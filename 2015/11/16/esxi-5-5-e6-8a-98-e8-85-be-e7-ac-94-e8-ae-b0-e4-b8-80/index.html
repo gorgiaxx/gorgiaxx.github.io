@@ -3,14 +3,54 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017 | Hexo</title>
+  <title>ESXi 5.5 折腾笔记 (一) | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+  <meta name="description" content="&amp;nbsp;
+简介VMware ESX 服务器是在通用环境下分区和整合系统的虚拟主机软件。它是具有高级资源管理功能高效，灵活的虚拟主机平台。ESXi (现在叫做VMware vSphere Hypervisor)是免费的，基本功能差不多，更小，更安全。
+
+准备官方下载地址：VMware vSphere Hypervisor 5.5
+注册完官方账号后，找到并记下自己的许可证，安装完后用来激活
+这是花">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ESXi 5.5 折腾笔记 (一)">
+<meta property="og:url" content="http://yoursite.com/2015/11/16/esxi-5-5-e6-8a-98-e8-85-be-e7-ac-94-e8-ae-b0-e4-b8-80/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="&amp;nbsp;
+简介VMware ESX 服务器是在通用环境下分区和整合系统的虚拟主机软件。它是具有高级资源管理功能高效，灵活的虚拟主机平台。ESXi (现在叫做VMware vSphere Hypervisor)是免费的，基本功能差不多，更小，更安全。
+
+准备官方下载地址：VMware vSphere Hypervisor 5.5
+注册完官方账号后，找到并记下自己的许可证，安装完后用来激活
+这是花">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/diff.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/license.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/sanhaoji-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/a.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/b.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/c.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/d.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/e.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/1-768x1024.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/dhcp.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/2-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/3-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/4-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/5-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/6-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/7-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/8-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/9-1-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/progress-768x1024.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/successfully-768x1024.jpg">
+<meta property="og:updated_time" content="2017-03-22T06:50:56.058Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="ESXi 5.5 折腾笔记 (一)">
+<meta name="twitter:description" content="&amp;nbsp;
+简介VMware ESX 服务器是在通用环境下分区和整合系统的虚拟主机软件。它是具有高级资源管理功能高效，灵活的虚拟主机平台。ESXi (现在叫做VMware vSphere Hypervisor)是免费的，基本功能差不多，更小，更安全。
+
+准备官方下载地址：VMware vSphere Hypervisor 5.5
+注册完官方账号后，找到并记下自己的许可证，安装完后用来激活
+这是花">
+<meta name="twitter:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/diff.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,58 +99,90 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" class="archive-article-date">
-  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">Feb 24</time>
+        <section id="main"><article id="post-esxi-5-5-e6-8a-98-e8-85-be-e7-ac-94-e8-ae-b0-e4-b8-80" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/16/esxi-5-5-e6-8a-98-e8-85-be-e7-ac-94-e8-ae-b0-e4-b8-80/" class="article-date">
+  <time datetime="2015-11-16T15:28:03.000Z" itemprop="datePublished">2015-11-16</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/">源码编译OpenWrt固件笔记</a>
+    <h1 class="article-title" itemprop="name">
+      ESXi 5.5 折腾笔记 (一)
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" class="archive-article-date">
-  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">Jan 17</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-    </h1>
-  
+        <p>&nbsp;</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>VMware ESX 服务器是在通用环境下分区和整合系统的虚拟主机软件。它是具有高级资源管理功能高效，灵活的虚拟主机平台。<br>ESXi (现在叫做VMware vSphere Hypervisor)是免费的，基本功能差不多，更小，更安全。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/diff.png" alt="diff"></p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p>官方下载地址：<a href="https://my.vmware.com/cn/group/vmware/evalcenter?p=free-esxi5" target="_blank" rel="external">VMware vSphere Hypervisor 5.5</a></p>
+<p>注册完官方账号后，找到并记下自己的许可证，安装完后用来激活<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/license.png" alt="license"></p>
+<p>这是花椒CERT社团黑色的“三号机”。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/sanhaoji-1024x768.jpg" alt="sanhaoji"></p>
+<p>————————分割线—————————–</p>
+<p>暑假7月27日由于硬盘坏道没能继续折腾，现在准备好了继续。</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>方法1：USB启动安装</p>
+<p>由于我的U盘装了Kali，暂时不想折腾了。想用U盘安装的可以装个大白菜，老毛桃，anywlan之类的做成启动盘，然后用它们来装镜像。再或者用UltraISO写镜像到U盘（前提是要备份数据）。</p>
+<p>方法2：PXE启动安装</p>
+<p>需要用到这个工具，<a href="http://pan.baidu.com/s/1ntmylj7" target="_blank" rel="external">ESXiPXE</a>，需要.NET4.0支持</p>
+<p>把它解压，在里面新建一个文件夹，就叫“esxi”吧。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/a.png" alt="a"></p>
+<p>把iso镜像里面的文件放到esxi文件夹里，然后在esxi文件夹里新建一个文件夹，”pxelinux.cfg”。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/b.png" alt="b"></p>
+<p>把<code>./esxi/ISOLINUX.CFG</code>这个文件复制到pxelinux.cfg里，改名为<code>default.</code></p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/c.png" alt="c"></p>
+<p>改完之后，找到根目录<code>ESXiPXE.exe.config</code>文件，用文本编辑器编辑<br>配置好DHCP服务，关键填上ServerIp，<code>172.16.85.177</code>这是我笔记本的ip。<br><a href="http://tietuku.com/64a7937fac0d9ca6" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/d.png" alt="d"></a><br>下面的参数保留默认即可(和图片上的一样)。<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/e.png" alt="e"></p>
+<p>接下来运行<code>ESXiPXE.exe</code>，会提示是否允许访问网络，选择允许。<br>然后打开三号机，网络启动，三号机会出现pxelinux的菜单界面。<br><a href="http://tietuku.com/84d7166d99a294a71" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/1-768x1024.jpg" alt="1"></a><br>ESXiPXE.exe会出现这些内容。<br><a href="http://tietuku.com/b56dea7e35f4879c1" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/dhcp.png" alt="dhcp"></a><br>接下来是安装过程<br><a href="http://tietuku.com/362a4d862a2f88e71" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/2-1024x768.jpg" alt="2"></a><br>在这张图里可以看到内存只有4G，后面出错的原因也在这里。<br><a href="http://tietuku.com/0187bd3bf30305a51" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/3-1024x768.jpg" alt="3"></a><br><a href="http://tietuku.com/3806b3133711bf481" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/4-1024x768.jpg" alt="4"></a><br>扫描硬盘需要十几秒左右，如果要等一分多钟说明硬盘有问题，暑假就是这样，然后老是卡在29%。<br><a href="http://tietuku.com/28bee787deaf08c11" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/5-1024x768.jpg" alt="5"></a><br>选择英语<br><a href="http://tietuku.com/e7b972c20a0225591" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/6-1024x768.jpg" alt="6"></a><br>设置管理员密码<br><a href="http://tietuku.com/d9baea5cbaa239dd1" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/7-1024x768.jpg" alt="7"></a><br>这里出错了，显示内存不够，这台机器有24GB内存，现在插拔一下内存条。<br><a href="http://tietuku.com/6471d19cfc93c8821" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/8-1024x768.jpg" alt="8"></a><br>经过几分钟的插♂拔，可以看到内存容量回来了。<br><a href="http://tietuku.com/e08a52ad9f1bd2351" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/9-1-1024x768.jpg" alt="9"></a><br>重新安装。<br><a href="http://tietuku.com/7dc9634d73b72ac11" target="_blank" rel="external"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/progress-768x1024.jpg" alt="progress"></a><br>安装完成ლ(╹◡╹ლ)！<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/successfully-768x1024.jpg" alt="successfully"></p>
+<p>&nbsp;</p>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/11/16/esxi-5-5-e6-8a-98-e8-85-be-e7-ac-94-e8-ae-b0-e4-b8-80/" data-id="cj0km5439000t5hbqh1l582cf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ESXi/">ESXi</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/VMware/">VMware</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安装/">安装</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/虚拟化/">虚拟化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/虚拟机/">虚拟机</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/11/windows-e5-ae-89-e8-a3-85-mysql-5-7-zip-e7-89-88/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Windows 安装 MySQL 5.7 Zip版
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/11/01/e5-9c-a8gitcafe-e4-b8-8a-e9-83-a8-e7-bd-b2hexo-e5-8d-9a-e5-ae-a2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">在GitCafe上部署Hexo博客</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         

@@ -3,14 +3,24 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017 | Hexo</title>
+  <title>Arch Linux 双显卡 安装 NVIDIA 闭源驱动 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+  <meta name="description" content="前言我的笔记本电脑是联想Y410P，双显卡GT755M + HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。
+以前都是玄学安装，一头雾水地安装，网上也没有找到解决办法。这一次特意折腾了一下，希望能帮助有需要的人。
+分析失">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Arch Linux 双显卡 安装 NVIDIA 闭源驱动">
+<meta property="og:url" content="http://yoursite.com/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言我的笔记本电脑是联想Y410P，双显卡GT755M + HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。
+以前都是玄学安装，一头雾水地安装，网上也没有找到解决办法。这一次特意折腾了一下，希望能帮助有需要的人。
+分析失">
+<meta property="og:updated_time" content="2017-03-22T06:50:56.058Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="Arch Linux 双显卡 安装 NVIDIA 闭源驱动">
+<meta name="twitter:description" content="前言我的笔记本电脑是联想Y410P，双显卡GT755M + HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。
+以前都是玄学安装，一头雾水地安装，网上也没有找到解决办法。这一次特意折腾了一下，希望能帮助有需要的人。
+分析失">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,58 +69,228 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" class="archive-article-date">
-  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">Feb 24</time>
+        <section id="main"><article id="post-arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" class="article-date">
+  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">2017-01-17</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/折腾癌/">折腾癌</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/">源码编译OpenWrt固件笔记</a>
+    <h1 class="article-title" itemprop="name">
+      Arch Linux 双显卡 安装 NVIDIA 闭源驱动
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" class="archive-article-date">
-  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">Jan 17</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-    </h1>
-  
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我的笔记本电脑是联想Y410P，双显卡GT755M + HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。<br>但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。</p>
+<p>以前都是玄学安装，一头雾水地安装，网上也没有找到解决办法。这一次特意折腾了一下，希望能帮助有需要的人。</p>
+<h2 id="分析失败原因"><a href="#分析失败原因" class="headerlink" title="分析失败原因"></a>分析失败原因</h2><p>一般安装NVIDIA闭源驱动最后会提示生成xorg.conf，这一步非常关键，如果同意生成，重启后会黑屏，不能进入桌面。</p>
+<p>根据情况不同，会出现以下错误的一种或多种</p>
+<ul>
+<li>Error: couldn’t get an RGB, Double-buffered visual</li>
+<li>ERROR: ld.so: object ‘libdlfaker.so’ from LD_PRELOAD cannot be preloaded: ignored</li>
+<li>SDDM服务启动失败</li>
+<li>/var/log/Xorg.0.log 提示 (EE) No devices detected. (EE) no screens found(EE)*   /var/log/Xorg.0.log 提示 Cannot establish any listening sockets - Make sure an X server isn’t already running</li>
+</ul>
+<p>前两个错误是因为安装顺序不正确，导致文件冲突然后缺失。<br>Xorg server不能启动是xorg.conf配置的问题。一种是Xorg server不能启动，导致SDDM服务启动失败，还有一种是Xorg server启动成功，仍然黑屏的情况。<br>xorg.conf是对linux X window系统的配置文件，主要保存鼠标、键盘、显示器以及显示卡等设备的配置信息。文件由数个Section/EndSection的区块组成，而每个区块的格式如下：</p>
+<pre><code>    Section &quot;Section名称&quot;
+           选项名称     &quot;选项值&quot;
+           选项名称     &quot;选项值&quot;
+           …
+    EndSection
+`&lt;/pre&gt;
 
-    </header>
+Xorg.conf配置特别反人类，看着都头晕，这个不会自己去配置的。
+一般情况下，在安装Arch Linux的时候都是先安装集显驱动，再安装独显驱动，[xf86-video-intel](https://www.archlinux.org/packages/?name=xf86-video-intel)。
+可能还会运行这条命令在`/etc/X11/`目录下生成配置文件。
+
+&lt;pre&gt;`Xorg -configure
+`&lt;/pre&gt;
+
+使用集显时，可以不需要xorg.conf，需要微调时才会用到。但是使用独显时，必须要配置xorg.conf，不然会出现各种错误导致Xorg server不能运行，或者是运行后出各种问题。
+
+这里的显卡切换解决方案是Bumblebee，也听说过一个空格引发的血案。据说nvidia-prime要更好，但是得折腾xorg.conf，先略过。
+
+## 开始安装
+
+现在要正常使用桌面，没有独显驱动的状态，请参考Arch Wiki上的[Installing Bumblebee with Intel/NVIDIA](https://wiki.archlinux.org/index.php/Bumblebee#Installing_Bumblebee_with_Intel.2FNVIDIA)教程安装，**一定要保证能正常进入桌面才能进行接下来的安装**
+
+安装以下内容
+
+&lt;pre&gt;`sudo pacman -S bumblebee bbswitch
+`&lt;/pre&gt;
+
+把用户添加到bumblebee用户组
+
+&lt;pre&gt;`sudo gpasswd -a gorgias bumblebee
+`&lt;/pre&gt;
+
+开启bumblebeed.service服务
+
+&lt;pre&gt;`sudo systemctl enable bumblebeed.service
+`&lt;/pre&gt;
+
+这里顺序要注意，NVIDIA驱动要先安装，不然会和某些库文件冲突导致开机黑屏，或者因为缺少32位库导致VMWare不能使用GPU
+
+&lt;pre&gt;`sudo pacman -S bumblebee nvidia opencl-nvidia lib32-nvidia-utils lib32-opencl-nvidia mesa lib32-mesa-libgl xf86-video-intel 
+`&lt;/pre&gt;
+
+&lt;del datetime=&quot;2017-02-24T05:08:32+00:00&quot;&gt;提示生成xorg.conf时，要确认/etc/X11/xorg.conf是否存在。
+一定要在正常使用桌面的状态下执行，否则生成的配置文件会出错。
+先把生成的配置文件放在bumblebee目录下
+
+&lt;pre&gt;`sudo mv /etc/X11/xorg.conf /etc/bumblebee/xorg.conf.nvidia
+`&lt;/pre&gt;
+
+若原先存在xorg.conf，生成后还原，其实有没有都没关系，主要是确保和原先一样。
+
+&lt;pre&gt;`sudo mv /etc/X11/xorg.conf.backup /etc/X11/xorg.conf&amp;lt;/del&amp;gt;
+`&lt;/pre&gt;
+
+配置bumblebee
+
+&lt;pre&gt;`sudo vi /etc/bumblebee/bumblebee.conf
+-----------------------------------------
+这一个不要auto，指定nvidia
+Driver=nvidia
+
+电源管理指定bbswitch
+[driver-nvidia]
+PMMethod=bbswitch
+`&lt;/pre&gt;
+
+然后重启，可以进入桌面，检测一下是否能启用独显
+
+安装测试工具
+
+&lt;pre&gt;`sudo pacman -S glxspheres32 glxspheres64
+`&lt;/pre&gt;
+
+然后运行
+
+&lt;pre&gt;`glxspheres32
+glxspheres64
+optirun glxspheres32
+optirun glxspheres64
+`&lt;/pre&gt;
+
+很完美
+![](https://blog.gorgiaxx.com/wp-content/uploads/2017/01/Screenshot_20170117_140349-1024x612.png)
+
+## 添加未识别分辨率
+
+我的笔记本在Linux下使用VGA接口不能正常识别最高分辨率，照网上教程使用cvt也不能生成能用的显示参数。
+为此伤透脑筋，去年买了一根黄刀的DVI转HDMI线才解决。
+但是好景不长，16年年底，笔记本电脑HDMI接口坏了，于是继续折腾。
+
+首先解决不能生成可用显示参数的问题，非CRT显示器需要加上-r参数，参考[CVT Timings Program](http://www.uruk.org/projects/cvt/)
+&gt; Reduced Blanking - Timings for LCD flat panels and other monitors that do not require long blanking intervals as a retrace period. CRTs require this because the electron beam takes time to horizontally resteer to the other side of the monitor.
+
+&lt;pre&gt;`usage: cvt [-v|--verbose] [-r|--reduced] X Y [refresh]
+
+ -v|--verbose : Warn about CVT standard adherance.
+ -r|--reduced : Create a mode with reduced blanking (default: normal blanking).
+            X : Desired horizontal resolution (multiple of 8, required).
+            Y : Desired vertical resolution (required).
+      refresh : Desired refresh rate (default: 60.0Hz).
+
+Calculates VESA CVT (Coordinated Video Timing) modelines for use with X.
+`&lt;/pre&gt;
+
+最后执行这段命令就能得到可用显示参数
+
+&lt;pre&gt;`$ cvt -r 1920 1080
+
+Modeline &quot;1920x1080R&quot;  138.50  1920 1968 2000 2080  1080 1083 1088 1111 +hsync -vsync
+`&lt;/pre&gt;
+
+先来一个错误的解决方法，脚本文件/etc/rc.d/afterx，这段代码比较尴尬，不能执行太早也不能太晚，只好把脚本路径放在/usr/share/sddm/scripts/Xsetup才解决，但是登录界面的DPI存在问题
+
+&lt;pre&gt;`#!/bin/sh -e
+#Fix VGA resolution
+xrandr --newmode &quot;1920x1080R&quot;  138.50  1920 1968 2000 2080  1080 1083 1088 1111 +hsync -vsync
+xrandr --addmode VGA1 &quot;1920x1080R&quot;
+xrandr --output VGA1 --mode &quot;1920x1080R&quot;
+`&lt;/pre&gt;
+
+其实在xorg配置文件里就能完美解决，参考[Monitor Settings](https://wiki.archlinux.org/index.php/Xorg#Monitor_settings)，Section的含义可以参考Wiki。
+
+&lt;pre&gt;`/etc/X11/xorg.conf.d/10-monitor.conf
+--------------------------------------
+Section &quot;Monitor&quot;
+    Identifier &quot;VGA1&quot;
+    Modeline &quot;1920x1080R&quot;  138.50  1920 1968 2000 2080  1080 1083 1088 1111 +hsync -vsync
+    Option &quot;PreferredMode&quot; &quot;1920x1080R&quot;
+EndSection
+
+Section &quot;Screen&quot;
+    Identifier &quot;Screen0&quot;
+    Monitor &quot;VGA1&quot;
+    DefaultDepth 24
+    SubSection &quot;Display&quot;
+        Modes &quot;1920x1080R&quot;
+    EndSubSection
+EndSection
+
+Section &quot;Device&quot;
+    Identifier &quot;Device0&quot;
+    Driver &quot;intel&quot;
+EndSection
+`&lt;/pre&gt;
+
+这里说一下如何配置，Driver这里设成独显的驱动intel。
+Identifier可以使用xrandr查看，查看Monitor,Screen
+
+&lt;pre&gt;`xrandr
+xrandr --listmonitors
+</code></pre><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://wiki.archlinux.org/" target="_blank" rel="external">Arch Linux Wiki</a><br><a href="http://www.uruk.org/projects/cvt/" target="_blank" rel="external">CVT Timings Program</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" data-id="cj0km542600015hbqklpm1ipc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/VGA/">VGA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/arch/">arch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bumblebee/">bumblebee</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xorg/">xorg</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分辨率/">分辨率</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/双显卡/">双显卡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/失败/">失败</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/闭源/">闭源</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/黑屏/">黑屏</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          源码编译OpenWrt固件笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/13/kvmqemu-e5-88-9d-e4-bd-93-e9-aa-8c/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">KVM/QEMU初体验</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         

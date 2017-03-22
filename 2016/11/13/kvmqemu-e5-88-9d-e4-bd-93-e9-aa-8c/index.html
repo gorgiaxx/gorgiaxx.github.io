@@ -3,14 +3,25 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017 | Hexo</title>
+  <title>KVM/QEMU初体验 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+  <meta name="description" content="前言正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。
+周围人都用QQ和微信，需要传文件和图片，我不得不用，但是又不想使用Windows工作，所以安装了VMWare Workstation来跑虚拟机。期初在Debian上跑Win10很流畅，换Arch之后总是因为ntfs3g占用率过高而卡顿，后来把宿主机放虚拟机的分区文件系统换成Ext4缓解了一些，把Wi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KVM/QEMU初体验">
+<meta property="og:url" content="http://yoursite.com/2016/11/13/kvmqemu-e5-88-9d-e4-bd-93-e9-aa-8c/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。
+周围人都用QQ和微信，需要传文件和图片，我不得不用，但是又不想使用Windows工作，所以安装了VMWare Workstation来跑虚拟机。期初在Debian上跑Win10很流畅，换Arch之后总是因为ntfs3g占用率过高而卡顿，后来把宿主机放虚拟机的分区文件系统换成Ext4缓解了一些，把Wi">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/11/guide_fig.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/11/Screenshot_20161113_014030.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/11/Screenshot_20161113_014351.png">
+<meta property="og:updated_time" content="2017-03-22T06:50:56.058Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="KVM/QEMU初体验">
+<meta name="twitter:description" content="前言正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。
+周围人都用QQ和微信，需要传文件和图片，我不得不用，但是又不想使用Windows工作，所以安装了VMWare Workstation来跑虚拟机。期初在Debian上跑Win10很流畅，换Arch之后总是因为ntfs3g占用率过高而卡顿，后来把宿主机放虚拟机的分区文件系统换成Ext4缓解了一些，把Wi">
+<meta name="twitter:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/11/guide_fig.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,58 +70,156 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" class="archive-article-date">
-  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">Feb 24</time>
+        <section id="main"><article id="post-kvmqemu-e5-88-9d-e4-bd-93-e9-aa-8c" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/11/13/kvmqemu-e5-88-9d-e4-bd-93-e9-aa-8c/" class="article-date">
+  <time datetime="2016-11-13T03:19:58.000Z" itemprop="datePublished">2016-11-13</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/">源码编译OpenWrt固件笔记</a>
+    <h1 class="article-title" itemprop="name">
+      KVM/QEMU初体验
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" class="archive-article-date">
-  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">Jan 17</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-    </h1>
-  
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。</p>
+<p>周围人都用QQ和微信，需要传文件和图片，我不得不用，但是又不想使用Windows工作，所以安装了VMWare Workstation来跑虚拟机。<br>期初在Debian上跑Win10很流畅，换Arch之后总是因为ntfs3g占用率过高而卡顿，后来把宿主机放虚拟机的分区文件系统换成Ext4缓解了一些，把Win10自带的应用删掉后才好了很多。</p>
+<p>KVM 是 kernel-based Virtual Machine 的简称,是一个开源的系统虚拟化模块,是 Linux 下 x86 硬件平台上的全功能虚拟化解决方案。<br>QEMU是一个强大的开源仿真器，仿真系统，仿真各种硬件。<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/11/guide_fig.png" alt="guide_fig"><br>QEMU通过KVM虚拟化达到更好的性能，以前从来没有用过QEMU，于是花了很多时间入门，每个细节都不放过，学习过程中收获了很多，对虚拟机也有了更进一步的了解。</p>
+<p><a href="http://www.ibm.com/developerworks/cn/" target="_blank" rel="external">IBM开发者社区</a>真是一大堆干货，还有各大产品的官方文档和Wiki。自带的man pages也非常详细。</p>
+<p>也正是开发者们做的伟大贡献，能让我方便地在Linux上进行工作和娱乐。也很惭愧目前自己没有能力做贡献。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>为了更方便的学习，先不使用图形化界面。(后来发现不装图形化的我太年轻，正式环境中配置远比想象中要多，而且复杂很多，CPU，键盘，USB，声音等都很难配置)</p>
+<pre><code>sudo pacman -S qemu
+`&lt;/pre&gt;
 
-    </header>
+还是安装图形化界面吧，试过qtemu,qemu-launcher,aqemu要好用一点。
+
+&lt;pre&gt;`yaourt aqemu
+`&lt;/pre&gt;
+
+## 添加硬盘
+
+### 创建硬盘
+
+QEMU支持许多种镜像格式，包括VMDK, VDI, VHD (vpc), VHDX, qcow1 和 QED，可以通过qemu-img进行操作。
+
+目前一般采用raw和qcow2。
+
+raw是原始磁盘镜像格式，速度最快，但是要立即分配磁盘空间。
+
+qcow2速度稍慢，不用立即分配空间，支持很多特性，比如快照，回滚，加密，压缩等等。
+
+比如创建一个raw格式的硬盘镜像
+
+&lt;pre&gt;`qemu-img create -f raw Kali_Linux.img 20G
+`&lt;/pre&gt;
+
+或者创建一个簇大小为2M，立即分配所有空间的qcow2硬盘镜像
+
+&lt;pre&gt;`qemu-img create -f qcow2 -o cluster_size=2M,preallocation=full Kali_Linux.qcow2 4G
+`&lt;/pre&gt;
+
+### 格式转换
+
+qemu-img支持转换磁盘镜像格式。某些情况下，需要迁移磁盘镜像。
+
+比如我想要对比Kali Linux运行在KVM和VMware下的性能，需要把vmdk转换成更适合QEMU的磁盘镜像格式。
+
+&lt;pre&gt;`# 把vmdk转换成raw
+qemu-img convert -f vmdk -O raw Kali\ 2016\ 64-bit.vmdk Kali_Linux.img
+# 把vmdk转换成qcow2
+qemu-img convert -f vmdk -O qcow2 Kali\ 2016\ 64-bit.vmdk Kali_Linux.qcow2
+`&lt;/pre&gt;
+
+## 开启硬件辅助虚拟化
+
+确保在BIOS里开启了VT。我的电脑是Intel平台，把`intel_iommu=on`加进内核参数。如果是AMD平台则用`amd_iommu=on`。
+IOMMU技术可以说是把硬件设备直接映射到虚拟机上，解决外围设备的支持问题和硬件利用效率问题。
+在`/boot/grub/grub.cfg`文件里修改。
+
+&lt;pre&gt;`linux   /boot/vmlinuz-linux root=UUID=6bb8eda5-d588-4e6a-8f5e-bbc856cc9f96 rw quiet intel_iommu=on
+`&lt;/pre&gt;
+
+重启之后查看IOMMU是否开启
+
+&lt;pre&gt;`gorgias@3vil ~&amp;gt; dmesg | grep -e DMAR -e IOMMU
+[    0.000000] DMAR: IOMMU enabled
+`&lt;/pre&gt;
+
+安装图形驱动，这里先试试vmware的。安装后可以解决鼠标不显示的问题，但是进入桌面会花屏几秒。
+
+&lt;pre&gt;`sudo pacman -S xf86-video-vmware xf86-input-vmmouse
+`&lt;/pre&gt;
+
+尝试启动虚拟机，参数：使用Kali_Linux.qcow2硬盘镜像，内存2GB，使用vmware图形驱动，仿真Q35芯片组，使用KVM，开启iommu。
+
+&lt;pre&gt;`qemu-system-x86_64 /home/gorgias/media/Lancer/KVM/Kali\ Linux/Kali_Linux.qcow2 -enable-kvm -m 2048 -vga vmware -machine q35,accel=kvm,type=q35 -device intel-iommu
+`&lt;/pre&gt;
+
+用起来挺流畅的
+![screenshot_20161113_013944](https://blog.gorgiaxx.com/wp-content/uploads/2016/11/Screenshot_20161113_013944.png)
+
+## QEMU monitor
+
+QEMU提供一个检查虚拟机运行状态的监视器，
+在QEMU界面按Ctrl + Alt + 2(不是小键盘)可以切换到QEMU monitor。如果不能，请检查快捷键是否冲突。
+也可以在启动虚拟机的时候，添加`-monitor &amp;lt;dev&amp;gt;`参数，比如`-monitor stdio`将允许使用标准输入作为 monitor 命令源。
+
+在monitor输入info kvm检查kvm模块是否开启。
+
+&lt;pre&gt;`(qemu) info kvm
+kvm support: enabled
+</code></pre><p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/11/Screenshot_20161113_014030.png" alt="screenshot_20161113_014030"></p>
+<h2 id="AQEMU"><a href="#AQEMU" class="headerlink" title="AQEMU"></a>AQEMU</h2><p>配置是不可能全手动配置的，这辈子不可能全手动配置的。<br>QEMU是非常强大的工具，值得深入研究，吾等还是随便玩玩就好。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/11/Screenshot_20161113_014351.png" alt="screenshot_20161113_014351"><br>界面有点像Virtual Box，功能齐全。像VMware一样配置就能跑起虚拟机了。<br>不管是性能还是易用性，VMware都要强很多。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://wiki.archlinux.org/index.php/QEMU#Running_virtualized_system" target="_blank" rel="external">Arch Linux Wiki - QEMU</a><br><a href="https://en.wikibooks.org/wiki/QEMU/Monitor" target="_blank" rel="external">WIKIBOOKS - QEMU/Monitor</a><br><a href="http://www.linux-kvm.org/" target="_blank" rel="external">linux-kvm.org</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/13/kvmqemu-e5-88-9d-e4-bd-93-e9-aa-8c/" data-id="cj0km543c00105hbqt64gbco4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/arch/">arch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kvm/">kvm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/qemu/">qemu</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/体验/">体验</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安装/">安装</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Arch Linux 双显卡 安装 NVIDIA 闭源驱动
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/25/arch-linux-e4-b8-8a-e4-bd-bf-e7-94-a8acr122u-e7-a0-b4-e8-a7-a3-e9-b2-9c-e5-a5-b6-e5-8d-a1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Arch Linux上使用ACR122U破解鲜奶卡</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         

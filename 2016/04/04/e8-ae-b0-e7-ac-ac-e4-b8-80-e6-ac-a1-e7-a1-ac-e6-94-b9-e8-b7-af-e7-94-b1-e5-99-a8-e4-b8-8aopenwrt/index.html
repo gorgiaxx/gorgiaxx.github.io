@@ -3,14 +3,41 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017 | Hexo</title>
+  <title>记第一次硬改路由器上Openwrt | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+  <meta name="description" content="前言最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）
+
+准备设备: TP-Link WR845N v4
+硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。配件:Winbond(华邦) 16MB 128MBIT SPI FLASH内存颗粒 HY5DU121622CTP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记第一次硬改路由器上Openwrt">
+<meta property="og:url" content="http://yoursite.com/2016/04/04/e8-ae-b0-e7-ac-ac-e4-b8-80-e6-ac-a1-e7-a1-ac-e6-94-b9-e8-b7-af-e7-94-b1-e5-99-a8-e4-b8-8aopenwrt/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）
+
+准备设备: TP-Link WR845N v4
+硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。配件:Winbond(华邦) 16MB 128MBIT SPI FLASH内存颗粒 HY5DU121622CTP">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/1-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/2-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/a.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/b-768x1024.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/bad-768x1024.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/complete-1024x758.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/inside-1024x758.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/3-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/4-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/breed-1024x758.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/a64.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/ssh-1024x768.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/appearance-768x1024.jpg">
+<meta property="og:updated_time" content="2017-03-22T06:50:56.058Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="记第一次硬改路由器上Openwrt">
+<meta name="twitter:description" content="前言最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）
+
+准备设备: TP-Link WR845N v4
+硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。配件:Winbond(华邦) 16MB 128MBIT SPI FLASH内存颗粒 HY5DU121622CTP">
+<meta name="twitter:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/1-1024x768.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,58 +86,94 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" class="archive-article-date">
-  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">Feb 24</time>
+        <section id="main"><article id="post-e8-ae-b0-e7-ac-ac-e4-b8-80-e6-ac-a1-e7-a1-ac-e6-94-b9-e8-b7-af-e7-94-b1-e5-99-a8-e4-b8-8aopenwrt" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/04/e8-ae-b0-e7-ac-ac-e4-b8-80-e6-ac-a1-e7-a1-ac-e6-94-b9-e8-b7-af-e7-94-b1-e5-99-a8-e4-b8-8aopenwrt/" class="article-date">
+  <time datetime="2016-04-04T10:16:01.000Z" itemprop="datePublished">2016-04-04</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>►<a class="article-category-link" href="/categories/技术宅/折腾癌/">折腾癌</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/">源码编译OpenWrt固件笔记</a>
+    <h1 class="article-title" itemprop="name">
+      记第一次硬改路由器上Openwrt
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" class="archive-article-date">
-  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">Jan 17</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-    </h1>
-  
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/1-1024x768.jpg" alt="1"></p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p>设备: TP-Link WR845N v4</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/2-1024x768.jpg" alt="2"><br>硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。<br>配件:<br>Winbond(华邦) 16MB 128MBIT SPI FLASH<br>内存颗粒 HY5DU121622CTP-D43 DDR64M16位<br>系统环境：Windows 10，CH341A编程器软件</p>
+<p>&nbsp;</p>
+<h1 id="硬件改造要点"><a href="#硬件改造要点" class="headerlink" title="硬件改造要点"></a>硬件改造要点</h1><h2 id="拆闪存"><a href="#拆闪存" class="headerlink" title="拆闪存"></a>拆闪存</h2><p>首先给热风枪装上1cm的出风口，把热风枪温度调到265度，风速6。然后预热路由器主板，接着对着闪存吹，大概十几秒后闪存引脚上的锡变亮，说明锡熔化了，用镊子把它取下。</p>
+<h2 id="拆内存"><a href="#拆内存" class="headerlink" title="拆内存"></a>拆内存</h2><p>首先用隔热胶带贴住周围，保护零件，用助焊剂涂满内存颗粒两边引脚，给引脚上锡，一边拖焊一边用镊子顶住左边，力向上，不要太大力，否则焊盘会被扯下。拖焊的时候把烙铁头温度调到380度，轻轻来回滑动碰引脚，让上面的锡变成液态，这样一边就被镊子顶起来了。另一边也这样做。</p>
+<h2 id="焊杜邦头"><a href="#焊杜邦头" class="headerlink" title="焊杜邦头"></a>焊杜邦头</h2><p>烙铁头温度调到350度，根据闪存与插孔的走线，把杜邦头插在SOP转接板上，用烙铁头贴着杜邦头接触点，用锡点一下，就焊上去了。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/a.png" alt="a"></p>
+<h2 id="焊闪存"><a href="#焊闪存" class="headerlink" title="焊闪存"></a>焊闪存</h2><p>把闪存焊在SOP转接板上，闪存上面有圆点的那一面对着电路板上有缺口的那一面</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/b-768x1024.jpg" alt="b"></p>
+<h2 id="焊内存"><a href="#焊内存" class="headerlink" title="焊内存"></a>焊内存</h2><p>把内存与焊盘对齐，圆点的那一面对着电路板上有缺口的那一面，对称的两角用锡固定，然后加锡拖焊，可能是我的锡有问题，最后总是连锡，也是因为这个问题，让我焊上去又取下来，导致一个板子焊盘掉了许多。解决办法：用吸锡带或者用细针把锡清理干净。</p>
+<p>失败图：</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/bad-768x1024.jpg" alt="bad"></p>
+<p>成功图：</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/complete-1024x758.jpg" alt="complete"></p>
+<p>加个散热片</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/inside-1024x758.jpg" alt="inside"></p>
+<h1 id="操作流程"><a href="#操作流程" class="headerlink" title="操作流程"></a>操作流程</h1><p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/3-1024x768.jpg" alt="3"></p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/4-1024x768.jpg" alt="4"></p>
+<p>先拆闪存，用编程器备份原有的固件，因为里面有art，这里面有无线相关的参数，每台机器的配置都有略微不同，很重要。<br>然后再下载对应芯片的Bootloader写入16MB的闪存，这里用的Bootloader是<a href="http://blog.hackpascal.net/" target="_blank" rel="external">Hackpascal</a>大神的<a href="http://www.right.com.cn/forum/thread-161906-1-1.html" target="_blank" rel="external">Breed</a>。<br>写入之后焊在主板上。启动，插入网线，用浏览器打开192.168.1.1。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/breed-1024x758.jpg" alt="breed"></p>
+<p>然后替换内存，再启动，如果虚焊或者连锡，加电后led会一直全亮。<br>这里可以看到内存变成64MB了。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/a64.png" alt="a64"></p>
+<p>然后进Breed刷入PandoraBox和ART，这里我刷的是Hackpascal编译的Openwrt，假如没有备份art，可以是用Hackspecial提供的<a href="http://www.right.com.cn/forum/thread-136444-1-1.html" target="_blank" rel="external">art</a>。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/ssh-1024x768.jpg" alt="ssh"></p>
+<p>贴上水果的logo，perfect！</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2016/04/appearance-768x1024.jpg" alt="appearance"></p>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/04/e8-ae-b0-e7-ac-ac-e4-b8-80-e6-ac-a1-e7-a1-ac-e6-94-b9-e8-b7-af-e7-94-b1-e5-99-a8-e4-b8-8aopenwrt/" data-id="cj0km5437000q5hbqwyke0gsi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tplink/">tplink</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/改装/">改装</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/硬改/">硬改</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/路由器/">路由器</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/09/e7-bb-99-e7-bd-91-e7-ab-99-e6-b7-bb-e5-8a-a0-e5-85-8d-e8-b4-b9ssl-e8-af-81-e4-b9-a6-e5-90-af-e7-94-a8-certificate-transparency-e7-ad-96-e7-95-a5-e5-bc-80-e5-90-af-http2-e5-8d-8f-e8-ae-ae/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/11/windows-e5-ae-89-e8-a3-85-mysql-5-7-zip-e7-89-88/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Windows 安装 MySQL 5.7 Zip版</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         

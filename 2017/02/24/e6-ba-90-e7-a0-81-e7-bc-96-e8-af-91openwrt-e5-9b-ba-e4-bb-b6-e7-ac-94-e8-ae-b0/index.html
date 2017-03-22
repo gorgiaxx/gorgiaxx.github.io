@@ -3,14 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017 | Hexo</title>
+  <title>源码编译OpenWrt固件笔记 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+  <meta name="description" content="前言最近学校的移动宽带运营商开始搞事情，搞流量劫持，下载投毒，步入电信联通之流。这个学期也不能多拨了，会被系统检测到，封停半个小时。去年夏天乔治学长送我的路由器，OYE-0001，用了半年多了，软件上挺稳定的，就是接口太松，不小心碰到会掉线。之前改装的TP-Link WR845N刷Hackpascal的固件会定期宕机，因为不能多拨了，所以打算换回原来的路由器刷官方固件稳定一点，反正不在寝室住了，对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="源码编译OpenWrt固件笔记">
+<meta property="og:url" content="http://yoursite.com/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言最近学校的移动宽带运营商开始搞事情，搞流量劫持，下载投毒，步入电信联通之流。这个学期也不能多拨了，会被系统检测到，封停半个小时。去年夏天乔治学长送我的路由器，OYE-0001，用了半年多了，软件上挺稳定的，就是接口太松，不小心碰到会掉线。之前改装的TP-Link WR845N刷Hackpascal的固件会定期宕机，因为不能多拨了，所以打算换回原来的路由器刷官方固件稳定一点，反正不在寝室住了，对">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2017/02/IMG_20170224_111804-768x1024.jpg">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2017/02/Screenshot_20170224_125456.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2017/02/Screenshot_20170224_125620-1024x594.png">
+<meta property="og:updated_time" content="2017-03-22T06:50:56.058Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="源码编译OpenWrt固件笔记">
+<meta name="twitter:description" content="前言最近学校的移动宽带运营商开始搞事情，搞流量劫持，下载投毒，步入电信联通之流。这个学期也不能多拨了，会被系统检测到，封停半个小时。去年夏天乔治学长送我的路由器，OYE-0001，用了半年多了，软件上挺稳定的，就是接口太松，不小心碰到会掉线。之前改装的TP-Link WR845N刷Hackpascal的固件会定期宕机，因为不能多拨了，所以打算换回原来的路由器刷官方固件稳定一点，反正不在寝室住了，对">
+<meta name="twitter:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2017/02/IMG_20170224_111804-768x1024.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,58 +67,120 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" class="archive-article-date">
-  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">Feb 24</time>
+        <section id="main"><article id="post-e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" class="article-date">
+  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">2017-02-24</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>►<a class="article-category-link" href="/categories/技术宅/折腾癌/">折腾癌</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/">源码编译OpenWrt固件笔记</a>
+    <h1 class="article-title" itemprop="name">
+      源码编译OpenWrt固件笔记
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" class="archive-article-date">
-  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">Jan 17</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-    </h1>
-  
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近学校的移动宽带运营商开始搞事情，搞流量劫持，下载投毒，步入电信联通之流。这个学期也不能多拨了，会被系统检测到，封停半个小时。<br>去年夏天乔治学长送我的路由器，OYE-0001，用了半年多了，软件上挺稳定的，就是接口太松，不小心碰到会掉线。<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2017/02/IMG_20170224_111804-768x1024.jpg" alt=""><br>之前改装的TP-Link WR845N刷Hackpascal的固件会定期宕机，因为不能多拨了，所以打算换回原来的路由器刷官方固件稳定一点，反正不在寝室住了，对于流控也没有要求。<br>但是官方似乎放弃了WR845N V4版本，已经下载不到固件了，其他版本固件刷入后不能开机。<br>于是打算自己尝试编译，踩了不少坑呢。<br>记录下步骤吧！</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>先参考<a href="https://github.com/openwrt/openwrt" target="_blank" rel="external">openwrt github</a><br>准备好编译环境，需要以下组件</p>
+<pre><code>gcc, binutils, bzip2, flex, python, perl, make,
+find, grep, diff, unzip, gawk, getopt, subversion, libz-dev and libc headers
+`&lt;/pre&gt;
 
-    </header>
+系统环境
+
+&lt;pre&gt;`OS: Arch Linux 
+Kernel: x86_64 Linux 4.9.8-1-ARCH
+`&lt;/pre&gt;
+
+直接用trunk版本
+
+&lt;pre&gt;`git clone https://github.com/openwrt/openwrt
+`&lt;/pre&gt;
+
+运行feeds获取所有的预定义软件包并且安装，关于[feeds参考](https://wiki.openwrt.org/doc/devel/feeds)
+
+&lt;pre&gt;`./scripts/feeds update -a
+./scripts/feeds install -a
+`&lt;/pre&gt;
+
+## 编译
+
+开始配置编译菜单
+
+&lt;pre&gt;`make menuconfig
+`&lt;/pre&gt;
+
+方向建上下操作纵列，左右操作横列，空格选择，M代表作为模块编译，*代表编译到固件。
+![](https://blog.gorgiaxx.com/wp-content/uploads/2017/02/Screenshot_20170223_120857-1024x476.png)
+因为ROM是八脚SPI，Subtarget选择Generic，参考[The OpenWrt Flash Layout](https://wiki.openwrt.org/doc/techref/flash.layout)
+
+Target Profile 选择 TP-LINK TL-WR842N/ND，因为硬件相似，都是QCA953X的。
+Target Images 选择 squashfs，参考[SquashFS](https://en.wikipedia.org/wiki/SquashFS)
+其他保持默认，因为容量不够，所以其他组件就不装了，接下来到LuCI
+Collections，三个都选
+![](https://blog.gorgiaxx.com/wp-content/uploads/2017/02/Screenshot_20170224_124308.png)
+
+&lt;pre&gt;`Modules ---&amp;gt; Translations
+`&lt;/pre&gt;
+
+选择中文和英文
+Applications这里选择需要的应用，参考PandoraBox固件的应用。
+Themes里面选最漂亮的luci-theme-material
+![](https://blog.gorgiaxx.com/wp-content/uploads/2017/02/Screenshot_20170224_124308.png)
+接下来保存，名字一定要为`.config`，不能改
+![](https://blog.gorgiaxx.com/wp-content/uploads/2017/02/Screenshot_20170224_124831.png)
+
+接下来开始编译，因为CPU是双核双线程，所以加上-j4，然后加上V=99可以看到详细信息。
+
+&lt;pre&gt;`make -j4 V=99
+`&lt;/pre&gt;
+
+编译时需要连接网络下载软件包，部分地区网络不可达，请使用代理。
+因为网络问题编译失败，请清理，然后使用proxychains4代理安装
+
+&lt;pre&gt;`make clean
+pc4 make -j4 V=99
+</code></pre><p>编译完成后，会在<code>./bin/ar71xx/</code>目录生成固件和软件包，找到相应固件，进breed刷入即可。<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2017/02/Screenshot_20170224_125456.png" alt=""><br>开机成功，发现在卫生间信号都是满格<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2017/02/Screenshot_20170224_125620-1024x594.png" alt=""></p>
+<p>附上固件下载地址<br><a href="https://mega.nz/#!b94VCaJS!3u3TEam6ScpjXH9-oPVySjihKCgzLtbE6Z8KpYADhkc" target="_blank" rel="external">Mega</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://wiki.openwrt.org/" target="_blank" rel="external">OpenWrt Wiki</a><br><a href="https://en.wikipedia.org" target="_blank" rel="external">Wikipedia</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" data-id="cj0km542v000f5hbq9w51balc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TP-Link/">TP-Link</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/menuconfig/">menuconfig</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/固件/">固件</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译/">编译</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         

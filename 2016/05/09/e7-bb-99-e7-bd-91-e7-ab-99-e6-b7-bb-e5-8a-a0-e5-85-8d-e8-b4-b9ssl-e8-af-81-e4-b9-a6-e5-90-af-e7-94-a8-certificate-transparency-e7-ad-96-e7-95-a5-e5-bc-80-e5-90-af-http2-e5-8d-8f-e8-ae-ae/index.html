@@ -3,14 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017 | Hexo</title>
+  <title>给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+  <meta name="description" content="为什么要添加SSL证书/使用HTTPS协议目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。
+准备 &amp;amp; 环境本服务器环境DigitalOcean VPS，SG节点，Debian jessie，AMH主机面板需要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议">
+<meta property="og:url" content="http://yoursite.com/2016/05/09/e7-bb-99-e7-bd-91-e7-ab-99-e6-b7-bb-e5-8a-a0-e5-85-8d-e8-b4-b9ssl-e8-af-81-e4-b9-a6-e5-90-af-e7-94-a8-certificate-transparency-e7-ad-96-e7-95-a5-e5-bc-80-e5-90-af-http2-e5-8d-8f-e8-ae-ae/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="为什么要添加SSL证书/使用HTTPS协议目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。
+准备 &amp;amp; 环境本服务器环境DigitalOcean VPS，SG节点，Debian jessie，AMH主机面板需要">
+<meta property="og:updated_time" content="2017-03-22T06:50:56.058Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议">
+<meta name="twitter:description" content="为什么要添加SSL证书/使用HTTPS协议目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。
+准备 &amp;amp; 环境本服务器环境DigitalOcean VPS，SG节点，Debian jessie，AMH主机面板需要">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,58 +66,223 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" class="archive-article-date">
-  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">Feb 24</time>
+        <section id="main"><article id="post-e7-bb-99-e7-bd-91-e7-ab-99-e6-b7-bb-e5-8a-a0-e5-85-8d-e8-b4-b9ssl-e8-af-81-e4-b9-a6-e5-90-af-e7-94-a8-certificate-transparency-e7-ad-96-e7-95-a5-e5-bc-80-e5-90-af-http2-e5-8d-8f-e8-ae-ae" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/09/e7-bb-99-e7-bd-91-e7-ab-99-e6-b7-bb-e5-8a-a0-e5-85-8d-e8-b4-b9ssl-e8-af-81-e4-b9-a6-e5-90-af-e7-94-a8-certificate-transparency-e7-ad-96-e7-95-a5-e5-bc-80-e5-90-af-http2-e5-8d-8f-e8-ae-ae/" class="article-date">
+  <time datetime="2016-05-09T13:17:55.000Z" itemprop="datePublished">2016-05-09</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/">源码编译OpenWrt固件笔记</a>
+    <h1 class="article-title" itemprop="name">
+      给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" class="archive-article-date">
-  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">Jan 17</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-    </h1>
-  
+        <h2 id="为什么要添加SSL证书-使用HTTPS协议"><a href="#为什么要添加SSL证书-使用HTTPS协议" class="headerlink" title="为什么要添加SSL证书/使用HTTPS协议"></a>为什么要添加SSL证书/使用HTTPS协议</h2><p>目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。<br>近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。</p>
+<h2 id="准备-amp-环境"><a href="#准备-amp-环境" class="headerlink" title="准备 &amp; 环境"></a>准备 &amp; 环境</h2><p>本服务器环境DigitalOcean VPS，SG节点，Debian jessie，AMH主机面板<br>需要用到:<br><em>免费SSL证书 <a href="https://letsencrypt.org/" target="_blank" rel="external">Let’s Encrypt</a>
+</em><a href="http://nginx.org/" target="_blank" rel="external">NGINX</a><br>*<a href="https://www.openssl.org/" target="_blank" rel="external">OpenSSL</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="安装-amp-升级OpenSSL-1-0-2"><a href="#安装-amp-升级OpenSSL-1-0-2" class="headerlink" title="安装&amp;升级OpenSSL 1.0.2"></a>安装&amp;升级OpenSSL 1.0.2</h3><p>要让NGINX开启HTTP/2协议，必须使用此版本的OpenSSL</p>
+<blockquote>
+<p>Note that accepting HTTP/2 connections over TLS requires the “Application-Layer Protocol Negotiation” (ALPN) TLS extension support, which is available only since OpenSSL version 1.0.2. Using the “Next Protocol Negotiation” (NPN) TLS extension for this purpose (available since OpenSSL version 1.0.1) is not guaranteed.</p>
+</blockquote>
+<p>去官网或者载Gayhub下载OpenSSL源码</p>
+<pre><code>wget https://github.com/openssl/openssl/archive/OpenSSL_1_0_2h.tar.gz
+tar -zxvf ./OpenSSL_1_0_2h.tar.gz
+cd ./openssl-OpenSSL_1_0_2h/
+`&lt;/pre&gt;
 
-    </header>
+选择你要安装的目录，如果升级的话，把prefix参数改成OpenSSL所在的目录
+
+&lt;pre&gt;`./config --prefix=/usr/local/openssl --openssldir=/usr/local/ssl
+make
+make install
+mv /usr/bin/openssl /usr/bin/openssl.OFF  
+mv /usr/include/openssl /usr/include/openssl.OFF  
+ln -s /usr/local/openssl/bin/openssl /usr/bin/openssl  
+ln -s /usr/local/openssl/include/openssl /usr/include/openssl  
+echo &quot;/usr/local/openssl/lib&quot;&amp;gt;&amp;gt;/etc/ld.so.conf
+`&lt;/pre&gt;
+
+查看OpenSSL的版本变成了1.0.2h
+
+&lt;pre&gt;`openssl version -a
+`&lt;/pre&gt;
+
+### 安装Let’s Encrypt客户端
+
+获取源码
+
+&lt;pre&gt;`git clone https://github.com/letsencrypt/letsencrypt
+cd letsencrypt
+`&lt;/pre&gt;
+
+安装
+
+&lt;pre&gt;`./letsencrypt-auto --help
+`&lt;/pre&gt;
+
+签发证书,w参数填网站的路径,d参数填域名，证书以第一个域名为准，具体参考官方文档
+
+&lt;pre&gt;`./letsencrypt-auto certonly --webroot -w /www/blog/ -d gorgiaxx.com -d blog.gorgiaxx.com
+`&lt;/pre&gt;
+
+证书有效期三个月,可以写脚本续期
+
+&lt;pre&gt;`0 0 1 * * /usr/local/nginx/sbin/nginx -s stop &amp;amp;&amp;amp; /opt/letsencrypt-auto certonly --renew-by-default --webroot -w /www/blog/ -d gorgiaxx.com -d blog.gorgiaxx.com &amp;amp;&amp;amp; /usr/local/nginx/sbin/nginx
+`&lt;/pre&gt;
+
+证书默认生成在此目录，NGINX需要用到后两个文件
+
+&lt;pre&gt;`root@gorgiaxx-ubuntu:~/tmp# ls /etc/letsencrypt/live/gorgiaxx.com
+cert.pem  chain.pem  fullchain.pem  privkey.pem
+`&lt;/pre&gt;
+
+### 启用 Certificate Transparency 策略
+
+由 Google 主导，并由 IETF 标准化为 RFC 6962。Certificate Transparency 的目标是提供一个开放的审计和监控系统，可以让任何域名所有者或者 CA 确定证书是否被错误签发或者被恶意使用，从而提高 HTTPS 网站的安全性。
+
+CT 策略目前只有 Chrome 支持；其次 Chrome 也知道现在支持 CT 的网站并不多，所以对于没有提供 SCT 信息的 HTTPS 网站也没有太大的影响。
+
+具体参考[Certificate Transparency 那些事](https://imququ.com/post/certificate-transparency.html)
+通过 ct-submit 这个模块，可以方便地将证书提交给 CT Logs 服务器并得到 SCT 响应
+
+&lt;pre&gt;`apt-get install golang
+wget -O ct-submit.zip -c https://github.com/grahamedgecombe/ct-submit/archive/v1.0.0.zip
+unzip ct-submit.zip
+cd ct-submit-1.0.0
+go build
+`&lt;/pre&gt;
+
+编译完毕，执行并提交，CT Logs服务器可以在[这里找到](https://www.certificate-transparency.org/known-logs)（被墙了）
+
+&lt;pre&gt;`./ct-submit-1.0.0 ct.googleapis.com/aviator 
+&amp;lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem 
+&amp;gt;/etc/letsencrypt/live/gorgiaxx.com/scts/aviator.sct
+./ct-submit-1.0.0 ct.googleapis.com/pilot 
+&amp;lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem 
+&amp;gt;/etc/letsencrypt/live/gorgiaxx.com/scts/pilot.sct
+./ct-submit-1.0.0 ct.googleapis.com/rocketeer 
+&amp;lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem 
+&amp;gt;/etc/letsencrypt/live/gorgiaxx.com/scts/rocketeer.sct
+`&lt;/pre&gt;
+
+### 安装&amp;amp;升级NGINX
+
+下载并解压NGINX和nginx-ct模块
+
+&lt;pre&gt;`wget -O nginx-ct.zip https://github.com/grahamedgecombe/nginx-ct/archive/master.zip
+unzip nginx-ct.zip
+
+http://nginx.org/download/nginx-1.10.0.tar.gz
+tar -zxvf nginx-1.10.0.tar.gz
+`&lt;/pre&gt;
+
+/usr/local/nginx是我原先nginx的目录
+安装文件临时放在/tmp/里面
+
+&lt;pre&gt;`./configure --prefix=/usr/local/nginx --user=www --group=www --with-http_ssl_module --with-http_gzip_static_module --with-http_v2_module --add-module=/tmp/nginx-ct-master
+make
+`&lt;/pre&gt;
+
+如果make失败，请在configure加上
+
+`--with-openssl=/tmp/openssl-1.0.2h/`
+替换旧文件
+
+&lt;pre&gt;`cp -f objs/nginx /usr/local/nginx/sbin/nginx
+`&lt;/pre&gt;
+
+升级
+
+&lt;pre&gt;`make upgrade
+`&lt;/pre&gt;
+
+### 配置NGINX
+
+把监听端口换成443，添加ssl和http2
+
+&lt;pre&gt;`listen 443 ssl http2 default; #listen end
+`&lt;/pre&gt;
+
+开启ssl和ssl_ct，添加SCT目录和SSL证书路径
+
+&lt;pre&gt;`ssl on;
+ssl_ct on;
+ssl_ct_static_scts /etc/letsencrypt/live/gorgiaxx.com/scts/;
+ssl_certificate /etc/letsencrypt/live/gorgiaxx.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/gorgiaxx.com/privkey.pem;
+`&lt;/pre&gt;
+
+重载NGINX
+
+&lt;pre&gt;`/usr/local/nginx/sbin/nginx -s reload
+`&lt;/pre&gt;
+
+由图可以看到，已经启用了HTTP/2协议和CT策略
+![http2](https://blog.gorgiaxx.com/wp-content/uploads/2016/05/Screenshot_20160509_221523.png)
+可以看到CT策略开启了
+![ssl-ct](https://blog.gorgiaxx.com/wp-content/uploads/2016/05/YKXMU5BBADVX814ZMWYW-765x1024.png)
+
+---------------------2016年11月12日 更新：---------------------------
+
+新版的letsencrypt使用certbot部署证书
+
+&lt;pre&gt;`./certbot-auto certonly --standalone --email gorgiaxx@gmail.com -d gorgiaxx.com -d www.gorgiaxx.com -d blog.gorgiaxx.com -d api.gorgiaxx.com
+`&lt;/pre&gt;
+
+证书自动续期
+
+&lt;pre&gt;`0 0 1 * * /usr/local/nginx/sbin/nginx -s stop &amp;amp;&amp;amp; /opt/certbot-auto renew &amp;amp;&amp;amp; /usr/local/nginx/sbin/nginx
+</code></pre><p>———————2017年2月9日 更新：—————————–</p>
+<p>我说怎么老是提醒我过期(╯‵□′)╯︵┻━┻，原来certbot会在启动时自己更新，然后依赖virtualenv，VPS上没有装，所以自动续期失败</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/09/e7-bb-99-e7-bd-91-e7-ab-99-e6-b7-bb-e5-8a-a0-e5-85-8d-e8-b4-b9ssl-e8-af-81-e4-b9-a6-e5-90-af-e7-94-a8-certificate-transparency-e7-ad-96-e7-95-a5-e5-bc-80-e5-90-af-http2-e5-8d-8f-e8-ae-ae/" data-id="cj0km5434000l5hbq7zml1l4n" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP-2/">HTTP/2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL/">SSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/certificate-transparency/">certificate transparency</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/https/">https</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx-openssl/">nginx.openssl</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/证书/">证书</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/06/20/e8-81-94-e6-83-b3y410p-bios-e6-8b-af-e6-95-91-e7-ac-94-e8-ae-b0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          联想Y410p BIOS 拯救笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/04/e8-ae-b0-e7-ac-ac-e4-b8-80-e6-ac-a1-e7-a1-ac-e6-94-b9-e8-b7-af-e7-94-b1-e5-99-a8-e4-b8-8aopenwrt/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">记第一次硬改路由器上Openwrt</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         

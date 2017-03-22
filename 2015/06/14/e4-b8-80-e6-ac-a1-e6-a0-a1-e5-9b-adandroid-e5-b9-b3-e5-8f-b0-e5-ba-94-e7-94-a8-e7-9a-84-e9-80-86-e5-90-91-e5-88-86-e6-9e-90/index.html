@@ -3,14 +3,75 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2017 | Hexo</title>
+  <title>一次校园Android平台应用的逆向分析 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+  <meta name="description" content="&amp;nbsp;
+手机：Google Nexus 5
+工具：
+APK改之理（APK IDE）
+Package Capture  by  Grey Shirts
+分析文件：东软智慧校园平台（华东交大版）
+
+先来简单看一下这个应用
+
+
+20142110070202史泰龙011211
+
+我们使用这个账号登陆
+
+打开Package Capture进行抓包
+
+可以看到，登陆时，移动端向服务端发送一个get请">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次校园Android平台应用的逆向分析">
+<meta property="og:url" content="http://yoursite.com/2015/06/14/e4-b8-80-e6-ac-a1-e6-a0-a1-e5-9b-adandroid-e5-b9-b3-e5-8f-b0-e5-ba-94-e7-94-a8-e7-9a-84-e9-80-86-e5-90-91-e5-88-86-e6-9e-90/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="&amp;nbsp;
+手机：Google Nexus 5
+工具：
+APK改之理（APK IDE）
+Package Capture  by  Grey Shirts
+分析文件：东软智慧校园平台（华东交大版）
+
+先来简单看一下这个应用
+
+
+20142110070202史泰龙011211
+
+我们使用这个账号登陆
+
+打开Package Capture进行抓包
+
+可以看到，登陆时，移动端向服务端发送一个get请">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/1.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/3.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/4.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/5.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/6.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/7.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/8.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/9.png">
+<meta property="og:updated_time" content="2017-03-22T06:50:56.058Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="一次校园Android平台应用的逆向分析">
+<meta name="twitter:description" content="&amp;nbsp;
+手机：Google Nexus 5
+工具：
+APK改之理（APK IDE）
+Package Capture  by  Grey Shirts
+分析文件：东软智慧校园平台（华东交大版）
+
+先来简单看一下这个应用
+
+
+20142110070202史泰龙011211
+
+我们使用这个账号登陆
+
+打开Package Capture进行抓包
+
+可以看到，登陆时，移动端向服务端发送一个get请">
+<meta name="twitter:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/1.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,58 +120,215 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/" class="archive-article-date">
-  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">Feb 24</time>
+        <section id="main"><article id="post-e4-b8-80-e6-ac-a1-e6-a0-a1-e5-9b-adandroid-e5-b9-b3-e5-8f-b0-e5-ba-94-e7-94-a8-e7-9a-84-e9-80-86-e5-90-91-e5-88-86-e6-9e-90" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/14/e4-b8-80-e6-ac-a1-e6-a0-a1-e5-9b-adandroid-e5-b9-b3-e5-8f-b0-e5-ba-94-e7-94-a8-e7-9a-84-e9-80-86-e5-90-91-e5-88-86-e6-9e-90/" class="article-date">
+  <time datetime="2015-06-14T01:35:26.000Z" itemprop="datePublished">2015-06-14</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/">源码编译OpenWrt固件笔记</a>
+    <h1 class="article-title" itemprop="name">
+      一次校园Android平台应用的逆向分析
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/" class="archive-article-date">
-  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">Jan 17</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-    </h1>
-  
+        <p>&nbsp;</p>
+<p>手机：Google Nexus 5</p>
+<p>工具：</p>
+<p><a href="http://www.popotu.com/popo/apkide.html" target="_blank" rel="external">APK改之理（APK IDE）</a></p>
+<p><a href="https://play.google.com/store/apps/details?id=app.greyshirts.sslcapture" target="_blank" rel="external">Package Capture</a>  by  Grey Shirts</p>
+<p>分析文件：东软智慧校园平台（华东交大版）</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/1.png" alt="1"></p>
+<p>先来简单看一下这个应用</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/3.png" alt="3"></p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/4.png" alt="4"></p>
+<table width="60%" cellpadding="0"><br><tbody><br><tr bgcolor="#eeeeee"><br><td>20142110070202</td><br><td>史泰龙</td><br><td>011211</td><br></tr><br></tbody><br></table>
 
-    </header>
+<p>我们使用这个账号登陆</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/5.png" alt="5"></p>
+<p>打开Package Capture进行抓包</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/6.png" alt="6"></p>
+<p>可以看到，登陆时，移动端向服务端发送一个get请求</p>
+<pre>portal.ecjtu.edu.cn/dcp/service?action=0B38EC05B0815AFB59A1B6171DD8378702E08185784ADC47B213462CC176EBC626865CAE40CF998812E25558152958267F28B8BE59532A45283F2A274FA363CB685347955B330164CDEFA8228F011F4BB73C36BFF072DB9C
+</pre>
+
+<p>服务器返回一段json数据</p>
+<pre>{"message":{"map":{"UNIT_NAME":"软件学院","USER_ID":"20142110070202","UUID":"201412019176","ID_TYPE":"1","UNIT_ID":"1021","USER_PASSWORD":"?h?g?g+t.[=dR);:","USER_ACCOUNT":"20142110070202","USER_SEX":"1","IS_ACTIVE":"1","BEGIN_TIME":"20141219","USER_FULLNAME":"史泰龙","USER_FIRST_LOGIN":"0","USER_DESCRIPTION":"史泰龙","USER_ACCOUNT_LOCKED":"1","IS_MAIN_IDENTITY":"1","END_TIME":"20600606"}},"success":true}
+</pre>
+
+<p>可见移动端与服务端之间的传输是加密的</p>
+<p>用APK改之理打开这个app</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/7.png" alt="7"></p>
+<p>smali不易阅读，所以点击上面的“打开Java源码”。</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/8.png" alt="8"></p>
+<p>找到关键词 “/dcp/service?action=”<br>关键代码：</p>
+<pre>public final a a(String paramString1, String paramString2, String paramString3)
+{
+String str = paramString3;
+if (paramString3 == null) {
+str = "";
+}
+paramString1 = "method=checkUserLoginIFS&amp;idNumber=" + paramString1 + "&amp;UserPwd=" + paramString2 + "&amp;logonIP=" + str;
+try
+{
+paramString2 = com.neusoft.edu.v6.ydszxy.hdjiaoda.appcenter.c.b.a.a(paramString1);
+paramString1 = paramString2;
+}
+catch (Exception paramString2)
+{
+for (;;)
+{
+paramString2.printStackTrace();
+}
+}
+paramString1 = "/dcp/service?action=" + paramString1;
+return (a)a(this.a.a(paramString1), new a());
+}</pre>
+
+<p>通过源码得知，paramString1本来是</p>
+<pre>method=checkUserLoginIFS&amp;idNumber=xxx&amp;UserPwd=xxx&amp;logonIP=xxx</pre>
+
+<p>这样的形式，但是通过</p>
+<pre>com.neusoft.edu.v6.ydszxy.hdjiaoda.appcenter.c.b.a.a</pre>
+
+<p>方法的加密，变成了上面的get请求action后面的密文，跟踪到appcenter.c.b.a.a，</p>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/9.png" alt="9"></p>
+<p>关键代码：</p>
+<pre>public static String a(String paramString)
+{
+Object localObject = new DESedeKeySpec("neusofteducationplatform".getBytes());
+localObject = SecretKeyFactory.getInstance("desede").generateSecret((KeySpec)localObject);
+Cipher localCipher = Cipher.getInstance("desede/CBC/PKCS5Padding");
+localCipher.init(1, (Key)localObject, new IvParameterSpec("01234567".getBytes()));
+return a(localCipher.doFinal(paramString.getBytes("utf-8")));
+}
+
+private static String a(byte[] paramArrayOfByte)
+{
+String str1 = "";
+int i = 0;
+for (;;)
+{
+if (i &gt;= paramArrayOfByte.length) {
+return str1;
+}
+String str3 = Integer.toHexString(paramArrayOfByte[i] &amp; 0xFF);
+String str2 = str3;
+if (str3.length() == 1) {
+str2 = '0' + str3;
+}
+str1 = str1 + str2.toUpperCase();
+i += 1;
+}
+}
+</pre>
+
+<p>通过分析，可以得知加密方式是DESede(TripleDES，对每个数据块应用三次DES加密算法)，算法模式为CBC(每个平文块先与前一个密文块进行异或后，再进行加密。)，填充算法为PKCS5Padding(The number of bytes to be padded equals to “8 - numberOfBytes(clearText) mod 8”. So 1 to 8 bytes will be padded to the clear text data depending on the length of the clear text data.)，初始化向量(IV,Initialization Vector)为”01234567”,向量的作用其实就是salt。</p>
+<p>private static String a的作用应该是把bytes转成大写的Hex字符串。</p>
+<p>于是根据分析得到的加密思路写下解密算法</p>
+<pre>public static String desDecode(String encryptText, String pk)//encryptText为密文，pk为私钥，通过跟踪到的代码可知为"neusofteducationplatform"
+throws Exception
+{
+java.security.Key deskey = null;
+DESedeKeySpec spec = new DESedeKeySpec(pk.getBytes());
+SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("desede");
+deskey = keyfactory.generateSecret(spec);
+Cipher cipher = Cipher.getInstance("desede/CBC/PKCS5Padding");
+IvParameterSpec ips = new IvParameterSpec("01234567".getBytes());
+cipher.init(2, deskey, ips);
+System.out.println(encryptText);
+byte decryptData[] = cipher.doFinal(hexStringToBytes(encryptText));
+return new String(decryptData, "utf-8");
+}
+
+public static String Bytes2HexString(byte b[])
+{
+String ret = "";
+for(int i = 0; i &lt; b.length; i++)
+{
+String hex = Integer.toHexString(b[i] &amp; 0xff);
+if(hex.length() == 1)
+hex = (new StringBuilder(String.valueOf('0'))).append(hex).toString();
+ret = (new StringBuilder(String.valueOf(ret))).append(hex.toUpperCase()).toString();
+}
+
+return ret;
+}</pre>
+
+<p>把之前get请求后面的</p>
+<pre>0B38EC05B0815AFB59A1B6171DD8378702E08185784ADC47B213462CC176EBC626865CAE40CF998812E25558152958267F28B8BE59532A45283F2A274FA363CB685347955B330164CDEFA8228F011F4BB73C36BFF072DB9C</pre>
+
+<p>扔进去解，得到</p>
+<pre>method=checkUserLoginIFS&amp;idNumber=20142110070202&amp;UserPwd=011211&amp;logonIP=10.0.8.1</pre>
+
+<p>到这里可能有人会问，这里的UserPwd=011211与上面json的USER_PASSWORD=?h?g?g+t.[=dR);:不一样，这里是字符串加密后得到的数据。<br>附上解密代码</p>
+<pre>public static String Decode(String varCode)
+    {
+        String des = new String();
+        String strKey = new String();
+        if(varCode == null || varCode.length() == 0)
+            return "";
+        strKey = "zxcvbnm,./asdfghjkl;'qwertyuiop[]\1234567890-=` ZXCVBNM&lt;&gt;?:LKJHGFDSAQWERTYUIOP{}|+_)(*&amp;^%$#@!~";
+        if(varCode.length() % 2 == 1)
+            varCode = (new StringBuilder(String.valueOf(varCode))).append("?").toString();
+        des = "";
+        int n;
+        for(n = 0; n &lt;= varCode.length() / 2 - 1; n++) { char b = varCode.charAt(n * 2); int a = strKey.indexOf(varCode.charAt(n * 2 + 1)); des = (new StringBuilder(String.valueOf(des))).append((char)(b ^ a)).toString(); System.out.println(des); } n = des.indexOf('01'); if(n &gt; 0)
+            return des.substring(0, n);
+        else
+            return des;
+}
+</pre>
+
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考:"></a><strong>参考:</strong></h4><p><a href="http://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html" target="_blank" rel="external">Java Class Cipher</a><br><a href="http://blog.csdn.net/janronehoo/article/details/7590778" target="_blank" rel="external">Java加密技术（二）——DES数据加密算法(和加IV向量版)</a><br><a href="http://blog.163.com/kevinlee_2010/blog/static/16982082020113853451308/" target="_blank" rel="external">分组密码的工作模式</a><br><a href="http://www.herongyang.com/Cryptography/DES-JDK-What-Is-PKCS5Padding.html" target="_blank" rel="external">What Is PKCS5Padding?</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/14/e4-b8-80-e6-ac-a1-e6-a0-a1-e5-9b-adandroid-e5-b9-b3-e5-8f-b0-e5-ba-94-e7-94-a8-e7-9a-84-e9-80-86-e5-90-91-e5-88-86-e6-9e-90/" data-id="cj0km542e00055hbqn6noyq67" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/app/">app</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/东软/">东软</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安卓/">安卓</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数字校园/">数字校园</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/逆向分析/">逆向分析</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/08/24/e7-ae-80-e5-8d-95-e7-a0-b4-e8-a7-a3ckfinder3-for-php/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          简单破解CKFinder3 for PHP
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/02/e5-af-b9-e4-b8-80-e4-ba-9b-e5-82-bb-e5-82-bb-e5-88-86-e4-b8-8d-e6-b8-85-e6-a5-9a-e7-9a-84-e5-8d-95-e4-bd-8d-e6-95-b4-e7-90-86-e7-ac-94-e8-ae-b0/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">对一些傻傻分不清楚的单位整理的笔记</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 </section>
         
