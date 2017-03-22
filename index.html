@@ -1,11 +1,39 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-  <title>Gorgias&#39;blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="人终究会被其年少不可得之物困扰一生">
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="人终究会被其年少不可得之物困扰一生"/>
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Gorgias'blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="https://gorgias.me/"/>
+
+
+<meta name="description" content="人终究会被其年少不可得之物困扰一生">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Gorgias'blog">
 <meta property="og:url" content="https://gorgias.me/index.html">
@@ -14,915 +42,421 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Gorgias'blog">
 <meta name="twitter:description" content="人终究会被其年少不可得之物困扰一生">
-  
-    <link rel="alternate" href="/atom.xml" title="Gorgias&#39;blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
   
 
-</head>
 
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Gorgias&#39;blog</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://gorgias.me"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-源码编译OpenWrt固件笔记" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/02/24/源码编译OpenWrt固件笔记/" class="article-date">
-  <time datetime="2017-02-24T05:08:06.000Z" itemprop="datePublished">2017-02-24</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/OpenWrt/">OpenWrt</a>
-  </div>
 
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/02/24/源码编译OpenWrt固件笔记/">源码编译OpenWrt固件笔记</a>
+    <title> Gorgias'blog - 人终究会被其年少不可得之物困扰一生</title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'blog</a>
     </h1>
-  
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近学校的移动宽带运营商开始搞事情，搞流量劫持，下载投毒，步入电信联通之流。这个学期也不能多拨了，会被系统检测到，封停半个小时。<br>去年夏天乔治学长送我的路由器，OYE-0001，用了半年多了，软件上挺稳定的，就是接口太松，不小心碰到会掉线。<br><img src="https://gorgias.me/uploads/2017/02/IMG_20170224_111804-768x1024.jpg" alt=""><br>之前改装的TP-Link WR845N刷Hackpascal的固件会定期宕机，因为不能多拨了，所以打算换回原来的路由器刷官方固件稳定一点，反正不在寝室住了，对于流控也没有要求。<br>但是官方似乎放弃了WR845N V4版本，已经下载不到固件了，其他版本固件刷入后不能开机。<br>于是打算自己尝试编译，踩了不少坑呢。<br>记录下步骤吧！</p>
-<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>先参考<a href="https://github.com/openwrt/openwrt" target="_blank" rel="external">openwrt github</a><br>准备好编译环境，需要以下组件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gcc, binutils, bzip2, flex, python, perl, make,</div><div class="line">find, grep, diff, unzip, gawk, getopt, subversion, libz-dev and libc headers</div></pre></td></tr></table></figure></p>
-<h3 id="系统环境"><a href="#系统环境" class="headerlink" title="系统环境"></a>系统环境</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">OS: Arch Linux </div><div class="line">Kernel: x86_64 Linux 4.9.8-1-ARCH</div></pre></td></tr></table></figure>
-<p>直接用trunk版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/openwrt/openwrt</div></pre></td></tr></table></figure>
-<p>运行feeds获取所有的预定义软件包并且安装，关于<a href="https://wiki.openwrt.org/doc/devel/feeds" target="_blank" rel="external">feeds参考</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">./scripts/feeds update -a</div><div class="line">./scripts/feeds install -a</div></pre></td></tr></table></figure>
-<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>开始配置编译菜单</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">make menuconfig</div></pre></td></tr></table></figure>
-<p>方向建上下操作纵列，左右操作横列，空格选择，M代表作为模块编译，*代表编译到固件。<br><img src="https://gorgias.me/uploads/2017/02/Screenshot_20170223_120857-1024x476.png" alt=""><br>因为ROM是八脚SPI，Subtarget选择Generic，参考<a href="https://wiki.openwrt.org/doc/techref/flash.layout" target="_blank" rel="external">The OpenWrt Flash Layout</a></p>
-<p>Target Profile 选择 TP-LINK TL-WR842N/ND，因为硬件相似，都是QCA953X的。<br>Target Images 选择 squashfs，参考<a href="https://en.wikipedia.org/wiki/SquashFS" target="_blank" rel="external">SquashFS</a><br>其他保持默认，因为容量不够，所以其他组件就不装了，接下来到LuCI<br>Collections，三个都选<br><img src="https://gorgias.me/uploads/2017/02/Screenshot_20170224_124308.png" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Modules ---&gt; Translations</div></pre></td></tr></table></figure>
-<p>选择中文和英文<br>Applications这里选择需要的应用，参考PandoraBox固件的应用。<br>Themes里面选最漂亮的luci-theme-material<br><img src="https://gorgias.me/uploads/2017/02/Screenshot_20170224_124308.png" alt=""><br>接下来保存，名字一定要为<code>.config</code>，不能改<br><img src="https://gorgias.me/uploads/2017/02/Screenshot_20170224_124831.png" alt=""></p>
-<p>接下来开始编译，因为CPU是双核双线程，所以加上-j4，然后加上V=99可以看到详细信息。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">make -j4 V=99</div></pre></td></tr></table></figure>
-<p>编译时需要连接网络下载软件包，部分地区网络不可达，请使用代理。<br>因为网络问题编译失败，请清理，然后使用proxychains4代理安装</p>
-<p>```make clean<br>pc4 make -j4 V=99</p>
-<p>编译完成后，会在<code>./bin/ar71xx/</code>目录生成固件和软件包，找到相应固件，进breed刷入即可。<br><img src="https://gorgias.me/uploads/2017/02/Screenshot_20170224_125456.png" alt=""><br>开机成功，发现在卫生间信号都是满格<br><img src="https://gorgias.me/uploads/2017/02/Screenshot_20170224_125620-1024x594.png" alt=""></p>
-<p>附上固件下载地址<br><a href="https://mega.nz/#!b94VCaJS!3u3TEam6ScpjXH9-oPVySjihKCgzLtbE6Z8KpYADhkc" target="_blank" rel="external">Mega</a></p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://wiki.openwrt.org/" target="_blank" rel="external">OpenWrt Wiki</a><br><a href="https://en.wikipedia.org" target="_blank" rel="external">Wikipedia</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2017/02/24/源码编译OpenWrt固件笔记/" data-id="cj0ksyxhy000pk6bqre236un6" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TP-Link/">TP-Link</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/menuconfig/">menuconfig</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/固件/">固件</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译/">编译</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Arch-Linux-双显卡-安装-NVIDIA-闭源驱动" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/01/17/Arch-Linux-双显卡-安装-NVIDIA-闭源驱动/" class="article-date">
-  <time datetime="2017-01-17T06:54:37.000Z" itemprop="datePublished">2017-01-17</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+    <nav id="nav-top">
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/01/17/Arch-Linux-双显卡-安装-NVIDIA-闭源驱动/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我的笔记本电脑是联想Y410P，双显卡GT755M + HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。<br>但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。</p>
-<p>以前都是玄学安装，一头雾水地安装，网上也没有找到解决办法。这一次特意折腾了一下，希望能帮助有需要的人。</p>
-<h2 id="分析失败原因"><a href="#分析失败原因" class="headerlink" title="分析失败原因"></a>分析失败原因</h2><p>一般安装NVIDIA闭源驱动最后会提示生成xorg.conf，这一步非常关键，如果同意生成，重启后会黑屏，不能进入桌面。</p>
-<p>根据情况不同，会出现以下错误的一种或多种</p>
-<ul>
-<li>Error: couldn’t get an RGB, Double-buffered visual</li>
-<li>ERROR: ld.so: object ‘libdlfaker.so’ from LD_PRELOAD cannot be preloaded: ignored</li>
-<li>SDDM服务启动失败</li>
-<li>/var/log/Xorg.0.log 提示 (EE) No devices detected. (EE) no screens found(EE)*   /var/log/Xorg.0.log 提示 Cannot establish any listening sockets - Make sure an X server isn’t already running</li>
-</ul>
-<p>前两个错误是因为安装顺序不正确，导致文件冲突然后缺失。<br><strong>不要使用官网的二进制安装包！！！</strong><br>Xorg server不能启动是xorg.conf配置的问题。一种是Xorg server不能启动，导致SDDM服务启动失败，还有一种是Xorg server启动成功，仍然黑屏的情况。<br>xorg.conf是对linux X window系统的配置文件，主要保存鼠标、键盘、显示器以及显示卡等设备的配置信息。文件由数个Section/EndSection的区块组成，而每个区块的格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Section &quot;Section名称&quot;</div><div class="line">       选项名称     &quot;选项值&quot;</div><div class="line">       选项名称     &quot;选项值&quot;</div><div class="line">       …</div><div class="line">EndSection</div></pre></td></tr></table></figure>
-<p>Xorg.conf配置特别反人类，看着都头晕，这个不会自己去配置的。<br>一般情况下，在安装Arch Linux的时候都是先安装集显驱动，再安装独显驱动，<a href="https://www.archlinux.org/packages/?name=xf86-video-intel" target="_blank" rel="external">xf86-video-intel</a>。<br>可能还会运行这条命令在<code>/etc/X11/</code>目录下生成配置文件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Xorg -configure</div></pre></td></tr></table></figure>
-<p>使用集显时，可以不需要xorg.conf，需要微调时才会用到。但是使用独显时，必须要配置xorg.conf，不然会出现各种错误导致Xorg server不能运行，或者是运行后出各种问题。</p>
-<p>这里的显卡切换解决方案是Bumblebee，也听说过一个空格引发的血案。据说nvidia-prime要更好，但是得折腾xorg.conf，先略过。</p>
-<h2 id="开始安装"><a href="#开始安装" class="headerlink" title="开始安装"></a>开始安装</h2><p>现在要正常使用桌面，没有独显驱动的状态，请参考Arch Wiki上的<a href="https://wiki.archlinux.org/index.php/Bumblebee#Installing_Bumblebee_with_Intel.2FNVIDIA" target="_blank" rel="external">Installing Bumblebee with Intel/NVIDIA</a>教程安装，<strong>一定要保证能正常进入桌面才能进行接下来的安装</strong></p>
-<p>安装以下内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S bumblebee bbswitch</div></pre></td></tr></table></figure>
-<p>把用户添加到bumblebee用户组</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo gpasswd -a gorgias bumblebee</div></pre></td></tr></table></figure>
-<p>开启bumblebeed.service服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo systemctl enable bumblebeed.service</div></pre></td></tr></table></figure>
-<p>这里顺序要注意，NVIDIA驱动要先安装，不然会和某些库文件冲突导致开机黑屏，或者因为缺少32位库导致VMWare不能使用GPU</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S bumblebee nvidia opencl-nvidia lib32-nvidia-utils lib32-opencl-nvidia mesa lib32-mesa-libgl xf86-video-intel</div></pre></td></tr></table></figure>
-<p>配置bumblebee</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">sudo vi /etc/bumblebee/bumblebee.conf</div><div class="line">-----------------------------------------</div><div class="line">这一个不要auto，指定nvidia</div><div class="line">Driver=nvidia</div><div class="line"></div><div class="line">电源管理指定bbswitch</div><div class="line">[driver-nvidia]</div><div class="line">PMMethod=bbswitch</div></pre></td></tr></table></figure>
-<p>然后重启，可以进入桌面，检测一下是否能启用独显</p>
-<p>安装测试工具</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S glxspheres32 glxspheres64</div></pre></td></tr></table></figure>
-<p>然后运行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">glxspheres32</div><div class="line">glxspheres64</div><div class="line">optirun glxspheres32</div><div class="line">optirun glxspheres64</div></pre></td></tr></table></figure>
-<p>很完美<br><img src="https://gorgias.me/uploads/2017/01/Screenshot_20170117_140349-1024x612.png" alt=""></p>
-<h2 id="添加未识别分辨率"><a href="#添加未识别分辨率" class="headerlink" title="添加未识别分辨率"></a>添加未识别分辨率</h2><p>我的笔记本在Linux下使用VGA接口不能正常识别最高分辨率，照网上教程使用cvt也不能生成能用的显示参数。<br>为此伤透脑筋，去年买了一根黄刀的DVI转HDMI线才解决。<br>但是好景不长，16年年底，笔记本电脑HDMI接口坏了，于是继续折腾。</p>
-<p>首先解决不能生成可用显示参数的问题，非CRT显示器需要加上-r参数，参考<a href="http://www.uruk.org/projects/cvt/" target="_blank" rel="external">CVT Timings Program</a></p>
-<blockquote>
-<p>Reduced Blanking - Timings for LCD flat panels and other monitors that do not require long blanking intervals as a retrace period. CRTs require this because the electron beam takes time to horizontally resteer to the other side of the monitor.</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">usage: cvt [-v|--verbose] [-r|--reduced] X Y [refresh]</div><div class="line"></div><div class="line"> -v|--verbose : Warn about CVT standard adherance.</div><div class="line"> -r|--reduced : Create a mode with reduced blanking (default: normal blanking).</div><div class="line">            X : Desired horizontal resolution (multiple of 8, required).</div><div class="line">            Y : Desired vertical resolution (required).</div><div class="line">      refresh : Desired refresh rate (default: 60.0Hz).</div><div class="line"></div><div class="line">Calculates VESA CVT (Coordinated Video Timing) modelines for use with X.</div></pre></td></tr></table></figure>
-<p>最后执行这段命令就能得到可用显示参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ cvt -r 1920 1080</div><div class="line"></div><div class="line">Modeline &quot;1920x1080R&quot;  138.50  1920 1968 2000 2080  1080 1083 1088 1111 +hsync -vsync</div></pre></td></tr></table></figure>
-<p>先来一个错误的解决方法，脚本文件/etc/rc.d/afterx，这段代码比较尴尬，不能执行太早也不能太晚，只好把脚本路径放在/usr/share/sddm/scripts/Xsetup才解决，但是登录界面的DPI存在问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh -e</div><div class="line">#Fix VGA resolution</div><div class="line">xrandr --newmode &quot;1920x1080R&quot;  138.50  1920 1968 2000 2080  1080 1083 1088 1111 +hsync -vsync</div><div class="line">xrandr --addmode VGA1 &quot;1920x1080R&quot;</div><div class="line">xrandr --output VGA1 --mode &quot;1920x1080R&quot;</div></pre></td></tr></table></figure>
-<p>其实在xorg配置文件里就能完美解决，参考<a href="https://wiki.archlinux.org/index.php/Xorg#Monitor_settings" target="_blank" rel="external">Monitor Settings</a>，Section的含义可以参考Wiki。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">/etc/X11/xorg.conf.d/10-monitor.conf</div><div class="line">--------------------------------------</div><div class="line">Section &quot;Monitor&quot;</div><div class="line">    Identifier &quot;VGA1&quot;</div><div class="line">    Modeline &quot;1920x1080R&quot;  138.50  1920 1968 2000 2080  1080 1083 1088 1111 +hsync -vsync</div><div class="line">    Option &quot;PreferredMode&quot; &quot;1920x1080R&quot;</div><div class="line">EndSection</div><div class="line"></div><div class="line">Section &quot;Screen&quot;</div><div class="line">    Identifier &quot;Screen0&quot;</div><div class="line">    Monitor &quot;VGA1&quot;</div><div class="line">    DefaultDepth 24</div><div class="line">    SubSection &quot;Display&quot;</div><div class="line">        Modes &quot;1920x1080R&quot;</div><div class="line">    EndSubSection</div><div class="line">EndSection</div><div class="line"></div><div class="line">Section &quot;Device&quot;</div><div class="line">    Identifier &quot;Device0&quot;</div><div class="line">    Driver &quot;intel&quot;</div><div class="line">EndSection</div></pre></td></tr></table></figure>
-<p>这里说一下如何配置，Driver这里设成独显的驱动intel。<br>Identifier可以使用xrandr查看，查看Monitor,Screen</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">xrandr</div><div class="line">xrandr --listmonitors</div></pre></td></tr></table></figure>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://wiki.archlinux.org/" target="_blank" rel="external">Arch Linux Wiki</a><br><a href="http://www.uruk.org/projects/cvt/" target="_blank" rel="external">CVT Timings Program</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2017/01/17/Arch-Linux-双显卡-安装-NVIDIA-闭源驱动/" data-id="cj0ksyxgt0000k6bq34k02cuk" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/VGA/">VGA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/arch/">arch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bumblebee/">bumblebee</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xorg/">xorg</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分辨率/">分辨率</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/双显卡/">双显卡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/失败/">失败</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/闭源/">闭源</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/黑屏/">黑屏</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-QEMU初体验" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/11/13/QEMU初体验/" class="article-date">
-  <time datetime="2016-11-13T03:19:58.000Z" itemprop="datePublished">2016-11-13</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/虚拟化/">虚拟化</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/11/13/QEMU初体验/">KVM/QEMU初体验</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。</p>
-<p>周围人都用QQ和微信，需要传文件和图片，我不得不用，但是又不想使用Windows工作，所以安装了VMWare Workstation来跑虚拟机。<br>期初在Debian上跑Win10很流畅，换Arch之后总是因为ntfs3g占用率过高而卡顿，后来把宿主机放虚拟机的分区文件系统换成Ext4缓解了一些，把Win10自带的应用删掉后才好了很多。</p>
-<p>KVM 是 kernel-based Virtual Machine 的简称,是一个开源的系统虚拟化模块,是 Linux 下 x86 硬件平台上的全功能虚拟化解决方案。<br>QEMU是一个强大的开源仿真器，仿真系统，仿真各种硬件。<br><img src="https://gorgias.me/uploads/2016/11/guide_fig.png" alt="guide_fig"><br>QEMU通过KVM虚拟化达到更好的性能，以前从来没有用过QEMU，于是花了很多时间入门，每个细节都不放过，学习过程中收获了很多，对虚拟机也有了更进一步的了解。</p>
-<p><a href="http://www.ibm.com/developerworks/cn/" target="_blank" rel="external">IBM开发者社区</a>真是一大堆干货，还有各大产品的官方文档和Wiki。自带的man pages也非常详细。</p>
-<p>也正是开发者们做的伟大贡献，能让我方便地在Linux上进行工作和娱乐。也很惭愧目前自己没有能力做贡献。</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>为了更方便的学习，先不使用图形化界面。(后来发现不装图形化的我太年轻，正式环境中配置远比想象中要多，而且复杂很多，CPU，键盘，USB，声音等都很难配置)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S qemu</div></pre></td></tr></table></figure>
-<p>还是安装图形化界面吧，试过qtemu,qemu-launcher,aqemu要好用一点。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yaourt aqemu</div></pre></td></tr></table></figure>
-<h2 id="添加硬盘"><a href="#添加硬盘" class="headerlink" title="添加硬盘"></a>添加硬盘</h2><h3 id="创建硬盘"><a href="#创建硬盘" class="headerlink" title="创建硬盘"></a>创建硬盘</h3><p>QEMU支持许多种镜像格式，包括VMDK, VDI, VHD (vpc), VHDX, qcow1 和 QED，可以通过qemu-img进行操作。</p>
-<p>目前一般采用raw和qcow2。</p>
-<p>raw是原始磁盘镜像格式，速度最快，但是要立即分配磁盘空间。</p>
-<p>qcow2速度稍慢，不用立即分配空间，支持很多特性，比如快照，回滚，加密，压缩等等。</p>
-<p>比如创建一个raw格式的硬盘镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">qemu-img create -f raw Kali_Linux.img 20G</div></pre></td></tr></table></figure>
-<p>或者创建一个簇大小为2M，立即分配所有空间的qcow2硬盘镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">qemu-img create -f qcow2 -o cluster_size=2M,preallocation=full Kali_Linux.qcow2 4G</div></pre></td></tr></table></figure>
-<h3 id="格式转换"><a href="#格式转换" class="headerlink" title="格式转换"></a>格式转换</h3><p>qemu-img支持转换磁盘镜像格式。某些情况下，需要迁移磁盘镜像。</p>
-<p>比如我想要对比Kali Linux运行在KVM和VMware下的性能，需要把vmdk转换成更适合QEMU的磁盘镜像格式。</p>
-<h1 id="把vmdk转换成raw"><a href="#把vmdk转换成raw" class="headerlink" title="把vmdk转换成raw"></a>把vmdk转换成raw</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">qemu-img convert -f vmdk -O raw Kali\ 2016\ 64-bit.vmdk Kali_Linux.img</div></pre></td></tr></table></figure>
-<h1 id="把vmdk转换成qcow2"><a href="#把vmdk转换成qcow2" class="headerlink" title="把vmdk转换成qcow2"></a>把vmdk转换成qcow2</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">qemu-img convert -f vmdk -O qcow2 Kali\ 2016\ 64-bit.vmdk Kali_Linux.qcow2</div></pre></td></tr></table></figure>
-<h2 id="开启硬件辅助虚拟化"><a href="#开启硬件辅助虚拟化" class="headerlink" title="开启硬件辅助虚拟化"></a>开启硬件辅助虚拟化</h2><p>确保在BIOS里开启了VT。我的电脑是Intel平台，把<code>intel_iommu=on</code>加进内核参数。如果是AMD平台则用<code>amd_iommu=on</code>。<br>IOMMU技术可以说是把硬件设备直接映射到虚拟机上，解决外围设备的支持问题和硬件利用效率问题。<br>在<code>/boot/grub/grub.cfg</code>文件里修改。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">linux   /boot/vmlinuz-linux root=UUID=6bb8eda5-d588-4e6a-8f5e-bbc856cc9f96 rw quiet intel_iommu=on</div></pre></td></tr></table></figure>
-<p>重启之后查看IOMMU是否开启</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; dmesg | grep -e DMAR -e IOMMU</div><div class="line">[    0.000000] DMAR: IOMMU enabled</div></pre></td></tr></table></figure>
-<p>安装图形驱动，这里先试试vmware的。安装后可以解决鼠标不显示的问题，但是进入桌面会花屏几秒。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S xf86-video-vmware xf86-input-vmmouse</div></pre></td></tr></table></figure>
-<p>尝试启动虚拟机，参数：使用Kali_Linux.qcow2硬盘镜像，内存2GB，使用vmware图形驱动，仿真Q35芯片组，使用KVM，开启iommu。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">qemu-system-x86_64 /home/gorgias/media/Lancer/KVM/Kali\ Linux/Kali_Linux.qcow2 -enable-kvm -m 2048 -vga vmware -machine q35,accel=kvm,type=q35 -device intel-iommu</div></pre></td></tr></table></figure>
-<p>用起来挺流畅的<br><img src="https://gorgias.me/uploads/2016/11/Screenshot_20161113_013944.png" alt="screenshot_20161113_013944"></p>
-<h2 id="QEMU-monitor"><a href="#QEMU-monitor" class="headerlink" title="QEMU monitor"></a>QEMU monitor</h2><p>QEMU提供一个检查虚拟机运行状态的监视器，<br>在QEMU界面按Ctrl + Alt + 2(不是小键盘)可以切换到QEMU monitor。如果不能，请检查快捷键是否冲突。<br>也可以在启动虚拟机的时候，添加<code>-monitor dev</code>参数，比如<code>-monitor stdio</code>将允许使用标准输入作为 monitor 命令源。</p>
-<p>在monitor输入info kvm检查kvm模块是否开启。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">(qemu) info kvm</div><div class="line">kvm support: enabled</div></pre></td></tr></table></figure>
-<p><img src="https://gorgias.me/uploads/2016/11/Screenshot_20161113_014030.png" alt="screenshot_20161113_014030"></p>
-<h2 id="AQEMU"><a href="#AQEMU" class="headerlink" title="AQEMU"></a>AQEMU</h2><p>配置是不可能全手动配置的，这辈子不可能全手动配置的。<br>QEMU是非常强大的工具，值得深入研究，吾等还是随便玩玩就好。</p>
-<p><img src="https://gorgias.me/uploads/2016/11/Screenshot_20161113_014351.png" alt="screenshot_20161113_014351"><br>界面有点像Virtual Box，功能齐全。像VMware一样配置就能跑起虚拟机了。<br>不管是性能还是易用性，VMware都要强很多。</p>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://wiki.archlinux.org/index.php/QEMU#Running_virtualized_system" target="_blank" rel="external">Arch Linux Wiki - QEMU</a><br><a href="https://en.wikibooks.org/wiki/QEMU/Monitor" target="_blank" rel="external">WIKIBOOKS - QEMU/Monitor</a><br><a href="http://www.linux-kvm.org/" target="_blank" rel="external">linux-kvm.org</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2016/11/13/QEMU初体验/" data-id="cj0ksyxh80006k6bqjjostbgw" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/arch/">arch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kvm/">kvm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/qemu/">qemu</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/体验/">体验</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安装/">安装</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Arch-Linux上使用ACR122U破解鲜奶卡" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/" class="article-date">
-  <time datetime="2016-10-25T14:49:39.000Z" itemprop="datePublished">2016-10-25</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/网络安全/">网络安全</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/">Arch Linux上使用ACR122U破解鲜奶卡</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这样的文章多年前就已经被写烂了，没啥意思，作为学习过程吧，发出来。<br>前几天办了一张鲜奶会员卡，充值100获得的，也不用实名。把卡放到机子上刷一下就支付完成了，引起了我的兴趣。</p>
-<p>玩RFID一般使用Proxmark3，当时年少无知买了ACR122U。</p>
-<p>先用我的Nexus5安装Mifare Classic Tool验证一下奶店提供的卡是不是Mifare Classic卡(Nexus5硬件不支持这种类型的卡，只能读基本信息)。</p>
-<p>确定是之后，重新拿出封尘的ACR122U，开始在Arch Linux上折腾。</p>
-<p>我的两张饭卡都在外出时丢失了，刚好有备份过以前的卡，顺便重新恢复两张。</p>
-<p><img src="https://gorgias.me/uploads/2016/10/IMG_20161025_230234-768x1024.jpg" alt="img_20161025_230234"></p>
-<h2 id="Basic-Knowledge"><a href="#Basic-Knowledge" class="headerlink" title="Basic Knowledge"></a>Basic Knowledge</h2><p>MIFARE IC卡由荷兰恩智浦(NXP)半导体公司开发，本篇文章分析的是MF1S50系列卡，遵循<a href="https://en.wikipedia.org/wiki/ISO/IEC_14443" target="_blank" rel="external">ISO/IEC 14443A</a>标准。</p>
-<p>NXP公司在2010年更新了MIFARE Classic卡，ID分为7 Byte unique ID和4 Byte non-unique ID。</p>
-<h3 id="Logical-Structure"><a href="#Logical-Structure" class="headerlink" title="Logical Structure"></a>Logical Structure</h3><p>MIFARE Classic 1K 卡的内存被划分成16个sectors，每个sector有4个blocks，每个block占16bytes。</p>
-<p>开头第一个block（Manufacturer Block）包含了UID(Unique Identifier 4 bytes),接下来是厂商数据(Manufacturer Data)。</p>
-<p>BCC(Block Check Character, 1 byte，前4bytes ID的异或结果),ATQA(Answer To Request acc, 2 bytes),SAK(Select Acknowledge, 1 byte)。</p>
-<p><img src="https://gorgias.me/uploads/2016/10/Screenshot_20161020_224410.png" alt="screenshot_20161020_224410"><br>每个sector中的第四个block（Sector Trailer，控制块）保存着两个Secret keys (Key A, Key B, 各占 6 bytes)和 AC (Access condition,决定哪个Key将被使用，占 3 bytes)。还有GPB(General Purpose Byte, 1 byte, 未使用，或者成为 Unused)。</p>
-<h3 id="CRYPTO1"><a href="#CRYPTO1" class="headerlink" title="CRYPTO1"></a>CRYPTO1</h3><p>MIFARE Classic仅使用<a href="https://en.wikipedia.org/wiki/Crypto-1" target="_blank" rel="external">CRYPTO1</a>加密算法，因为算法不公开，未经过大神们的考验，存在潜在的漏洞。2007年两位德国人Karsten Nohl 和 Henryk Pltz提出了Crypto-1加密的缺陷。2008年算法被完全逆向并且公布出来。<br>Crypto-1是一种流密码，依赖密钥序列的随机性和不可预测性。<br><img src="https://gorgias.me/uploads/2016/10/Screenshot_20161025_224830.png" alt="screenshot_20161025_224830"><br>48-bit的LFSR(Linear Feedback Shift Register，线性反馈位移寄存器)和一个非线性函数，生成密钥，长度太短容易被爆破。<br>16-bit的LFSR通过一个多项式生成32bit的nT(随机数)。的前面的16-bit决定了后面的16-bit，密钥的不可预测性就失效了。<br>初始随机数依赖时间生成，通过控制读卡器的时间，可以控制随机数，所以随机性也失效了。</p>
-<h3 id="Attack"><a href="#Attack" class="headerlink" title="Attack"></a>Attack</h3><p>参考大神们的文章将破解方法总结。</p>
-<ul>
-<li>条件特殊：重放，监控USB流量，在读卡器和卡之间窃听流量。</li>
-<li>通常：爆破，Dark-Side，认证嵌套(authentication nested)</li>
-</ul>
-<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><h3 id="ACR122U-Driver"><a href="#ACR122U-Driver" class="headerlink" title="ACR122U Driver"></a>ACR122U Driver</h3><p>下载官方驱动源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://www.acs.com.hk/download-driver-unified/6260/ACS-Unified-Driver-Lnx-Mac-113-P.zip</div></pre></td></tr></table></figure></p>
-<p>在编译安装之前，需要pcsc-lite。pcsc-lite 封装了访问使用 SCard API (PC/SC) 访问智能卡设备的开发包。</p>
-<p>Arch-Linux</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S pcsclite</div></pre></td></tr></table></figure>
-<p>解压并编译安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">unzip -d acr122u ./ACS-Unified-Driver-Lnx-Mac-113-P.zip</div><div class="line">cd acr122u</div><div class="line">tar -jxvf acsccid-1.1.3.tar.bz2</div><div class="line">cd ./acsccid-1.1.3</div></pre></td></tr></table></figure>
-<h3 id="Open-Source-Near-Field-Communication-NFC-Library"><a href="#Open-Source-Near-Field-Communication-NFC-Library" class="headerlink" title="Open Source Near Field Communication (NFC) Library"></a>Open Source Near Field Communication (NFC) Library</h3><p>还需要安装libtool（通用库支持脚本），libnfc，在Arch-Linux上安装特别方便</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S libtool</div><div class="line">yaourt libnfc</div></pre></td></tr></table></figure>
-<p><code>nfc-list -v</code>查看一下设备列表，结果报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Unable to claim USB interface (Device or resource busy)</div></pre></td></tr></table></figure>
-<p><a href="https://wiki.archlinux.org/index.php/Touchatag_RFID_Reader" target="_blank" rel="external">Arch Linux Wiki</a>上面说，内核版本(&gt;3.5)会自动加载pn533驱动，pcscd则会报错</p>
-<p>先查看一下模块列表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; lsmod</div><div class="line">Module                  Size  Used by</div><div class="line">pn533_usb              16384  0</div><div class="line">pn533                  28672  1 pn533_usb</div><div class="line">nfc                    86016  1 pn533</div></pre></td></tr></table></figure>
-<p>把这三个模块移除，并且加入黑名单，灯会熄灭，但是正常使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo modprobe -r pn533_usb pn533 nfc</div><div class="line">sudo vi /etc/modprobe.d/blacklist-libnfc.conf</div></pre></td></tr></table></figure>
-<p>加入以下内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">blacklist nfc</div><div class="line">blacklist pn533</div><div class="line">blacklist pn533_usb</div></pre></td></tr></table></figure>
-<p>成功显示设备信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; nfc-list</div><div class="line">nfc-list uses libnfc 1.7.1</div><div class="line">NFC device: ACS / ACR122U PICC Interface opened</div><div class="line">1 ISO14443A passive target(s) found:</div><div class="line">ISO/IEC 14443A (106 kbps) target:</div><div class="line">    ATQA (SENS_RES): 00  04  </div><div class="line">       UID (NFCID1): 96  c2  d2  9d  </div><div class="line">      SAK (SEL_RES): 08</div></pre></td></tr></table></figure>
-<h3 id="MFOC"><a href="#MFOC" class="headerlink" title="MFOC"></a>MFOC</h3><p>MFOC(Mifare Classic Offline Cracker)是一款离线的认证嵌套攻击工具</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/nfc-tools/mfoc.git</div><div class="line">cd ./mfoc</div><div class="line">autoreconf -vis</div><div class="line">make &amp;&amp; make install</div></pre></td></tr></table></figure>
-<h3 id="Dump-MIFARE-Classic-1K"><a href="#Dump-MIFARE-Classic-1K" class="headerlink" title="Dump MIFARE Classic 1K"></a>Dump MIFARE Classic 1K</h3><p>首先查看帮助</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; mfoc -h</div><div class="line">Usage: mfoc [-h] [-k key] [-f file] ... [-P probnum] [-T tolerance] [-O output]</div><div class="line"></div><div class="line">  h     print this help and exit</div><div class="line">  k     try the specified key in addition to the default keys</div><div class="line">  f     parses a file of keys to add in addition to the default keys </div><div class="line">  P     number of probes per sector, instead of default of 20</div><div class="line">  T     nonce tolerance half-range, instead of default of 20</div><div class="line">        (i.e., 40 for the total range, in both directions)</div><div class="line">  O     file in which the card contents will be written (REQUIRED)</div><div class="line"></div><div class="line">Example: mfoc -O mycard.mfd</div><div class="line">Example: mfoc -k ffffeeeedddd -O mycard.mfd</div><div class="line">Example: mfoc -f keys.txt -O mycard.mfd</div><div class="line">Example: mfoc -P 50 -T 30 -O mycard.mfd</div></pre></td></tr></table></figure>
-<p>Dump数据，把每个sector的probes调高一点，默认20，速度可以快很多，输出文件为test.mfd。<br>MFOC先尝试默认密钥，如果不匹配则进行认证嵌套攻击</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; mfoc -P 500 -O ~/temp/old.mfd</div><div class="line">Found Mifare Classic 1k tag</div><div class="line">ISO/IEC 14443A (106 kbps) target:</div><div class="line">    ATQA (SENS_RES): 00  04  </div><div class="line">* UID size: single</div><div class="line">* bit frame anticollision supported</div><div class="line">       UID (NFCID1): 96  c2  d2  9d  </div><div class="line">      SAK (SEL_RES): 08  </div><div class="line">* Not compliant with ISO/IEC 14443-4</div><div class="line">* Not compliant with ISO/IEC 18092</div><div class="line"></div><div class="line">Fingerprinting based on MIFARE type Identification Procedure:</div><div class="line">* MIFARE Classic 1K</div><div class="line">* MIFARE Plus (4 Byte UID or 4 Byte RID) 2K, Security level 1</div><div class="line">* SmartMX with MIFARE 1K emulation</div><div class="line">Other possible matches based on ATQA &amp; SAK values:</div><div class="line"></div><div class="line">Try to authenticate to all sectors with default keys...</div><div class="line">Symbols: &apos;.&apos; no key found, &apos;/&apos; A key found, &apos;\&apos; B key found, &apos;x&apos; both keys found</div><div class="line">[Key: ffffffffffff] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: a0a1a2a3a4a5] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: d3f7d3f7d3f7] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 000000000000] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: b0b1b2b3b4b5] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 4d3a99c351dd] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 1a982c7e459a] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: aabbccddeeff] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 714c5c886e97] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 587ee5f9350f] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: a0478cc39091] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 533cb6c723f6] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 8fd0a4f256e9] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line"></div><div class="line">Sector 00 - Unknown Key A               Unknown Key B</div><div class="line">Sector 01 - Unknown Key A               Unknown Key B</div><div class="line">Sector 02 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 03 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 04 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 05 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 06 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 07 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 08 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 09 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 10 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 11 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 12 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 13 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 14 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 15 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line"></div><div class="line">Using sector 02 as an exploit sector</div><div class="line">Sector: 0, type A, probe 0, distance 64 .....</div><div class="line">  Found Key: A [9db8bbe5265d]</div><div class="line">  Data read with Key A revealed Key B: [883206883206] - checking Auth: OK</div><div class="line">Sector: 1, type A</div><div class="line">  Data read with Key A revealed Key B: [883206883206] - checking Auth: OK</div><div class="line">  Found Key: A [9db8bbe5265d]</div><div class="line">Auth with all sectors succeeded, dumping keys to a file!</div><div class="line">Block 63, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 62, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 61, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 60, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 59, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 58, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 57, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 56, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 55, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 54, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 53, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 52, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 51, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 50, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 49, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 48, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 47, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 46, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 45, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 44, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 43, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 42, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 41, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 40, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 39, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 38, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 37, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 36, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 35, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 34, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 33, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 32, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 31, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 30, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 29, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 28, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 27, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 26, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 25, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 24, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 23, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 22, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 21, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 20, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 19, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 18, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 17, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 16, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 15, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 14, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 13, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 12, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 11, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 10, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 09, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 08, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 07, type A, key 9db8bbe5265d :00  00  00  00  00  00  ff  07  80  69  88  32  06  88  32  06  </div><div class="line">Block 06, type A, key 9db8bbe5265d :36  30  35  34  38  32  35  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 05, type A, key 9db8bbe5265d :03  00  00  00  fc  ff  ff  ff  03  00  00  00  05  fa  05  fa  </div><div class="line">Block 04, type A, key 9db8bbe5265d :dc  23  00  00  23  dc  ff  ff  dc  23  00  00  04  fb  04  fb  </div><div class="line">Block 03, type A, key 9db8bbe5265d :00  00  00  00  00  00  ff  07  80  69  88  32  06  88  32  06  </div><div class="line">Block 02, type A, key 9db8bbe5265d :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 01, type A, key 9db8bbe5265d :bd  fa  d2  b5  b9  ab  cb  be  49  43  bf  a8  00  00  00  00  </div><div class="line">Block 00, type A, key 9db8bbe5265d :96  c2  d2  9d  1b  08  04  00  62  63  64  65  66  67  68  69</div></pre></td></tr></table></figure>
-<h3 id="开始分析"><a href="#开始分析" class="headerlink" title="开始分析"></a>开始分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">96c2 d29d 1b08 0400 6263 6465 6667 6869     #UID 96c2d29d(4 bytes), 1b(???), 08(SAK 1 byte), 0400(ATQA 0004 2 bytes), 6263646566676869(占位 bcdefghi 8 bytes)</div><div class="line">bdfa d2b5 b9ab cbbe 4943 bfa8 0000 0000     #字符串“晋业公司IC卡”</div><div class="line">0000 0000 0000 0000 0000 0000 0000 0000</div><div class="line">9db8 bbe5 265d ff07 8069 8832 0688 3206     #9db8bbe5265d(KeyA 6 bytes), ff0780(Access Conditions 3 bytes), 69（Undefined 1 byte）,883206883206(KeyB 6 bytes)</div><div class="line"></div><div class="line">dc23 0000 23dc ffff dc23 0000 04fb 04fb     #dc23 0000(金额高低位转换，10进制 91.80，4 bytes), 23dc ffff(金额异或校验位，4 bytes), 23dc ffff(金额，4 bytes), 04fb 04fb(???)</div><div class="line">0300 0000 fcff ffff 0300 0000 05fa 05fa     #0300 0000(使用次数，每次消费或充值加1，4 bytes), fcff ffff(次数异或校验位，4 bytes), 0300 0000(次数，4 bytes), 05fa(???)</div><div class="line">3630 3534 3832 3500 0000 0000 0000 0000     #卡号6054825</div><div class="line">9db8 bbe5 265d ff07 8069 8832 0688 3206     #9db8bbe5265d(KeyA 6 bytes), ff0780(Access Conditions 3 bytes), 69(Undefined 1 byte),883206883206(KeyB 6 bytes)</div></pre></td></tr></table></figure>
-<h3 id="修改数据"><a href="#修改数据" class="headerlink" title="修改数据"></a>修改数据</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; nfc-mfclassic</div><div class="line">Usage: nfc-mfclassic f|r|R|w|W a|b &amp;lt;dump.mfd&gt; [&amp;lt;keys.mfd&gt; [f]]</div><div class="line">  f|r|R|w|W     - Perform format (f) or read from (r) or unlocked read from (R) or write to (w) or unlocked write to (W) card</div><div class="line">                  *** format will reset all keys to FFFFFFFFFFFF and all data to 00 and all ACLs to default</div><div class="line">                  *** unlocked read does not require authentication and will reveal A and B keys</div><div class="line">                  *** note that unlocked write will attempt to overwrite block 0 including UID</div><div class="line">                  *** unlocking only works with special Mifare 1K cards (Chinese clones)</div><div class="line">  a|A|b|B       - Use A or B keys for action; Halt on errors (a|b) or tolerate errors (A|B)</div><div class="line">  &amp;lt;dump.mfd&gt;    - MiFare Dump (MFD) used to write (card to MFD) or (MFD to card)</div><div class="line">  &amp;lt;keys.mfd&gt;    - MiFare Dump (MFD) that contain the keys (optional)</div><div class="line">  f             - Force using the keyfile even if UID does not match (optional)</div><div class="line">Examples: </div><div class="line"></div><div class="line">  Read card to file, using key A:</div><div class="line"></div><div class="line">    nfc-mfclassic r a mycard.mfd</div><div class="line"></div><div class="line">  Write file to blank card, using key A:</div><div class="line"></div><div class="line">    nfc-mfclassic w a mycard.mfd</div><div class="line"></div><div class="line">  Write new data and/or keys to previously written card, using key A:</div><div class="line"></div><div class="line">    nfc-mfclassic w a newdata.mfd mycard.mfd</div><div class="line"></div><div class="line">  Format/wipe card (note two passes required to ensure writes for all ACL cases):</div><div class="line"></div><div class="line">    nfc-mfclassic f A dummy.mfd keyfile.mfd f</div><div class="line">    nfc-mfclassic f B dummy.mfd keyfile.mfd f</div></pre></td></tr></table></figure>
-<p>使用参数W可以改写空白MC1K卡的UID(某宝上面卖的那种)。<br><img src="https://gorgias.me/uploads/2016/10/IMG_20161018_1049091-e1477406819438-1024x768.jpg" alt="img_20161018_1049091"><br>这里把金额修改减少一毛钱，把修改好的数据写进去，再去鲜奶店刷卡成功，小票上面的金额也匹配。<br>结构很简单，完全可以“免费”喝奶。但是这和偷没什么区别了，奶店也是小本生意。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; nfc-mfclassic W a ~/temp/test.mfd ~/temp/old.mfd</div><div class="line">NFC reader: ACS / ACR122U PICC Interface opened</div><div class="line">Found MIFARE Classic card:</div><div class="line">ISO/IEC 14443A (106 kbps) target:</div><div class="line">    ATQA (SENS_RES): 00  04  </div><div class="line">       UID (NFCID1): 96  c2  d2  9d  </div><div class="line">      SAK (SEL_RES): 08  </div><div class="line">Guessing size: seems to be a 1024-byte card</div><div class="line">Writing 64 blocks |...............................................................|</div><div class="line">Done, 63 of 64 blocks written.</div></pre></td></tr></table></figure>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="http://cache.nxp.com/documents/application_note/AN10833.pdf" target="_blank" rel="external">[AN10833] MIFARE Type Identification Procedure</a></p>
-<p><a href="http://cache.nxp.com/documents/application_note/AN10927.pdf" target="_blank" rel="external">[AN10927] MIFARE and handling of UIDs</a></p>
-<p><a href="http://www.nxp.com/documents/application_note/AN1304.pdf" target="_blank" rel="external">[AN1304] NFC Type MIFARE Classic Tag Operation</a></p>
-<p><a href="http://nickholdren.com/wp-content/uploads/2009/07/capstone.pdf" target="_blank" rel="external">The Mifare Classic AuthenticationProcess</a></p>
-<p><a href="https://www.cs.bham.ac.uk/~garciaf/publications/Dismantling.Mifare.pdf" target="_blank" rel="external">Dismantling MIFARE Classic</a></p>
-<p><a href="https://www.blackhat.com/docs/sp-14/materials/arsenal/sp-14-Almeida-Hacking-MIFARE-Classic-Cards-Slides.pdf" target="_blank" rel="external">RFID Cooking with Mifare Classic</a></p>
-<p><a href="http://www.cnblogs.com/k1two2/p/5415400.html" target="_blank" rel="external">谈谈 Mifare Classic 破解 - K1two2</a><br><a href="http://www.freebuf.com/articles/wireless/8792.html" target="_blank" rel="external">RFID破解三两事(三篇文章和评论)</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/" data-id="cj0ksyxgy0001k6bqmgtst76y" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ACR122U/">ACR122U</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Arch-Linux/">Arch Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IC卡/">IC卡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RFID/">RFID</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-五太子不能退休，快当我的备用机！" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/10/08/五太子不能退休，快当我的备用机！/" class="article-date">
-  <time datetime="2016-10-08T14:32:07.000Z" itemprop="datePublished">2016-10-08</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/网络安全/">网络安全</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/10/08/五太子不能退休，快当我的备用机！/">五太子不能退休，快当我的备用机！</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>我的Nexus 5用了两年，电池也是越来越尿崩，从一天一充到一天三充。出门在外，接上充电宝使用，越充越少。结果没电关机，自己失联了好几次，耽误了很多事情。<br><img src="https://gorgias.me/uploads/2016/10/底部-1024x680.jpg" alt=""></p>
-<p>于是入手了Nubia Z11，2.5D玻璃屏幕，看起来几乎没有边框，外观漂亮，性能也不错，续航还行，快充，适合日常使用。<br><img src="https://gorgias.me/uploads/2016/10/正面-1024x680.jpg" alt=""></p>
-<p><img src="https://gorgias.me/uploads/2016/10/背面-1024x680.jpg" alt=""></p>
-<p><img src="https://gorgias.me/uploads/2016/10/亮屏-1024x680.jpg" alt=""></p>
-<p>Nexus 5闲置之后，待机居然能超过一个星期，终于找到电池尿崩的原因了，装的东西太多。<br>以前的手机同时跑telegram，GAPPS，QQ，微信，支付宝，美团，闲鱼等耗电大户，还运行着XP框架，Shadowsocks，不尿崩才怪呢。<br>于是这一次打算分开使用，Nexus 5作为工作机，Nubia Z11作为生活机。</p>
-<p>另外用和我名字一样的人的信息在网上办了一张手机卡，却发现现在要实名了，手持身份证不说，还要身份证和电话卡包装合照。<br>这个难度就大了，看了一下实名验证的网站，使用的是二次开发的xxshop，前台作为商城，可以购买电话卡，后台有审核实名用户的功能。<br><img src="https://gorgias.me/uploads/2016/10/xxshop.png" alt="xxshop"><br>用户上传的照片会用随机字符串重命名，并且知道图片上传的目录，想获取那些用户的照片可行的，可以穷举，难度比较大。<br>还有一个办法就是找漏洞，但是这个平台经过高度定制，并没有那么简单找到，而且花时间在这个地方也没多大意义，就没有继续。</p>
-<h2 id="折腾"><a href="#折腾" class="headerlink" title="折腾"></a>折腾</h2><h3 id="从零开始"><a href="#从零开始" class="headerlink" title="从零开始"></a>从零开始</h3><p>开始折腾我的备用机，首先刷回官方的固件。<a href="https://developers.google.com/android/nexus/images" target="_blank" rel="external">谷歌原厂镜像</a><br>然后进fastboot刷入TWRP的recovery，再进入REC刷SuperSU。</p>
-<h3 id="装装装"><a href="#装装装" class="headerlink" title="装装装"></a>装装装</h3><p>进入系统后，安装自己的梯子，还有最重要的<a href="http://www.coolapk.com/apk/com.coolapk.market" target="_blank" rel="external">酷市场</a><br>必备</p>
-<ul>
-<li><a href="http://www.coolapk.com/apk/com.wuxianlin.xposedinstaller" target="_blank" rel="external">Xposed安装器</a></li>
-<li><a href="http://www.coolapk.com/apk/com.ceco.marshmallow.gravitybox" target="_blank" rel="external">GravityBox</a></li>
-<li><a href="http://www.coolapk.com/apk/com.oasisfeng.greenify" target="_blank" rel="external">Greenify</a></li>
-<li><a href="http://www.coolapk.com/apk/com.speedsoftware.rootexplorer" target="_blank" rel="external">Root Explorer</a><br>因为我的电源键失灵，经常是按住的状态，导致关机或者不停重启，可以看到插卡处也裂了（很多人的手机这里都裂了），我只好把它拆了。<br><img src="https://gorgias.me/uploads/2016/10/菊花裂-1024x768.jpg" alt=""></li>
-</ul>
-<p>在GravityBox里把音量键换成电源键，双击虚拟home健熄屏，设置听歌时不能调音量，这样听歌时也能唤醒手机了。</p>
-<p>Nethunter自带的就不说了，这里推荐几个不错的应用</p>
-<ul>
-<li><a href="https://www.zimperium.com/zanti-mobile-penetration-testing" target="_blank" rel="external">zANTI</a>，中间人攻击</li>
-<li><a href="http://www.coolapk.com/apk/com.rcreations.WebCamViewerPaid" target="_blank" rel="external">IP Cam Viewer</a>，监控某些人</li>
-<li><a href="http://www.coolapk.com/apk/app.greyshirts.sslcapture" target="_blank" rel="external">Packet Capture</a>，免Root抓包</li>
-<li><a href="https://play.google.com/store/apps/details?id=cz.hipercalc.pro&amp;hl=en" target="_blank" rel="external">HiPER Calc Pro</a>，功能强大的计算器</li>
-<li><a href="https://play.google.com/store/apps/details?id=com.wmspanel.larix_broadcaster&amp;hl=en" target="_blank" rel="external">Larix Broadcaster</a>，推流直播软件</li>
-<li><a href="https://play.google.com/store/apps/details?id=com.aor.droidedit.pro&amp;hl=en" target="_blank" rel="external">DroidEdit</a>，安卓上的Sublime,比Jota+好用</li>
-<li><a href="https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&amp;hl=en" target="_blank" rel="external">VNC Viewer</a></li>
-<li><a href="https://play.google.com/store/apps/details?id=com.microsoft.rdc.android&amp;hl=en" target="_blank" rel="external">Microsoft Remote Desktop</a>，两款远程桌面应用</li>
-</ul>
-<p>我是Archlinux用户，使用KDE，于是我安装了KDE Connect桌面端和<a href="http://www.coolapk.com/apk/org.kde.kdeconnect_tp" target="_blank" rel="external">移动端</a>，作为手机与电脑的无线连接工具。<br><img src="https://gorgias.me/uploads/2016/10/KDEC桌面端-1024x342.png" alt=""></p>
-<p><img src="https://gorgias.me/uploads/2016/10/KDEC移动端-576x1024.jpg" alt=""></p>
-<p>最后刷入Kali Nethunter。<br>去年写过一篇笔记，<a href="https://blog.gorgiaxx.com/2015/08/kali-nethunter%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/" target="_blank" rel="external">Kali Nethunter尝鲜</a>但是不适用于现在了。</p>
-<h3 id="postgresql无法启动"><a href="#postgresql无法启动" class="headerlink" title="postgresql无法启动"></a>postgresql无法启动</h3><p>我安装完Nethunter，发现postgresql服务不能启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">root@kali:~# service postgresql start</div><div class="line">[....] Starting PostgreSQL 9.4 database server: main[....] The PostgreSQL server failed to start. Please check the log output: 2016-10-08 12:18:03 UTC [5618-1] FATAL: could not create shared memory segment: Function not implemented 2016-10-08 12:18:03 UTC [561[FAILDETAIL: Failed system call was shmget(key=5432001, size=40, 03600). ... failed!</div></pre></td></tr></table></figure></p>
-<p>使用shmget函数出错，发现是共享内存这里有问题。初步判断可能是设置的值过小。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">root@kali:~# cat /proc/sys/kernel/shmmax</div><div class="line">cat: /proc/sys/kernel/shmmax: No such file or directory</div></pre></td></tr></table></figure>
-<p>查看一下内核中发现并不存在这个属性，这就尴尬了，于是不断Google，终于在<a href="https://github.com/offensive-security/kali-nethunter/issues/530" target="_blank" rel="external">Offensive Security 的 Github Issues</a>上面看到了同样的情况。他们已经Patch了，但是官网上面的还是没变，需要自行打包。</p>
-<p>那么我就开始打包吧，其实不是Nexus5也能刷入Nethunter<br>参照<a href="https://github.com/offensive-security/kali-nethunter/wiki/Building-Nethunter" target="_blank" rel="external">官方Wiki</a>，一步一步操作<br>下载Nethunter源文件，进入目录。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/offensive-security/kali-nethunter</div><div class="line">cd kali-nethunter/nethunter-installer</div></pre></td></tr></table></figure>
-<p>这里只能用Python2构建包，查看说明后，运行如下命令，参数大概是Nexus5的代号hammerhead，目标系统marshmallow，仅打包Kernel。<br>因为我已经装过一遍了，所以这次只打包内核，再加一个自定义版本就叫RBQ吧！</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~/g/k/nethunter-installer&amp;gt; python2 build.py -d hammerhead -m -k -r RBQ</div><div class="line">Kernel: Copying common files...</div><div class="line">Kernel: Copying armhf arch specific common files...</div><div class="line">Kernel: Copying boot-patcher files...</div><div class="line">Kernel: Copying armhf arch specific boot-patcher files...</div><div class="line">Kernel: Configuring installer script for hammerhead</div><div class="line">Kernel: Configuring boot-patcher script for hammerhead</div><div class="line">Found kernel image at: devices/marshmallow/hammerhead/zImage-dtb</div><div class="line">Creating ZIP file: kernel-nethunter-hammerhead-marshmallow-RBQ.zip</div><div class="line">Added: zImage-dtb</div><div class="line">Added: boot-patcher.sh</div><div class="line">Added: env.sh</div><div class="line">Added: patch.d-env</div><div class="line">Added: META-INF/com/google/android/update-binary</div><div class="line">Added: META-INF/com/google/android/updater-script</div><div class="line">Added: ramdisk-patch/init.nethunter.rc</div><div class="line">Added: ramdisk-patch/sbin/dvmediarevert</div><div class="line">Added: ramdisk-patch/sbin/media_profiles.xml</div><div class="line">Added: ramdisk-patch/sbin/dvbootscript.sh</div><div class="line">Added: ramdisk-patch/sbin/hostapd</div><div class="line">Added: tools/busybox</div><div class="line">Added: tools/unpackbootimg</div><div class="line">Added: tools/freespace.sh</div><div class="line">Added: tools/installbusybox.sh</div><div class="line">Added: tools/mkbootimg</div><div class="line">Added: tools/lz4</div><div class="line">Added: patch.d/01-ramdisk-patch</div><div class="line">Added: patch.d/02-no-verity-opt-encrypt</div><div class="line">Added: system/xbin/hid-keyboard</div><div class="line">Added: system/etc/firmware/htc_9271.fw</div><div class="line">Added: system/etc/firmware/ar9170-1.fw</div><div class="line">Added: system/etc/firmware/ar9170-2.fw</div><div class="line">Added: system/etc/firmware/rt2870.bin</div><div class="line">Added: system/etc/firmware/rt3070.bin</div><div class="line">Added: system/etc/firmware/rt73.bin</div><div class="line">Added: system/etc/firmware/rt2561.bin</div><div class="line">Added: system/etc/firmware/rt2860.bin</div><div class="line">Added: system/etc/firmware/htc_7010.fw</div><div class="line">Added: system/etc/firmware/carl9170-1.fw</div><div class="line">Added: system/etc/firmware/zd1211/zd1211_ub</div><div class="line">Added: system/etc/firmware/zd1211/zd1211b_uph</div><div class="line">Added: system/etc/firmware/zd1211/zd1211_ur</div><div class="line">Added: system/etc/firmware/zd1211/zd1211b_uphm</div><div class="line">Added: system/etc/firmware/zd1211/zd1211b_ur</div><div class="line">Added: system/etc/firmware/zd1211/zd1211_uph</div><div class="line">Added: system/etc/firmware/zd1211/zd1211_uphr</div><div class="line">Added: system/etc/firmware/zd1211/zd1211_uphm</div><div class="line">Added: system/etc/firmware/zd1211/zd1211b_uphr</div><div class="line">Added: system/etc/firmware/zd1211/zd1211b_ub</div><div class="line">Added: system/etc/firmware/rtlwifi/rtl8192cufw.bin</div><div class="line">Added: system/etc/firmware/rtlwifi/rtl8188efw.bin</div><div class="line">Created kernel installer: kernel-nethunter-hammerhead-marshmallow-RBQ.zip</div></pre></td></tr></table></figure>
-<p>打包完成后会在目录下生成文件，通过KDE Connect传入到手机，重启进入REC刷入。大功告成！！<br><img src="https://gorgias.me/uploads/2016/10/大功告成.png" alt=""></p>
-<p>最新的Nethunter使用的是kali-rolling源，如果更新源或者下载包失败的话，请把源更改为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">deb http://http.kali.org/kali kali-rolling main contrib non-free</div><div class="line">deb-src http://http.kali.org/kali kali-rolling main contrib non-free</div></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2016/10/08/五太子不能退休，快当我的备用机！/" data-id="cj0ksyxhk000ek6bqo5w7282i" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/The-PostgreSQL-server-failed-to-start/">The PostgreSQL server failed to start</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kali/">kali</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nethunter/">nethunter</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/备用机/">备用机</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/折腾/">折腾</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-联想Y410p-BIOS-拯救笔记" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/06/20/联想Y410p-BIOS-拯救笔记/" class="article-date">
-  <time datetime="2016-06-20T04:08:27.000Z" itemprop="datePublished">2016-06-20</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/硬件DIY/">硬件DIY</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/20/联想Y410p-BIOS-拯救笔记/">联想Y410p BIOS 拯救笔记</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！<br><img src="https://gorgias.me/uploads/2016/06/IMG_0398-1024x768.jpg" alt="IMG_0398"><br>黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。<br><img src="https://gorgias.me/uploads/2016/06/IMG_0376-1024x768.jpg" alt="IMG_0376"><br>依然没用，只能今天去再用编程器烧写。</p>
-<h2 id="开始折腾"><a href="#开始折腾" class="headerlink" title="开始折腾"></a>开始折腾</h2><p>准备工具：焊台，其他辅助工具，编程器，一台能用的电脑<br><a href="https://drive.google.com/open?id=0B3hbKdJ8eeqfRUZpeG1ZTFRyWHc" target="_blank" rel="external">工具和原厂镜像打包下载</a><br><img src="https://gorgias.me/uploads/2016/06/IMG_0380-1024x768.jpg" alt="IMG_0380"></p>
-<p>这是直插式的SOP-16烧录座,不用再焊来焊去了<br><img src="https://gorgias.me/uploads/2016/06/IMG_0385-1024x768.jpg" alt="IMG_0385"></p>
-<p>贴上隔热胶带，防止损坏其他元件<br><img src="https://gorgias.me/uploads/2016/06/IMG_0387-1024x768.jpg" alt="IMG_0387"></p>
-<p>这是双BIOS的主板，先用风枪以370的温度，风速3，把右边那个4MB的SOP-8闪存吹下，8秒左右。<br><img src="https://gorgias.me/uploads/2016/06/IMG_0389-1024x1024.jpg" alt="IMG_0389"></p>
-<p>然后放在烧录座上，写入原厂固件。<br><img src="https://gorgias.me/uploads/2016/06/IMG_0390-1024x1024.jpg" alt="IMG_0390"></p>
-<p>再吹下另一个2MB的闪存，写入对应的固件<br><img src="https://gorgias.me/uploads/2016/06/IMG_0392-1024x1024.jpg" alt="IMG_0392"></p>
-<p><img src="https://gorgias.me/uploads/2016/06/IMG_0393-1024x1024.jpg" alt="IMG_0393"></p>
-<p>刷入2.07版未写保护的BIOS，方便刷入自定义的固件<br><img src="https://gorgias.me/uploads/2016/06/IMG_0395-1024x1024.jpg" alt="IMG_0395"></p>
-<p>然后进DOS重新刷之前备份好的解锁版BIOS，GPU超频，除去了网卡白名单<br><img src="https://gorgias.me/uploads/2016/06/IMG_0396-1024x1024.jpg" alt="IMG_0396"><br>刷EC<br><img src="https://gorgias.me/uploads/2016/06/IMG_0397-1024x1024.jpg" alt="IMG_0397"></p>
-<p>大功告成！<br>再也不作死了！这不是第一次弄坏BIOS了，下次再作死就，就。。。（〃｀д´ ) ?</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/" data-id="cj0ksyxi3000xk6bq8uk4dkqv" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BIOS/">BIOS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/救砖/">救砖</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/砖/">砖</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编程器/">编程器</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/联想/">联想</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-给网站添加免费SSL证书" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/09/给网站添加免费SSL证书/" class="article-date">
-  <time datetime="2016-05-09T13:17:55.000Z" itemprop="datePublished">2016-05-09</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/环境配置/">环境配置</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/09/给网站添加免费SSL证书/">给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="为什么要添加SSL证书-使用HTTPS协议"><a href="#为什么要添加SSL证书-使用HTTPS协议" class="headerlink" title="为什么要添加SSL证书/使用HTTPS协议"></a>为什么要添加SSL证书/使用HTTPS协议</h2><p>目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。<br>近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。</p>
-<h2 id="准备-amp-环境"><a href="#准备-amp-环境" class="headerlink" title="准备 &amp; 环境"></a>准备 &amp; 环境</h2><p>本服务器环境DigitalOcean VPS，SG节点，Debian jessie，AMH主机面板<br>需要用到:<br><em>免费SSL证书 <a href="https://letsencrypt.org/" target="_blank" rel="external">Let’s Encrypt</a>
-</em><a href="http://nginx.org/" target="_blank" rel="external">NGINX</a><br>*<a href="https://www.openssl.org/" target="_blank" rel="external">OpenSSL</a></p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="安装-amp-升级OpenSSL-1-0-2"><a href="#安装-amp-升级OpenSSL-1-0-2" class="headerlink" title="安装&amp;升级OpenSSL 1.0.2"></a>安装&amp;升级OpenSSL 1.0.2</h3><p>要让NGINX开启HTTP/2协议，必须使用此版本的OpenSSL</p>
-<blockquote>
-<p>Note that accepting HTTP/2 connections over TLS requires the “Application-Layer Protocol Negotiation” (ALPN) TLS extension support, which is available only since OpenSSL version 1.0.2. Using the “Next Protocol Negotiation” (NPN) TLS extension for this purpose (available since OpenSSL version 1.0.1) is not guaranteed.</p>
-</blockquote>
-<p>去官网或者载Gayhub下载OpenSSL源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget https://github.com/openssl/openssl/archive/OpenSSL_1_0_2h.tar.gz</div><div class="line">tar -zxvf ./OpenSSL_1_0_2h.tar.gz</div><div class="line">cd ./openssl-OpenSSL_1_0_2h/</div></pre></td></tr></table></figure></p>
-<p>选择你要安装的目录，如果升级的话，把prefix参数改成OpenSSL所在的目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">./config --prefix=/usr/local/openssl --openssldir=/usr/local/ssl</div><div class="line">make</div><div class="line">make install</div><div class="line">mv /usr/bin/openssl /usr/bin/openssl.OFF  </div><div class="line">mv /usr/include/openssl /usr/include/openssl.OFF  </div><div class="line">ln -s /usr/local/openssl/bin/openssl /usr/bin/openssl  </div><div class="line">ln -s /usr/local/openssl/include/openssl /usr/include/openssl  </div><div class="line">echo &quot;/usr/local/openssl/lib&quot;&gt;&gt;/etc/ld.so.conf</div></pre></td></tr></table></figure>
-<p>查看OpenSSL的版本变成了1.0.2h</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">openssl version -a</div></pre></td></tr></table></figure>
-<h3 id="安装Let’s-Encrypt客户端"><a href="#安装Let’s-Encrypt客户端" class="headerlink" title="安装Let’s Encrypt客户端"></a>安装Let’s Encrypt客户端</h3><p>获取源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/letsencrypt/letsencrypt</div><div class="line">cd letsencrypt</div></pre></td></tr></table></figure>
-<p>安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./letsencrypt-auto --help</div></pre></td></tr></table></figure>
-<p>签发证书,w参数填网站的路径,d参数填域名，证书以第一个域名为准，具体参考官方文档</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./letsencrypt-auto certonly --webroot -w /www/blog/ -d gorgiaxx.com -d blog.gorgiaxx.com</div></pre></td></tr></table></figure>
-<p>证书有效期三个月,可以写脚本续期</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 0 1 * * /usr/local/nginx/sbin/nginx -s stop &amp;&amp; /opt/letsencrypt-auto certonly --renew-by-default --webroot -w /www/blog/ -d gorgiaxx.com -d blog.gorgiaxx.com &amp;&amp; /usr/local/nginx/sbin/nginx</div></pre></td></tr></table></figure>
-<p>证书默认生成在此目录，NGINX需要用到后两个文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">root@gorgiaxx-ubuntu:~/tmp# ls /etc/letsencrypt/live/gorgiaxx.com</div><div class="line">cert.pem  chain.pem  fullchain.pem  privkey.pem</div></pre></td></tr></table></figure>
-<h3 id="启用-Certificate-Transparency-策略"><a href="#启用-Certificate-Transparency-策略" class="headerlink" title="启用 Certificate Transparency 策略"></a>启用 Certificate Transparency 策略</h3><p>由 Google 主导，并由 IETF 标准化为 RFC 6962。Certificate Transparency 的目标是提供一个开放的审计和监控系统，可以让任何域名所有者或者 CA 确定证书是否被错误签发或者被恶意使用，从而提高 HTTPS 网站的安全性。</p>
-<p>CT 策略目前只有 Chrome 支持；其次 Chrome 也知道现在支持 CT 的网站并不多，所以对于没有提供 SCT 信息的 HTTPS 网站也没有太大的影响。</p>
-<p>具体参考<a href="https://imququ.com/post/certificate-transparency.html" target="_blank" rel="external">Certificate Transparency 那些事</a><br>通过 ct-submit 这个模块，可以方便地将证书提交给 CT Logs 服务器并得到 SCT 响应</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">apt-get install golang</div><div class="line">wget -O ct-submit.zip -c https://github.com/grahamedgecombe/ct-submit/archive/v1.0.0.zip</div><div class="line">unzip ct-submit.zip</div><div class="line">cd ct-submit-1.0.0</div><div class="line">go build</div></pre></td></tr></table></figure>
-<p>编译完毕，执行并提交，CT Logs服务器可以在<a href="https://www.certificate-transparency.org/known-logs" target="_blank" rel="external">这里找到</a>（被墙了）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">./ct-submit-1.0.0 ct.googleapis.com/aviator </div><div class="line">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem </div><div class="line">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/aviator.sct</div><div class="line">./ct-submit-1.0.0 ct.googleapis.com/pilot </div><div class="line">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem </div><div class="line">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/pilot.sct</div><div class="line">./ct-submit-1.0.0 ct.googleapis.com/rocketeer </div><div class="line">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem </div><div class="line">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/rocketeer.sct</div></pre></td></tr></table></figure>
-<h3 id="安装-amp-升级NGINX"><a href="#安装-amp-升级NGINX" class="headerlink" title="安装&amp;升级NGINX"></a>安装&amp;升级NGINX</h3><p>下载并解压NGINX和nginx-ct模块</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">wget -O nginx-ct.zip https://github.com/grahamedgecombe/nginx-ct/archive/master.zip</div><div class="line">unzip nginx-ct.zip</div><div class="line"></div><div class="line">http://nginx.org/download/nginx-1.10.0.tar.gz</div><div class="line">tar -zxvf nginx-1.10.0.tar.gz</div></pre></td></tr></table></figure>
-<p>/usr/local/nginx是我原先nginx的目录<br>安装文件临时放在/tmp/里面</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">./configure --prefix=/usr/local/nginx --user=www --group=www --with-http_ssl_module --with-http_gzip_static_module --with-http_v2_module --add-module=/tmp/nginx-ct-master</div><div class="line">make</div></pre></td></tr></table></figure>
-<p>如果make失败，请在configure加上</p>
-<p><code>--with-openssl=/tmp/openssl-1.0.2h/</code><br>替换旧文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cp -f objs/nginx /usr/local/nginx/sbin/nginx</div></pre></td></tr></table></figure>
-<p>升级</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">make upgrade</div></pre></td></tr></table></figure>
-<h3 id="配置NGINX"><a href="#配置NGINX" class="headerlink" title="配置NGINX"></a>配置NGINX</h3><p>把监听端口换成443，添加ssl和http2</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">listen 443 ssl http2 default; #listen end</div></pre></td></tr></table></figure>
-<p>开启ssl和ssl_ct，添加SCT目录和SSL证书路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ssl on;</div><div class="line">ssl_ct on;</div><div class="line">ssl_ct_static_scts /etc/letsencrypt/live/gorgiaxx.com/scts/;</div><div class="line">ssl_certificate /etc/letsencrypt/live/gorgiaxx.com/fullchain.pem;</div><div class="line">ssl_certificate_key /etc/letsencrypt/live/gorgiaxx.com/privkey.pem;</div></pre></td></tr></table></figure>
-<p>重载NGINX</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/usr/local/nginx/sbin/nginx -s reload</div></pre></td></tr></table></figure>
-<p>由图可以看到，已经启用了HTTP/2协议和CT策略<br><img src="https://gorgias.me/uploads/2016/05/Screenshot_20160509_221523.png" alt="http2"><br>可以看到CT策略开启了<br><img src="https://gorgias.me/uploads/2016/05/YKXMU5BBADVX814ZMWYW-765x1024.png" alt="ssl-ct"></p>
-<p>———————2016年11月12日 更新：—————————</p>
-<p>新版的letsencrypt使用certbot部署证书</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./certbot-auto certonly --standalone --email gorgiaxx@gmail.com -d gorgiaxx.com -d www.gorgiaxx.com -d blog.gorgiaxx.com -d api.gorgiaxx.com</div></pre></td></tr></table></figure>
-<p>证书自动续期</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 0 1 * * /usr/local/nginx/sbin/nginx -s stop &amp;&amp; /opt/certbot-auto renew &amp;&amp; /usr/local/nginx/sbin/nginx</div></pre></td></tr></table></figure>
-<p>———————2017年2月9日 更新：—————————–</p>
-<p>我说怎么老是提醒我过期(╯‵□′)╯︵┻━┻，原来certbot会在启动时自己更新，然后依赖virtualenv，VPS上没有装，所以自动续期失败</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2016/05/09/给网站添加免费SSL证书/" data-id="cj0ksyxi2000uk6bq1xjd3s18" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP-2/">HTTP/2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL/">SSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/certificate-transparency/">certificate transparency</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/https/">https</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx-openssl/">nginx.openssl</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/证书/">证书</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-记第一次硬改路由器上Openwrt" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/04/记第一次硬改路由器上Openwrt/" class="article-date">
-  <time datetime="2016-04-04T10:16:01.000Z" itemprop="datePublished">2016-04-04</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/硬件DIY/">硬件DIY</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/04/记第一次硬改路由器上Openwrt/">记第一次硬改路由器上Openwrt</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）</p>
-<p><img src="https://gorgias.me/uploads/2016/04/1-1024x768.jpg" alt="1"></p>
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p>设备: TP-Link WR845N v4</p>
-<p><img src="https://gorgias.me/uploads/2016/04/2-1024x768.jpg" alt="2"><br>硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。<br>配件:<br>Winbond(华邦) 16MB 128MBIT SPI FLASH<br>内存颗粒 HY5DU121622CTP-D43 DDR64M16位<br>系统环境：Windows 10，CH341A编程器软件</p>
-<h1 id="硬件改造要点"><a href="#硬件改造要点" class="headerlink" title="硬件改造要点"></a>硬件改造要点</h1><h2 id="拆闪存"><a href="#拆闪存" class="headerlink" title="拆闪存"></a>拆闪存</h2><p>首先给热风枪装上1cm的出风口，把热风枪温度调到265度，风速6。然后预热路由器主板，接着对着闪存吹，大概十几秒后闪存引脚上的锡变亮，说明锡熔化了，用镊子把它取下。</p>
-<h2 id="拆内存"><a href="#拆内存" class="headerlink" title="拆内存"></a>拆内存</h2><p>首先用隔热胶带贴住周围，保护零件，用助焊剂涂满内存颗粒两边引脚，给引脚上锡，一边拖焊一边用镊子顶住左边，力向上，不要太大力，否则焊盘会被扯下。拖焊的时候把烙铁头温度调到380度，轻轻来回滑动碰引脚，让上面的锡变成液态，这样一边就被镊子顶起来了。另一边也这样做。</p>
-<h2 id="焊杜邦头"><a href="#焊杜邦头" class="headerlink" title="焊杜邦头"></a>焊杜邦头</h2><p>烙铁头温度调到350度，根据闪存与插孔的走线，把杜邦头插在SOP转接板上，用烙铁头贴着杜邦头接触点，用锡点一下，就焊上去了。</p>
-<p><img src="https://gorgias.me/uploads/2016/04/a.png" alt="a"></p>
-<h2 id="焊闪存"><a href="#焊闪存" class="headerlink" title="焊闪存"></a>焊闪存</h2><p>把闪存焊在SOP转接板上，闪存上面有圆点的那一面对着电路板上有缺口的那一面</p>
-<p><img src="https://gorgias.me/uploads/2016/04/b-768x1024.jpg" alt="b"></p>
-<h2 id="焊内存"><a href="#焊内存" class="headerlink" title="焊内存"></a>焊内存</h2><p>把内存与焊盘对齐，圆点的那一面对着电路板上有缺口的那一面，对称的两角用锡固定，然后加锡拖焊，可能是我的锡有问题，最后总是连锡，也是因为这个问题，让我焊上去又取下来，导致一个板子焊盘掉了许多。解决办法：用吸锡带或者用细针把锡清理干净。</p>
-<p>失败图：</p>
-<p><img src="https://gorgias.me/uploads/2016/04/bad-768x1024.jpg" alt="bad"></p>
-<p>成功图：</p>
-<p><img src="https://gorgias.me/uploads/2016/04/complete-1024x758.jpg" alt="complete"></p>
-<p>加个散热片</p>
-<p><img src="https://gorgias.me/uploads/2016/04/inside-1024x758.jpg" alt="inside"></p>
-<h1 id="操作流程"><a href="#操作流程" class="headerlink" title="操作流程"></a>操作流程</h1><p><img src="https://gorgias.me/uploads/2016/04/3-1024x768.jpg" alt="3"></p>
-<p><img src="https://gorgias.me/uploads/2016/04/4-1024x768.jpg" alt="4"></p>
-<p>先拆闪存，用编程器备份原有的固件，因为里面有art，这里面有无线相关的参数，每台机器的配置都有略微不同，很重要。<br>然后再下载对应芯片的Bootloader写入16MB的闪存，这里用的Bootloader是<a href="http://blog.hackpascal.net/" target="_blank" rel="external">Hackpascal</a>大神的<a href="http://www.right.com.cn/forum/thread-161906-1-1.html" target="_blank" rel="external">Breed</a>。<br>写入之后焊在主板上。启动，插入网线，用浏览器打开192.168.1.1。</p>
-<p><img src="https://gorgias.me/uploads/2016/04/breed-1024x758.jpg" alt="breed"></p>
-<p>然后替换内存，再启动，如果虚焊或者连锡，加电后led会一直全亮。<br>这里可以看到内存变成64MB了。</p>
-<p><img src="https://gorgias.me/uploads/2016/04/a64.png" alt="a64"></p>
-<p>然后进Breed刷入PandoraBox和ART，这里我刷的是Hackpascal编译的Openwrt，假如没有备份art，可以是用Hackspecial提供的<a href="http://www.right.com.cn/forum/thread-136444-1-1.html" target="_blank" rel="external">art</a>。</p>
-<p><img src="https://gorgias.me/uploads/2016/04/ssh-1024x768.jpg" alt="ssh"></p>
-<p>贴上水果的logo，perfect！</p>
-<p><img src="https://gorgias.me/uploads/2016/04/appearance-768x1024.jpg" alt="appearance"></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/" data-id="cj0ksyxi50010k6bq85h66p2o" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tplink/">tplink</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/改装/">改装</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/硬改/">硬改</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/路由器/">路由器</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Windows-安装-MySQL-5.7-Zip版" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/11/Windows-安装-MySQL-5.7-Zip版/" class="article-date">
-  <time datetime="2016-03-10T16:25:27.000Z" itemprop="datePublished">2016-03-11</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/环境配置/">环境配置</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/11/Windows-安装-MySQL-5.7-Zip版/">Windows 安装 MySQL 5.7 Zip版</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>想在虚拟机上搭建一个Windows Server 2008 的靶机，在安装MySQL 5.7的时候老是出错。最后终于解决了，真是太不人性化了！本来计划在博客上只写干货的，但是这个问题在网上很难找到解决办法，于是打算把解决过程记录下来。</p>
-<p>下载地址：<a href="http://dev.mysql.com/downloads/mysql/" target="_blank" rel="external">http://dev.mysql.com/downloads/mysql/</a></p>
-<p>1.下载解压，首先把my-default.ini重命名为my.ini</p>
-<p>然后用编辑器打开，注意编码为ANSI</p>
-<p>这里是最基本的安装，其他参数选项自行查阅<a href="http://dev.mysql.com/doc/refman/5.7/en/" target="_blank" rel="external">官方文档</a>配置</p>
-<p>在mysqld里修改路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">basedir = X:/path/mysql</div><div class="line">datadir = X:/path/mysql/data</div></pre></td></tr></table></figure>
-<p>然后在后面加上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[mysql]</div><div class="line">default-character-set=utf8</div></pre></td></tr></table></figure>
-<p>注释sqlmode</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES</div></pre></td></tr></table></figure>
-<p>在bin目录运行,初始化data目录和系统表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --initialize</div></pre></td></tr></table></figure>
-<p>在控制台运行mysql，跳过密码认证</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --standalone --console --skip-grant-tables</div></pre></td></tr></table></figure>
-<p>自行配好环境变量，cmd运行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql -u root</div></pre></td></tr></table></figure>
-<p>更新密码为123456</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set password for &apos;root&apos;@&apos;localhost&apos;=password(&apos;123456&apos;);</div></pre></td></tr></table></figure>
-<p>安装MySQL服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --install</div></pre></td></tr></table></figure>
-<p>把控制台的mysql停止，然后启动MySQL服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">net start mysql</div></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2016/03/11/Windows-安装-MySQL-5.7-Zip版/" data-id="cj0ksyxhb0009k6bqx0vc2wu5" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/windows/">windows</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安装/">安装</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-ESXi-5.5-折腾笔记一" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/11/16/ESXi-5.5-折腾笔记一/" class="article-date">
-  <time datetime="2015-11-16T15:28:03.000Z" itemprop="datePublished">2015-11-16</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/虚拟化/">虚拟化</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/11/16/ESXi-5.5-折腾笔记一/">ESXi 5.5 折腾笔记 (一)</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>&nbsp;</p>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>VMware ESX 服务器是在通用环境下分区和整合系统的虚拟主机软件。它是具有高级资源管理功能高效，灵活的虚拟主机平台。<br>ESXi (现在叫做VMware vSphere Hypervisor)是免费的，基本功能差不多，更小，更安全。</p>
-<p><img src="https://gorgias.me/uploads/2015/11/diff.png" alt="diff"></p>
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><p>官方下载地址：<a href="https://my.vmware.com/cn/group/vmware/evalcenter?p=free-esxi5" target="_blank" rel="external">VMware vSphere Hypervisor 5.5</a></p>
-<p>注册完官方账号后，找到并记下自己的许可证，安装完后用来激活<br><img src="https://gorgias.me/uploads/2015/11/license.png" alt="license"></p>
-<p>这是花椒CERT社团黑色的“三号机”。</p>
-<p><img src="https://gorgias.me/uploads/2015/11/sanhaoji-1024x768.jpg" alt="sanhaoji"></p>
-<p>暑假7月27日由于硬盘坏道没能继续折腾，现在准备好了继续。</p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>方法1：USB启动安装</p>
-<p>由于我的U盘装了Kali，暂时不想折腾了。想用U盘安装的可以装个大白菜，老毛桃，anywlan之类的做成启动盘，然后用它们来装镜像。再或者用UltraISO写镜像到U盘（前提是要备份数据）。</p>
-<p>方法2：PXE启动安装</p>
-<p>需要用到这个工具，<a href="http://pan.baidu.com/s/1ntmylj7" target="_blank" rel="external">ESXiPXE</a>，需要.NET4.0支持</p>
-<p>把它解压，在里面新建一个文件夹，就叫“esxi”吧。</p>
-<p><img src="https://gorgias.me/uploads/2015/11/a.png" alt="a"></p>
-<p>把iso镜像里面的文件放到esxi文件夹里，然后在esxi文件夹里新建一个文件夹，”pxelinux.cfg”。</p>
-<p><img src="https://gorgias.me/uploads/2015/11/b.png" alt="b"></p>
-<p>把<code>./esxi/ISOLINUX.CFG</code>这个文件复制到pxelinux.cfg里，改名为<code>default.</code></p>
-<p><img src="https://gorgias.me/uploads/2015/11/c.png" alt="c"></p>
-<p>改完之后，找到根目录<code>ESXiPXE.exe.config</code>文件，用文本编辑器编辑<br>配置好DHCP服务，关键填上ServerIp，<code>172.16.85.177</code>这是我笔记本的ip。<br><a href="http://tietuku.com/64a7937fac0d9ca6" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/d.png" alt="d"></a><br>下面的参数保留默认即可(和图片上的一样)。<br><img src="https://gorgias.me/uploads/2015/11/e.png" alt="e"></p>
-<p>接下来运行<code>ESXiPXE.exe</code>，会提示是否允许访问网络，选择允许。<br>然后打开三号机，网络启动，三号机会出现pxelinux的菜单界面。<br><a href="http://tietuku.com/84d7166d99a294a71" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/1-768x1024.jpg" alt="1"></a><br>ESXiPXE.exe会出现这些内容。<br><a href="http://tietuku.com/b56dea7e35f4879c1" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/dhcp.png" alt="dhcp"></a><br>接下来是安装过程<br><a href="http://tietuku.com/362a4d862a2f88e71" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/2-1024x768.jpg" alt="2"></a><br>在这张图里可以看到内存只有4G，后面出错的原因也在这里。<br><a href="http://tietuku.com/0187bd3bf30305a51" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/3-1024x768.jpg" alt="3"></a><br><a href="http://tietuku.com/3806b3133711bf481" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/4-1024x768.jpg" alt="4"></a><br>扫描硬盘需要十几秒左右，如果要等一分多钟说明硬盘有问题，暑假就是这样，然后老是卡在29%。<br><a href="http://tietuku.com/28bee787deaf08c11" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/5-1024x768.jpg" alt="5"></a><br>选择英语<br><a href="http://tietuku.com/e7b972c20a0225591" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/6-1024x768.jpg" alt="6"></a><br>设置管理员密码<br><a href="http://tietuku.com/d9baea5cbaa239dd1" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/7-1024x768.jpg" alt="7"></a><br>这里出错了，显示内存不够，这台机器有24GB内存，现在插拔一下内存条。<br><a href="http://tietuku.com/6471d19cfc93c8821" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/8-1024x768.jpg" alt="8"></a><br>经过几分钟的插♂拔，可以看到内存容量回来了。<br><a href="http://tietuku.com/e08a52ad9f1bd2351" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/9-1-1024x768.jpg" alt="9"></a><br>重新安装。<br><a href="http://tietuku.com/7dc9634d73b72ac11" target="_blank" rel="external"><img src="https://gorgias.me/uploads/2015/11/progress-768x1024.jpg" alt="progress"></a><br>安装完成ლ(╹◡╹ლ)！<br><img src="https://gorgias.me/uploads/2015/11/successfully-768x1024.jpg" alt="successfully"></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gorgias.me/2015/11/16/ESXi-5.5-折腾笔记一/" data-id="cj0ksyxh40004k6bqovr7trrl" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ESXi/">ESXi</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/VMware/">VMware</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安装/">安装</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/虚拟化/">虚拟化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/虚拟机/">虚拟机</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-
-
-  <nav id="page-nav">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">__('next') &raquo;</a>
   </nav>
-</section>
+</div>
+
+      </header>
+      <div id="content">
         
-          <aside id="sidebar">
-  
+    <div id="primary" class="home">
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/02/24/源码编译OpenWrt固件笔记/">源码编译OpenWrt固件笔记</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Feb 24 2017
+      </time>
+    </header>
+
+
+
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenWrt/">OpenWrt</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/环境配置/">环境配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/硬件DIY/">硬件DIY</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络安全/">网络安全</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/虚拟化/">虚拟化</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计/">设计</a></li></ul>
-    </div>
-  </div>
+        <div class="post-excerpt">
+            
+            
 
+            
+          
 
-  
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACR122U/">ACR122U</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Arch-Linux/">Arch Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BIOS/">BIOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ESXi/">ESXi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP-2/">HTTP/2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IC卡/">IC卡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nexus5/">Nexus5</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RFID/">RFID</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL/">SSL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TP-Link/">TP-Link</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/The-PostgreSQL-server-failed-to-start/">The PostgreSQL server failed to start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VGA/">VGA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VMware/">VMware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/app/">app</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bumblebee/">bumblebee</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/certificate-transparency/">certificate transparency</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ckfinder/">ckfinder</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-hub/">docker hub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/em/">em</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitcafe/">gitcafe</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kali/">kali</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kali手机版/">kali手机版</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/">kvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/menuconfig/">menuconfig</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nethunter/">nethunter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-openssl/">nginx.openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/px/">px</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/qemu/">qemu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rem/">rem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tplink/">tplink</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/">windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xorg/">xorg</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/东软/">东软</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/体验/">体验</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/像素/">像素</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分辨率/">分辨率</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/区分/">区分</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/单位/">单位</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/双显卡/">双显卡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/固件/">固件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备用机/">备用机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/失败/">失败</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安卓/">安卓</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安装/">安装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/常见/">常见</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/折腾/">折腾</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/改装/">改装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/救砖/">救砖</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/教程/">教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数字校园/">数字校园</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/格式/">格式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/砖/">砖</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/破解/">破解</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/硬改/">硬改</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程器/">编程器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译/">编译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/联想/">联想</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟机/">虚拟机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/证书/">证书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/路由器/">路由器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/逆向分析/">逆向分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭源/">闭源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/静态博客/">静态博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/黑屏/">黑屏</a></li></ul>
-    </div>
-  </div>
+  </article>
+
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/01/17/Arch-Linux-双显卡-安装-NVIDIA-闭源驱动/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Jan 17 2017
+      </time>
+    </header>
 
 
-  
+
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/ACR122U/" style="font-size: 10px;">ACR122U</a> <a href="/tags/Arch-Linux/" style="font-size: 10px;">Arch Linux</a> <a href="/tags/BIOS/" style="font-size: 10px;">BIOS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/ESXi/" style="font-size: 10px;">ESXi</a> <a href="/tags/HTTP-2/" style="font-size: 10px;">HTTP/2</a> <a href="/tags/IC卡/" style="font-size: 10px;">IC卡</a> <a href="/tags/Nexus5/" style="font-size: 10px;">Nexus5</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/TP-Link/" style="font-size: 10px;">TP-Link</a> <a href="/tags/The-PostgreSQL-server-failed-to-start/" style="font-size: 10px;">The PostgreSQL server failed to start</a> <a href="/tags/VGA/" style="font-size: 10px;">VGA</a> <a href="/tags/VMware/" style="font-size: 10px;">VMware</a> <a href="/tags/app/" style="font-size: 10px;">app</a> <a href="/tags/arch/" style="font-size: 15px;">arch</a> <a href="/tags/bumblebee/" style="font-size: 10px;">bumblebee</a> <a href="/tags/certificate-transparency/" style="font-size: 10px;">certificate transparency</a> <a href="/tags/ckfinder/" style="font-size: 10px;">ckfinder</a> <a href="/tags/docker-hub/" style="font-size: 10px;">docker hub</a> <a href="/tags/em/" style="font-size: 10px;">em</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitcafe/" style="font-size: 10px;">gitcafe</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/kali/" style="font-size: 15px;">kali</a> <a href="/tags/kali手机版/" style="font-size: 10px;">kali手机版</a> <a href="/tags/kvm/" style="font-size: 10px;">kvm</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/menuconfig/" style="font-size: 10px;">menuconfig</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nethunter/" style="font-size: 15px;">nethunter</a> <a href="/tags/nginx-openssl/" style="font-size: 10px;">nginx.openssl</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openwrt/" style="font-size: 15px;">openwrt</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/postgresql/" style="font-size: 10px;">postgresql</a> <a href="/tags/px/" style="font-size: 10px;">px</a> <a href="/tags/qemu/" style="font-size: 10px;">qemu</a> <a href="/tags/rem/" style="font-size: 10px;">rem</a> <a href="/tags/tplink/" style="font-size: 10px;">tplink</a> <a href="/tags/windows/" style="font-size: 10px;">windows</a> <a href="/tags/xorg/" style="font-size: 10px;">xorg</a> <a href="/tags/东软/" style="font-size: 10px;">东软</a> <a href="/tags/体验/" style="font-size: 10px;">体验</a> <a href="/tags/像素/" style="font-size: 10px;">像素</a> <a href="/tags/分辨率/" style="font-size: 10px;">分辨率</a> <a href="/tags/区分/" style="font-size: 10px;">区分</a> <a href="/tags/单位/" style="font-size: 10px;">单位</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/双显卡/" style="font-size: 10px;">双显卡</a> <a href="/tags/固件/" style="font-size: 10px;">固件</a> <a href="/tags/备用机/" style="font-size: 10px;">备用机</a> <a href="/tags/失败/" style="font-size: 10px;">失败</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安装/" style="font-size: 20px;">安装</a> <a href="/tags/常见/" style="font-size: 10px;">常见</a> <a href="/tags/折腾/" style="font-size: 10px;">折腾</a> <a href="/tags/改装/" style="font-size: 10px;">改装</a> <a href="/tags/救砖/" style="font-size: 10px;">救砖</a> <a href="/tags/教程/" style="font-size: 10px;">教程</a> <a href="/tags/数字校园/" style="font-size: 10px;">数字校园</a> <a href="/tags/格式/" style="font-size: 10px;">格式</a> <a href="/tags/源码/" style="font-size: 10px;">源码</a> <a href="/tags/砖/" style="font-size: 10px;">砖</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/硬改/" style="font-size: 10px;">硬改</a> <a href="/tags/编程器/" style="font-size: 10px;">编程器</a> <a href="/tags/编译/" style="font-size: 10px;">编译</a> <a href="/tags/联想/" style="font-size: 10px;">联想</a> <a href="/tags/虚拟化/" style="font-size: 15px;">虚拟化</a> <a href="/tags/虚拟机/" style="font-size: 10px;">虚拟机</a> <a href="/tags/证书/" style="font-size: 10px;">证书</a> <a href="/tags/路由器/" style="font-size: 10px;">路由器</a> <a href="/tags/逆向分析/" style="font-size: 10px;">逆向分析</a> <a href="/tags/闭源/" style="font-size: 10px;">闭源</a> <a href="/tags/静态博客/" style="font-size: 10px;">静态博客</a> <a href="/tags/黑屏/" style="font-size: 10px;">黑屏</a>
-    </div>
-  </div>
+        <div class="post-excerpt">
+            
+            
 
-  
+            
+          
+
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li></ul>
-    </div>
-  </div>
+  </article>
+
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2016/11/13/QEMU初体验/">KVM/QEMU初体验</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Nov 13 2016
+      </time>
+    </header>
 
 
-  
+
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2017/02/24/源码编译OpenWrt固件笔记/">源码编译OpenWrt固件笔记</a>
-          </li>
-        
-          <li>
-            <a href="/2017/01/17/Arch-Linux-双显卡-安装-NVIDIA-闭源驱动/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
-          </li>
-        
-          <li>
-            <a href="/2016/11/13/QEMU初体验/">KVM/QEMU初体验</a>
-          </li>
-        
-          <li>
-            <a href="/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/">Arch Linux上使用ACR122U破解鲜奶卡</a>
-          </li>
-        
-          <li>
-            <a href="/2016/10/08/五太子不能退休，快当我的备用机！/">五太子不能退休，快当我的备用机！</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
+        <div class="post-excerpt">
+            
+            
 
-  
-</aside>
+            
+          
+
+    
+  </article>
+
         
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/">Arch Linux上使用ACR122U破解鲜奶卡</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Oct 25 2016
+      </time>
+    </header>
+
+
+
+    
+        <div class="post-excerpt">
+            
+            
+
+            
+          
+
+    
+  </article>
+
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2016/10/08/五太子不能退休，快当我的备用机！/">五太子不能退休，快当我的备用机！</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Oct 8 2016
+      </time>
+    </header>
+
+
+
+    
+        <div class="post-excerpt">
+            
+            
+
+            
+          
+
+    
+  </article>
+
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2016/06/20/联想Y410p-BIOS-拯救笔记/">联想Y410p BIOS 拯救笔记</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Jun 20 2016
+      </time>
+    </header>
+
+
+
+    
+        <div class="post-excerpt">
+            
+            
+
+            
+          
+
+    
+  </article>
+
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2016/05/09/给网站添加免费SSL证书/">给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议</a>
+        
+      </h1>
+
+      <time class="post-time">
+          May 9 2016
+      </time>
+    </header>
+
+
+
+    
+        <div class="post-excerpt">
+            
+            
+
+            
+          
+
+    
+  </article>
+
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2016/04/04/记第一次硬改路由器上Openwrt/">记第一次硬改路由器上Openwrt</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Apr 4 2016
+      </time>
+    </header>
+
+
+
+    
+        <div class="post-excerpt">
+            
+            
+
+            
+          
+
+    
+  </article>
+
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2016/03/11/Windows-安装-MySQL-5.7-Zip版/">Windows 安装 MySQL 5.7 Zip版</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Mar 11 2016
+      </time>
+    </header>
+
+
+
+    
+        <div class="post-excerpt">
+            
+            
+
+            
+          
+
+    
+  </article>
+
+        
+            
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2015/11/16/ESXi-5.5-折腾笔记一/">ESXi 5.5 折腾笔记 (一)</a>
+        
+      </h1>
+
+      <time class="post-time">
+          Nov 16 2015
+      </time>
+    </header>
+
+
+
+    
+        <div class="post-excerpt">
+            
+            
+
+            
+          
+
+    
+  </article>
+
+        
+        
+  <nav class="pagination">
+    
+    
+      <a class="next" href="/page/2/">
+        <span class="next-text">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+    </div>
+    <div id="secondary">
+    
+    <section id="about" class="widget-area">
+        <h3 class="widget-title"></h3>
+        
+    </section>
+
+
+    
+
+    
+    <section id="tags" class="widget-area widget_tags">
+        <h3 class="widget-title">Tags</h3>
+        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/静态博客/">静态博客</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VGA/">VGA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xorg/">xorg</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分辨率/">分辨率</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/双显卡/">双显卡</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/失败/">失败</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭源/">闭源</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/黑屏/">黑屏</a><span class="tag-list-count">1</span></li></ul>
+    </section>
+
+
+</div>
+
+
       </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2017 Gorgias<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2017
+    <span class="footer-author">Gorgias.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
     </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
     
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    
 
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
 
 
-<script src="/js/script.js"></script>
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-  </div>
-</body>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
 </html>
