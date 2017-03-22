@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>一次校园Android平台应用的逆向分析 | Gorgias&#39;blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="准备手机：Google Nexus 5
+工具：
+APK改之理（APK IDE）
+Package Capture  by  Grey Shirts
+分析文件：东软智慧校园平台（华东交大版）
+
+先来简单看一下这个应用
+
+
+我们使用这个账号登陆12username:20142110070202password:011211
+
+打开Package Capture进行抓包
+
+可以看到，登陆时，移动端向服务端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次校园Android平台应用的逆向分析">
+<meta property="og:url" content="https://gorgias.me/2015/06/14/一次校园Android平台应用的逆向分析/index.html">
+<meta property="og:site_name" content="Gorgias'blog">
+<meta property="og:description" content="准备手机：Google Nexus 5
+工具：
+APK改之理（APK IDE）
+Package Capture  by  Grey Shirts
+分析文件：东软智慧校园平台（华东交大版）
+
+先来简单看一下这个应用
+
+
+我们使用这个账号登陆12username:20142110070202password:011211
+
+打开Package Capture进行抓包
+
+可以看到，登陆时，移动端向服务端">
+<meta property="og:image" content="https://gorgias.me/uploads/2015/06/1.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2015/06/3.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2015/06/4.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2015/06/5.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2015/06/6.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2015/06/7.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2015/06/8.png">
+<meta property="og:image" content="https://gorgias.me/uploads/2015/06/9.png">
+<meta property="og:updated_time" content="2017-03-22T10:04:42.363Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一次校园Android平台应用的逆向分析">
+<meta name="twitter:description" content="准备手机：Google Nexus 5
+工具：
+APK改之理（APK IDE）
+Package Capture  by  Grey Shirts
+分析文件：东软智慧校园平台（华东交大版）
+
+先来简单看一下这个应用
+
+
+我们使用这个账号登陆12username:20142110070202password:011211
+
+打开Package Capture进行抓包
+
+可以看到，登陆时，移动端向服务端">
+<meta name="twitter:image" content="https://gorgias.me/uploads/2015/06/1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Gorgias&#39;blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Gorgias&#39;blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://gorgias.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-一次校园Android平台应用的逆向分析" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/14/一次校园Android平台应用的逆向分析/" class="article-date">
+  <time datetime="2015-06-14T01:35:26.000Z" itemprop="datePublished">2015-06-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/网络安全/">网络安全</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      一次校园Android平台应用的逆向分析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>手机：Google Nexus 5</p>
+<p>工具：</p>
+<p><a href="http://www.popotu.com/popo/apkide.html" target="_blank" rel="external">APK改之理（APK IDE）</a></p>
+<p><a href="https://play.google.com/store/apps/details?id=app.greyshirts.sslcapture" target="_blank" rel="external">Package Capture</a>  by  Grey Shirts</p>
+<p>分析文件：东软智慧校园平台（华东交大版）</p>
+<p><img src="https://gorgias.me/uploads/2015/06/1.png" alt="1"></p>
+<p>先来简单看一下这个应用</p>
+<p><img src="https://gorgias.me/uploads/2015/06/3.png" alt="3"></p>
+<p><img src="https://gorgias.me/uploads/2015/06/4.png" alt="4"></p>
+<p>我们使用这个账号登陆<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">username:20142110070202</div><div class="line">password:011211</div></pre></td></tr></table></figure></p>
+<p><img src="https://gorgias.me/uploads/2015/06/5.png" alt="5"></p>
+<p>打开Package Capture进行抓包</p>
+<p><img src="https://gorgias.me/uploads/2015/06/6.png" alt="6"></p>
+<p>可以看到，登陆时，移动端向服务端发送一个get请求</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">portal.ecjtu.edu.cn/dcp/service?action=0B38EC05B0815AFB59A1B6171DD8378702E08185784ADC47B213462CC176EBC626865CAE40CF998812E25558152958267F28B8BE59532A45283F2A274FA363CB685347955B330164CDEFA8228F011F4BB73C36BFF072DB9C</div></pre></td></tr></table></figure>
+<p>服务器返回一段json数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;&quot;message&quot;:&#123;&quot;map&quot;:&#123;&quot;UNIT_NAME&quot;:&quot;软件学院&quot;,&quot;USER_ID&quot;:&quot;20142110070202&quot;,&quot;UUID&quot;:&quot;201412019176&quot;,&quot;ID_TYPE&quot;:&quot;1&quot;,&quot;UNIT_ID&quot;:&quot;1021&quot;,&quot;USER_PASSWORD&quot;:&quot;?h?g?g+t.[=dR);:&quot;,&quot;USER_ACCOUNT&quot;:&quot;20142110070202&quot;,&quot;USER_SEX&quot;:&quot;1&quot;,&quot;IS_ACTIVE&quot;:&quot;1&quot;,&quot;BEGIN_TIME&quot;:&quot;20141219&quot;,&quot;USER_FULLNAME&quot;:&quot;史泰龙&quot;,&quot;USER_FIRST_LOGIN&quot;:&quot;0&quot;,&quot;USER_DESCRIPTION&quot;:&quot;史泰龙&quot;,&quot;USER_ACCOUNT_LOCKED&quot;:&quot;1&quot;,&quot;IS_MAIN_IDENTITY&quot;:&quot;1&quot;,&quot;END_TIME&quot;:&quot;20600606&quot;&#125;&#125;,&quot;success&quot;:true&#125;</div></pre></td></tr></table></figure>
+<p>可见移动端与服务端之间的传输是加密的</p>
+<p>用APK改之理打开这个app</p>
+<p><img src="https://gorgias.me/uploads/2015/06/7.png" alt="7"></p>
+<p>smali不易阅读，所以点击上面的“打开Java源码”。</p>
+<p><img src="https://gorgias.me/uploads/2015/06/8.png" alt="8"></p>
+<p>找到关键词 “/dcp/service?action=”<br>关键代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public final a a(String paramString1, String paramString2, String paramString3)</div><div class="line">&#123;</div><div class="line">String str = paramString3;</div><div class="line">if (paramString3 == null) &#123;</div><div class="line">str = &quot;&quot;;</div><div class="line">&#125;</div><div class="line">paramString1 = &quot;method=checkUserLoginIFS&amp;idNumber=&quot; + paramString1 + &quot;&amp;UserPwd=&quot; + paramString2 + &quot;&amp;logonIP=&quot; + str;</div><div class="line">try</div><div class="line">&#123;</div><div class="line">paramString2 = com.neusoft.edu.v6.ydszxy.hdjiaoda.appcenter.c.b.a.a(paramString1);</div><div class="line">paramString1 = paramString2;</div><div class="line">&#125;</div><div class="line">catch (Exception paramString2)</div><div class="line">&#123;</div><div class="line">for (;;)</div><div class="line">&#123;</div><div class="line">paramString2.printStackTrace();</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">paramString1 = &quot;/dcp/service?action=&quot; + paramString1;</div><div class="line">return (a)a(this.a.a(paramString1), new a());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过源码得知，paramString1本来是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">method=checkUserLoginIFS&amp;idNumber=xxx&amp;UserPwd=xxx&amp;logonIP=xxx</div></pre></td></tr></table></figure>
+<p>这样的形式，但是通过</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">com.neusoft.edu.v6.ydszxy.hdjiaoda.appcenter.c.b.a.a</div></pre></td></tr></table></figure>
+<p>方法的加密，变成了上面的get请求action后面的密文，跟踪到appcenter.c.b.a.a，</p>
+<p><img src="https://gorgias.me/uploads/2015/06/9.png" alt="9"></p>
+<p>关键代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">public static String a(String paramString)</div><div class="line">&#123;</div><div class="line">Object localObject = new DESedeKeySpec(&quot;neusofteducationplatform&quot;.getBytes());</div><div class="line">localObject = SecretKeyFactory.getInstance(&quot;desede&quot;).generateSecret((KeySpec)localObject);</div><div class="line">Cipher localCipher = Cipher.getInstance(&quot;desede/CBC/PKCS5Padding&quot;);</div><div class="line">localCipher.init(1, (Key)localObject, new IvParameterSpec(&quot;01234567&quot;.getBytes()));</div><div class="line">return a(localCipher.doFinal(paramString.getBytes(&quot;utf-8&quot;)));</div><div class="line">&#125;</div><div class="line"></div><div class="line">private static String a(byte[] paramArrayOfByte)</div><div class="line">&#123;</div><div class="line">String str1 = &quot;&quot;;</div><div class="line">int i = 0;</div><div class="line">for (;;)</div><div class="line">&#123;</div><div class="line">if (i &gt;= paramArrayOfByte.length) &#123;</div><div class="line">return str1;</div><div class="line">&#125;</div><div class="line">String str3 = Integer.toHexString(paramArrayOfByte[i] &amp; 0xFF);</div><div class="line">String str2 = str3;</div><div class="line">if (str3.length() == 1) &#123;</div><div class="line">str2 = &apos;0&apos; + str3;</div><div class="line">&#125;</div><div class="line">str1 = str1 + str2.toUpperCase();</div><div class="line">i += 1;</div><div class="line">&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过分析，可以得知加密方式是DESede(TripleDES，对每个数据块应用三次DES加密算法)，算法模式为CBC(每个平文块先与前一个密文块进行异或后，再进行加密。)，填充算法为PKCS5Padding(The number of bytes to be padded equals to “8 - numberOfBytes(clearText) mod 8”. So 1 to 8 bytes will be padded to the clear text data depending on the length of the clear text data.)，初始化向量(IV,Initialization Vector)为”01234567”,向量的作用其实就是salt。</p>
+<p>private static String a的作用应该是把bytes转成大写的Hex字符串。</p>
+<p>于是根据分析得到的加密思路写下解密算法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public static String desDecode(String encryptText, String pk)//encryptText为密文，pk为私钥，通过跟踪到的代码可知为&quot;neusofteducationplatform&quot;</div><div class="line">throws Exception</div><div class="line">&#123;</div><div class="line">java.security.Key deskey = null;</div><div class="line">DESedeKeySpec spec = new DESedeKeySpec(pk.getBytes());</div><div class="line">SecretKeyFactory keyfactory = SecretKeyFactory.getInstance(&quot;desede&quot;);</div><div class="line">deskey = keyfactory.generateSecret(spec);</div><div class="line">Cipher cipher = Cipher.getInstance(&quot;desede/CBC/PKCS5Padding&quot;);</div><div class="line">IvParameterSpec ips = new IvParameterSpec(&quot;01234567&quot;.getBytes());</div><div class="line">cipher.init(2, deskey, ips);</div><div class="line">System.out.println(encryptText);</div><div class="line">byte decryptData[] = cipher.doFinal(hexStringToBytes(encryptText));</div><div class="line">return new String(decryptData, &quot;utf-8&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static String Bytes2HexString(byte b[])</div><div class="line">&#123;</div><div class="line">String ret = &quot;&quot;;</div><div class="line">for(int i = 0; i &lt; b.length; i++)</div><div class="line">&#123;</div><div class="line">String hex = Integer.toHexString(b[i] &amp; 0xff);</div><div class="line">if(hex.length() == 1)</div><div class="line">hex = (new StringBuilder(String.valueOf(&apos;0&apos;))).append(hex).toString();</div><div class="line">ret = (new StringBuilder(String.valueOf(ret))).append(hex.toUpperCase()).toString();</div><div class="line">&#125;</div><div class="line"></div><div class="line">return ret;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>把之前get请求后面的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0B38EC05B0815AFB59A1B6171DD8378702E08185784ADC47B213462CC176EBC626865CAE40CF998812E25558152958267F28B8BE59532A45283F2A274FA363CB685347955B330164CDEFA8228F011F4BB73C36BFF072DB9C</div></pre></td></tr></table></figure>
+<p>扔进去解，得到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">method=checkUserLoginIFS&amp;idNumber=20142110070202&amp;UserPwd=011211&amp;logonIP=10.0.8.1</div></pre></td></tr></table></figure>
+<p>到这里可能有人会问，这里的UserPwd=011211与上面json的USER_PASSWORD=?h?g?g+t.[=dR);:不一样，这里是字符串加密后得到的数据。<br>附上解密代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public static String Decode(String varCode)</div><div class="line">    &#123;</div><div class="line">        String des = new String();</div><div class="line">        String strKey = new String();</div><div class="line">        if(varCode == null || varCode.length() == 0)</div><div class="line">            return &quot;&quot;;</div><div class="line">        strKey = &quot;zxcvbnm,./asdfghjkl;&apos;qwertyuiop[]\1234567890-=` ZXCVBNM&lt;&gt;?:LKJHGFDSAQWERTYUIOP&#123;&#125;|+_)(*&amp;^%$#@!~&quot;;</div><div class="line">        if(varCode.length() % 2 == 1)</div><div class="line">            varCode = (new StringBuilder(String.valueOf(varCode))).append(&quot;?&quot;).toString();</div><div class="line">        des = &quot;&quot;;</div><div class="line">        int n;</div><div class="line">        for(n = 0; n &lt;= varCode.length() / 2 - 1; n++) &#123; char b = varCode.charAt(n * 2); int a = strKey.indexOf(varCode.charAt(n * 2 + 1)); des = (new StringBuilder(String.valueOf(des))).append((char)(b ^ a)).toString(); System.out.println(des); &#125; n = des.indexOf(&apos;01&apos;); if(n &gt; 0)</div><div class="line">            return des.substring(0, n);</div><div class="line">        else</div><div class="line">            return des;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html" target="_blank" rel="external">Java Class Cipher</a><br><a href="http://blog.csdn.net/janronehoo/article/details/7590778" target="_blank" rel="external">Java加密技术（二）——DES数据加密算法(和加IV向量版)</a><br><a href="http://blog.163.com/kevinlee_2010/blog/static/16982082020113853451308/" target="_blank" rel="external">分组密码的工作模式</a><br><a href="http://www.herongyang.com/Cryptography/DES-JDK-What-Is-PKCS5Padding.html" target="_blank" rel="external">What Is PKCS5Padding?</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gorgias.me/2015/06/14/一次校园Android平台应用的逆向分析/" data-id="cj0ksyxhf000bk6bq7c6j3y11" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/app/">app</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/东软/">东软</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安卓/">安卓</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数字校园/">数字校园</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/逆向分析/">逆向分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/08/24/简单破解CKFinder3-for-PHP/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          简单破解CKFinder3 for PHP
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/02/对一些傻傻分不清楚的单位整理的笔记/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">对一些傻傻分不清楚的单位整理的笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenWrt/">OpenWrt</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/环境配置/">环境配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/硬件DIY/">硬件DIY</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络安全/">网络安全</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/虚拟化/">虚拟化</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计/">设计</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACR122U/">ACR122U</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Arch-Linux/">Arch Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BIOS/">BIOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ESXi/">ESXi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP-2/">HTTP/2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IC卡/">IC卡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nexus5/">Nexus5</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RFID/">RFID</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL/">SSL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TP-Link/">TP-Link</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/The-PostgreSQL-server-failed-to-start/">The PostgreSQL server failed to start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VGA/">VGA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VMware/">VMware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/app/">app</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bumblebee/">bumblebee</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/certificate-transparency/">certificate transparency</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ckfinder/">ckfinder</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-hub/">docker hub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/em/">em</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitcafe/">gitcafe</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kali/">kali</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kali手机版/">kali手机版</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/">kvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/menuconfig/">menuconfig</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nethunter/">nethunter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-openssl/">nginx.openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/px/">px</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/qemu/">qemu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rem/">rem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tplink/">tplink</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/">windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xorg/">xorg</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/东软/">东软</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/体验/">体验</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/像素/">像素</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分辨率/">分辨率</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/区分/">区分</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/单位/">单位</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/双显卡/">双显卡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/固件/">固件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备用机/">备用机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/失败/">失败</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安卓/">安卓</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安装/">安装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/常见/">常见</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/折腾/">折腾</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/改装/">改装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/救砖/">救砖</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/教程/">教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数字校园/">数字校园</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/格式/">格式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/砖/">砖</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/破解/">破解</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/硬改/">硬改</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程器/">编程器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译/">编译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/联想/">联想</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟机/">虚拟机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/证书/">证书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/路由器/">路由器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/逆向分析/">逆向分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭源/">闭源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/静态博客/">静态博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/黑屏/">黑屏</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ACR122U/" style="font-size: 10px;">ACR122U</a> <a href="/tags/Arch-Linux/" style="font-size: 10px;">Arch Linux</a> <a href="/tags/BIOS/" style="font-size: 10px;">BIOS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/ESXi/" style="font-size: 10px;">ESXi</a> <a href="/tags/HTTP-2/" style="font-size: 10px;">HTTP/2</a> <a href="/tags/IC卡/" style="font-size: 10px;">IC卡</a> <a href="/tags/Nexus5/" style="font-size: 10px;">Nexus5</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/TP-Link/" style="font-size: 10px;">TP-Link</a> <a href="/tags/The-PostgreSQL-server-failed-to-start/" style="font-size: 10px;">The PostgreSQL server failed to start</a> <a href="/tags/VGA/" style="font-size: 10px;">VGA</a> <a href="/tags/VMware/" style="font-size: 10px;">VMware</a> <a href="/tags/app/" style="font-size: 10px;">app</a> <a href="/tags/arch/" style="font-size: 15px;">arch</a> <a href="/tags/bumblebee/" style="font-size: 10px;">bumblebee</a> <a href="/tags/certificate-transparency/" style="font-size: 10px;">certificate transparency</a> <a href="/tags/ckfinder/" style="font-size: 10px;">ckfinder</a> <a href="/tags/docker-hub/" style="font-size: 10px;">docker hub</a> <a href="/tags/em/" style="font-size: 10px;">em</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitcafe/" style="font-size: 10px;">gitcafe</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/kali/" style="font-size: 15px;">kali</a> <a href="/tags/kali手机版/" style="font-size: 10px;">kali手机版</a> <a href="/tags/kvm/" style="font-size: 10px;">kvm</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/menuconfig/" style="font-size: 10px;">menuconfig</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nethunter/" style="font-size: 15px;">nethunter</a> <a href="/tags/nginx-openssl/" style="font-size: 10px;">nginx.openssl</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openwrt/" style="font-size: 15px;">openwrt</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/postgresql/" style="font-size: 10px;">postgresql</a> <a href="/tags/px/" style="font-size: 10px;">px</a> <a href="/tags/qemu/" style="font-size: 10px;">qemu</a> <a href="/tags/rem/" style="font-size: 10px;">rem</a> <a href="/tags/tplink/" style="font-size: 10px;">tplink</a> <a href="/tags/windows/" style="font-size: 10px;">windows</a> <a href="/tags/xorg/" style="font-size: 10px;">xorg</a> <a href="/tags/东软/" style="font-size: 10px;">东软</a> <a href="/tags/体验/" style="font-size: 10px;">体验</a> <a href="/tags/像素/" style="font-size: 10px;">像素</a> <a href="/tags/分辨率/" style="font-size: 10px;">分辨率</a> <a href="/tags/区分/" style="font-size: 10px;">区分</a> <a href="/tags/单位/" style="font-size: 10px;">单位</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/双显卡/" style="font-size: 10px;">双显卡</a> <a href="/tags/固件/" style="font-size: 10px;">固件</a> <a href="/tags/备用机/" style="font-size: 10px;">备用机</a> <a href="/tags/失败/" style="font-size: 10px;">失败</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安装/" style="font-size: 20px;">安装</a> <a href="/tags/常见/" style="font-size: 10px;">常见</a> <a href="/tags/折腾/" style="font-size: 10px;">折腾</a> <a href="/tags/改装/" style="font-size: 10px;">改装</a> <a href="/tags/救砖/" style="font-size: 10px;">救砖</a> <a href="/tags/教程/" style="font-size: 10px;">教程</a> <a href="/tags/数字校园/" style="font-size: 10px;">数字校园</a> <a href="/tags/格式/" style="font-size: 10px;">格式</a> <a href="/tags/源码/" style="font-size: 10px;">源码</a> <a href="/tags/砖/" style="font-size: 10px;">砖</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/硬改/" style="font-size: 10px;">硬改</a> <a href="/tags/编程器/" style="font-size: 10px;">编程器</a> <a href="/tags/编译/" style="font-size: 10px;">编译</a> <a href="/tags/联想/" style="font-size: 10px;">联想</a> <a href="/tags/虚拟化/" style="font-size: 15px;">虚拟化</a> <a href="/tags/虚拟机/" style="font-size: 10px;">虚拟机</a> <a href="/tags/证书/" style="font-size: 10px;">证书</a> <a href="/tags/路由器/" style="font-size: 10px;">路由器</a> <a href="/tags/逆向分析/" style="font-size: 10px;">逆向分析</a> <a href="/tags/闭源/" style="font-size: 10px;">闭源</a> <a href="/tags/静态博客/" style="font-size: 10px;">静态博客</a> <a href="/tags/黑屏/" style="font-size: 10px;">黑屏</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/02/24/源码编译OpenWrt固件笔记/">源码编译OpenWrt固件笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2017/01/17/Arch-Linux-双显卡-安装-NVIDIA-闭源驱动/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/13/QEMU初体验/">KVM/QEMU初体验</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/">Arch Linux上使用ACR122U破解鲜奶卡</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/08/五太子不能退休，快当我的备用机！/">五太子不能退休，快当我的备用机！</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Gorgias<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

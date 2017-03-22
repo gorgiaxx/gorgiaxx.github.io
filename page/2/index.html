@@ -3,16 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Hexo</title>
+  <title>Gorgias&#39;blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/page/2/index.html">
-<meta property="og:site_name" content="Hexo">
+  <meta name="description" content="人终究会被其年少不可得之物困扰一生">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gorgias'blog">
+<meta property="og:url" content="https://gorgias.me/page/2/index.html">
+<meta property="og:site_name" content="Gorgias'blog">
+<meta property="og:description" content="人终究会被其年少不可得之物困扰一生">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="Gorgias'blog">
+<meta name="twitter:description" content="人终究会被其年少不可得之物困扰一生">
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="Gorgias&#39;blog" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -33,7 +36,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">Gorgias&#39;blog</a>
       </h1>
       
     </div>
@@ -48,12 +51,12 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://gorgias.me"></form>
       </div>
     </div>
   </div>
@@ -61,14 +64,14 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-e5-9c-a8gitcafe-e4-b8-8a-e9-83-a8-e7-bd-b2hexo-e5-8d-9a-e5-ae-a2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-在GitCafe上部署Hexo博客" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/11/01/e5-9c-a8gitcafe-e4-b8-8a-e9-83-a8-e7-bd-b2hexo-e5-8d-9a-e5-ae-a2/" class="article-date">
+    <a href="/2015/11/01/在GitCafe上部署Hexo博客/" class="article-date">
   <time datetime="2015-11-01T10:42:01.000Z" itemprop="datePublished">2015-11-01</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>►<a class="article-category-link" href="/categories/技术宅/未分类/">未分类</a>
+    <a class="article-category-link" href="/categories/环境配置/">环境配置</a>
   </div>
 
   </div>
@@ -79,7 +82,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/11/01/e5-9c-a8gitcafe-e4-b8-8a-e9-83-a8-e7-bd-b2hexo-e5-8d-9a-e5-ae-a2/">在GitCafe上部署Hexo博客</a>
+      <a class="article-title" href="/2015/11/01/在GitCafe上部署Hexo博客/">在GitCafe上部署Hexo博客</a>
     </h1>
   
 
@@ -99,249 +102,77 @@
 <li><a href="https://docs.npmjs.com/" target="_blank" rel="external">npm</a></li>
 <li><a href="https://github.com/hexojs/hexo/wiki" target="_blank" rel="external">Hexo resources</a></li>
 </ul>
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><h3 id="安装git"><a href="#安装git" class="headerlink" title="安装git"></a>安装git</h3><p>首先打开git安装包<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/git1.png" alt="git1"><br>按照自己需求选择组件<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/git2.png" alt="git2"><br>选择命令行的风格<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/git3.png" alt="git3"><br>选择文本的结束符,参考 <a href="http://www.tuicool.com/articles/IJjQVb" target="_blank" rel="external">CRLF和LF</a><br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/git4.png" alt="git4"><br>使用MinTTY作为终端<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/git5.png" alt="git5"><br>开启系统缓存，解决运行缓慢的问题</p>
-<h3 id="配置NodeJS环境变量"><a href="#配置NodeJS环境变量" class="headerlink" title="配置NodeJS环境变量"></a>配置NodeJS环境变量</h3><p>请使用4.x.x版本,5.x.x会出错<br>在CMD执行npm -v,如果如下显示，则说明环境变量配置成功，反之则需要重新配置环境变量<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/nodejs3.png" alt="nodejs3"><br>下载安装nodejs,找到nodejs安装目录<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/nodejs1.png" alt="nodejs1"><br>我这里是<code>C:Program Filesnodejs</code><br>右键我的电脑，属性，高级，环境变量<br>找到系统变量的Path，点击编辑，先看看有没有nodejs的路径<br>如果没有，加上<code>;C:Program Filesnodejs</code><br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/nodejs2.png" alt="nodejs2"></p>
-<h2 id="注册Gitcafe账号"><a href="#注册Gitcafe账号" class="headerlink" title="注册Gitcafe账号"></a>注册Gitcafe账号</h2><p>在username输入一个你喜欢的英文名<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gitcafe1.png" alt="gitcafe1"><br>注册完后可以看到用户控制面板，点击配置SSH Public Key<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gitcafe2.png" alt="gitcafe2"><br>我们按照第一步，配置SSH公钥<br>先在桌面点击右键，选择Git Bash Here，执行下面这条命令，后面是你注册的邮箱：</p>
-<pre><code>ssh-keygen -t rsa -C &quot;root@gorgiaxx.com&quot; -f ~/.ssh/gitcafe
-`&lt;/pre&gt;
-
-会提示输入密码，输入路两遍密码后，SSH密钥就生成成功了
-![gitcafe3](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gitcafe3.png)
-接下来到用户目录下的.ssh文件夹`C:UsersPC013evil.ssh`PC013evil是我的Windows的用户名。
-新建一个无扩展名的文本文件名字为config，里面输入：
-
-&lt;pre&gt;`Host gitcafe.com www.gitcafe.com
-  IdentityFile ~/.ssh/gitcafe
-`&lt;/pre&gt;
-
-![gitcafe4](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gitcafe4.png)
-切换到Gitcafe的页面`https://gitcafe.com/account/public_keys/new`
-![gitcafe5](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gitcafe5.png)
-标题随便起一个，Key就填写gitcafe.pub里的内容，密码填写之前配置SSH公钥的密码
-接着到终端里测试下是否成功，会提示输入密码：
-
-&lt;pre&gt;`ssh -vT git@gitcafe.com
-`&lt;/pre&gt;
-
-然后到用户控制面板，点Create a new project`https://gitcafe.com/projects/new`
-Project name与用户名相同，点击创建
-![gitcafe6](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gitcafe6.png)
-接下来选择右边的SSH，复制链接`git@gitcafe.com:Drizzle/Drizzle.git`
-![gitcafe7](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gitcafe7.png)
-
-## 安装配置hexo
-
-在管理员模式下的CMD执行：
-
-&lt;pre&gt;`npm install -g hexo-cli
-`&lt;/pre&gt;
-
--g是参数，表示全局安装hexo，这样你在任何路径都能执行hexo命令。cli代表command-line interface，命令行界面的意思。
-
-Tips:如果安装过程缓慢，可以使用淘宝镜像
-
-&lt;pre&gt;`npm install -g cnpm --registry=https://registry.npm.taobao.org
-`&lt;/pre&gt;
-
-然后每次使用都在npm前面加上c
-
-&lt;pre&gt;`cnpm install -g hexo-cli
-`&lt;/pre&gt;
-
-新建一个文件夹，在里面右键Git Bash Here，弹出MINGW的终端
-![hexo1](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo1.png)
-在此文件夹初始化hexo
-
-&lt;pre&gt;`hexo init
-`&lt;/pre&gt;
-
-![hexo2](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo2.png)
-初始化hexo后，提示执行
-
-&lt;pre&gt;`npm install
-`&lt;/pre&gt;
-
-可以看到已经生成了一些文件
-![hexo3](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo3.png)
-
-&lt;pre&gt;`.
-├── _config.yml         hexo配置文件
-├── package.json        依赖包列表
-├── node_modules        nodejs模块目录
-├── scaffolds           工具模板目录
-├── scripts             功能增强脚本
-├── source              博客内容文件
-|   ├── _drafts         草稿目录
-|   └── _posts          文章目录
-└── themes              主题目录
-`&lt;/pre&gt;
-
-现在用编辑器打开_config.yml，找到最下面的deploy，不要忘记每个冒号后面都有空格。
-这些内容的填写在官网都有说明，部署类型git，repo是远程仓库，填写之前复制的内容。
-
-&lt;pre&gt;`deploy:
-  type: git
-  repo: git@gitcafe.com:Drizzle/Drizzle.git
-`&lt;/pre&gt;
-
-要用git方式部署hexo的话，需要安装一个插件，这里提供两种安装方法。
-第一种，直接安装，后面加--save安装的同时,将信息写入package.json
-
-&lt;pre&gt;`npm install hexo-deployer-git --save
-`&lt;/pre&gt;
-
-第二种，在Package.json里加上这个插件依赖`hexo-deployer-git`
-![hexo4](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo4.png)
-然后执行
-
-&lt;pre&gt;`npm install
-`&lt;/pre&gt;
-
-这里使用第一种，安装完成
-![hexo5](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo5.png)
-接下来预览一下博客
-输入
-
-&lt;pre&gt;`hexo server -i 127.0.0.1 -p 80
-`&lt;/pre&gt;
-
-浏览器打开[http://127.0.0.1](http://127.0.0.1)，成功访问
-![hexo6](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo6-1024x629.png)
-每次要预览加参数很麻烦，可以到nodejs模块目录修改配置
-
-&lt;pre&gt;`./node_modules/hexo-server/index.js
-`&lt;/pre&gt;
-
-修改为：
-
-&lt;pre&gt;`hexo.config.server = assign({
-  port: 80,
-  log: false,
-  ip: &apos;127.0.0.1&apos;
-}, hexo.config.server);
-`&lt;/pre&gt;
-
-接下来预览就不用加参数了。hexo的命令可以简化,server可以用s表示
-
-&lt;pre&gt;`hexo s
-`&lt;/pre&gt;
-
-![hexo7](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo7.png)
-测试成功之后我们生成静态文件，生成后在`./public`里，准备部署
-
-&lt;pre&gt;`hexo generate
-`&lt;/pre&gt;
-
-也可以用
-
-&lt;pre&gt;`hexo g
-`&lt;/pre&gt;
-
-生成之后，开始部署
-
-&lt;pre&gt;`hexo deploy
-`&lt;/pre&gt;
-
-也可以用
-
-&lt;pre&gt;`hexo d
-`&lt;/pre&gt;
-
-提示这个，是远端服务器ssh配置问题，我们不管，填yes，然后输入密码
-![hexo8](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo8.png)
-部署成功
-![hexo9](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo9.png)
-现在打开 `http://drizzle.gitcafe.io/`
-![hexo10](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/hexo10-1024x533.png)
-
-## 写博客
-
-执行`hexo n &quot;title&quot;`,新建一篇以title为标题的空文章。
-
-&lt;pre&gt;`$ hexo n &quot;title&quot;
-INFO  Created: C:wwwMyBlogsource_poststitle.md
-`&lt;/pre&gt;
-
-可以看到生成了一个title.md，博客内容是用markdown语法写的。可以使用sublime的插件，也可以在线编辑，还有专门的编辑器
-
-## Git工具的简单使用
-
-有的时候因为git工具版本问题，执行deploy后，不能成功部署，这时候我们就要手动部署
-在./.deploy_git文件夹里面就是git的工程目录，关于git，可以到廖雪峰的博客学习[git教程](http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000)
-在此文件夹右键Git Bash Here
-我们先添加远程仓库
-
-&lt;pre&gt;`git remote add origin git@gitcafe.com:Drizzle/Drizzle.git
-`&lt;/pre&gt;
-
-先将远端所有文件取回到本地，解决一些冲突问题
-
-&lt;pre&gt;`git fetch --all
-`&lt;/pre&gt;
-
-回显，已经把分支给更新了
-
-&lt;pre&gt;`$ git fetch --all
-Fetching origin
-Enter passphrase for key &apos;/c/Users/PC013evil/.ssh/gitcafe&apos;:
-From gitcafe.com:Drizzle/Drizzle
- * [new branch]      gitcafe-pages -&amp;gt; origin/gitcafe-pages
-`&lt;/pre&gt;
-
-切换到gitcafe-pages分支
-
-&lt;pre&gt;`git branch gitcafe-pages
-`&lt;/pre&gt;
-
-不做任何合并处理，将HEAD指向刚从远程仓库同步下来的版本
-
-&lt;pre&gt;`git reset --hard origin/gitcafe-pages
-`&lt;/pre&gt;
-
-回显
-
-&lt;pre&gt;`$ git reset --hard origin/gitcafe-pages
-HEAD is now at d202356 Site updated: 2015-11-01 14:22:41
-`&lt;/pre&gt;
-
-比如我要修改index.html的标题的内容
-![gituse1](https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gituse1.png)
-保存，执行`git add ./`
-
-&lt;pre&gt;`$ git add ./
-warning: LF will be replaced by CRLF in index.html.
-The file will have its original line endings in your working directory.
-`&lt;/pre&gt;
-
-提交到本地仓库，-m表示注释
-
-&lt;pre&gt;`$ git commit -m &quot;test&quot;
-[master warning: LF will be replaced by CRLF in index.html.
-The file will have its original line endings in your working directory.
-bf2c13f] test
-warning: LF will be replaced by CRLF in index.html.
-The file will have its original line endings in your working directory.
- 1 file changed, 1 insertion(+), 1 deletion(-)
-`&lt;/pre&gt;
-
-最后提交到远端仓库
-
-&lt;pre&gt;`$ git push -u origin gitcafe-pages
-Enter passphrase for key &apos;/c/Users/PC013evil/.ssh/gitcafe&apos;:
-Counting objects: 3, done.
-Delta compression using up to 4 threads.
-Compressing objects: 100% (3/3), done.
-Writing objects: 100% (3/3), 280 bytes | 0 bytes/s, done.
-Total 3 (delta 2), reused 0 (delta 0)
-To git@gitcafe.com:Drizzle/Drizzle.git
-   d202356..bf2c13f  gitcafe-pages -&amp;gt; gitcafe-pages
-Branch gitcafe-pages set up to track remote branch gitcafe-pages from origin.
-</code></pre><p>刷新页面<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/11/gituse2.png" alt="gituse2"><br>标题已经改变</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><h3 id="安装git"><a href="#安装git" class="headerlink" title="安装git"></a>安装git</h3><p>首先打开git安装包<br><img src="https://gorgias.me/uploads/2015/11/git1.png" alt="git1"><br>按照自己需求选择组件<br><img src="https://gorgias.me/uploads/2015/11/git2.png" alt="git2"><br>选择命令行的风格<br><img src="https://gorgias.me/uploads/2015/11/git3.png" alt="git3"><br>选择文本的结束符,参考 <a href="http://www.tuicool.com/articles/IJjQVb" target="_blank" rel="external">CRLF和LF</a><br><img src="https://gorgias.me/uploads/2015/11/git4.png" alt="git4"><br>使用MinTTY作为终端<br><img src="https://gorgias.me/uploads/2015/11/git5.png" alt="git5"><br>开启系统缓存，解决运行缓慢的问题</p>
+<h3 id="配置NodeJS环境变量"><a href="#配置NodeJS环境变量" class="headerlink" title="配置NodeJS环境变量"></a>配置NodeJS环境变量</h3><p>请使用4.x.x版本,5.x.x会出错<br>在CMD执行npm -v,如果如下显示，则说明环境变量配置成功，反之则需要重新配置环境变量<br><img src="https://gorgias.me/uploads/2015/11/nodejs3.png" alt="nodejs3"><br>下载安装nodejs,找到nodejs安装目录<br><img src="https://gorgias.me/uploads/2015/11/nodejs1.png" alt="nodejs1"><br>我这里是<code>C:Program Filesnodejs</code><br>右键我的电脑，属性，高级，环境变量<br>找到系统变量的Path，点击编辑，先看看有没有nodejs的路径<br>如果没有，加上<code>;C:Program Filesnodejs</code><br><img src="https://gorgias.me/uploads/2015/11/nodejs2.png" alt="nodejs2"></p>
+<h2 id="注册Gitcafe账号"><a href="#注册Gitcafe账号" class="headerlink" title="注册Gitcafe账号"></a>注册Gitcafe账号</h2><p>在username输入一个你喜欢的英文名<br><img src="https://gorgias.me/uploads/2015/11/gitcafe1.png" alt="gitcafe1"><br>注册完后可以看到用户控制面板，点击配置SSH Public Key<br><img src="https://gorgias.me/uploads/2015/11/gitcafe2.png" alt="gitcafe2"><br>我们按照第一步，配置SSH公钥<br>先在桌面点击右键，选择Git Bash Here，执行下面这条命令，后面是你注册的邮箱：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh-keygen -t rsa -C &quot;root@gorgiaxx.com&quot; -f ~/.ssh/gitcafe</div></pre></td></tr></table></figure></p>
+<p>会提示输入密码，输入路两遍密码后，SSH密钥就生成成功了<br><img src="https://gorgias.me/uploads/2015/11/gitcafe3.png" alt="gitcafe3"><br>接下来到用户目录下的.ssh文件夹<code>C:UsersPC013evil.ssh</code>PC013evil是我的Windows的用户名。<br>新建一个无扩展名的文本文件名字为config，里面输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">`Host gitcafe.com www.gitcafe.com</div><div class="line">  IdentityFile ~/.ssh/gitcafe</div></pre></td></tr></table></figure>
+<p><img src="https://gorgias.me/uploads/2015/11/gitcafe4.png" alt="gitcafe4"><br>切换到Gitcafe的页面<code>https://gitcafe.com/account/public_keys/new</code><br><img src="https://gorgias.me/uploads/2015/11/gitcafe5.png" alt="gitcafe5"><br>标题随便起一个，Key就填写gitcafe.pub里的内容，密码填写之前配置SSH公钥的密码<br>接着到终端里测试下是否成功，会提示输入密码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`ssh -vT git@gitcafe.com</div></pre></td></tr></table></figure>
+<p>然后到用户控制面板，点Create a new project<code>https://gitcafe.com/projects/new</code><br>Project name与用户名相同，点击创建<br><img src="https://gorgias.me/uploads/2015/11/gitcafe6.png" alt="gitcafe6"><br>接下来选择右边的SSH，复制链接<code>git@gitcafe.com:Drizzle/Drizzle.git</code><br><img src="https://gorgias.me/uploads/2015/11/gitcafe7.png" alt="gitcafe7"></p>
+<h2 id="安装配置hexo"><a href="#安装配置hexo" class="headerlink" title="安装配置hexo"></a>安装配置hexo</h2><p>在管理员模式下的CMD执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`npm install -g hexo-cli</div></pre></td></tr></table></figure>
+<p>-g是参数，表示全局安装hexo，这样你在任何路径都能执行hexo命令。cli代表command-line interface，命令行界面的意思。</p>
+<p>Tips:如果安装过程缓慢，可以使用淘宝镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`npm install -g cnpm --registry=https://registry.npm.taobao.org</div></pre></td></tr></table></figure>
+<p>然后每次使用都在npm前面加上c</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`cnpm install -g hexo-cli</div></pre></td></tr></table></figure>
+<p>新建一个文件夹，在里面右键Git Bash Here，弹出MINGW的终端<br><img src="https://gorgias.me/uploads/2015/11/hexo1.png" alt="hexo1"><br>在此文件夹初始化hexo</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`hexo init</div></pre></td></tr></table></figure>
+<p><img src="https://gorgias.me/uploads/2015/11/hexo2.png" alt="hexo2"><br>初始化hexo后，提示执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`npm install</div></pre></td></tr></table></figure>
+<p>可以看到已经生成了一些文件<br><img src="https://gorgias.me/uploads/2015/11/hexo3.png" alt="hexo3"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">`.</div><div class="line">├── _config.yml         hexo配置文件</div><div class="line">├── package.json        依赖包列表</div><div class="line">├── node_modules        nodejs模块目录</div><div class="line">├── scaffolds           工具模板目录</div><div class="line">├── scripts             功能增强脚本</div><div class="line">├── source              博客内容文件</div><div class="line">|   ├── _drafts         草稿目录</div><div class="line">|   └── _posts          文章目录</div><div class="line">└── themes              主题目录</div></pre></td></tr></table></figure>
+<p>现在用编辑器打开_config.yml，找到最下面的deploy，不要忘记每个冒号后面都有空格。<br>这些内容的填写在官网都有说明，部署类型git，repo是远程仓库，填写之前复制的内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">`deploy:</div><div class="line">  type: git</div><div class="line">  repo: git@gitcafe.com:Drizzle/Drizzle.git</div></pre></td></tr></table></figure>
+<p>要用git方式部署hexo的话，需要安装一个插件，这里提供两种安装方法。<br>第一种，直接安装，后面加–save安装的同时,将信息写入package.json</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>第二种，在Package.json里加上这个插件依赖<code>hexo-deployer-git</code><br><img src="https://gorgias.me/uploads/2015/11/hexo4.png" alt="hexo4"><br>然后执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`npm install</div></pre></td></tr></table></figure>
+<p>这里使用第一种，安装完成<br><img src="https://gorgias.me/uploads/2015/11/hexo5.png" alt="hexo5"><br>接下来预览一下博客<br>输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`hexo server -i 127.0.0.1 -p 80</div></pre></td></tr></table></figure>
+<p>浏览器打开<a href="http://127.0.0.1" target="_blank" rel="external">http://127.0.0.1</a>，成功访问<br><img src="https://gorgias.me/uploads/2015/11/hexo6-1024x629.png" alt="hexo6"><br>每次要预览加参数很麻烦，可以到nodejs模块目录修改配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`./node_modules/hexo-server/index.js</div></pre></td></tr></table></figure>
+<p>修改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">`hexo.config.server = assign(&#123;</div><div class="line">  port: 80,</div><div class="line">  log: false,</div><div class="line">  ip: &apos;127.0.0.1&apos;</div><div class="line">&#125;, hexo.config.server);</div></pre></td></tr></table></figure>
+<p>接下来预览就不用加参数了。hexo的命令可以简化,server可以用s表示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`hexo s</div></pre></td></tr></table></figure>
+<p><img src="https://gorgias.me/uploads/2015/11/hexo7.png" alt="hexo7"><br>测试成功之后我们生成静态文件，生成后在<code>./public</code>里，准备部署</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`hexo generate</div></pre></td></tr></table></figure>
+<p>也可以用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`hexo g</div></pre></td></tr></table></figure>
+<p>生成之后，开始部署</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`hexo deploy</div></pre></td></tr></table></figure>
+<p>也可以用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`hexo d</div></pre></td></tr></table></figure>
+<p>提示这个，是远端服务器ssh配置问题，我们不管，填yes，然后输入密码<br><img src="https://gorgias.me/uploads/2015/11/hexo8.png" alt="hexo8"><br>部署成功<br><img src="https://gorgias.me/uploads/2015/11/hexo9.png" alt="hexo9"><br>现在打开 <code>http://drizzle.gitcafe.io/</code><br><img src="https://gorgias.me/uploads/2015/11/hexo10-1024x533.png" alt="hexo10"></p>
+<h2 id="写博客"><a href="#写博客" class="headerlink" title="写博客"></a>写博客</h2><p>执行<code>hexo n &quot;title&quot;</code>,新建一篇以title为标题的空文章。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">`$ hexo n &quot;title&quot;</div><div class="line">INFO  Created: C:wwwMyBlogsource_poststitle.md</div></pre></td></tr></table></figure>
+<p>可以看到生成了一个title.md，博客内容是用markdown语法写的。可以使用sublime的插件，也可以在线编辑，还有专门的编辑器</p>
+<h2 id="Git工具的简单使用"><a href="#Git工具的简单使用" class="headerlink" title="Git工具的简单使用"></a>Git工具的简单使用</h2><p>有的时候因为git工具版本问题，执行deploy后，不能成功部署，这时候我们就要手动部署<br>在./.deploy_git文件夹里面就是git的工程目录，关于git，可以到廖雪峰的博客学习<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000" target="_blank" rel="external">git教程</a><br>在此文件夹右键Git Bash Here<br>我们先添加远程仓库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`git remote add origin git@gitcafe.com:Drizzle/Drizzle.git</div></pre></td></tr></table></figure>
+<p>先将远端所有文件取回到本地，解决一些冲突问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`git fetch --all</div></pre></td></tr></table></figure>
+<p>回显，已经把分支给更新了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">`$ git fetch --all</div><div class="line">Fetching origin</div><div class="line">Enter passphrase for key &apos;/c/Users/PC013evil/.ssh/gitcafe&apos;:</div><div class="line">From gitcafe.com:Drizzle/Drizzle</div><div class="line"> * [new branch]      gitcafe-pages -&gt; origin/gitcafe-pages</div></pre></td></tr></table></figure>
+<p>切换到gitcafe-pages分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`git branch gitcafe-pages</div></pre></td></tr></table></figure>
+<p>不做任何合并处理，将HEAD指向刚从远程仓库同步下来的版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">`git reset --hard origin/gitcafe-pages</div></pre></td></tr></table></figure>
+<p>回显</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">`$ git reset --hard origin/gitcafe-pages</div><div class="line">HEAD is now at d202356 Site updated: 2015-11-01 14:22:41</div></pre></td></tr></table></figure>
+<p>比如我要修改index.html的标题的内容<br><img src="https://gorgias.me/uploads/2015/11/gituse1.png" alt="gituse1"><br>保存，执行<code>git add ./</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">`$ git add ./</div><div class="line">warning: LF will be replaced by CRLF in index.html.</div><div class="line">The file will have its original line endings in your working directory.</div></pre></td></tr></table></figure>
+<p>提交到本地仓库，-m表示注释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">`$ git commit -m &quot;test&quot;</div><div class="line">[master warning: LF will be replaced by CRLF in index.html.</div><div class="line">The file will have its original line endings in your working directory.</div><div class="line">bf2c13f] test</div><div class="line">warning: LF will be replaced by CRLF in index.html.</div><div class="line">The file will have its original line endings in your working directory.</div><div class="line"> 1 file changed, 1 insertion(+), 1 deletion(-)</div></pre></td></tr></table></figure>
+<p>最后提交到远端仓库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">`$ git push -u origin gitcafe-pages</div><div class="line">Enter passphrase for key &apos;/c/Users/PC013evil/.ssh/gitcafe&apos;:</div><div class="line">Counting objects: 3, done.</div><div class="line">Delta compression using up to 4 threads.</div><div class="line">Compressing objects: 100% (3/3), done.</div><div class="line">Writing objects: 100% (3/3), 280 bytes | 0 bytes/s, done.</div><div class="line">Total 3 (delta 2), reused 0 (delta 0)</div><div class="line">To git@gitcafe.com:Drizzle/Drizzle.git</div><div class="line">   d202356..bf2c13f  gitcafe-pages -&gt; gitcafe-pages</div><div class="line">Branch gitcafe-pages set up to track remote branch gitcafe-pages from origin.</div></pre></td></tr></table></figure>
+<p>刷新页面<br><img src="https://gorgias.me/uploads/2015/11/gituse2.png" alt="gituse2"><br>标题已经改变</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/11/01/e5-9c-a8gitcafe-e4-b8-8a-e9-83-a8-e7-bd-b2hexo-e5-8d-9a-e5-ae-a2/" data-id="cj0km542o000b5hbqy23ff4l4" class="article-share-link">Share</a>
+      <a data-url="https://gorgias.me/2015/11/01/在GitCafe上部署Hexo博客/" data-id="cj0ksyxhm000fk6bqy3pgejjh" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gitcafe/">gitcafe</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nodejs/">nodejs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/教程/">教程</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/静态博客/">静态博客</a></li></ul>
@@ -353,14 +184,14 @@ Branch gitcafe-pages set up to track remote branch gitcafe-pages from origin.
 
 
   
-    <article id="post-e5-b0-8f-e9-b2-b8-e9-b1-bcdocker-e6-96-b0-e6-89-8b-e5-ad-a6-e4-b9-a0-e7-ac-94-e8-ae-b0" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-小鲸鱼Docker新手学习笔记" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/08/29/e5-b0-8f-e9-b2-b8-e9-b1-bcdocker-e6-96-b0-e6-89-8b-e5-ad-a6-e4-b9-a0-e7-ac-94-e8-ae-b0/" class="article-date">
+    <a href="/2015/08/29/小鲸鱼Docker新手学习笔记/" class="article-date">
   <time datetime="2015-08-28T17:09:37.000Z" itemprop="datePublished">2015-08-29</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>
+    <a class="article-category-link" href="/categories/虚拟化/">虚拟化</a>
   </div>
 
   </div>
@@ -371,7 +202,7 @@ Branch gitcafe-pages set up to track remote branch gitcafe-pages from origin.
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/29/e5-b0-8f-e9-b2-b8-e9-b1-bcdocker-e6-96-b0-e6-89-8b-e5-ad-a6-e4-b9-a0-e7-ac-94-e8-ae-b0/">小鲸鱼Docker新手学习笔记</a>
+      <a class="article-title" href="/2015/08/29/小鲸鱼Docker新手学习笔记/">小鲸鱼Docker新手学习笔记</a>
     </h1>
   
 
@@ -379,7 +210,7 @@ Branch gitcafe-pages set up to track remote branch gitcafe-pages from origin.
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/logo.png" alt="logo"><br>完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。<br>Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。<br>Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作系统内核.<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/diff-1024x495.png" alt="diff"></p>
+        <p><img src="https://gorgias.me/uploads/2015/08/logo.png" alt="logo"><br>完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。<br>Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。<br>Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作系统内核.<br><img src="https://gorgias.me/uploads/2015/08/diff-1024x495.png" alt="diff"></p>
 <h4 id="Docker通常用于如下场景："><a href="#Docker通常用于如下场景：" class="headerlink" title="Docker通常用于如下场景："></a>Docker通常用于如下场景：</h4><ul>
 <li>web应用的自动化打包和发布；</li>
 <li>自动化测试和持续集成、发布；</li>
@@ -388,119 +219,37 @@ Branch gitcafe-pages set up to track remote branch gitcafe-pages from origin.
 </ul>
 <p>Linux版本：<a href="http://www.ubuntu.com/download/server" target="_blank" rel="external">ubuntu-15.04-server-amd64</a><br>环境：VMware Workstation 11</p>
 <p>下载安装docker</p>
-<pre>apt-get install docker.io</pre>
-
-<p>&nbsp;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install docker.io</div></pre></td></tr></table></figure>
 <p>查看docker版本</p>
-<pre>root@ubuntu:~# docker version
-Client version: 1.6.2
-Client API version: 1.18
-Go version (client): go1.3.3
-Git commit (client): 7c8fca2
-OS/Arch (client): linux/amd64
-Server version: 1.6.2
-Server API version: 1.18
-Go version (server): go1.3.3
-Git commit (server): 7c8fca2
-OS/Arch (server): linux/amd64
-
-root@ubuntu:~# docker info
-Containers: 13
-Images: 3
-Storage Driver: aufs
- Root Dir: /var/lib/docker/aufs
- Backing Filesystem: extfs
- Dirs: 29
- Dirperm1 Supported: true
-Execution Driver: native-0.2
-Kernel Version: 3.19.0-15-generic
-Operating System: Ubuntu 15.04
-CPUs: 2
-Total Memory: 1.938 GiB
-Name: ubuntu
-ID: 5P2D:CFMQ:5WWP:U7RE:3SLE:Z2D3:L7D3:UMCI:LHZD:WNQK:Q6DD:ZRPA
-WARNING: No swap limit support
-</pre>
-
-<p>&nbsp;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker version</div><div class="line">Client version: 1.6.2</div><div class="line">Client API version: 1.18</div><div class="line">Go version (client): go1.3.3</div><div class="line">Git commit (client): 7c8fca2</div><div class="line">OS/Arch (client): linux/amd64</div><div class="line">Server version: 1.6.2</div><div class="line">Server API version: 1.18</div><div class="line">Go version (server): go1.3.3</div><div class="line">Git commit (server): 7c8fca2</div><div class="line">OS/Arch (server): linux/amd64</div><div class="line"></div><div class="line">root@ubuntu:~# docker info</div><div class="line">Containers: 13</div><div class="line">Images: 3</div><div class="line">Storage Driver: aufs</div><div class="line"> Root Dir: /var/lib/docker/aufs</div><div class="line"> Backing Filesystem: extfs</div><div class="line"> Dirs: 29</div><div class="line"> Dirperm1 Supported: true</div><div class="line">Execution Driver: native-0.2</div><div class="line">Kernel Version: 3.19.0-15-generic</div><div class="line">Operating System: Ubuntu 15.04</div><div class="line">CPUs: 2</div><div class="line">Total Memory: 1.938 GiB</div><div class="line">Name: ubuntu</div><div class="line">ID: 5P2D:CFMQ:5WWP:U7RE:3SLE:Z2D3:L7D3:UMCI:LHZD:WNQK:Q6DD:ZRPA</div><div class="line">WARNING: No swap limit support</div></pre></td></tr></table></figure>
 <p>搜索可用的docker镜像<br>这里用工具检索名字为tutorial的镜像</p>
-<pre>root@ubuntu:~# docker search learn/tutorial
-NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED
-learn/tutorial                 11
-</pre>
-
-<p>&nbsp;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker search learn/tutorial</div><div class="line">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED</div><div class="line">learn/tutorial                 11</div></pre></td></tr></table></figure>
 <p>下载容器镜像</p>
-<pre>root@ubuntu:~# docker search learn/tutorial
-NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED
-learn/tutorial                 11
-root@ubuntu:~# docker pull learn/tutorial
-Pulling repository learn/tutorial
-8dbd9e392a96: Download complete Status: Downloaded newer image for learn/tutorial:latest
-</pre>
-
-<p>&nbsp;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker search learn/tutorial</div><div class="line">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED</div><div class="line">learn/tutorial                 11</div><div class="line">root@ubuntu:~# docker pull learn/tutorial</div><div class="line">Pulling repository learn/tutorial</div><div class="line">8dbd9e392a96: Download complete Status: Downloaded newer image for learn/tutorial:latest</div></pre></td></tr></table></figure>
 <p>来一个hello <del datetime="2015-08-28T09:08:10+00:00">world</del> gorigas!</p>
-<pre>root@ubuntu:~# docker run learn/tutorial echo "hello gorgias"
-hello gorgias
-</pre>
-
-<p>&nbsp;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker run learn/tutorial echo &quot;hello gorgias&quot;</div><div class="line">hello gorgias</div></pre></td></tr></table></figure>
 <p>在容器中安装新的程序</p>
-<pre>docker run learn/tutorial apt-get install -y ping</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run learn/tutorial apt-get install -y ping</div></pre></td></tr></table></figure>
 <p>在执行apt-get 命令的时候，要带上-y参数。如果不指定-y参数的话，apt-get命令会进入交互模式，需要用户输入命令来进行确认，但在docker环境中是无法响应这种交互的。</p>
 <p>保存对容器的修改<br>当你对某一个容器做了修改之后（通过在容器中运行某一个命令），可以把对容器的修改保存下来，这样下次可以从保存后的最新状态运行该容器。docker中保存状态的过程称之为committing，它保存的新旧状态之间的区别，从而产生一个新的版本。<br>首先使用docker ps -l命令获得安装完ping命令之后容器的id。然后把这个镜像保存为learn/ping。</p>
-<pre>root@ubuntu:~# docker ps -l
-CONTAINER ID        IMAGE                   COMMAND              CREATED              STATUS              PORTS               NAMES
-824490fb9db6        learn/tutorial:latest   "ping 192.168.1.1"   About a minute ago
-//只需取到能用于区分的量就行了，这里是824                                          suspicious_yalow
-root@ubuntu:~# docker commit 824 learn/ping
-ae5aa76cc0f84a7a3ebb77e8c7557df0d89564dd5cb9830cb4d35424290a71ca //返回的版本号
-</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker ps -l</div><div class="line">CONTAINER ID        IMAGE                   COMMAND              CREATED              STATUS              PORTS               NAMES</div><div class="line">824490fb9db6        learn/tutorial:latest   &quot;ping 192.168.1.1&quot;   About a minute ago</div><div class="line">//只需取到能用于区分的量就行了，这里是824                                          suspicious_yalow</div><div class="line">root@ubuntu:~# docker commit 824 learn/ping</div><div class="line">ae5aa76cc0f84a7a3ebb77e8c7557df0d89564dd5cb9830cb4d35424290a71ca //返回的版本号</div></pre></td></tr></table></figure>
 <p>运行新的镜像<br>一定要使用新的镜像名learn/ping来运行ping命令。(译者按：最开始下载的learn/tutorial镜像中是没有ping命令的)</p>
-<pre># docker run learn/ping ping www.baidu.com
-PING www.a.shifen.com (115.239.210.27) 56(84) bytes of data.
-64 bytes from 115.239.210.27: icmp_req=1 ttl=53 time=23.7 ms
-64 bytes from 115.239.210.27: icmp_req=2 ttl=53 time=23.2 ms
-64 bytes from 115.239.210.27: icmp_req=3 ttl=53 time=23.4 ms
-</pre>
-
-<p>&nbsp;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># docker run learn/ping ping www.baidu.com</div><div class="line">PING www.a.shifen.com (115.239.210.27) 56(84) bytes of data.</div><div class="line">64 bytes from 115.239.210.27: icmp_req=1 ttl=53 time=23.7 ms</div><div class="line">64 bytes from 115.239.210.27: icmp_req=2 ttl=53 time=23.2 ms</div><div class="line">64 bytes from 115.239.210.27: icmp_req=3 ttl=53 time=23.4 ms</div></pre></td></tr></table></figure>
 <p>停止运行中的镜像</p>
-<pre>docker stop id  //优♂雅地停止镜像
-docker kill id  //强行停止镜像
-</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker stop id  //优♂雅地停止镜像</div><div class="line">docker kill id  //强行停止镜像</div></pre></td></tr></table></figure>
 <p>检查运行中的镜像<br>先使用docker ps查看镜像，然后再用这条命令</p>
-<pre>docker inspect dc8 //这里dc8是镜像id的前三位</pre>
-
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/inspect.png" alt="inspect"></p>
-<p>发布自己的镜像<br>先在<a href="https://hub.docker.com/" target="_blank" rel="external">Docker Hub</a>注册一个账号<br>创建一个自己的仓库<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/repostitory-1024x490.png" alt="repostitory"><br>push之前也可以先登录</p>
-<pre>docker login</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker inspect dc8 //这里dc8是镜像id的前三位</div></pre></td></tr></table></figure>
+<p><img src="https://gorgias.me/uploads/2015/08/inspect.png" alt="inspect"></p>
+<p>发布自己的镜像<br>先在<a href="https://hub.docker.com/" target="_blank" rel="external">Docker Hub</a>注册一个账号<br>创建一个自己的仓库<br><img src="https://gorgias.me/uploads/2015/08/repostitory-1024x490.png" alt="repostitory"><br>push之前也可以先登录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker login</div></pre></td></tr></table></figure>
 <p>这里尝试把learn/ping发布到docker的index网站。你只能将镜像发布到自己的空间下面。这个模拟器登录的是learn帐号。</p>
-<pre>root@ubuntu:~# docker images //列出所有安装过的镜像
-REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE
-learn/ping          latest              db66cd8a04ae        55 minutes ago       139.5 MB
-learn/tutorial      latest              8dbd9e392a96        2.380344 years ago   128 MB
-root@ubuntu:~# docker tag db6 gorgiaxx/learn-ping //修改镜像标签
-root@ubuntu:~# docker push gorgiaxx/learn-ping //发布一个镜像到官方网站
-The push refers to a repository [gorgiaxx/learn-ping] (len: 1)
-Sending image list
-Pushing repository gorgiaxx/learn-ping (1 tags)
-8dbd9e392a96: Image already pushed, skipping
-db66cd8a04ae: Image successfully pushed
-Pushing tag for rev [db66cd8a04ae] on {https://cdn-registry-1.docker.io/v1/repositories/gorgiaxx/learn-ping/tags/latest}
-</pre>
-
-<p>成功发布到了Docker Hub上<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/pushed.png" alt="pushed"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker images //列出所有安装过的镜像</div><div class="line">REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE</div><div class="line">learn/ping          latest              db66cd8a04ae        55 minutes ago       139.5 MB</div><div class="line">learn/tutorial      latest              8dbd9e392a96        2.380344 years ago   128 MB</div><div class="line">root@ubuntu:~# docker tag db6 gorgiaxx/learn-ping //修改镜像标签</div><div class="line">root@ubuntu:~# docker push gorgiaxx/learn-ping //发布一个镜像到官方网站</div><div class="line">The push refers to a repository [gorgiaxx/learn-ping] (len: 1)</div><div class="line">Sending image list</div><div class="line">Pushing repository gorgiaxx/learn-ping (1 tags)</div><div class="line">8dbd9e392a96: Image already pushed, skipping</div><div class="line">db66cd8a04ae: Image successfully pushed</div><div class="line">Pushing tag for rev [db66cd8a04ae] on &#123;https://cdn-registry-1.docker.io/v1/repositories/gorgiaxx/learn-ping/tags/latest&#125;</div></pre></td></tr></table></figure>
+<p>成功发布到了Docker Hub上<br><img src="https://gorgias.me/uploads/2015/08/pushed.png" alt="pushed"></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/29/e5-b0-8f-e9-b2-b8-e9-b1-bcdocker-e6-96-b0-e6-89-8b-e5-ad-a6-e4-b9-a0-e7-ac-94-e8-ae-b0/" data-id="cj0km542h00065hbq5ieqdp58" class="article-share-link">Share</a>
+      <a data-url="https://gorgias.me/2015/08/29/小鲸鱼Docker新手学习笔记/" data-id="cj0ksyxhq000lk6bq73btj1t3" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker-hub/">docker hub</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/虚拟化/">虚拟化</a></li></ul>
@@ -512,14 +261,14 @@ Pushing tag for rev [db66cd8a04ae] on {https://cdn-registry-1.docker.io/v1/repos
 
 
   
-    <article id="post-kali-nethunter-e5-88-9d-e5-ad-a6-e7-ac-94-e8-ae-b0" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Kali-Nethunter尝鲜" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/08/27/kali-nethunter-e5-88-9d-e5-ad-a6-e7-ac-94-e8-ae-b0/" class="article-date">
+    <a href="/2015/08/27/Kali-Nethunter尝鲜/" class="article-date">
   <time datetime="2015-08-26T16:06:11.000Z" itemprop="datePublished">2015-08-27</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>
+    <a class="article-category-link" href="/categories/网络安全/">网络安全</a>
   </div>
 
   </div>
@@ -530,7 +279,7 @@ Pushing tag for rev [db66cd8a04ae] on {https://cdn-registry-1.docker.io/v1/repos
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/27/kali-nethunter-e5-88-9d-e5-ad-a6-e7-ac-94-e8-ae-b0/">Kali Nethunter尝鲜</a>
+      <a class="article-title" href="/2015/08/27/Kali-Nethunter尝鲜/">Kali Nethunter尝鲜</a>
     </h1>
   
 
@@ -539,43 +288,31 @@ Pushing tag for rev [db66cd8a04ae] on {https://cdn-registry-1.docker.io/v1/repos
     <div class="article-entry" itemprop="articleBody">
       
         <p>Kali Nethunter渗透测试平台出来也有一段时间了，国内极客们对此工具的态度也褒贬不一。不管怎样，我很早就想体验一下Nethunter了，毕竟能在某些场合用手机做些邪恶的事情~有点Watch Dog的感觉。</p>
-<h1 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a><strong>一、安装</strong></h1><p>机型：Google Nexus 5<br>Android版本:5.1.1 LMY48l<br>Nethunter下载地址:<a href="https://www.kali.org/kali-linux-nethunter/" target="_blank" rel="external">https://www.kali.org/kali-linux-nethunter/</a><br>首先确保已经root，下载好对应机型的刷机包。<br>我这里用的recovery是TWRP，在Play Store的TWRP Manager上安装的。也可以自己下载，关机状态按住电源和音量-进入fastboot刷入。<br><a href="https://drive.google.com/file/d/0B3hbKdJ8eeqfWkNQQkRWV1MxSU0/view?usp=sharing" target="_blank" rel="external">adb_fastboot下载地址</a><br><a href="https://dl.twrp.me/hammerhead/" target="_blank" rel="external">TWRP recovery下载地址</a></p>
-<pre>fastboot flash recovery twrp-2.8.7.1-hammerhead.img
-</pre>
-
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>机型：Google Nexus 5<br>Android版本:5.1.1 LMY48l<br>Nethunter下载地址:<a href="https://www.kali.org/kali-linux-nethunter/" target="_blank" rel="external">https://www.kali.org/kali-linux-nethunter/</a><br>首先确保已经root，下载好对应机型的刷机包。<br>我这里用的recovery是TWRP，在Play Store的TWRP Manager上安装的。也可以自己下载，关机状态按住电源和音量-进入fastboot刷入。<br><a href="https://drive.google.com/file/d/0B3hbKdJ8eeqfWkNQQkRWV1MxSU0/view?usp=sharing" target="_blank" rel="external">adb_fastboot下载地址</a><br><a href="https://dl.twrp.me/hammerhead/" target="_blank" rel="external">TWRP recovery下载地址</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fastboot flash recovery twrp-2.8.7.1-hammerhead.img</div></pre></td></tr></table></figure>
 <p>原版的TWRP默认是不挂在System分区的，很多人因为这个安装失败，刷之前记得到Mount挂载System。安装前确保system分区有足够空间，把那些没用的gapps都删了。<br>kali 的目录在</p>
-<pre>/data/local/kali-armhf</pre>
-
-<p>当时忘记了TWRP可以截图的。。。。居然找了台手机来拍照<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/twrp-1024x768.jpg" alt="twrp"></p>
-<h1 id="二、自带第三方应用"><a href="#二、自带第三方应用" class="headerlink" title="二、自带第三方应用"></a><strong>二、自带第三方应用</strong></h1><p>开机后的样子：可以看到有八个自带应用<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/home-576x1024.png" alt="home"><br><strong>DriveDroid：</strong>将手机内镜像模拟为启动盘.<br><strong>BlueNMEA：</strong>是用来获取GPS的NMEA数据，然而在nexus5 lolipop上并不能使用啊喂！<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/bluenmea-576x1024.png" alt="bluenmea"></p>
-<p><strong>远程桌面：</strong>用来连接Windows（怎么又是过时的应用？根本用不了，推荐使用VNC取代，我这里用的是微软的RD Client，没有特殊需要谁会在linux上装VNC服务啊~！）</p>
-<p><strong>RF Analyzer</strong>：射频分析器，通过连接HackRF，对射频信号进行采样，以FFT瀑布图来显示。<br>想要了解可以左转 <a href="http://www.hackrf.net/" target="_blank" rel="external">HackRF中文讨论区</a><br>以下两张图来自Github<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/rf-analyzer2.jpg" alt="rf-analyzer2"><br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/rf-analyzer-1024x683.jpg" alt="rf-analyzer"></p>
-<p><strong>USB Keyboard</strong>：顾名思义，用USB来控制电脑当做键盘鼠标使用<br><strong>Shodan：</strong>基于物联网的搜索引擎，需要API Key，在下并没有key<br><strong>Hacker’s KeyBoard</strong>：便于输入各种控制字符</p>
-<h1 id="三、使用Kali"><a href="#三、使用Kali" class="headerlink" title="三、使用Kali"></a><strong>三、使用Kali</strong></h1><p><strong>NetHunter Android</strong>：这才是主角！<br>NetHunter Home：可以查看本地的网络接口和外网ip地址<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/nethunterhome-576x1024.png" alt="nethunterhome"><br>Kali Launcher:方便进行各种操作</p>
-<pre>LAUNCH KALI SHELL IN TERMINAL  打开Kali shell
-LAUNCH KALI MENU INTERMINAL  打开Kali菜单
-LAUNCH WIFITE  打开Wifite
-UPDATE KALI CHROOT  更新Kali
-TURN OFF EXTERNAL WIFI  关闭外接网卡
-UNMOUNT KALI  卸载Kali
-</pre>
-
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/nethunter-launcher-576x1024.png" alt="nethunter-launcher"></p>
-<p>Kali Service Control：这里有许多服务开关<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/service-control-576x1024.png" alt="service-control"></p>
-<p><strong>Metasploit</strong>：打字非常不方便！不过能正常使用。<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/msf-1024x576.png" alt="msf"><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/exploit-576x1024.png" alt="exploit"></p>
-<p><strong>SSH</strong>：找到</p>
-<pre>/data/local/kali-armhf/etc/ssh</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/data/local/kali-armhf</div></pre></td></tr></table></figure>
+<p>当时忘记了TWRP可以截图的。。。。居然找了台手机来拍照<br><img src="https://gorgias.me/uploads/2015/08/twrp-1024x768.jpg" alt="twrp"></p>
+<h1 id="自带第三方应用"><a href="#自带第三方应用" class="headerlink" title="自带第三方应用"></a>自带第三方应用</h1><p>开机后的样子：可以看到有八个自带应用<br><img src="https://gorgias.me/uploads/2015/08/home-576x1024.png" alt="home"><br>DriveDroid：将手机内镜像模拟为启动盘.<br>BlueNMEA：是用来获取GPS的NMEA数据，然而在nexus5 lolipop上并不能使用啊喂！<br><img src="https://gorgias.me/uploads/2015/08/bluenmea-576x1024.png" alt="bluenmea"></p>
+<p>远程桌面：用来连接Windows（怎么又是过时的应用？根本用不了，推荐使用VNC取代，我这里用的是微软的RD Client，没有特殊需要谁会在linux上装VNC服务啊~！）</p>
+<p>RF Analyzer：射频分析器，通过连接HackRF，对射频信号进行采样，以FFT瀑布图来显示。<br>想要了解可以左转 <a href="http://www.hackrf.net/" target="_blank" rel="external">HackRF中文讨论区</a><br>以下两张图来自Github<br><img src="https://gorgias.me/uploads/2015/08/rf-analyzer2.jpg" alt="rf-analyzer2"><br><img src="https://gorgias.me/uploads/2015/08/rf-analyzer.jpg" alt="rf-analyzer"></p>
+<p>USB Keyboard：顾名思义，用USB来控制电脑当做键盘鼠标使用<br>Shodan：基于物联网的搜索引擎，需要API Key，在下并没有key<br>Hacker’s KeyBoard：便于输入各种控制字符</p>
+<h1 id="使用Kali"><a href="#使用Kali" class="headerlink" title="使用Kali"></a>使用Kali</h1><p>NetHunter Android：这才是主角！<br>NetHunter Home：可以查看本地的网络接口和外网ip地址<br><img src="https://gorgias.me/uploads/2015/08/nethunterhome-576x1024.png" alt="nethunterhome"><br>Kali Launcher:方便进行各种操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">LAUNCH KALI SHELL IN TERMINAL  打开Kali shell</div><div class="line">LAUNCH KALI MENU INTERMINAL  打开Kali菜单</div><div class="line">LAUNCH WIFITE  打开Wifite</div><div class="line">UPDATE KALI CHROOT  更新Kali</div><div class="line">TURN OFF EXTERNAL WIFI  关闭外接网卡</div><div class="line">UNMOUNT KALI  卸载Kali</div></pre></td></tr></table></figure>
+<p><img src="https://gorgias.me/uploads/2015/08/nethunter-launcher-576x1024.png" alt="nethunter-launcher"></p>
+<p>Kali Service Control：这里有许多服务开关<br><img src="https://gorgias.me/uploads/2015/08/service-control-576x1024.png" alt="service-control"></p>
+<p>Metasploit：打字非常不方便！不过能正常使用。<br><img src="https://gorgias.me/uploads/2015/08/msf-1024x576.png" alt="msf"><br><img src="https://gorgias.me/uploads/2015/08/exploit-576x1024.png" alt="exploit"></p>
+<p>SSH：找到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/data/local/kali-armhf/etc/ssh</div></pre></td></tr></table></figure>
 <p>内置无线网卡貌似不支持，需要通过OTG连接外置无线网卡才能使用一系列的无线测试功能。</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/airmon-ng-576x1024.png" alt="airmon-ng"></p>
+<p><img src="https://gorgias.me/uploads/2015/08/airmon-ng-576x1024.png" alt="airmon-ng"></p>
 <p>通过体验最终得出结论：玩玩就好，一些功能对于普通玩家来说算是鸡肋吧。其实个人认为最好玩的是开启VNC服务，然后手机安装VNC Viewer，变成桌面操作系统。</p>
-<p>&nbsp;</p>
-<p>参考：<br><a href="http://drops.wooyun.org/tips/4634" target="_blank" rel="external">Pocket Hacking: NetHunter实战指南</a></p>
+<p>#参考<br><a href="http://drops.wooyun.org/tips/4634" target="_blank" rel="external">Pocket Hacking: NetHunter实战指南</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/27/kali-nethunter-e5-88-9d-e5-ad-a6-e7-ac-94-e8-ae-b0/" data-id="cj0km543b000x5hbqmax5ycby" class="article-share-link">Share</a>
+      <a data-url="https://gorgias.me/2015/08/27/Kali-Nethunter尝鲜/" data-id="cj0ksyxh50005k6bqaj46r73e" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nexus5/">Nexus5</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kali/">kali</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kali手机版/">kali手机版</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nethunter/">nethunter</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安装/">安装</a></li></ul>
@@ -587,14 +324,14 @@ UNMOUNT KALI  卸载Kali
 
 
   
-    <article id="post-e7-ae-80-e5-8d-95-e7-a0-b4-e8-a7-a3ckfinder3-for-php" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-简单破解CKFinder3-for-PHP" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/08/24/e7-ae-80-e5-8d-95-e7-a0-b4-e8-a7-a3ckfinder3-for-php/" class="article-date">
+    <a href="/2015/08/24/简单破解CKFinder3-for-PHP/" class="article-date">
   <time datetime="2015-08-24T00:36:41.000Z" itemprop="datePublished">2015-08-24</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>
+    <a class="article-category-link" href="/categories/工具/">工具</a>
   </div>
 
   </div>
@@ -605,7 +342,7 @@ UNMOUNT KALI  卸载Kali
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/24/e7-ae-80-e5-8d-95-e7-a0-b4-e8-a7-a3ckfinder3-for-php/">简单破解CKFinder3 for PHP</a>
+      <a class="article-title" href="/2015/08/24/简单破解CKFinder3-for-PHP/">简单破解CKFinder3 for PHP</a>
     </h1>
   
 
@@ -613,48 +350,31 @@ UNMOUNT KALI  卸载Kali
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>CKFinder是基于Web的Ajax文件管理器。很多小网站的后台都会使用CKFinder，方便上传资源的管理。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>CKFinder是基于Web的Ajax文件管理器。很多小网站的后台都会使用CKFinder，方便上传资源的管理。</p>
 <p>由于某些原因，需要使用到这个东西，在网上下载了PHP的最新版。用时发现DEMO版本不能删除文件！后来在网上找破解版，居然找不到，作为一个强迫症，我一定要用上最新版。</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/preview.jpg" alt="preview"></p>
-<p>文件目录</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/dir.png" alt="dir"></p>
-<pre>CKFinder
-├─core          核心文件（包括PHP库文件）
-├─lang          语言包
-├─libs          JS库文件
-├─plugins           插件目录
-├─samples           demo页 (可以删掉)
-├─skins         皮肤样式
-├─userfiles         默认上传目录
-├──ckfinder.html        管理器页面
-├──ckfinder.js      主要程序代码
-├──config.js        配置文件
-└──config.php       服务端配置文件</pre>
-
+<p><img src="https://gorgias.me/uploads/2015/08/preview.jpg" alt="preview"></p>
+<h2 id="文件目录"><a href="#文件目录" class="headerlink" title="文件目录"></a>文件目录</h2><p><img src="https://gorgias.me/uploads/2015/08/dir.png" alt="dir"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">CKFinder</div><div class="line">├─core          核心文件（包括PHP库文件）</div><div class="line">├─lang          语言包</div><div class="line">├─libs          JS库文件</div><div class="line">├─plugins           插件目录</div><div class="line">├─samples           demo页 (可以删掉)</div><div class="line">├─skins         皮肤样式</div><div class="line">├─userfiles         默认上传目录</div><div class="line">├──ckfinder.html        管理器页面</div><div class="line">├──ckfinder.js      主要程序代码</div><div class="line">├──config.js        配置文件</div><div class="line">└──config.php       服务端配置文件</div></pre></td></tr></table></figure>
 <p>用户的验证代码就在ckfinder.js里面，我这里只采取解除限制的方法，这样比较简单<br>先copy一份，把它解混淆和解压缩，方便分析。<br>推荐这个在线工具站，<a href="http://tool.lu/js/" target="_blank" rel="external">http://tool.lu/js/</a><br>ckfinder就只是限制了删除和文件上传数量，还有一个不知道什么鬼。</p>
-<p>代码1<br>这个不知道是什么鬼。。可以看到就是一个简单的判断语句，先把特征区域净化(去除空格换行)，反一下就好了</p>
-<pre>if((I&amp;&amp;q&amp;&amp;K&amp;&amp;_)||!V)</pre>
-
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/1.png" alt="1"></p>
-<p>代码2<br>这里也一样，去除demo展示，简单的判断语句，反一下</p>
-<pre>if((E&amp;&amp;k&amp;&amp;T&amp;&amp;M)||!S)</pre>
-
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/2.png" alt="2"></p>
-<p>代码3<br>setHandler就是把要执行的函数换成自定义的函数，这边是删除的功能换成demo版本提示。也是简单处理一下就好。<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/3.png" alt="3">写成这个</p>
-<pre>if((s&amp;&amp;l&amp;&amp;u&amp;&amp;a)||!d)</pre>
-
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/4.png" alt="4"></p>
-<p>代码4<br>解除上传数限制<br>直接把这一段删除</p>
-<pre>{var y=r.request("x66x69x6cx65x73u003ax67etCx75x72rx65nx74").where({"view:isFolder":!1}).length;y+a.length&gt;10&amp;&amp;r.request("u0064iu0061x6cogu003ax69x6eu0066u006f",{msg:"Thx65 nu0075u006du0062eru0020x6ffx20x66ilu0065u0073 u0070eru0020x66ou006cu0064x65r u0061u0066u0074x65x72 x74u0068u0065u0020uu0070x6cu006fau0064x20u0063ax6eu006ex6fu0074x20x65x78x63eeu0064u002010u0020x69u006eu0020deu006dox20x6du006fx64u0065x2e"});var b=-(y-10);0&gt;b&amp;&amp;(b=0),a.splice(b,a.length)}</pre>
-
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="代码1"><a href="#代码1" class="headerlink" title="代码1"></a>代码1</h3><p>这个不知道是什么鬼。。可以看到就是一个简单的判断语句，先把特征区域净化(去除空格换行)，反一下就好了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">if((I&amp;&amp;q&amp;&amp;K&amp;&amp;_)||!V)</div></pre></td></tr></table></figure>
+<p><img src="https://gorgias.me/uploads/2015/08/1.png" alt="1"></p>
+<h3 id="代码2"><a href="#代码2" class="headerlink" title="代码2"></a>代码2</h3><p>这里也一样，去除demo展示，简单的判断语句，反一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">if((E&amp;&amp;k&amp;&amp;T&amp;&amp;M)||!S)</div></pre></td></tr></table></figure>
+<p><img src="https://gorgias.me/uploads/2015/08/2.png" alt="2"></p>
+<h3 id="代码3"><a href="#代码3" class="headerlink" title="代码3"></a>代码3</h3><p>setHandler就是把要执行的函数换成自定义的函数，这边是删除的功能换成demo版本提示。也是简单处理一下就好。<br><img src="https://gorgias.me/uploads/2015/08/3.png" alt="3">写成这个</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">if((s&amp;&amp;l&amp;&amp;u&amp;&amp;a)||!d)</div></pre></td></tr></table></figure>
+<p><img src="https://gorgias.me/uploads/2015/08/4.png" alt="4"></p>
+<h3 id="代码4"><a href="#代码4" class="headerlink" title="代码4"></a>代码4</h3><p>解除上传数限制<br>直接把这一段删除</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;var y=r.request(&quot;x66x69x6cx65x73u003ax67etCx75x72rx65nx74&quot;).where(&#123;&quot;view:isFolder&quot;:!1&#125;).length;y+a.length&gt;10&amp;&amp;r.request(&quot;u0064iu0061x6cogu003ax69x6eu0066u006f&quot;,&#123;msg:&quot;Thx65 nu0075u006du0062eru0020x6ffx20x66ilu0065u0073 u0070eru0020x66ou006cu0064x65r u0061u0066u0074x65x72 x74u0068u0065u0020uu0070x6cu006fau0064x20u0063ax6eu006ex6fu0074x20x65x78x63eeu0064u002010u0020x69u006eu0020deu006dox20x6du006fx64u0065x2e&quot;&#125;);var b=-(y-10);0&gt;b&amp;&amp;(b=0),a.splice(b,a.length)&#125;</div></pre></td></tr></table></figure>
 <p>完成√</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/08/complete.png" alt="complete"></p>
-<p>另外附上破解后的文件<br><a href="https://drive.google.com/file/d/0B3hbKdJ8eeqfNkQ1ellxRkxaSlk/view?usp=sharing" target="_blank" rel="external"><del datetime="2016-04-29T02:26:19+00:00">Google Drive</del></a><br><a href="https://mega.nz/#!jpIgVLia!JNvOu1mbIBm-tL5SleOaku9-CU6x_fdj3b6gmjAwrHQ" target="_blank" rel="external">Mega</a></p>
+<p><img src="https://gorgias.me/uploads/2015/08/complete.png" alt="complete"></p>
+<p>另外附上破解后的文件<br><a href="https://drive.google.com/file/d/0B3hbKdJ8eeqfNkQ1ellxRkxaSlk/view?usp=sharing" target="_blank" rel="external"><del>Google Drive</del></a><br><a href="https://mega.nz/#!jpIgVLia!JNvOu1mbIBm-tL5SleOaku9-CU6x_fdj3b6gmjAwrHQ" target="_blank" rel="external">Mega</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/24/e7-ae-80-e5-8d-95-e7-a0-b4-e8-a7-a3ckfinder3-for-php/" data-id="cj0km542x000h5hbqhyizkmh7" class="article-share-link">Share</a>
+      <a data-url="https://gorgias.me/2015/08/24/简单破解CKFinder3-for-PHP/" data-id="cj0ksyxi0000rk6bqkso6egbo" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ckfinder/">ckfinder</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/js/">js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/破解/">破解</a></li></ul>
@@ -666,14 +386,14 @@ UNMOUNT KALI  卸载Kali
 
 
   
-    <article id="post-e4-b8-80-e6-ac-a1-e6-a0-a1-e5-9b-adandroid-e5-b9-b3-e5-8f-b0-e5-ba-94-e7-94-a8-e7-9a-84-e9-80-86-e5-90-91-e5-88-86-e6-9e-90" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-一次校园Android平台应用的逆向分析" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/06/14/e4-b8-80-e6-ac-a1-e6-a0-a1-e5-9b-adandroid-e5-b9-b3-e5-8f-b0-e5-ba-94-e7-94-a8-e7-9a-84-e9-80-86-e5-90-91-e5-88-86-e6-9e-90/" class="article-date">
+    <a href="/2015/06/14/一次校园Android平台应用的逆向分析/" class="article-date">
   <time datetime="2015-06-14T01:35:26.000Z" itemprop="datePublished">2015-06-14</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/技术宅/">技术宅</a>
+    <a class="article-category-link" href="/categories/网络安全/">网络安全</a>
   </div>
 
   </div>
@@ -684,7 +404,7 @@ UNMOUNT KALI  卸载Kali
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/06/14/e4-b8-80-e6-ac-a1-e6-a0-a1-e5-9b-adandroid-e5-b9-b3-e5-8f-b0-e5-ba-94-e7-94-a8-e7-9a-84-e9-80-86-e5-90-91-e5-88-86-e6-9e-90/">一次校园Android平台应用的逆向分析</a>
+      <a class="article-title" href="/2015/06/14/一次校园Android平台应用的逆向分析/">一次校园Android平台应用的逆向分析</a>
     </h1>
   
 
@@ -692,160 +412,54 @@ UNMOUNT KALI  卸载Kali
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>&nbsp;</p>
-<p>手机：Google Nexus 5</p>
+        <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>手机：Google Nexus 5</p>
 <p>工具：</p>
 <p><a href="http://www.popotu.com/popo/apkide.html" target="_blank" rel="external">APK改之理（APK IDE）</a></p>
 <p><a href="https://play.google.com/store/apps/details?id=app.greyshirts.sslcapture" target="_blank" rel="external">Package Capture</a>  by  Grey Shirts</p>
 <p>分析文件：东软智慧校园平台（华东交大版）</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/1.png" alt="1"></p>
+<p><img src="https://gorgias.me/uploads/2015/06/1.png" alt="1"></p>
 <p>先来简单看一下这个应用</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/3.png" alt="3"></p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/4.png" alt="4"></p>
-<table width="60%" cellpadding="0"><br><tbody><br><tr bgcolor="#eeeeee"><br><td>20142110070202</td><br><td>史泰龙</td><br><td>011211</td><br></tr><br></tbody><br></table>
-
-<p>我们使用这个账号登陆</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/5.png" alt="5"></p>
+<p><img src="https://gorgias.me/uploads/2015/06/3.png" alt="3"></p>
+<p><img src="https://gorgias.me/uploads/2015/06/4.png" alt="4"></p>
+<p>我们使用这个账号登陆<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">username:20142110070202</div><div class="line">password:011211</div></pre></td></tr></table></figure></p>
+<p><img src="https://gorgias.me/uploads/2015/06/5.png" alt="5"></p>
 <p>打开Package Capture进行抓包</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/6.png" alt="6"></p>
+<p><img src="https://gorgias.me/uploads/2015/06/6.png" alt="6"></p>
 <p>可以看到，登陆时，移动端向服务端发送一个get请求</p>
-<pre>portal.ecjtu.edu.cn/dcp/service?action=0B38EC05B0815AFB59A1B6171DD8378702E08185784ADC47B213462CC176EBC626865CAE40CF998812E25558152958267F28B8BE59532A45283F2A274FA363CB685347955B330164CDEFA8228F011F4BB73C36BFF072DB9C
-</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">portal.ecjtu.edu.cn/dcp/service?action=0B38EC05B0815AFB59A1B6171DD8378702E08185784ADC47B213462CC176EBC626865CAE40CF998812E25558152958267F28B8BE59532A45283F2A274FA363CB685347955B330164CDEFA8228F011F4BB73C36BFF072DB9C</div></pre></td></tr></table></figure>
 <p>服务器返回一段json数据</p>
-<pre>{"message":{"map":{"UNIT_NAME":"软件学院","USER_ID":"20142110070202","UUID":"201412019176","ID_TYPE":"1","UNIT_ID":"1021","USER_PASSWORD":"?h?g?g+t.[=dR);:","USER_ACCOUNT":"20142110070202","USER_SEX":"1","IS_ACTIVE":"1","BEGIN_TIME":"20141219","USER_FULLNAME":"史泰龙","USER_FIRST_LOGIN":"0","USER_DESCRIPTION":"史泰龙","USER_ACCOUNT_LOCKED":"1","IS_MAIN_IDENTITY":"1","END_TIME":"20600606"}},"success":true}
-</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;&quot;message&quot;:&#123;&quot;map&quot;:&#123;&quot;UNIT_NAME&quot;:&quot;软件学院&quot;,&quot;USER_ID&quot;:&quot;20142110070202&quot;,&quot;UUID&quot;:&quot;201412019176&quot;,&quot;ID_TYPE&quot;:&quot;1&quot;,&quot;UNIT_ID&quot;:&quot;1021&quot;,&quot;USER_PASSWORD&quot;:&quot;?h?g?g+t.[=dR);:&quot;,&quot;USER_ACCOUNT&quot;:&quot;20142110070202&quot;,&quot;USER_SEX&quot;:&quot;1&quot;,&quot;IS_ACTIVE&quot;:&quot;1&quot;,&quot;BEGIN_TIME&quot;:&quot;20141219&quot;,&quot;USER_FULLNAME&quot;:&quot;史泰龙&quot;,&quot;USER_FIRST_LOGIN&quot;:&quot;0&quot;,&quot;USER_DESCRIPTION&quot;:&quot;史泰龙&quot;,&quot;USER_ACCOUNT_LOCKED&quot;:&quot;1&quot;,&quot;IS_MAIN_IDENTITY&quot;:&quot;1&quot;,&quot;END_TIME&quot;:&quot;20600606&quot;&#125;&#125;,&quot;success&quot;:true&#125;</div></pre></td></tr></table></figure>
 <p>可见移动端与服务端之间的传输是加密的</p>
 <p>用APK改之理打开这个app</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/7.png" alt="7"></p>
+<p><img src="https://gorgias.me/uploads/2015/06/7.png" alt="7"></p>
 <p>smali不易阅读，所以点击上面的“打开Java源码”。</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/8.png" alt="8"></p>
+<p><img src="https://gorgias.me/uploads/2015/06/8.png" alt="8"></p>
 <p>找到关键词 “/dcp/service?action=”<br>关键代码：</p>
-<pre>public final a a(String paramString1, String paramString2, String paramString3)
-{
-String str = paramString3;
-if (paramString3 == null) {
-str = "";
-}
-paramString1 = "method=checkUserLoginIFS&amp;idNumber=" + paramString1 + "&amp;UserPwd=" + paramString2 + "&amp;logonIP=" + str;
-try
-{
-paramString2 = com.neusoft.edu.v6.ydszxy.hdjiaoda.appcenter.c.b.a.a(paramString1);
-paramString1 = paramString2;
-}
-catch (Exception paramString2)
-{
-for (;;)
-{
-paramString2.printStackTrace();
-}
-}
-paramString1 = "/dcp/service?action=" + paramString1;
-return (a)a(this.a.a(paramString1), new a());
-}</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public final a a(String paramString1, String paramString2, String paramString3)</div><div class="line">&#123;</div><div class="line">String str = paramString3;</div><div class="line">if (paramString3 == null) &#123;</div><div class="line">str = &quot;&quot;;</div><div class="line">&#125;</div><div class="line">paramString1 = &quot;method=checkUserLoginIFS&amp;idNumber=&quot; + paramString1 + &quot;&amp;UserPwd=&quot; + paramString2 + &quot;&amp;logonIP=&quot; + str;</div><div class="line">try</div><div class="line">&#123;</div><div class="line">paramString2 = com.neusoft.edu.v6.ydszxy.hdjiaoda.appcenter.c.b.a.a(paramString1);</div><div class="line">paramString1 = paramString2;</div><div class="line">&#125;</div><div class="line">catch (Exception paramString2)</div><div class="line">&#123;</div><div class="line">for (;;)</div><div class="line">&#123;</div><div class="line">paramString2.printStackTrace();</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">paramString1 = &quot;/dcp/service?action=&quot; + paramString1;</div><div class="line">return (a)a(this.a.a(paramString1), new a());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>通过源码得知，paramString1本来是</p>
-<pre>method=checkUserLoginIFS&amp;idNumber=xxx&amp;UserPwd=xxx&amp;logonIP=xxx</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">method=checkUserLoginIFS&amp;idNumber=xxx&amp;UserPwd=xxx&amp;logonIP=xxx</div></pre></td></tr></table></figure>
 <p>这样的形式，但是通过</p>
-<pre>com.neusoft.edu.v6.ydszxy.hdjiaoda.appcenter.c.b.a.a</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">com.neusoft.edu.v6.ydszxy.hdjiaoda.appcenter.c.b.a.a</div></pre></td></tr></table></figure>
 <p>方法的加密，变成了上面的get请求action后面的密文，跟踪到appcenter.c.b.a.a，</p>
-<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2015/06/9.png" alt="9"></p>
+<p><img src="https://gorgias.me/uploads/2015/06/9.png" alt="9"></p>
 <p>关键代码：</p>
-<pre>public static String a(String paramString)
-{
-Object localObject = new DESedeKeySpec("neusofteducationplatform".getBytes());
-localObject = SecretKeyFactory.getInstance("desede").generateSecret((KeySpec)localObject);
-Cipher localCipher = Cipher.getInstance("desede/CBC/PKCS5Padding");
-localCipher.init(1, (Key)localObject, new IvParameterSpec("01234567".getBytes()));
-return a(localCipher.doFinal(paramString.getBytes("utf-8")));
-}
-
-private static String a(byte[] paramArrayOfByte)
-{
-String str1 = "";
-int i = 0;
-for (;;)
-{
-if (i &gt;= paramArrayOfByte.length) {
-return str1;
-}
-String str3 = Integer.toHexString(paramArrayOfByte[i] &amp; 0xFF);
-String str2 = str3;
-if (str3.length() == 1) {
-str2 = '0' + str3;
-}
-str1 = str1 + str2.toUpperCase();
-i += 1;
-}
-}
-</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">public static String a(String paramString)</div><div class="line">&#123;</div><div class="line">Object localObject = new DESedeKeySpec(&quot;neusofteducationplatform&quot;.getBytes());</div><div class="line">localObject = SecretKeyFactory.getInstance(&quot;desede&quot;).generateSecret((KeySpec)localObject);</div><div class="line">Cipher localCipher = Cipher.getInstance(&quot;desede/CBC/PKCS5Padding&quot;);</div><div class="line">localCipher.init(1, (Key)localObject, new IvParameterSpec(&quot;01234567&quot;.getBytes()));</div><div class="line">return a(localCipher.doFinal(paramString.getBytes(&quot;utf-8&quot;)));</div><div class="line">&#125;</div><div class="line"></div><div class="line">private static String a(byte[] paramArrayOfByte)</div><div class="line">&#123;</div><div class="line">String str1 = &quot;&quot;;</div><div class="line">int i = 0;</div><div class="line">for (;;)</div><div class="line">&#123;</div><div class="line">if (i &gt;= paramArrayOfByte.length) &#123;</div><div class="line">return str1;</div><div class="line">&#125;</div><div class="line">String str3 = Integer.toHexString(paramArrayOfByte[i] &amp; 0xFF);</div><div class="line">String str2 = str3;</div><div class="line">if (str3.length() == 1) &#123;</div><div class="line">str2 = &apos;0&apos; + str3;</div><div class="line">&#125;</div><div class="line">str1 = str1 + str2.toUpperCase();</div><div class="line">i += 1;</div><div class="line">&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>通过分析，可以得知加密方式是DESede(TripleDES，对每个数据块应用三次DES加密算法)，算法模式为CBC(每个平文块先与前一个密文块进行异或后，再进行加密。)，填充算法为PKCS5Padding(The number of bytes to be padded equals to “8 - numberOfBytes(clearText) mod 8”. So 1 to 8 bytes will be padded to the clear text data depending on the length of the clear text data.)，初始化向量(IV,Initialization Vector)为”01234567”,向量的作用其实就是salt。</p>
 <p>private static String a的作用应该是把bytes转成大写的Hex字符串。</p>
 <p>于是根据分析得到的加密思路写下解密算法</p>
-<pre>public static String desDecode(String encryptText, String pk)//encryptText为密文，pk为私钥，通过跟踪到的代码可知为"neusofteducationplatform"
-throws Exception
-{
-java.security.Key deskey = null;
-DESedeKeySpec spec = new DESedeKeySpec(pk.getBytes());
-SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("desede");
-deskey = keyfactory.generateSecret(spec);
-Cipher cipher = Cipher.getInstance("desede/CBC/PKCS5Padding");
-IvParameterSpec ips = new IvParameterSpec("01234567".getBytes());
-cipher.init(2, deskey, ips);
-System.out.println(encryptText);
-byte decryptData[] = cipher.doFinal(hexStringToBytes(encryptText));
-return new String(decryptData, "utf-8");
-}
-
-public static String Bytes2HexString(byte b[])
-{
-String ret = "";
-for(int i = 0; i &lt; b.length; i++)
-{
-String hex = Integer.toHexString(b[i] &amp; 0xff);
-if(hex.length() == 1)
-hex = (new StringBuilder(String.valueOf('0'))).append(hex).toString();
-ret = (new StringBuilder(String.valueOf(ret))).append(hex.toUpperCase()).toString();
-}
-
-return ret;
-}</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public static String desDecode(String encryptText, String pk)//encryptText为密文，pk为私钥，通过跟踪到的代码可知为&quot;neusofteducationplatform&quot;</div><div class="line">throws Exception</div><div class="line">&#123;</div><div class="line">java.security.Key deskey = null;</div><div class="line">DESedeKeySpec spec = new DESedeKeySpec(pk.getBytes());</div><div class="line">SecretKeyFactory keyfactory = SecretKeyFactory.getInstance(&quot;desede&quot;);</div><div class="line">deskey = keyfactory.generateSecret(spec);</div><div class="line">Cipher cipher = Cipher.getInstance(&quot;desede/CBC/PKCS5Padding&quot;);</div><div class="line">IvParameterSpec ips = new IvParameterSpec(&quot;01234567&quot;.getBytes());</div><div class="line">cipher.init(2, deskey, ips);</div><div class="line">System.out.println(encryptText);</div><div class="line">byte decryptData[] = cipher.doFinal(hexStringToBytes(encryptText));</div><div class="line">return new String(decryptData, &quot;utf-8&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static String Bytes2HexString(byte b[])</div><div class="line">&#123;</div><div class="line">String ret = &quot;&quot;;</div><div class="line">for(int i = 0; i &lt; b.length; i++)</div><div class="line">&#123;</div><div class="line">String hex = Integer.toHexString(b[i] &amp; 0xff);</div><div class="line">if(hex.length() == 1)</div><div class="line">hex = (new StringBuilder(String.valueOf(&apos;0&apos;))).append(hex).toString();</div><div class="line">ret = (new StringBuilder(String.valueOf(ret))).append(hex.toUpperCase()).toString();</div><div class="line">&#125;</div><div class="line"></div><div class="line">return ret;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>把之前get请求后面的</p>
-<pre>0B38EC05B0815AFB59A1B6171DD8378702E08185784ADC47B213462CC176EBC626865CAE40CF998812E25558152958267F28B8BE59532A45283F2A274FA363CB685347955B330164CDEFA8228F011F4BB73C36BFF072DB9C</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0B38EC05B0815AFB59A1B6171DD8378702E08185784ADC47B213462CC176EBC626865CAE40CF998812E25558152958267F28B8BE59532A45283F2A274FA363CB685347955B330164CDEFA8228F011F4BB73C36BFF072DB9C</div></pre></td></tr></table></figure>
 <p>扔进去解，得到</p>
-<pre>method=checkUserLoginIFS&amp;idNumber=20142110070202&amp;UserPwd=011211&amp;logonIP=10.0.8.1</pre>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">method=checkUserLoginIFS&amp;idNumber=20142110070202&amp;UserPwd=011211&amp;logonIP=10.0.8.1</div></pre></td></tr></table></figure>
 <p>到这里可能有人会问，这里的UserPwd=011211与上面json的USER_PASSWORD=?h?g?g+t.[=dR);:不一样，这里是字符串加密后得到的数据。<br>附上解密代码</p>
-<pre>public static String Decode(String varCode)
-    {
-        String des = new String();
-        String strKey = new String();
-        if(varCode == null || varCode.length() == 0)
-            return "";
-        strKey = "zxcvbnm,./asdfghjkl;'qwertyuiop[]\1234567890-=` ZXCVBNM&lt;&gt;?:LKJHGFDSAQWERTYUIOP{}|+_)(*&amp;^%$#@!~";
-        if(varCode.length() % 2 == 1)
-            varCode = (new StringBuilder(String.valueOf(varCode))).append("?").toString();
-        des = "";
-        int n;
-        for(n = 0; n &lt;= varCode.length() / 2 - 1; n++) { char b = varCode.charAt(n * 2); int a = strKey.indexOf(varCode.charAt(n * 2 + 1)); des = (new StringBuilder(String.valueOf(des))).append((char)(b ^ a)).toString(); System.out.println(des); } n = des.indexOf('01'); if(n &gt; 0)
-            return des.substring(0, n);
-        else
-            return des;
-}
-</pre>
-
-<h4 id="参考"><a href="#参考" class="headerlink" title="参考:"></a><strong>参考:</strong></h4><p><a href="http://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html" target="_blank" rel="external">Java Class Cipher</a><br><a href="http://blog.csdn.net/janronehoo/article/details/7590778" target="_blank" rel="external">Java加密技术（二）——DES数据加密算法(和加IV向量版)</a><br><a href="http://blog.163.com/kevinlee_2010/blog/static/16982082020113853451308/" target="_blank" rel="external">分组密码的工作模式</a><br><a href="http://www.herongyang.com/Cryptography/DES-JDK-What-Is-PKCS5Padding.html" target="_blank" rel="external">What Is PKCS5Padding?</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public static String Decode(String varCode)</div><div class="line">    &#123;</div><div class="line">        String des = new String();</div><div class="line">        String strKey = new String();</div><div class="line">        if(varCode == null || varCode.length() == 0)</div><div class="line">            return &quot;&quot;;</div><div class="line">        strKey = &quot;zxcvbnm,./asdfghjkl;&apos;qwertyuiop[]\1234567890-=` ZXCVBNM&lt;&gt;?:LKJHGFDSAQWERTYUIOP&#123;&#125;|+_)(*&amp;^%$#@!~&quot;;</div><div class="line">        if(varCode.length() % 2 == 1)</div><div class="line">            varCode = (new StringBuilder(String.valueOf(varCode))).append(&quot;?&quot;).toString();</div><div class="line">        des = &quot;&quot;;</div><div class="line">        int n;</div><div class="line">        for(n = 0; n &lt;= varCode.length() / 2 - 1; n++) &#123; char b = varCode.charAt(n * 2); int a = strKey.indexOf(varCode.charAt(n * 2 + 1)); des = (new StringBuilder(String.valueOf(des))).append((char)(b ^ a)).toString(); System.out.println(des); &#125; n = des.indexOf(&apos;01&apos;); if(n &gt; 0)</div><div class="line">            return des.substring(0, n);</div><div class="line">        else</div><div class="line">            return des;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html" target="_blank" rel="external">Java Class Cipher</a><br><a href="http://blog.csdn.net/janronehoo/article/details/7590778" target="_blank" rel="external">Java加密技术（二）——DES数据加密算法(和加IV向量版)</a><br><a href="http://blog.163.com/kevinlee_2010/blog/static/16982082020113853451308/" target="_blank" rel="external">分组密码的工作模式</a><br><a href="http://www.herongyang.com/Cryptography/DES-JDK-What-Is-PKCS5Padding.html" target="_blank" rel="external">What Is PKCS5Padding?</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/06/14/e4-b8-80-e6-ac-a1-e6-a0-a1-e5-9b-adandroid-e5-b9-b3-e5-8f-b0-e5-ba-94-e7-94-a8-e7-9a-84-e9-80-86-e5-90-91-e5-88-86-e6-9e-90/" data-id="cj0km542e00055hbqn6noyq67" class="article-share-link">Share</a>
+      <a data-url="https://gorgias.me/2015/06/14/一次校园Android平台应用的逆向分析/" data-id="cj0ksyxhf000bk6bq7c6j3y11" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/app/">app</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/东软/">东软</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/安卓/">安卓</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数字校园/">数字校园</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/逆向分析/">逆向分析</a></li></ul>
@@ -857,14 +471,14 @@ return ret;
 
 
   
-    <article id="post-e5-af-b9-e4-b8-80-e4-ba-9b-e5-82-bb-e5-82-bb-e5-88-86-e4-b8-8d-e6-b8-85-e6-a5-9a-e7-9a-84-e5-8d-95-e4-bd-8d-e6-95-b4-e7-90-86-e7-ac-94-e8-ae-b0" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-对一些傻傻分不清楚的单位整理的笔记" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/05/02/e5-af-b9-e4-b8-80-e4-ba-9b-e5-82-bb-e5-82-bb-e5-88-86-e4-b8-8d-e6-b8-85-e6-a5-9a-e7-9a-84-e5-8d-95-e4-bd-8d-e6-95-b4-e7-90-86-e7-ac-94-e8-ae-b0/" class="article-date">
+    <a href="/2015/05/02/对一些傻傻分不清楚的单位整理的笔记/" class="article-date">
   <time datetime="2015-05-02T07:46:34.000Z" itemprop="datePublished">2015-05-02</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/设计癖/">设计癖</a>
+    <a class="article-category-link" href="/categories/设计/">设计</a>
   </div>
 
   </div>
@@ -875,7 +489,7 @@ return ret;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/02/e5-af-b9-e4-b8-80-e4-ba-9b-e5-82-bb-e5-82-bb-e5-88-86-e4-b8-8d-e6-b8-85-e6-a5-9a-e7-9a-84-e5-8d-95-e4-bd-8d-e6-95-b4-e7-90-86-e7-ac-94-e8-ae-b0/">对一些傻傻分不清楚的单位整理的笔记</a>
+      <a class="article-title" href="/2015/05/02/对一些傻傻分不清楚的单位整理的笔记/">对一些傻傻分不清楚的单位整理的笔记</a>
     </h1>
   
 
@@ -884,9 +498,8 @@ return ret;
     <div class="article-entry" itemprop="articleBody">
       
         <p>最近在看设计方面的文章，对于一些单位老是分不清（╯‵□′）╯︵┴─┴ ，现在整理一下。</p>
-<h3 id="最基本的两个单位"><a href="#最基本的两个单位" class="headerlink" title="最基本的两个单位"></a><strong>最基本的两个单位</strong></h3><p>pt是point，点，是印刷行业常用单位，等于1/72英寸。pt是物理大小。<br>px是pixel，像素，是屏幕上显示数据的最基本的点。</p>
-<p>&nbsp;</p>
-<h3 id="像素密度"><a href="#像素密度" class="headerlink" title="像素密度"></a><strong>像素密度</strong></h3><ul>
+<h3 id="最基本的两个单位"><a href="#最基本的两个单位" class="headerlink" title="最基本的两个单位"></a>最基本的两个单位</h3><p>pt是point，点，是印刷行业常用单位，等于1/72英寸。pt是物理大小。<br>px是pixel，像素，是屏幕上显示数据的最基本的点。</p>
+<h3 id="像素密度"><a href="#像素密度" class="headerlink" title="像素密度"></a>像素密度</h3><ul>
 <li>ppi=Pixel Per Inch，图像像素密度 （在图像中，每英寸所包含的像素数目）</li>
 <li>dpi=dots per inch，打印像素密度 （每英寸所能打印的点数，即打印精度）<br><code>ppi(dpi) = √（长度像素数² + 宽度像素数²） / 屏幕对角线英寸数</code></li>
 </ul>
@@ -899,21 +512,18 @@ return ret;
 <li>xxhdpi (extra-extra-high) ~480dpi</li>
 <li>xxxhdpi (extra-extra-extra-high) ~640dpi</li>
 </ol>
-<p>&nbsp;</p>
-<h3 id="像素"><a href="#像素" class="headerlink" title="像素"></a><strong>像素</strong></h3><p>device independent pixels<em>   dp(dip)=Density-independent Pixels(Device independent pixels)，密度(设备)独立像素，它是一个抽象单位,建立在屏幕的物理密度上，以160PPI屏幕为标准。<br>`dp</em>ppi/160 = px`</p>
+<h3 id="像素"><a href="#像素" class="headerlink" title="像素"></a>像素</h3><p>device independent pixels<em>   dp(dip)=Density-independent Pixels(Device independent pixels)，密度(设备)独立像素，它是一个抽象单位,建立在屏幕的物理密度上，以160PPI屏幕为标准。<br>`dp</em>ppi/160 = px`</p>
 <ul>
 <li>sp=Scale-independent pixels，尺度独立像素，它是安卓的字体单位，以160PPI屏幕为标准。<br><code>sp*ppi/160 = px</code></li>
 </ul>
 <p>在Android设计原则中，有提到这两个单位，他建议文字的尺寸一律用sp单位，非文字的尺寸一律使用dp单位。例如textSize=”16sp”、layout_width=”60dp”。</p>
-<p>&nbsp;</p>
-<h3 id="CSS-Font-relative-lengths"><a href="#CSS-Font-relative-lengths" class="headerlink" title="CSS Font-relative lengths:"></a><strong>CSS Font-relative lengths:</strong></h3><p>em:”element”,大小不固定 ,成为相对单位（body则相对浏览器的默认字体设置，子集相对父级，则em会继承父级元素的字体大小）,可看做1em＝100％<br><code>em * 浏览器字体大小(px) = px</code><br>rem:”root element”,CSS3新的单位，和em的区别是，rem是相对于根元素字体大小。 ex: 0.5em,小写字母x的高度 ch: 数字“0”的宽度<br>ex: 0.5em,小写字母x的高度<br>ch: 数字“0”的宽度</p>
-<p>&nbsp;</p>
+<h3 id="CSS-Font-relative-lengths"><a href="#CSS-Font-relative-lengths" class="headerlink" title="CSS Font-relative lengths:"></a>CSS Font-relative lengths:</h3><p>em:”element”,大小不固定 ,成为相对单位（body则相对浏览器的默认字体设置，子集相对父级，则em会继承父级元素的字体大小）,可看做1em＝100％<br><code>em * 浏览器字体大小(px) = px</code><br>rem:”root element”,CSS3新的单位，和em的区别是，rem是相对于根元素字体大小。 ex: 0.5em,小写字母x的高度 ch: 数字“0”的宽度<br>ex: 0.5em,小写字母x的高度<br>ch: 数字“0”的宽度</p>
 <h4 id="参考"><a href="#参考" class="headerlink" title="参考:"></a><strong>参考:</strong></h4><p><a href="http://zhuanlan.zhihu.com/zhezhexiong/19565895" target="_blank" rel="external">[无线手册-4] dp、sp、px傻傻分不清楚[完整]</a><br><a href="http://www.w3.org/TR/css3-values/#em-unit" target="_blank" rel="external">CSS Values and Units Module Level 3</a><br><a href="http://developer.android.com/guide/practices/screens_support.html" target="_blank" rel="external">Supporting Multiple Screens</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/02/e5-af-b9-e4-b8-80-e4-ba-9b-e5-82-bb-e5-82-bb-e5-88-86-e4-b8-8d-e6-b8-85-e6-a5-9a-e7-9a-84-e5-8d-95-e4-bd-8d-e6-95-b4-e7-90-86-e7-ac-94-e8-ae-b0/" data-id="cj0km542l00095hbqff1a647a" class="article-share-link">Share</a>
+      <a data-url="https://gorgias.me/2015/05/02/对一些傻傻分不清楚的单位整理的笔记/" data-id="cj0ksyxhp000jk6bqxb60l2m2" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/em/">em</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/px/">px</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rem/">rem</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/像素/">像素</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/区分/">区分</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/单位/">单位</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/常见/">常见</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/格式/">格式</a></li></ul>
@@ -936,9 +546,9 @@ return ret;
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/技术宅/">技术宅</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/技术宅/折腾癌/">折腾癌</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术宅/未分类/">未分类</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/折腾癌/">折腾癌</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/未分类/">未分类</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计癖/">设计癖</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenWrt/">OpenWrt</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/环境配置/">环境配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/硬件DIY/">硬件DIY</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络安全/">网络安全</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/虚拟化/">虚拟化</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计/">设计</a></li></ul>
     </div>
   </div>
 
@@ -946,7 +556,7 @@ return ret;
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACR122U/">ACR122U</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Arch-Linux/">Arch Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BIOS/">BIOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ESXi/">ESXi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP-2/">HTTP/2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IC卡/">IC卡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nexus5/">Nexus5</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RFID/">RFID</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL/">SSL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TP-Link/">TP-Link</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/The-PostgreSQL-server-failed-to-start/">The PostgreSQL server failed to start</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VGA/">VGA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VMware/">VMware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/app/">app</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bumblebee/">bumblebee</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/certificate-transparency/">certificate transparency</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ckfinder/">ckfinder</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-hub/">docker hub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/em/">em</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitcafe/">gitcafe</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kali/">kali</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kali手机版/">kali手机版</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/">kvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/menuconfig/">menuconfig</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nethunter/">nethunter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx-openssl/">nginx.openssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nodejs/">nodejs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openwrt/">openwrt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postgresql/">postgresql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/px/">px</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/qemu/">qemu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rem/">rem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tplink/">tplink</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/">windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xorg/">xorg</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/东软/">东软</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/体验/">体验</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/像素/">像素</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分辨率/">分辨率</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/区分/">区分</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/单位/">单位</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/双显卡/">双显卡</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/固件/">固件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备用机/">备用机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/失败/">失败</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安卓/">安卓</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/安装/">安装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/常见/">常见</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/折腾/">折腾</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/改装/">改装</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/救砖/">救砖</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/教程/">教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数字校园/">数字校园</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/格式/">格式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/砖/">砖</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/破解/">破解</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/硬改/">硬改</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程器/">编程器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译/">编译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/联想/">联想</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟机/">虚拟机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/证书/">证书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/路由器/">路由器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/逆向分析/">逆向分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭源/">闭源</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/静态博客/">静态博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/黑屏/">黑屏</a></li></ul>
     </div>
@@ -956,7 +566,7 @@ return ret;
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
       <a href="/tags/ACR122U/" style="font-size: 10px;">ACR122U</a> <a href="/tags/Arch-Linux/" style="font-size: 10px;">Arch Linux</a> <a href="/tags/BIOS/" style="font-size: 10px;">BIOS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/ESXi/" style="font-size: 10px;">ESXi</a> <a href="/tags/HTTP-2/" style="font-size: 10px;">HTTP/2</a> <a href="/tags/IC卡/" style="font-size: 10px;">IC卡</a> <a href="/tags/Nexus5/" style="font-size: 10px;">Nexus5</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/TP-Link/" style="font-size: 10px;">TP-Link</a> <a href="/tags/The-PostgreSQL-server-failed-to-start/" style="font-size: 10px;">The PostgreSQL server failed to start</a> <a href="/tags/VGA/" style="font-size: 10px;">VGA</a> <a href="/tags/VMware/" style="font-size: 10px;">VMware</a> <a href="/tags/app/" style="font-size: 10px;">app</a> <a href="/tags/arch/" style="font-size: 15px;">arch</a> <a href="/tags/bumblebee/" style="font-size: 10px;">bumblebee</a> <a href="/tags/certificate-transparency/" style="font-size: 10px;">certificate transparency</a> <a href="/tags/ckfinder/" style="font-size: 10px;">ckfinder</a> <a href="/tags/docker-hub/" style="font-size: 10px;">docker hub</a> <a href="/tags/em/" style="font-size: 10px;">em</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/gitcafe/" style="font-size: 10px;">gitcafe</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/kali/" style="font-size: 15px;">kali</a> <a href="/tags/kali手机版/" style="font-size: 10px;">kali手机版</a> <a href="/tags/kvm/" style="font-size: 10px;">kvm</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/menuconfig/" style="font-size: 10px;">menuconfig</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/nethunter/" style="font-size: 15px;">nethunter</a> <a href="/tags/nginx-openssl/" style="font-size: 10px;">nginx.openssl</a> <a href="/tags/nodejs/" style="font-size: 10px;">nodejs</a> <a href="/tags/openwrt/" style="font-size: 15px;">openwrt</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/postgresql/" style="font-size: 10px;">postgresql</a> <a href="/tags/px/" style="font-size: 10px;">px</a> <a href="/tags/qemu/" style="font-size: 10px;">qemu</a> <a href="/tags/rem/" style="font-size: 10px;">rem</a> <a href="/tags/tplink/" style="font-size: 10px;">tplink</a> <a href="/tags/windows/" style="font-size: 10px;">windows</a> <a href="/tags/xorg/" style="font-size: 10px;">xorg</a> <a href="/tags/东软/" style="font-size: 10px;">东软</a> <a href="/tags/体验/" style="font-size: 10px;">体验</a> <a href="/tags/像素/" style="font-size: 10px;">像素</a> <a href="/tags/分辨率/" style="font-size: 10px;">分辨率</a> <a href="/tags/区分/" style="font-size: 10px;">区分</a> <a href="/tags/单位/" style="font-size: 10px;">单位</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/双显卡/" style="font-size: 10px;">双显卡</a> <a href="/tags/固件/" style="font-size: 10px;">固件</a> <a href="/tags/备用机/" style="font-size: 10px;">备用机</a> <a href="/tags/失败/" style="font-size: 10px;">失败</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安装/" style="font-size: 20px;">安装</a> <a href="/tags/常见/" style="font-size: 10px;">常见</a> <a href="/tags/折腾/" style="font-size: 10px;">折腾</a> <a href="/tags/改装/" style="font-size: 10px;">改装</a> <a href="/tags/救砖/" style="font-size: 10px;">救砖</a> <a href="/tags/教程/" style="font-size: 10px;">教程</a> <a href="/tags/数字校园/" style="font-size: 10px;">数字校园</a> <a href="/tags/格式/" style="font-size: 10px;">格式</a> <a href="/tags/源码/" style="font-size: 10px;">源码</a> <a href="/tags/砖/" style="font-size: 10px;">砖</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/硬改/" style="font-size: 10px;">硬改</a> <a href="/tags/编程器/" style="font-size: 10px;">编程器</a> <a href="/tags/编译/" style="font-size: 10px;">编译</a> <a href="/tags/联想/" style="font-size: 10px;">联想</a> <a href="/tags/虚拟化/" style="font-size: 15px;">虚拟化</a> <a href="/tags/虚拟机/" style="font-size: 10px;">虚拟机</a> <a href="/tags/证书/" style="font-size: 10px;">证书</a> <a href="/tags/路由器/" style="font-size: 10px;">路由器</a> <a href="/tags/逆向分析/" style="font-size: 10px;">逆向分析</a> <a href="/tags/闭源/" style="font-size: 10px;">闭源</a> <a href="/tags/静态博客/" style="font-size: 10px;">静态博客</a> <a href="/tags/黑屏/" style="font-size: 10px;">黑屏</a>
     </div>
@@ -975,28 +585,28 @@ return ret;
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
         
           <li>
-            <a href="/2017/02/24/e6-ba-90-e7-a0-81-e7-bc-96-e8-af-91openwrt-e5-9b-ba-e4-bb-b6-e7-ac-94-e8-ae-b0/">源码编译OpenWrt固件笔记</a>
+            <a href="/2017/02/24/源码编译OpenWrt固件笔记/">源码编译OpenWrt固件笔记</a>
           </li>
         
           <li>
-            <a href="/2017/01/17/arch-linux-e5-8f-8c-e6-98-be-e5-8d-a1-e7-ac-94-e8-ae-b0-e6-9c-ac-e5-ae-89-e8-a3-85-nvidia-e9-97-ad-e6-ba-90-e9-a9-b1-e5-8a-a8/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
+            <a href="/2017/01/17/Arch-Linux-双显卡-安装-NVIDIA-闭源驱动/">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a>
           </li>
         
           <li>
-            <a href="/2016/11/13/kvmqemu-e5-88-9d-e4-bd-93-e9-aa-8c/">KVM/QEMU初体验</a>
+            <a href="/2016/11/13/QEMU初体验/">KVM/QEMU初体验</a>
           </li>
         
           <li>
-            <a href="/2016/10/25/arch-linux-e4-b8-8a-e4-bd-bf-e7-94-a8acr122u-e7-a0-b4-e8-a7-a3-e9-b2-9c-e5-a5-b6-e5-8d-a1/">Arch Linux上使用ACR122U破解鲜奶卡</a>
+            <a href="/2016/10/25/Arch-Linux上使用ACR122U破解鲜奶卡/">Arch Linux上使用ACR122U破解鲜奶卡</a>
           </li>
         
           <li>
-            <a href="/2016/10/08/e4-ba-94-e5-a4-aa-e5-ad-90-e4-b8-8d-e8-83-bd-e9-80-80-e4-bc-91-ef-bc-8c-e5-bf-ab-e5-bd-93-e6-88-91-e7-9a-84-e5-a4-87-e7-94-a8-e6-9c-ba-ef-bc-81/">五太子不能退休，快当我的备用机！</a>
+            <a href="/2016/10/08/五太子不能退休，快当我的备用机！/">五太子不能退休，快当我的备用机！</a>
           </li>
         
       </ul>
@@ -1011,8 +621,8 @@ return ret;
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      &copy; 2017 Gorgias<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
