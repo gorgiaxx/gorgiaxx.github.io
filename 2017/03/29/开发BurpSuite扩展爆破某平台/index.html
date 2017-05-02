@@ -36,24 +36,24 @@
 
 
 <meta name="description" content="Introduction学校的校园网已经正式运营了，但是用户名密码还是使用的默认密码，身份证号后六位，对于单点登录的平台来说，是非常危险的。比如武汉大学的学号能在网上看到，密码是身份证后六位，那么登进他们的一卡通系统就能使用学生的银行卡进行消费。博主所在的学校使用的CAS实现SSO，爆破起来不方便。于是使用平台APP的接口爆破。
-PrepareDevelopment enviroment:1234">
+PrepareEnviroment:1234567OS: Arch">
 <meta property="og:type" content="article">
 <meta property="og:title" content="开发BurpSuite扩展爆破某平台">
 <meta property="og:url" content="https://gorgias.me/2017/03/29/开发BurpSuite扩展爆破某平台/index.html">
 <meta property="og:site_name" content="Gorgias'Blog">
 <meta property="og:description" content="Introduction学校的校园网已经正式运营了，但是用户名密码还是使用的默认密码，身份证号后六位，对于单点登录的平台来说，是非常危险的。比如武汉大学的学号能在网上看到，密码是身份证后六位，那么登进他们的一卡通系统就能使用学生的银行卡进行消费。博主所在的学校使用的CAS实现SSO，爆破起来不方便。于是使用平台APP的接口爆破。
-PrepareDevelopment enviroment:1234">
+PrepareEnviroment:1234567OS: Arch">
 <meta property="og:image" content="https://gorgias.me/./Intruder.png">
 <meta property="og:image" content="https://gorgias.me/./payload.png">
 <meta property="og:image" content="https://gorgias.me/./tel.png">
 <meta property="og:image" content="https://gorgias.me/./Extender.png">
 <meta property="og:image" content="https://gorgias.me/./Processing.png">
 <meta property="og:image" content="https://gorgias.me/./result.png">
-<meta property="og:updated_time" content="2017-03-30T09:36:13.203Z">
+<meta property="og:updated_time" content="2017-04-05T02:34:24.830Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发BurpSuite扩展爆破某平台">
 <meta name="twitter:description" content="Introduction学校的校园网已经正式运营了，但是用户名密码还是使用的默认密码，身份证号后六位，对于单点登录的平台来说，是非常危险的。比如武汉大学的学号能在网上看到，密码是身份证后六位，那么登进他们的一卡通系统就能使用学生的银行卡进行消费。博主所在的学校使用的CAS实现SSO，爆破起来不方便。于是使用平台APP的接口爆破。
-PrepareDevelopment enviroment:1234">
+PrepareEnviroment:1234567OS: Arch">
 <meta name="twitter:image" content="https://gorgias.me/./Intruder.png">
 
 
@@ -139,9 +139,8 @@ PrepareDevelopment enviroment:1234">
     
             <div class="post-content">
             <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>学校的校园网已经正式运营了，但是用户名密码还是使用的默认密码，身份证号后六位，对于单点登录的平台来说，是非常危险的。<br>比如武汉大学的学号能在网上看到，密码是身份证后六位，那么登进他们的一卡通系统就能使用学生的银行卡进行消费。<br>博主所在的学校使用的CAS实现SSO，爆破起来不方便。于是使用平台APP的接口爆破。</p>
-<h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><p>Development enviroment:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">OS: Arch Linux </div><div class="line">Kernel: x86_64 Linux 4.9.8-1-ARCH</div><div class="line">Shell: zsh 5.3.1</div><div class="line">DE: KDE5</div><div class="line">IDE: IntelliJIDEA 2016.1</div><div class="line">JDK: 1.8.0_121</div><div class="line">Build Tool: Gradle 3.3</div></pre></td></tr></table></figure></p>
-<h2 id="快速学习API"><a href="#快速学习API" class="headerlink" title="快速学习API"></a>快速学习API</h2><p>From samples import the Gradle project into IDEA.</p>
-<h3 id="需要被实现的接口"><a href="#需要被实现的接口" class="headerlink" title="需要被实现的接口"></a>需要被实现的接口</h3><p><em>IBurpExtender</em><br>所有扩展必须实现次接口，必须申明为 public ,并且必须提供一个默认的构造器。</p>
+<h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><p>Enviroment:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">OS: Arch Linux </div><div class="line">Kernel: x86_64 Linux 4.9.8-1-ARCH</div><div class="line">Shell: zsh 5.3.1</div><div class="line">DE: KDE5</div><div class="line">IDE: IntelliJIDEA 2016.1</div><div class="line">JDK: 1.8.0_121</div><div class="line">Build Tool: Gradle 3.3</div></pre></td></tr></table></figure></p>
+<h2 id="快速学习API"><a href="#快速学习API" class="headerlink" title="快速学习API"></a>快速学习API</h2><h3 id="需要被实现的接口"><a href="#需要被实现的接口" class="headerlink" title="需要被实现的接口"></a>需要被实现的接口</h3><p><em>IBurpExtender</em><br>所有扩展必须实现次接口，必须申明为 public ,并且必须提供一个默认的构造器。</p>
 <blockquote>
 <p>All extensions must implement this interface. Implementations must be called BurpExtender, in the package burp, must be declared public, and must provide a default (public, no-argument) constructor.</p>
 </blockquote>
@@ -195,6 +194,12 @@ PrepareDevelopment enviroment:1234">
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/2017/05/03/Ngrok使用笔记/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">ngrok 使用笔记</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
     
     
       <a class="next" href="/2017/02/24/源码编译OpenWrt固件笔记/">
