@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="人终究会被其年少不可得之物困扰一生"/>
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="https://gorgias.me/2017/05/03/frp使用笔记/"/>
+
+
+<meta name="description" content="title: frp 使用笔记tags:
+
+frp
+NAT
+内网穿透id: 249categories:
+工具date: 2017-05-03 10:35:44
+
+
+前言frp是中国开发者fatedier的作品，先看介绍
+
+frp 是一个高性能的反向代理应用，可以帮助您轻松地进行内网穿透，对外网提供服务，支持 tcp, udp, http, https 等协议类型，并且 web 服务支持根据域名">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gorgias'Blog">
+<meta property="og:url" content="https://gorgias.me/2017/05/03/frp使用笔记/index.html">
+<meta property="og:site_name" content="Gorgias'Blog">
+<meta property="og:description" content="title: frp 使用笔记tags:
+
+frp
+NAT
+内网穿透id: 249categories:
+工具date: 2017-05-03 10:35:44
+
+
+前言frp是中国开发者fatedier的作品，先看介绍
+
+frp 是一个高性能的反向代理应用，可以帮助您轻松地进行内网穿透，对外网提供服务，支持 tcp, udp, http, https 等协议类型，并且 web 服务支持根据域名">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2017/05/architecture.png">
+<meta property="og:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2017/05/Screenshot_20170503_105444.png">
+<meta property="og:updated_time" content="2017-05-03T03:22:18.661Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gorgias'Blog">
+<meta name="twitter:description" content="title: frp 使用笔记tags:
+
+frp
+NAT
+内网穿透id: 249categories:
+工具date: 2017-05-03 10:35:44
+
+
+前言frp是中国开发者fatedier的作品，先看介绍
+
+frp 是一个高性能的反向代理应用，可以帮助您轻松地进行内网穿透，对外网提供服务，支持 tcp, udp, http, https 等协议类型，并且 web 服务支持根据域名">
+<meta name="twitter:image" content="https://blog.gorgiaxx.com/wp-content/uploads/2017/05/architecture.png">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title>  - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          
+        
+      </h1>
+
+      <time class="post-time">
+          May 3 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <hr>
+<p>title: frp 使用笔记<br>tags:</p>
+<ul>
+<li>frp</li>
+<li>NAT</li>
+<li>内网穿透<br>id: 249<br>categories:</li>
+<li>工具<br>date: 2017-05-03 10:35:44</li>
+</ul>
+<p><img src="https://blog.gorgiaxx.com/wp-content/uploads/2017/05/architecture.png" alt="flowchart"></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>frp是中国开发者<a href="http://blog.fatedier.com" target="_blank" rel="external">fatedier</a>的作品，先看介绍</p>
+<blockquote>
+<p>frp 是一个高性能的反向代理应用，可以帮助您轻松地进行内网穿透，对外网提供服务，支持 tcp, udp, http, https 等协议类型，并且 web 服务支持根据域名进行路由转发。<br>之前一直在路由器上使用ngrok，所以对frp一无所知。做渗透测试，需要NAT穿透，所以一直在找好用的工具，磨刀不误砍柴工。<br>尝试之后发现，frp用法和ngrok相似，但是frp比ngrok更加优秀。<br>配置过程很简单，但是也遇到一些问题，所以把过程记录下来。  </p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>下载源码编译，这个编译就不是很自由，需要指定$GOPATH。ubuntu下没有指定$GOPATH，直接就下载到/src/xxxx了，然后也编译失败。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export GOPATH=$HOME/go</div><div class="line">$GOPATH/src/github.com/fatedier/frp</div></pre></td></tr></table></figure></p>
+</blockquote>
+<p>下载源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">go get github.com/fatedier/frp</div><div class="line"># 或者执行</div><div class="line">git clone https://github.com/fatedier/frp.git $GOPATH/src/github.com/fatedier/frp</div></pre></td></tr></table></figure></p>
+<p>编译<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd $GOPATH/src/github.com/fatedier/frp</div><div class="line">make</div></pre></td></tr></table></figure></p>
+<p>安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># server</div><div class="line">cp ./bin/frps /usr/bin/frps</div><div class="line">cp ./conf/frps.ini /etc/frps.ini</div><div class="line"># client</div><div class="line">cp ./bin/frps /usr/bin/frpc</div><div class="line">sudo cp ./conf/frpc.ini /etc/frpc.ini</div></pre></td></tr></table></figure></p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>默认使用配置文件</p>
+<h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><p>直接看帮助。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">root@gorgiaxx:~# frps -h</div><div class="line">frps is the server of frp</div><div class="line"></div><div class="line">Usage: </div><div class="line">    frps [-c config_file] [-L log_file] [--log-level=&lt;log_level&gt;] [--addr=&lt;bind_addr&gt;]</div><div class="line">    frps [-c config_file] --reload</div><div class="line">    frps -h | --help</div><div class="line">    frps -v | --version</div><div class="line"></div><div class="line">Options:</div><div class="line">    -c config_file            set config file</div><div class="line">    -L log_file               set output log file, including console</div><div class="line">    --log-level=&lt;log_level&gt;   set log level: debug, info, warn, error</div><div class="line">    --addr=&lt;bind_addr&gt;        listen addr for client, example: 0.0.0.0:7000</div><div class="line">    --reload                  reload ini file and configures in common section won&apos;t be changed</div><div class="line">    -h --help                 show this screen</div><div class="line">    -v --version              show version</div></pre></td></tr></table></figure></p>
+<p>支持读取配置文件，所以我们直接看配置文件。作者给出的配置文件示例已经写的很详细了。所以配置起来非常方便<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vim /etc/frps.ini</div></pre></td></tr></table></figure></p>
+<p>贴出我的配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">[common]</div><div class="line"># 支持IPv6，但是大陆网络情况下几乎不支持。这里填我们的IPv4地址，隧道端口7000</div><div class="line">bind_addr = 45.32.42.185</div><div class="line">bind_port = 7000</div><div class="line"></div><div class="line"># 这个就是http代理的端口，不要和nginx冲突，否则直接闪退。</div><div class="line">vhost_http_port = 8000</div><div class="line">vhost_https_port = 8443</div><div class="line"></div><div class="line"># 控制面板的访问端口，在这里我们可以看到隧道的使用情况</div><div class="line">dashboard_port = 7500</div><div class="line"></div><div class="line"># 控制面板访问控制，请修改默认密码</div><div class="line">dashboard_user = your_name</div><div class="line">dashboard_pwd = your_password</div><div class="line"></div><div class="line"># 日志记录路径，控制面板也能访问</div><div class="line">log_file = /var/log/frps.log</div><div class="line"></div><div class="line"># 日志级别，可选debug, info, warn, error。这里只需要warn，免得占空间。</div><div class="line">log_level = warn</div><div class="line"></div><div class="line"># 日志记录时间，不知道是不是支持自动清理，记录下warn日志就够了，也不需要清理。我觉得没必要记录warn以下的信息，就不管了</div><div class="line">log_max_days = 3</div><div class="line"></div><div class="line"># 特权模式，开启之后，支持客户端预配置，也就是不用在服务端单独配置服务，为了示范，我还是下面加一点服务端预配置参数</div><div class="line">privilege_mode = true</div><div class="line">privilege_token = your_privilege_token</div><div class="line"></div><div class="line"># 心跳包配置，默认30秒，超时应该就断开连接了</div><div class="line">heartbeat_timeout = 30</div><div class="line"></div><div class="line"># 设定端口范围，特权模式下端口是客户端决定的，所以要在服务端做好限制，以免影响正常服务</div><div class="line">privilege_allow_ports = 2000-3000,3001,3003,4000-50000</div><div class="line"></div><div class="line"># 最大连接数</div><div class="line">max_pool_count = 100</div><div class="line"></div><div class="line"># 认证超时</div><div class="line">authentication_timeout = 60</div><div class="line"></div><div class="line"># 子域名的根域名，就这样翻译吧</div><div class="line">subdomain_host = gorgiaxx.me</div><div class="line"></div><div class="line"># 这个用作metasploit的reverse_tcp穿透，配好token就好</div><div class="line">[rev]</div><div class="line">type = tcp</div><div class="line">auth_token = gorgiaxx</div><div class="line">bind_addr = 0.0.0.0</div><div class="line">listen_port = 4444</div><div class="line"></div><div class="line"># 这个来代理web服务，用来传输payload</div><div class="line">[web]</div><div class="line"># 如果要用http代理，必须至少在前面设定vhost_http_port这个参数。</div><div class="line">type = http</div><div class="line">auth_token = gorgiaxx</div><div class="line"># 子域名，最后的访问域名就是frp.gorgiaxx.me</div><div class="line">subdomain = frp</div></pre></td></tr></table></figure></p>
+<h3 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">～$ frpc -h </div><div class="line">frpc is the client of frp</div><div class="line"></div><div class="line">Usage: </div><div class="line">    frpc [-c config_file] [-L log_file] [--log-level=&lt;log_level&gt;] [--server-addr=&lt;server_addr&gt;]</div><div class="line">    frpc -h | --help</div><div class="line">    frpc -v | --version</div><div class="line"></div><div class="line">Options:</div><div class="line">    -c config_file              set config file</div><div class="line">    -L log_file                 set output log file, including console</div><div class="line">    --log-level=&lt;log_level&gt;     set log level: debug, info, warn, error</div><div class="line">    --server-addr=&lt;server_addr&gt; addr which frps is listening for, example: 0.0.0.0:7000</div><div class="line">    -h --help                   show this screen</div><div class="line">    --version                   show version</div></pre></td></tr></table></figure>
+<p>配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">[common]</div><div class="line"># 服务器端口和地址</div><div class="line">server_addr = 45.32.42.185</div><div class="line">server_port = 7000</div><div class="line"></div><div class="line"># 通过http代理访问，一般情况下用不到</div><div class="line"># http_proxy = http://user:pwd@192.168.1.128:8080</div><div class="line"></div><div class="line"># 日志路径，客户端访问这个要root权限，后面加sudo运行吧。</div><div class="line">log_file = /var/log/frpc.log</div><div class="line">log_level = warn</div><div class="line">log_max_days = 3</div><div class="line"></div><div class="line"># 服务指定给用户的token</div><div class="line">auth_token = gorgiaxx</div><div class="line"></div><div class="line"># 特权的token</div><div class="line">privilege_token = your_token</div><div class="line"></div><div class="line">[rev]</div><div class="line"># tcp | http, default is tcp</div><div class="line">type = tcp</div><div class="line">local_ip = 127.0.0.1</div><div class="line">local_port = 4444</div><div class="line"># 加密通信，暂时不需要</div><div class="line">use_encryption = false</div><div class="line"># 不是http的情况下，gzip压缩也不要</div><div class="line">use_gzip = false</div><div class="line"></div><div class="line">[web]</div><div class="line">type = http</div><div class="line">local_ip = 127.0.0.1</div><div class="line">local_port = 8080</div><div class="line">use_gzip = true</div><div class="line">pool_count = 20</div><div class="line"># 可以设定访问控制</div><div class="line"># http_user = admin</div><div class="line"># http_pwd = admin</div><div class="line"># 子域名，最后就是frp.gorgiaxx.me</div><div class="line">subdomain = frp</div></pre></td></tr></table></figure></p>
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p>frp权限控制做的比较好，不怕端口暴露在公网。所以可以放心常驻后台</p>
+<p>###服务端<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nohup frps -c /etc/frps.ini &amp;</div></pre></td></tr></table></figure></p>
+<p>###客户端<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nohup frps -c /etc/frps.ini &amp;</div></pre></td></tr></table></figure></p>
+<h3 id="Dashboard"><a href="#Dashboard" class="headerlink" title="Dashboard"></a>Dashboard</h3><p>直接浏览器访问<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://gorgiaxx.me:8000/</div></pre></td></tr></table></figure></p>
+<p>输入用户名密码就能看到面板了<br><img src="https://blog.gorgiaxx.com/wp-content/uploads/2017/05/Screenshot_20170503_105444.png" alt="dashboard"></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://github.com/fatedier/frp" target="_blank" rel="external">fatedier/frp</a></p>
+
+            </div>
+          
+
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2017
+    <span class="footer-author">Gorgias.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
