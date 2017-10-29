@@ -36,26 +36,29 @@
 
 
 <meta name="description" content="完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作">
+<meta name="keywords" content="虚拟化,Docker,docker hub">
 <meta property="og:type" content="article">
 <meta property="og:title" content="小鲸鱼Docker新手学习笔记">
 <meta property="og:url" content="https://gorgias.me/2015/08/29/小鲸鱼Docker新手学习笔记/index.html">
-<meta property="og:site_name" content="Gorgias'Blog">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
 <meta property="og:description" content="完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作">
-<meta property="og:image" content="https://gorgias.me/uploads/2015/08/logo.png">
-<meta property="og:image" content="https://gorgias.me/uploads/2015/08/diff-1024x495.png">
-<meta property="og:image" content="https://gorgias.me/uploads/2015/08/inspect.png">
-<meta property="og:image" content="https://gorgias.me/uploads/2015/08/repostitory-1024x490.png">
-<meta property="og:image" content="https://gorgias.me/uploads/2015/08/pushed.png">
-<meta property="og:updated_time" content="2017-03-22T10:04:42.324Z">
+<meta property="og:image" content="https://gorgias.me/2015/08/29/小鲸鱼Docker新手学习笔记/logo.png">
+<meta property="og:image" content="https://gorgias.me/2015/08/29/小鲸鱼Docker新手学习笔记/diff.png">
+<meta property="og:image" content="https://gorgias.me/2015/08/29/小鲸鱼Docker新手学习笔记/inspect.png">
+<meta property="og:image" content="https://gorgias.me/2015/08/29/小鲸鱼Docker新手学习笔记/repostitory.png">
+<meta property="og:image" content="https://gorgias.me/2015/08/29/小鲸鱼Docker新手学习笔记/pushed.png">
+<meta property="og:updated_time" content="2017-10-29T12:16:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小鲸鱼Docker新手学习笔记">
 <meta name="twitter:description" content="完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作">
-<meta name="twitter:image" content="https://gorgias.me/uploads/2015/08/logo.png">
+<meta name="twitter:image" content="https://gorgias.me/2015/08/29/小鲸鱼Docker新手学习笔记/logo.png">
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
 <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
 
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
@@ -63,7 +66,7 @@
 <script type="text/javascript">
   var themeConfig = {
     fancybox: {
-      enable: false
+      enable: true
     },
   };
 </script>
@@ -134,7 +137,7 @@
 
     
             <div class="post-content">
-            <p><img src="https://gorgias.me/uploads/2015/08/logo.png" alt="logo"><br>完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。<br>Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。<br>Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作系统内核.<br><img src="https://gorgias.me/uploads/2015/08/diff-1024x495.png" alt="diff"></p>
+            <p><img src="./logo.png" alt="logo"><br>完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。<br>Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。<br>Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作系统内核.<br><img src="./diff.png" alt="diff"></p>
 <h4 id="Docker通常用于如下场景："><a href="#Docker通常用于如下场景：" class="headerlink" title="Docker通常用于如下场景："></a>Docker通常用于如下场景：</h4><ul>
 <li>web应用的自动化打包和发布；</li>
 <li>自动化测试和持续集成、发布；</li>
@@ -143,47 +146,49 @@
 </ul>
 <p>Linux版本：<a href="http://www.ubuntu.com/download/server" target="_blank" rel="external">ubuntu-15.04-server-amd64</a><br>环境：VMware Workstation 11</p>
 <p>下载安装docker</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install docker.io</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install docker.io</div></pre></td></tr></table></figure>
 <p>查看docker版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker version</div><div class="line">Client version: 1.6.2</div><div class="line">Client API version: 1.18</div><div class="line">Go version (client): go1.3.3</div><div class="line">Git commit (client): 7c8fca2</div><div class="line">OS/Arch (client): linux/amd64</div><div class="line">Server version: 1.6.2</div><div class="line">Server API version: 1.18</div><div class="line">Go version (server): go1.3.3</div><div class="line">Git commit (server): 7c8fca2</div><div class="line">OS/Arch (server): linux/amd64</div><div class="line"></div><div class="line">root@ubuntu:~# docker info</div><div class="line">Containers: 13</div><div class="line">Images: 3</div><div class="line">Storage Driver: aufs</div><div class="line"> Root Dir: /var/lib/docker/aufs</div><div class="line"> Backing Filesystem: extfs</div><div class="line"> Dirs: 29</div><div class="line"> Dirperm1 Supported: true</div><div class="line">Execution Driver: native-0.2</div><div class="line">Kernel Version: 3.19.0-15-generic</div><div class="line">Operating System: Ubuntu 15.04</div><div class="line">CPUs: 2</div><div class="line">Total Memory: 1.938 GiB</div><div class="line">Name: ubuntu</div><div class="line">ID: 5P2D:CFMQ:5WWP:U7RE:3SLE:Z2D3:L7D3:UMCI:LHZD:WNQK:Q6DD:ZRPA</div><div class="line">WARNING: No swap limit support</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># docker version</span></div><div class="line">Client version: 1.6.2</div><div class="line">Client API version: 1.18</div><div class="line">Go version (client): go1.3.3</div><div class="line">Git commit (client): 7c8fca2</div><div class="line">OS/Arch (client): linux/amd64</div><div class="line">Server version: 1.6.2</div><div class="line">Server API version: 1.18</div><div class="line">Go version (server): go1.3.3</div><div class="line">Git commit (server): 7c8fca2</div><div class="line">OS/Arch (server): linux/amd64</div><div class="line"></div><div class="line">root@ubuntu:~<span class="comment"># docker info</span></div><div class="line">Containers: 13</div><div class="line">Images: 3</div><div class="line">Storage Driver: aufs</div><div class="line"> Root Dir: /var/lib/docker/aufs</div><div class="line"> Backing Filesystem: extfs</div><div class="line"> Dirs: 29</div><div class="line"> Dirperm1 Supported: <span class="literal">true</span></div><div class="line">Execution Driver: native-0.2</div><div class="line">Kernel Version: 3.19.0-15-generic</div><div class="line">Operating System: Ubuntu 15.04</div><div class="line">CPUs: 2</div><div class="line">Total Memory: 1.938 GiB</div><div class="line">Name: ubuntu</div><div class="line">ID: 5P2D:CFMQ:5WWP:U7RE:3SLE:Z2D3:L7D3:UMCI:LHZD:WNQK:Q6DD:ZRPA</div><div class="line">WARNING: No swap <span class="built_in">limit</span> support</div></pre></td></tr></table></figure>
 <p>搜索可用的docker镜像<br>这里用工具检索名字为tutorial的镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker search learn/tutorial</div><div class="line">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED</div><div class="line">learn/tutorial                 11</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># docker search learn/tutorial</span></div><div class="line">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED</div><div class="line">learn/tutorial                 11</div></pre></td></tr></table></figure>
 <p>下载容器镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker search learn/tutorial</div><div class="line">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED</div><div class="line">learn/tutorial                 11</div><div class="line">root@ubuntu:~# docker pull learn/tutorial</div><div class="line">Pulling repository learn/tutorial</div><div class="line">8dbd9e392a96: Download complete Status: Downloaded newer image for learn/tutorial:latest</div></pre></td></tr></table></figure>
-<p>来一个hello <del datetime="2015-08-28T09:08:10+00:00">world</del> gorigas!</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker run learn/tutorial echo &quot;hello gorgias&quot;</div><div class="line">hello gorgias</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># docker search learn/tutorial</span></div><div class="line">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED</div><div class="line">learn/tutorial                 11</div><div class="line">root@ubuntu:~<span class="comment"># docker pull learn/tutorial</span></div><div class="line">Pulling repository learn/tutorial</div><div class="line">8dbd9e392a96: Download complete Status: Downloaded newer image <span class="keyword">for</span> learn/tutorial:latest</div></pre></td></tr></table></figure>
+<p>来一个hello gorigas!</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># docker run learn/tutorial echo "hello gorgias"</span></div><div class="line">hello gorgias</div></pre></td></tr></table></figure>
 <p>在容器中安装新的程序</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run learn/tutorial apt-get install -y ping</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run learn/tutorial apt-get install -y ping</div></pre></td></tr></table></figure>
 <p>在执行apt-get 命令的时候，要带上-y参数。如果不指定-y参数的话，apt-get命令会进入交互模式，需要用户输入命令来进行确认，但在docker环境中是无法响应这种交互的。</p>
 <p>保存对容器的修改<br>当你对某一个容器做了修改之后（通过在容器中运行某一个命令），可以把对容器的修改保存下来，这样下次可以从保存后的最新状态运行该容器。docker中保存状态的过程称之为committing，它保存的新旧状态之间的区别，从而产生一个新的版本。<br>首先使用docker ps -l命令获得安装完ping命令之后容器的id。然后把这个镜像保存为learn/ping。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker ps -l</div><div class="line">CONTAINER ID        IMAGE                   COMMAND              CREATED              STATUS              PORTS               NAMES</div><div class="line">824490fb9db6        learn/tutorial:latest   &quot;ping 192.168.1.1&quot;   About a minute ago</div><div class="line">//只需取到能用于区分的量就行了，这里是824                                          suspicious_yalow</div><div class="line">root@ubuntu:~# docker commit 824 learn/ping</div><div class="line">ae5aa76cc0f84a7a3ebb77e8c7557df0d89564dd5cb9830cb4d35424290a71ca //返回的版本号</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># docker ps -l</span></div><div class="line">CONTAINER ID        IMAGE                   COMMAND              CREATED              STATUS              PORTS               NAMES</div><div class="line">824490fb9db6        learn/tutorial:latest   <span class="string">"ping 192.168.1.1"</span>   About a minute ago</div><div class="line">//只需取到能用于区分的量就行了，这里是824                                          suspicious_yalow</div><div class="line">root@ubuntu:~<span class="comment"># docker commit 824 learn/ping</span></div><div class="line">ae5aa76cc0f84a7a3ebb77e8c7557df0d89564dd5cb9830cb4d35424290a71ca //返回的版本号</div></pre></td></tr></table></figure>
 <p>运行新的镜像<br>一定要使用新的镜像名learn/ping来运行ping命令。(译者按：最开始下载的learn/tutorial镜像中是没有ping命令的)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># docker run learn/ping ping www.baidu.com</div><div class="line">PING www.a.shifen.com (115.239.210.27) 56(84) bytes of data.</div><div class="line">64 bytes from 115.239.210.27: icmp_req=1 ttl=53 time=23.7 ms</div><div class="line">64 bytes from 115.239.210.27: icmp_req=2 ttl=53 time=23.2 ms</div><div class="line">64 bytes from 115.239.210.27: icmp_req=3 ttl=53 time=23.4 ms</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># docker run learn/ping ping www.baidu.com</span></div><div class="line">PING www.a.shifen.com (115.239.210.27) 56(84) bytes of data.</div><div class="line">64 bytes from 115.239.210.27: icmp_req=1 ttl=53 time=23.7 ms</div><div class="line">64 bytes from 115.239.210.27: icmp_req=2 ttl=53 time=23.2 ms</div><div class="line">64 bytes from 115.239.210.27: icmp_req=3 ttl=53 time=23.4 ms</div></pre></td></tr></table></figure>
 <p>停止运行中的镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker stop id  //优♂雅地停止镜像</div><div class="line">docker kill id  //强行停止镜像</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker stop id  //优♂雅地停止镜像</div><div class="line">docker <span class="built_in">kill</span> id  //强行停止镜像</div></pre></td></tr></table></figure>
 <p>检查运行中的镜像<br>先使用docker ps查看镜像，然后再用这条命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker inspect dc8 //这里dc8是镜像id的前三位</div></pre></td></tr></table></figure>
-<p><img src="https://gorgias.me/uploads/2015/08/inspect.png" alt="inspect"></p>
-<p>发布自己的镜像<br>先在<a href="https://hub.docker.com/" target="_blank" rel="external">Docker Hub</a>注册一个账号<br>创建一个自己的仓库<br><img src="https://gorgias.me/uploads/2015/08/repostitory-1024x490.png" alt="repostitory"><br>push之前也可以先登录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker login</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker inspect dc8 //这里dc8是镜像id的前三位</div></pre></td></tr></table></figure>
+<p><img src="./inspect.png" alt="inspect"></p>
+<p>发布自己的镜像<br>先在<a href="https://hub.docker.com/" target="_blank" rel="external">Docker Hub</a>注册一个账号<br>创建一个自己的仓库<br><img src="./repostitory.png" alt="repostitory"><br>push之前也可以先登录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker login</div></pre></td></tr></table></figure>
 <p>这里尝试把learn/ping发布到docker的index网站。你只能将镜像发布到自己的空间下面。这个模拟器登录的是learn帐号。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~# docker images //列出所有安装过的镜像</div><div class="line">REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE</div><div class="line">learn/ping          latest              db66cd8a04ae        55 minutes ago       139.5 MB</div><div class="line">learn/tutorial      latest              8dbd9e392a96        2.380344 years ago   128 MB</div><div class="line">root@ubuntu:~# docker tag db6 gorgiaxx/learn-ping //修改镜像标签</div><div class="line">root@ubuntu:~# docker push gorgiaxx/learn-ping //发布一个镜像到官方网站</div><div class="line">The push refers to a repository [gorgiaxx/learn-ping] (len: 1)</div><div class="line">Sending image list</div><div class="line">Pushing repository gorgiaxx/learn-ping (1 tags)</div><div class="line">8dbd9e392a96: Image already pushed, skipping</div><div class="line">db66cd8a04ae: Image successfully pushed</div><div class="line">Pushing tag for rev [db66cd8a04ae] on &#123;https://cdn-registry-1.docker.io/v1/repositories/gorgiaxx/learn-ping/tags/latest&#125;</div></pre></td></tr></table></figure>
-<p>成功发布到了Docker Hub上<br><img src="https://gorgias.me/uploads/2015/08/pushed.png" alt="pushed"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># docker images //列出所有安装过的镜像</span></div><div class="line">REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE</div><div class="line">learn/ping          latest              db66<span class="built_in">cd</span>8a04ae        55 minutes ago       139.5 MB</div><div class="line">learn/tutorial      latest              8dbd9e392a96        2.380344 years ago   128 MB</div><div class="line">root@ubuntu:~<span class="comment"># docker tag db6 gorgiaxx/learn-ping //修改镜像标签</span></div><div class="line">root@ubuntu:~<span class="comment"># docker push gorgiaxx/learn-ping //发布一个镜像到官方网站</span></div><div class="line">The push refers to a repository [gorgiaxx/learn-ping] (len: 1)</div><div class="line">Sending image list</div><div class="line">Pushing repository gorgiaxx/learn-ping (1 tags)</div><div class="line">8dbd9e392a96: Image already pushed, skipping</div><div class="line">db66<span class="built_in">cd</span>8a04ae: Image successfully pushed</div><div class="line">Pushing tag <span class="keyword">for</span> rev [db66<span class="built_in">cd</span>8a04ae] on &#123;https://cdn-registry-1.docker.io/v1/repositories/gorgiaxx/learn-ping/tags/latest&#125;</div></pre></td></tr></table></figure>
+<p>成功发布到了Docker Hub上<br><img src="./pushed.png" alt="pushed"></p>
 
             </div>
           
 
     
       <footer class="post-footer">
-        <div class="post-tags">
-          
-            <a href="/tags/虚拟化/">虚拟化</a>
-          
-            <a href="/tags/Docker/">Docker</a>
-          
-            <a href="/tags/docker-hub/">docker hub</a>
-          
-        </div>
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/虚拟化/">虚拟化</a>
+		  
+			<a href="/tags/Docker/">Docker</a>
+		  
+			<a href="/tags/docker-hub/">docker hub</a>
+		  
+		</div>
+		
 
         
         
@@ -241,6 +246,8 @@
 
 
     
+  
+
 
 
 
@@ -249,6 +256,8 @@
     <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
   
 
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
   
 
     <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>

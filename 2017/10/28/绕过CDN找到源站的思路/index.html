@@ -35,24 +35,24 @@
 <link rel="canonical" href="https://gorgias.me/2017/10/28/绕过CDN找到源站的思路/"/>
 
 
-<meta name="description" content="绕过CDN的思路网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。站在站长的角度，不可能每个站都会用上CDN。站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。
-DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
+<meta name="description" content="绕过CDN的思路网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。站在站长的角度，不可能每个站都会用上CDN。站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。 DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
+<meta name="keywords" content="网络安全">
 <meta property="og:type" content="article">
 <meta property="og:title" content="绕过CDN找到源站的思路">
 <meta property="og:url" content="https://gorgias.me/2017/10/28/绕过CDN找到源站的思路/index.html">
-<meta property="og:site_name" content="Gorgias'Blog">
-<meta property="og:description" content="绕过CDN的思路网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。站在站长的角度，不可能每个站都会用上CDN。站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。
-DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="绕过CDN的思路网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。站在站长的角度，不可能每个站都会用上CDN。站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。 DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
 <meta property="og:updated_time" content="2017-10-29T08:04:49.191Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="绕过CDN找到源站的思路">
-<meta name="twitter:description" content="绕过CDN的思路网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。站在站长的角度，不可能每个站都会用上CDN。站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。
-DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
+<meta name="twitter:description" content="绕过CDN的思路网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。站在站长的角度，不可能每个站都会用上CDN。站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。 DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
 <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
 
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
@@ -60,7 +60,7 @@ DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
 <script type="text/javascript">
   var themeConfig = {
     fancybox: {
-      enable: false
+      enable: true
     },
   };
 </script>
@@ -169,11 +169,13 @@ DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
 
     
       <footer class="post-footer">
-        <div class="post-tags">
-          
-            <a href="/tags/网络安全/">网络安全</a>
-          
-        </div>
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/网络安全/">网络安全</a>
+		  
+		</div>
+		
 
         
         
@@ -225,6 +227,8 @@ DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
 
 
     
+  
+
 
 
 
@@ -233,6 +237,8 @@ DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
     <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
   
 
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
   
 
     <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>

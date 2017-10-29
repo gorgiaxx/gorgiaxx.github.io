@@ -393,19 +393,19 @@ a {
   text-decoration: none; }
 
 h1 {
-  font-size: 1.5rem;
+  font-size: 1.9rem;
   font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif; }
 
 h2 {
-  font-size: 1.4rem;
+  font-size: 1.7rem;
   font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif; }
 
 h3 {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif; }
 
 h4 {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif; }
 
 h5 {
@@ -525,7 +525,7 @@ h6 {
   .post .post-header .post-title {
     margin: 0 0 10px;
     line-height: 1.4;
-    font-size: 1.3em;
+    font-size: 1.5em;
     font-weight: 400;
     font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif; }
   .post .post-header .post-link {
@@ -549,32 +549,32 @@ h6 {
   .post .post-content {
     margin-bottom: 40px; }
     .post .post-content h1 {
-      font-size: 1.3em;
+      font-size: h1 1.9rem;
       font-weight: 400;
       font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif;
       margin-top: 1.2em; }
     .post .post-content h2 {
-      font-size: 1.3em;
+      font-size: h2 1.7rem;
       font-weight: 400;
       font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif;
       margin-top: 1.2em; }
     .post .post-content h3 {
-      font-size: 1.3em;
+      font-size: h3 1.5rem;
       font-weight: 400;
       font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif;
       margin-top: 1.2em; }
     .post .post-content h4 {
-      font-size: 1.3em;
+      font-size: h4 1.3rem;
       font-weight: 400;
       font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif;
       margin-top: 1.2em; }
     .post .post-content h5 {
-      font-size: 1.3em;
+      font-size: h5 1.1rem;
       font-weight: 400;
       font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif;
       margin-top: 1.2em; }
     .post .post-content h6 {
-      font-size: 1.3em;
+      font-size: h6 1rem;
       font-weight: 400;
       font-family: "Open Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif;
       margin-top: 1.2em; }

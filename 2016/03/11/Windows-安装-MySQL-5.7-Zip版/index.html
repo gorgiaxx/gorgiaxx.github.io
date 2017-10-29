@@ -35,30 +35,24 @@
 <link rel="canonical" href="https://gorgias.me/2016/03/11/Windows-安装-MySQL-5.7-Zip版/"/>
 
 
-<meta name="description" content="想在虚拟机上搭建一个Windows Server 2008 的靶机，在安装MySQL 5.7的时候老是出错。最后终于解决了，真是太不人性化了！本来计划在博客上只写干货的，但是这个问题在网上很难找到解决办法，于是打算把解决过程记录下来。
-下载地址：http://dev.mysql.com/downloads/mysql/
-1.下载解压，首先把my-default.ini重命名为my.ini
-然后用编">
+<meta name="description" content="想在虚拟机上搭建一个Windows Server 2008 的靶机，在安装MySQL 5.7的时候老是出错。最后终于解决了，真是太不人性化了！本来计划在博客上只写干货的，但是这个问题在网上很难找到解决办法，于是打算把解决过程记录下来。 下载地址：http://dev.mysql.com/downloads/mysql/ 1.下载解压，首先把my-default.ini重命名为my.ini 然后用编">
+<meta name="keywords" content="安装,mysql,windows">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Windows 安装 MySQL 5.7 Zip版">
 <meta property="og:url" content="https://gorgias.me/2016/03/11/Windows-安装-MySQL-5.7-Zip版/index.html">
-<meta property="og:site_name" content="Gorgias'Blog">
-<meta property="og:description" content="想在虚拟机上搭建一个Windows Server 2008 的靶机，在安装MySQL 5.7的时候老是出错。最后终于解决了，真是太不人性化了！本来计划在博客上只写干货的，但是这个问题在网上很难找到解决办法，于是打算把解决过程记录下来。
-下载地址：http://dev.mysql.com/downloads/mysql/
-1.下载解压，首先把my-default.ini重命名为my.ini
-然后用编">
-<meta property="og:updated_time" content="2017-03-22T09:34:06.120Z">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="想在虚拟机上搭建一个Windows Server 2008 的靶机，在安装MySQL 5.7的时候老是出错。最后终于解决了，真是太不人性化了！本来计划在博客上只写干货的，但是这个问题在网上很难找到解决办法，于是打算把解决过程记录下来。 下载地址：http://dev.mysql.com/downloads/mysql/ 1.下载解压，首先把my-default.ini重命名为my.ini 然后用编">
+<meta property="og:updated_time" content="2017-10-29T11:39:54.483Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Windows 安装 MySQL 5.7 Zip版">
-<meta name="twitter:description" content="想在虚拟机上搭建一个Windows Server 2008 的靶机，在安装MySQL 5.7的时候老是出错。最后终于解决了，真是太不人性化了！本来计划在博客上只写干货的，但是这个问题在网上很难找到解决办法，于是打算把解决过程记录下来。
-下载地址：http://dev.mysql.com/downloads/mysql/
-1.下载解压，首先把my-default.ini重命名为my.ini
-然后用编">
+<meta name="twitter:description" content="想在虚拟机上搭建一个Windows Server 2008 的靶机，在安装MySQL 5.7的时候老是出错。最后终于解决了，真是太不人性化了！本来计划在博客上只写干货的，但是这个问题在网上很难找到解决办法，于是打算把解决过程记录下来。 下载地址：http://dev.mysql.com/downloads/mysql/ 1.下载解压，首先把my-default.ini重命名为my.ini 然后用编">
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
 <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
 
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
@@ -66,7 +60,7 @@
 <script type="text/javascript">
   var themeConfig = {
     fancybox: {
-      enable: false
+      enable: true
     },
   };
 </script>
@@ -143,37 +137,39 @@
 <p>然后用编辑器打开，注意编码为ANSI</p>
 <p>这里是最基本的安装，其他参数选项自行查阅<a href="http://dev.mysql.com/doc/refman/5.7/en/" target="_blank" rel="external">官方文档</a>配置</p>
 <p>在mysqld里修改路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">basedir = X:/path/mysql</div><div class="line">datadir = X:/path/mysql/data</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">basedir = X:/path/mysql</div><div class="line">datadir = X:/path/mysql/data</div></pre></td></tr></table></figure>
 <p>然后在后面加上</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[mysql]</div><div class="line">default-character-set=utf8</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[mysql]</div><div class="line">default-character-set=utf8</div></pre></td></tr></table></figure>
 <p>注释sqlmode</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES</span></div></pre></td></tr></table></figure>
 <p>在bin目录运行,初始化data目录和系统表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --initialize</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --initialize</div></pre></td></tr></table></figure>
 <p>在控制台运行mysql，跳过密码认证</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --standalone --console --skip-grant-tables</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --standalone --console --skip-grant-tables</div></pre></td></tr></table></figure>
 <p>自行配好环境变量，cmd运行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql -u root</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql -u root</div></pre></td></tr></table></figure>
 <p>更新密码为123456</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set password for &apos;root&apos;@&apos;localhost&apos;=password(&apos;123456&apos;);</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">set</span> password <span class="keyword">for</span> <span class="string">'root'</span>@<span class="string">'localhost'</span>=password(<span class="string">'123456'</span>);</div></pre></td></tr></table></figure>
 <p>安装MySQL服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --install</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysqld --install</div></pre></td></tr></table></figure>
 <p>把控制台的mysql停止，然后启动MySQL服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">net start mysql</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">net start mysql</div></pre></td></tr></table></figure>
             </div>
           
 
     
       <footer class="post-footer">
-        <div class="post-tags">
-          
-            <a href="/tags/安装/">安装</a>
-          
-            <a href="/tags/mysql/">mysql</a>
-          
-            <a href="/tags/windows/">windows</a>
-          
-        </div>
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/安装/">安装</a>
+		  
+			<a href="/tags/mysql/">mysql</a>
+		  
+			<a href="/tags/windows/">windows</a>
+		  
+		</div>
+		
 
         
         
@@ -231,6 +227,8 @@
 
 
     
+  
+
 
 
 
@@ -239,6 +237,8 @@
     <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
   
 
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
   
 
     <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
