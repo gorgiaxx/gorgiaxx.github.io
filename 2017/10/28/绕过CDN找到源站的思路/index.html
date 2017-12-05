@@ -42,7 +42,7 @@
 <meta property="og:url" content="https://gorgias.me/2017/10/28/绕过CDN找到源站的思路/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
 <meta property="og:description" content="绕过CDN的思路网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。站在站长的角度，不可能每个站都会用上CDN。站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。 DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
-<meta property="og:updated_time" content="2017-10-29T08:04:49.191Z">
+<meta property="og:updated_time" content="2017-11-26T14:49:05.918Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="绕过CDN找到源站的思路">
 <meta name="twitter:description" content="绕过CDN的思路网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。站在站长的角度，不可能每个站都会用上CDN。站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。 DNS历史解析https://dnshistory.org/http://whoisrequest.com/history/https:">
@@ -132,7 +132,7 @@
     
             <div class="post-content">
             <h1 id="绕过CDN的思路"><a href="#绕过CDN的思路" class="headerlink" title="绕过CDN的思路"></a>绕过CDN的思路</h1><p>网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。<br>站在站长的角度，不可能每个站都会用上CDN。<br>站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。<br>站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。</p>
-<h2 id="DNS历史解析"><a href="#DNS历史解析" class="headerlink" title="DNS历史解析"></a>DNS历史解析</h2><p><a href="https://dnshistory.org/" target="_blank" rel="external">https://dnshistory.org/</a><br><a href="http://whoisrequest.com/history/" target="_blank" rel="external">http://whoisrequest.com/history/</a><br><a href="https://completedns.com/dns-history/" target="_blank" rel="external">https://completedns.com/dns-history/</a><br><a href="http://dnstrails.com/" target="_blank" rel="external">http://dnstrails.com/</a><br><a href="https://who.is/domain-history/" target="_blank" rel="external">https://who.is/domain-history/</a><br><a href="http://research.domaintools.com/research/hosting-history/" target="_blank" rel="external">http://research.domaintools.com/research/hosting-history/</a></p>
+<h2 id="DNS历史解析"><a href="#DNS历史解析" class="headerlink" title="DNS历史解析"></a>DNS历史解析</h2><p><a href="https://dnshistory.org/" target="_blank" rel="external">https://dnshistory.org/</a><br><a href="http://whoisrequest.com/history/" target="_blank" rel="external">http://whoisrequest.com/history/</a><br><a href="https://completedns.com/dns-history/" target="_blank" rel="external">https://completedns.com/dns-history/</a><br><a href="http://dnstrails.com/" target="_blank" rel="external">http://dnstrails.com/</a><br><a href="https://who.is/domain-history/" target="_blank" rel="external">https://who.is/domain-history/</a><br><a href="http://research.domaintools.com/research/hosting-history/" target="_blank" rel="external">http://research.domaintools.com/research/hosting-history/</a><br><a href="http://site.ip138.com/" target="_blank" rel="external">http://site.ip138.com/</a><br><a href="http://viewdns.info/iphistory/" target="_blank" rel="external">http://viewdns.info/iphistory/</a></p>
 <h3 id="通过大量DNS查漏"><a href="#通过大量DNS查漏" class="headerlink" title="通过大量DNS查漏"></a>通过大量DNS查漏</h3><p>查询冷门的DNS的解析。或者多地Ping<br><a href="http://ping.chinaz.com/" target="_blank" rel="external">http://ping.chinaz.com/</a><br><a href="http://ce.cloud.360.cn/" target="_blank" rel="external">http://ce.cloud.360.cn/</a><br><a href="http://www.webkaka.com/ping.aspx" target="_blank" rel="external">http://www.webkaka.com/ping.aspx</a><br><a href="https://asm.ca.com/en/ping.php" target="_blank" rel="external">https://asm.ca.com/en/ping.php</a></p>
 <h2 id="从目标服务器入手"><a href="#从目标服务器入手" class="headerlink" title="从目标服务器入手"></a>从目标服务器入手</h2><h3 id="被动获取"><a href="#被动获取" class="headerlink" title="被动获取"></a>被动获取</h3><p>让目标服务器主动链接我们的服务器，获取来源IP</p>
 <ul>
@@ -150,7 +150,7 @@
 <li>通过搜索引擎查找公网上的相同站点（开发环境，备份站点等）</li>
 <li>MX、TXT记录</li>
 </ul>
-<h3 id="对比全网banner"><a href="#对比全网banner" class="headerlink" title="对比全网banner"></a>对比全网banner</h3><p>获取目标站点的banner，在全网搜索引擎搜索。<br>也通过互联网络信息中心的IP数据，筛选目标地区IP，遍历Web服务的banner用来对比CDN站的banner，可以确定源IP。</p>
+<h3 id="对比全网banner"><a href="#对比全网banner" class="headerlink" title="对比全网banner"></a>对比全网banner</h3><p>获取目标站点的banner，在全网搜索引擎搜索，也可以使用<a href="https://github.com/michenriksen/aquatone" target="_blank" rel="external">AQUATONE</a>，在Shodan上搜索相同指纹站点。<br>可以通过互联网络信息中心的IP数据，筛选目标地区IP，遍历Web服务的banner用来对比CDN站的banner，可以确定源IP。</p>
 <ul>
 <li>亚洲：<a href="ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest" target="_blank" rel="external">ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest</a></li>
 <li>欧洲：<a href="ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest" target="_blank" rel="external">http://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-latest</a></li>
