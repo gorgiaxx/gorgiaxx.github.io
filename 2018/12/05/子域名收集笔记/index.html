@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="子域名收集笔记"/>
+
+
+
+
+  <meta name="keywords" content="子域名,枚举,DNS,信息收集," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="https://gorgias.me/2018/12/05/子域名收集笔记/"/>
+
+
+<meta name="description" content="前言思路如下： 公开情报：CTlog，DNS解析记录。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog Certificate Transpare">
+<meta name="keywords" content="子域名,枚举,DNS,信息收集">
+<meta property="og:type" content="article">
+<meta property="og:title" content="子域名收集笔记">
+<meta property="og:url" content="https://gorgias.me/2018/12/05/子域名收集笔记/index.html">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="前言思路如下： 公开情报：CTlog，DNS解析记录。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog Certificate Transpare">
+<meta property="og:updated_time" content="2017-12-05T13:22:41.606Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="子域名收集笔记">
+<meta name="twitter:description" content="前言思路如下： 公开情报：CTlog，DNS解析记录。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog Certificate Transpare">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 子域名收集笔记 - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          子域名收集笔记
+        
+      </h1>
+
+      <time class="post-time">
+          Dec 05 2018
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>思路如下：</p>
+<p>公开情报：CTlog，DNS解析记录。<br>非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。</p>
+<h2 id="搜索引擎"><a href="#搜索引擎" class="headerlink" title="搜索引擎"></a>搜索引擎</h2><p>也可以用其他搜索引擎，这个效果不是很好，Google hacking如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">site:target.com</div></pre></td></tr></table></figure>
+<p>使用”-“减号来去除已知子域名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">site:target.com-www-blog</div></pre></td></tr></table></figure>
+<h2 id="Certificate-Transparency-logs"><a href="#Certificate-Transparency-logs" class="headerlink" title="Certificate Transparency logs"></a>Certificate Transparency logs</h2><p>谷歌Chrome要求2017年所有SSL证书都要支持证书透明，所以可以根据CT log查询支持HTTPS网站的子域名。</p>
+<p><a href="https://crt.sh/" target="_blank" rel="external">crt.sh</a><br><a href="https://censys.io/" target="_blank" rel="external">censys.io</a><br><a href="https://google.com/transparencyreport/https/ct/" target="_blank" rel="external">google</a><br><a href="developers.facebook.com/tools/ct/">facebook</a></p>
+<h2 id="DNS域传递"><a href="#DNS域传递" class="headerlink" title="DNS域传递"></a>DNS域传递</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">dig AXFR@nameserver domain</div><div class="line">dnsenum domain</div></pre></td></tr></table></figure>
+<h2 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h2><p>爬URL<br>crossdomain.xml</p>
+<h2 id="国内公开信息"><a href="#国内公开信息" class="headerlink" title="国内公开信息"></a>国内公开信息</h2><p>工信部，链接地址如下，进去之后无法获取验证码，右键验证码新窗口打开。<br><a href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action" target="_blank" rel="external">http://www.miitbeian.gov.cn/publish/query/indexFirst.action</a></p>
+<p>工商网监<br><a href="http://szcert.ebs.org.cn" target="_blank" rel="external">http://szcert.ebs.org.cn</a></p>
+<h2 id="NSEC"><a href="#NSEC" class="headerlink" title="NSEC"></a>NSEC</h2><p>NSEC ldnsutil</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ldns-walk @nameserver domain</div></pre></td></tr></table></figure>
+<p>NSEC3 nsec3walker</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">collect inscuredns.com &gt; insecuredns.com.collect</div><div class="line"><span class="built_in">unhash</span> insecuredns.com.collect &gt; insecuredns.com.collect.unhash</div></pre></td></tr></table></figure>
+<h2 id="域名服务商私有DNS记录"><a href="#域名服务商私有DNS记录" class="headerlink" title="域名服务商私有DNS记录"></a>域名服务商私有DNS记录</h2><p>添加域名，然后查看导入DNS记录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">https://www.cloudflare.com/</div><div class="line">https://www.dnspod.cn/</div></pre></td></tr></table></figure>
+<h2 id="网络公开情报"><a href="#网络公开情报" class="headerlink" title="网络公开情报"></a>网络公开情报</h2><p><a href="https://www.virustotal.com/" target="_blank" rel="external">VirusTotal</a>是一个在线检测恶意样本或链接的网站，有自己的DNS数据集。</p>
+<p>HackerTarget上可以根据IP反查相关域名，但是不全<br><a href="https://hackertarget.com/reverse-ip-lookup/" target="_blank" rel="external">https://hackertarget.com/reverse-ip-lookup/</a></p>
+<p>可以使用HackerTarget收费的服务查看更完全的数据<br><a href="https://hackertarget.com/domain-profiler/" target="_blank" rel="external">https://hackertarget.com/domain-profiler/</a></p>
+<p><a href="https://dnsdumpster.com/" target="_blank" rel="external">DNSdumpster</a>是一个免费的域名分析网站，是HackerTarget旗下项目，可以查询相关的子域名或者旁站域名。</p>
+<p><a href="http://viewdns.info/" target="_blank" rel="external">ViewDNS</a>是一个DNS工具大全,可以查各种DNS信息。</p>
+<h2 id="扫描工具"><a href="#扫描工具" class="headerlink" title="扫描工具"></a>扫描工具</h2><p><a href="https://github.com/TheRook/subbrute" target="_blank" rel="external">SubBrute</a> - 是一个开源项目，DNS爬虫，能够使用字典爆破子域名，也是一个python库。<br><a href="https://github.com/aboul3la/Sublist3r" target="_blank" rel="external">Sublist3r</a> - 是一个开源项目，整合了SubBrute，并且能够在网上收集公开的域名数据。<br><a href="https://github.com/lijiejie/subDomainsBrute" target="_blank" rel="external">subDomainsBrute</a> - 是一个纯粹的子域名爆破脚本。基于字典，扫描速度快，支持多线程。<br><a href="https://github.com/appsecco/bugcrowd-levelup-subdomain-enumeration" target="_blank" rel="external">bugcrowd-levelup-subdomain-enumeration</a> - Bharath在Bugcrowd Levelup的议题用到的工具，包含子域名枚举脚本、CTlog查询脚本。<br><a href="https://github.com/darkoperator/dnsrecon" target="_blank" rel="external">DNSrecon</a> - DNS枚举脚本<br><a href="https://github.com/davidpepper/fierce-domain-scanner" target="_blank" rel="external">Fierce.pl Domain Scanner</a> - perl写的子域名爆破脚本<br><a href="https://github.com/michenriksen/aquatone" target="_blank" rel="external">AQUATONE</a> - 一款强大的域名工具，可以查子域名相同指纹站点。<br><a href="https://github.com/laramies/theHarvester" target="_blank" rel="external">theHarvester</a> - 一款社会工程学工具，有查询子域名的功能。<br><a href="https://github.com/blechschmidt/massdns.git" target="_blank" rel="external">MassDNS</a> - 一款域名解析工具，可以用于爆破子域名。<br><a href="https://github.com/infosec-au/altdns" target="_blank" rel="external">Alt-DNS</a> - 根据已知域名排列或关键词生成字典来爆破子域名。<br><a href="https://github.com/jhaddix/domain" target="_blank" rel="external">无名的，基于recon-ng和Alt-DNS的域名爆破脚本</a><br><a href="https://github.com/eldraco/domain_analyzer" target="_blank" rel="external">Domain Analyzer</a> - 一个分析域名的工具，可以用来查子域名<br><a href="https://github.com/jfrancois/SDBF" target="_blank" rel="external">Smart DNS Brute Forcer</a> - 卢森堡大学的学术型工具，结合Markov chain Models生成域名。<br><a href="https://github.com/evilsocket/xray" target="_blank" rel="external">XRay</a> - 一款情报收集工具，有子域名收集功能</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://speakerdeck.com/yamakira/esoteric-sub-domain-enumeration-techniques" target="_blank" rel="external">Esoteric sub-domain enumeration techniques</a><br><a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types" target="_blank" rel="external">List of DNS record types</a></p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/子域名/">子域名</a>
+		  
+			<a href="/tags/枚举/">枚举</a>
+		  
+			<a href="/tags/DNS/">DNS</a>
+		  
+			<a href="/tags/信息收集/">信息收集</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2017/11/12/硬件维修笔记/">
+        <span class="next-text nav-default">硬件维修笔记</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2017
+    <span class="footer-author">Gorgias.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
