@@ -191,11 +191,11 @@
       <category term="工具" scheme="https://gorgias.me/categories/%E5%B7%A5%E5%85%B7/"/>
     
     
+      <category term="frp" scheme="https://gorgias.me/tags/frp/"/>
+    
       <category term="NAT" scheme="https://gorgias.me/tags/NAT/"/>
     
       <category term="内网穿透" scheme="https://gorgias.me/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/"/>
-    
-      <category term="frp" scheme="https://gorgias.me/tags/frp/"/>
     
   </entry>
   
@@ -221,11 +221,11 @@
       <category term="工具" scheme="https://gorgias.me/categories/%E5%B7%A5%E5%85%B7/"/>
     
     
-      <category term="ngrok" scheme="https://gorgias.me/tags/ngrok/"/>
-    
       <category term="NAT" scheme="https://gorgias.me/tags/NAT/"/>
     
       <category term="内网穿透" scheme="https://gorgias.me/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/"/>
+    
+      <category term="ngrok" scheme="https://gorgias.me/tags/ngrok/"/>
     
   </entry>
   
@@ -595,11 +595,11 @@
       <category term="虚拟化" scheme="https://gorgias.me/categories/%E8%99%9A%E6%8B%9F%E5%8C%96/"/>
     
     
-      <category term="安装" scheme="https://gorgias.me/tags/%E5%AE%89%E8%A3%85/"/>
-    
       <category term="ESXi" scheme="https://gorgias.me/tags/ESXi/"/>
     
       <category term="VMware" scheme="https://gorgias.me/tags/VMware/"/>
+    
+      <category term="安装" scheme="https://gorgias.me/tags/%E5%AE%89%E8%A3%85/"/>
     
       <category term="虚拟化" scheme="https://gorgias.me/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/"/>
     
