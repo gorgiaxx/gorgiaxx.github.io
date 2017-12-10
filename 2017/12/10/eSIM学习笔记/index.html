@@ -35,23 +35,23 @@
 <link rel="canonical" href="https://gorgias.me/2017/12/10/eSIM学习笔记/"/>
 
 
-<meta name="description" content="SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。 然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所谓S">
+<meta name="description" content="简介SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。 然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所">
 <meta name="keywords" content="eSIM,e-SIM,SIM卡">
 <meta property="og:type" content="article">
 <meta property="og:title" content="eSIM学习笔记">
 <meta property="og:url" content="https://gorgias.me/2017/12/10/eSIM学习笔记/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。 然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所谓S">
+<meta property="og:description" content="简介SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。 然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所">
 <meta property="og:locale" content="zh-cn">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/smart_card.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/sim_card_iteration.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/SON-8-Photo.jpg">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/esim_pin_assigment.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/jump_wire.png">
-<meta property="og:updated_time" content="2017-12-10T16:39:29.312Z">
+<meta property="og:updated_time" content="2017-12-10T16:41:55.169Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="eSIM学习笔记">
-<meta name="twitter:description" content="SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。 然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所谓S">
+<meta name="twitter:description" content="简介SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。 然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所">
 <meta name="twitter:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/smart_card.png">
 
 
@@ -138,7 +138,7 @@
 
     
             <div class="post-content">
-            <p>SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。</p>
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。</p>
 <p>然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所谓SIM卡(SIM card)，属于IC智能卡的一种，下图包含多种智能卡。<br><img src="./smart_card.png" alt="smart_card"><br>SIM卡的叫法沿用至今，是不准确的，应该叫UICC，但是为了用户体验，厂商还是称作SIM卡，所以后面说的SIM卡就是指UICC智能卡。</p>
 <h2 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h2><p>SIM卡有数据存储的功能，存放了用来识别和验证客户端的配置信息。</p>
 <ul>
