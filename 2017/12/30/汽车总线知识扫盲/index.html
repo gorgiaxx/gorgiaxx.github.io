@@ -63,7 +63,7 @@
 <meta property="og:image" content="https://gorgias.me/2017/12/30/汽车总线知识扫盲/OSI_layers_table.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/30/汽车总线知识扫盲/OSI_layers_table2.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/30/汽车总线知识扫盲/UDS_ID.png">
-<meta property="og:updated_time" content="2017-12-30T14:52:42.000Z">
+<meta property="og:updated_time" content="2017-12-30T15:03:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="汽车总线知识扫盲笔记">
 <meta name="twitter:description" content="前言汽车行业非常严谨，许多产品都要按照规范设计，首先要搞清楚ISO与SAE的关系。  国际标准组织(International Organization for Standardization,ISO) 美国机动车工程师学会(Society of Automotive Engineers,SAE)  SAE的J系列标准是为地面交通工具编写的标准，几乎涉及每一个电子元件，面向美国，而ISO是国际标准">
@@ -169,7 +169,7 @@
 <li>ISO 11898-5 低功耗的高速接入单元</li>
 <li>ISO 11898-6 选择性唤醒的高速接入单元</li>
 </ul>
-<p>下图是在不同的角度对CAN的分类，CAN主要是</p>
+<p>下图是在不同的角度对CAN的分类，CAN的标准和网络模型层次还有实现的关系。</p>
 <p><img src="reference_model.png" alt="reference_model"></p>
 <h2 id="CAN-Physical-layer"><a href="#CAN-Physical-layer" class="headerlink" title="CAN Physical layer"></a>CAN Physical layer</h2><p>CAN使用双线差分信号，数据传输在两条线路上：CANH(+)和CANL(-)，这两条双绞线构成串行总线，总线端点加入了终端匹配电阻。采用多主通讯方式，每个节点都通过总线相互连接，对节点数量没有限制，所以报文是广播出去的，所有节点都能收到。</p>
 <p><img src="can_net.png" alt="can_net"><br>CAN信号的传输方式根据MAU的定义可分为高速CAN(ISO 11898-2)和低速CAN(ISO 11898-3)。</p>
