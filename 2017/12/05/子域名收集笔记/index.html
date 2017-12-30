@@ -43,7 +43,7 @@
 <meta property="og:site_name" content="Gorgias&#39;Blog">
 <meta property="og:description" content="前言思路如下： 公开情报：CTlog，DNS解析记录。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog Certificate Transpare">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2017-12-10T16:35:04.121Z">
+<meta property="og:updated_time" content="2017-12-29T10:00:04.159Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="子域名收集笔记">
 <meta name="twitter:description" content="前言思路如下： 公开情报：CTlog，DNS解析记录。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog Certificate Transpare">
@@ -149,7 +149,7 @@
 <p>NSEC3 nsec3walker</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">collect inscuredns.com &gt; insecuredns.com.collect</div><div class="line"><span class="built_in">unhash</span> insecuredns.com.collect &gt; insecuredns.com.collect.unhash</div></pre></td></tr></table></figure>
 <h2 id="域名服务商私有DNS记录"><a href="#域名服务商私有DNS记录" class="headerlink" title="域名服务商私有DNS记录"></a>域名服务商私有DNS记录</h2><p>添加域名，然后查看导入DNS记录</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">https://www.cloudflare.com/</div><div class="line">https://www.dnspod.cn/</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">https://www.cloudflare.com/</div><div class="line">https://www.dnspod.cn/</div><div class="line">http://www.dnspod.cn/proxy_diagnose/recordscan/doc88.com?callback=a</div></pre></td></tr></table></figure>
 <h2 id="网络公开情报"><a href="#网络公开情报" class="headerlink" title="网络公开情报"></a>网络公开情报</h2><p><a href="https://www.virustotal.com/" target="_blank" rel="external">VirusTotal</a>是一个在线检测恶意样本或链接的网站，有自己的DNS数据集。</p>
 <p>HackerTarget上可以根据IP反查相关域名，但是不全<br><a href="https://hackertarget.com/reverse-ip-lookup/" target="_blank" rel="external">https://hackertarget.com/reverse-ip-lookup/</a></p>
 <p>可以使用HackerTarget收费的服务查看更完全的数据<br><a href="https://hackertarget.com/domain-profiler/" target="_blank" rel="external">https://hackertarget.com/domain-profiler/</a></p>
