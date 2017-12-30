@@ -48,7 +48,7 @@
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/SON-8-Photo.jpg">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/esim_pin_assigment.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/jump_wire.png">
-<meta property="og:updated_time" content="2017-12-10T16:41:55.169Z">
+<meta property="og:updated_time" content="2017-12-30T14:50:32.827Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="eSIM学习笔记">
 <meta name="twitter:description" content="简介SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。 然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所">
@@ -146,6 +146,7 @@
 <li><a href="https://en.wikipedia.org/wiki/International_mobile_subscriber_identity" target="_blank" rel="external">IMSI</a>(international mobile subscriber identity，国际移动用户识别码)</li>
 <li>[Authentication Key] 是GSM网络下的一个128位鉴权key，因为GSM算法存在漏洞，导致key被泄漏从而可以复制SIM卡。</li>
 </ul>
+<p>目前找回丢失手机原理，就是通过查IMEI对应的ICCID锁定手机号，这个ICCID就是新插入SIM卡的识别码。</p>
 <p>SIM卡的IC包括CPU、ROM、RAM、EEPROM和I/O，尺寸也是越做越小，直到2016年出现的e-SIM。</p>
 <p><img src="./sim_card_iteration.png" alt="sim_card_iteration"></p>
 <p>Embedded-SIM/embedded universal integrated circuit card<br>嵌入式SIM(Embedded-SIM，又称eSIM，e-SIM)，也叫做eUICC。是芯片格式的SIM卡，大多数采用SON-8封装。<br><img src="./SON-8-Photo.jpg" alt="SON-8"></p>
@@ -190,7 +191,7 @@
     
       <a class="prev" href="/2017/12/30/汽车总线知识扫盲/">
         <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default"></span>
+        <span class="prev-text nav-default">汽车总线知识扫盲笔记</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
