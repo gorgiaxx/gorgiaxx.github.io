@@ -35,19 +35,19 @@
 <link rel="canonical" href="https://gorgias.me/2017/12/05/子域名收集笔记/"/>
 
 
-<meta name="description" content="前言思路如下： 公开情报：CTlog，多域名证书，DNS解析记录。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog Certificate Tra">
+<meta name="description" content="前言思路如下： 公开情报：证书，DNS解析记录，站内URL。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog 证书Certificate Tran">
 <meta name="keywords" content="子域名,枚举,DNS,信息收集">
 <meta property="og:type" content="article">
 <meta property="og:title" content="子域名收集笔记">
 <meta property="og:url" content="https://gorgias.me/2017/12/05/子域名收集笔记/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="前言思路如下： 公开情报：CTlog，多域名证书，DNS解析记录。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog Certificate Tra">
+<meta property="og:description" content="前言思路如下： 公开情报：证书，DNS解析记录，站内URL。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog 证书Certificate Tran">
 <meta property="og:locale" content="zh-cn">
 <meta property="og:image" content="https://gorgias.me/2017/12/05/子域名收集笔记/SAN.png">
-<meta property="og:updated_time" content="2018-03-21T13:03:49.967Z">
+<meta property="og:updated_time" content="2018-03-21T13:05:46.176Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="子域名收集笔记">
-<meta name="twitter:description" content="前言思路如下： 公开情报：CTlog，多域名证书，DNS解析记录。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog Certificate Tra">
+<meta name="twitter:description" content="前言思路如下： 公开情报：证书，DNS解析记录，站内URL。非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用”-“减号来去除已知子域名 1site:target.com-www-blog 证书Certificate Tran">
 <meta name="twitter:image" content="https://gorgias.me/2017/12/05/子域名收集笔记/SAN.png">
 
 
@@ -135,14 +135,14 @@
     
             <div class="post-content">
             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>思路如下：</p>
-<p>公开情报：CTlog，多域名证书，DNS解析记录。<br>非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。</p>
+<p>公开情报：证书，DNS解析记录，站内URL。<br>非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。</p>
 <h2 id="搜索引擎"><a href="#搜索引擎" class="headerlink" title="搜索引擎"></a>搜索引擎</h2><p>也可以用其他搜索引擎，这个效果不是很好，Google hacking如下</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">site:target.com</div></pre></td></tr></table></figure>
 <p>使用”-“减号来去除已知子域名</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">site:target.com-www-blog</div></pre></td></tr></table></figure>
-<h2 id="Certificate-Transparency-logs"><a href="#Certificate-Transparency-logs" class="headerlink" title="Certificate Transparency logs"></a>Certificate Transparency logs</h2><p>谷歌Chrome要求2017年所有SSL证书都要支持证书透明，所以可以根据CT log查询支持HTTPS网站的子域名。</p>
+<h2 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h2><h3 id="Certificate-Transparency-logs"><a href="#Certificate-Transparency-logs" class="headerlink" title="Certificate Transparency logs"></a>Certificate Transparency logs</h3><p>谷歌Chrome要求2017年所有SSL证书都要支持证书透明，所以可以根据CT log查询支持HTTPS网站的子域名。</p>
 <p><a href="https://crt.sh/" target="_blank" rel="external">crt.sh</a><br><a href="https://censys.io/" target="_blank" rel="external">censys.io</a><br><a href="https://google.com/transparencyreport/https/ct/" target="_blank" rel="external">google</a><br><a href="developers.facebook.com/tools/ct/">facebook</a></p>
-<h2 id="Subject-Alternative-Name"><a href="#Subject-Alternative-Name" class="headerlink" title="Subject Alternative Name"></a>Subject Alternative Name</h2><p>根据多域名证书的Subject Alternative Name中的内容，可以获取同一公司的其他域名。<br><img src="./SAN.png" alt="SAN"></p>
+<h3 id="Subject-Alternative-Name"><a href="#Subject-Alternative-Name" class="headerlink" title="Subject Alternative Name"></a>Subject Alternative Name</h3><p>根据多域名证书的Subject Alternative Name中的内容，可以获取同一公司的其他域名。<br><img src="./SAN.png" alt="SAN"></p>
 <h2 id="DNS域传递"><a href="#DNS域传递" class="headerlink" title="DNS域传递"></a>DNS域传递</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">dig AXFR@nameserver domain</div><div class="line">dnsenum domain</div></pre></td></tr></table></figure>
 <h2 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h2><p>爬URL<br>crossdomain.xml</p>
 <h2 id="国内公开信息"><a href="#国内公开信息" class="headerlink" title="国内公开信息"></a>国内公开信息</h2><p>工信部，链接地址如下，进去之后无法获取验证码，右键验证码新窗口打开。<br><a href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action" target="_blank" rel="external">http://www.miitbeian.gov.cn/publish/query/indexFirst.action</a></p>
