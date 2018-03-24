@@ -54,7 +54,7 @@
 <meta property="og:image" content="https://gorgias.me/2018/03/24/深信服-SSL-VPN-端口ACL-绕过实践/code2.png">
 <meta property="og:image" content="https://gorgias.me/2018/03/24/深信服-SSL-VPN-端口ACL-绕过实践/ps.png">
 <meta property="og:image" content="https://gorgias.me/2018/03/24/深信服-SSL-VPN-端口ACL-绕过实践/frida.png">
-<meta property="og:updated_time" content="2018-03-24T08:27:42.000Z">
+<meta property="og:updated_time" content="2018-03-24T08:42:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深信服 SSL VPN 端口ACL 绕过实践">
 <meta name="twitter:description" content="前言前段时间无意间看到安全群有人聊到绕深信服SSL VPN的ACL，一直想实践一下，后来再网上只找到了这一篇两年前的参考资料看我如何利用burp大法绕过深信服SSL VPN访问权限控制，并且这个人的马赛克非常可怕，导致几乎信息量太少，看不懂他在说什么。 于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，替换端口范围，客户端对端口进行访问控制，服务端对IP访问">
@@ -201,6 +201,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">frida -U <span class="_">-l</span> 2.js com.sangfor.vpn.client.phone</div></pre></td></tr></table></figure>
 <p><img src="frida.png" alt="frida"></p>
 <p>可以看到端口范围已经被修改。</p>
+<p>以上步骤在实战中都很繁琐，其实可以通过深信服SSL VPN的SDK来开发一个无限制版，不过也太麻烦了，只是绕个端口而已，还不去多撸几台服务器直接打入内网。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://www.frida.re/docs/home/" target="_blank" rel="external">Frida Docs</a><br><a href="https://linux.die.net/man/8/iptables" target="_blank" rel="external">iptables</a><br><a href="https://www.bettercap.org/" target="_blank" rel="external">Bettercap</a></p>
 
             </div>
