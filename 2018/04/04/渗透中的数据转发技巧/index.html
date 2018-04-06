@@ -43,7 +43,7 @@
 <meta property="og:site_name" content="Gorgias&#39;Blog">
 <meta property="og:description" content="思路渗透测试中，必须使用代理服务器，所以首先假设我们有一台具有公网IP的服务器，作为攻击机。 内网是相对的，有时进入DMZ区，发现要使用VPN进入目标网段。在这里讨论只一台受害主机的攻击路径，认为是最小元，需要得出一个方法论，这个方法论将适用于更多台受害主机的环境。 如果拿下的受害机在公网开放了端口，并且没有防火墙，可以随意访问它的端口，那么直接可以把它抽象成攻击机。 但是，如果拿下的主机不是开放">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2018-04-04T14:38:05.788Z">
+<meta property="og:updated_time" content="2018-04-06T09:44:56.761Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="渗透中的数据转发技巧">
 <meta name="twitter:description" content="思路渗透测试中，必须使用代理服务器，所以首先假设我们有一台具有公网IP的服务器，作为攻击机。 内网是相对的，有时进入DMZ区，发现要使用VPN进入目标网段。在这里讨论只一台受害主机的攻击路径，认为是最小元，需要得出一个方法论，这个方法论将适用于更多台受害主机的环境。 如果拿下的受害机在公网开放了端口，并且没有防火墙，可以随意访问它的端口，那么直接可以把它抽象成攻击机。 但是，如果拿下的主机不是开放">
@@ -168,7 +168,7 @@
 <p>防火墙允许相应入站规则</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">netsh advfirewall firewall add rule name="forwarded_RDP_3388" protocol=TCP <span class="built_in">dir</span>=<span class="keyword">in</span> localip=victim_B localport=<span class="number">3388</span> action=allow</div></pre></td></tr></table></figure>
 <p>也可以关闭防火墙</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">net</span> stop mpssvc</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 新版</span></div><div class="line">netsh advfirewall <span class="built_in">set</span> allprofiles state off</div><div class="line"><span class="comment"># 旧版</span></div><div class="line">netsh firewall <span class="built_in">set</span> opmode <span class="built_in">disable</span></div><div class="line"><span class="comment"># 或</span></div><div class="line">net stop mpssvc</div></pre></td></tr></table></figure>
 <p>查看所有代理</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">netsh interface portproxy show all</div></pre></td></tr></table></figure>
 <h3 id="netcat"><a href="#netcat" class="headerlink" title="netcat"></a>netcat</h3><p>首先在流行的发行版中，大多数NetCat不支持监听端口和程序重定向。<br>NetCat是非常强大的网络工具，支持扫描，各种数据传输，Ncat是改进版本，这里只介绍网络层面的转发和映射。<br>SoCat更强大，支持更多种输入输出，支持连接复用。</p>
@@ -211,6 +211,8 @@
 <p><a href="https://github.com/ptunnel-win" target="_blank" rel="external">https://github.com/ptunnel-win</a></p>
 <h3 id="SCTP隧道"><a href="#SCTP隧道" class="headerlink" title="SCTP隧道"></a>SCTP隧道</h3><p>SCTP属于传输层协议，不在防火墙TCP、UDP策略的范围内，Ncat支持，这里使用SoCat，跟端口映射类似，SCTP监听8888端口</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">socat SCTP-LISTEN:8888 tcp-connect:target_C:22</div></pre></td></tr></table></figure>
+<h4 id="DCCP隧道"><a href="#DCCP隧道" class="headerlink" title="DCCP隧道"></a>DCCP隧道</h4><p>大多数Linux不支持</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">socat TCP4-LISTEN:8886,reuseaddr,<span class="built_in">type</span>=6,prototype=33 TCP-CONNECT:target_C:22</div><div class="line">socat TCP4-CONNECT:8886,reuseaddr,<span class="built_in">type</span>=6,prototype=33 TCP-LISTEN:9000</div></pre></td></tr></table></figure>
 <h3 id="Nginx转发"><a href="#Nginx转发" class="headerlink" title="Nginx转发"></a>Nginx转发</h3><p>首先要确保Nginx使用了stream模块</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 结果返回 --with-stream</span></div><div class="line">nginx -V | grep stream</div></pre></td></tr></table></figure>
 <p>在nginx.conf加入下面这段</p>
