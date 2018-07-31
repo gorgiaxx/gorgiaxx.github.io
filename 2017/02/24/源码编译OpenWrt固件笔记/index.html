@@ -151,7 +151,7 @@
 <p>直接用trunk版本</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/openwrt/openwrt</span><br></pre></td></tr></table></figure>
 <p>运行feeds获取所有的预定义软件包并且安装，关于<a href="https://wiki.openwrt.org/doc/devel/feeds" target="_blank" rel="noopener">feeds参考</a></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./scripts/feeds update -a</span><br><span class="line">./scripts/feeds install -a</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./scripts/feeds update <span class="_">-a</span></span><br><span class="line">./scripts/feeds install <span class="_">-a</span></span><br></pre></td></tr></table></figure>
 <h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>开始配置编译菜单</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make menuconfig</span><br></pre></td></tr></table></figure>
 <p>方向建上下操作纵列，左右操作横列，空格选择，M代表作为模块编译，*代表编译到固件。<br><img src="menuconfig.png" alt=""><br>因为是八脚SPI Flash，Subtarget选择Generic，参考<a href="https://wiki.openwrt.org/doc/techref/flash.layout" target="_blank" rel="noopener">The OpenWrt Flash Layout</a></p>

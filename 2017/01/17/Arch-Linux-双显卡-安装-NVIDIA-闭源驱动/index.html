@@ -154,7 +154,7 @@
 <p>安装以下内容</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S bumblebee bbswitch</span><br></pre></td></tr></table></figure>
 <p>把用户添加到bumblebee用户组</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gpasswd -a gorgias bumblebee</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gpasswd <span class="_">-a</span> gorgias bumblebee</span><br></pre></td></tr></table></figure>
 <p>开启bumblebeed.service服务</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl <span class="built_in">enable</span> bumblebeed.service</span><br></pre></td></tr></table></figure>
 <p>这里顺序要注意，NVIDIA驱动要先安装，不然会和某些库文件冲突导致开机黑屏，或者因为缺少32位库导致VMWare不能使用GPU</p>
