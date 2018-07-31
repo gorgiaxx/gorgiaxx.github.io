@@ -43,7 +43,7 @@
 <meta property="og:site_name" content="Gorgias&#39;Blog">
 <meta property="og:description" content="思路渗透测试中，必须使用代理服务器，所以首先假设我们有一台具有公网IP的服务器，作为攻击机。 内网是相对的，有时进入DMZ区，发现要使用VPN进入目标网段。在这里讨论只一台受害主机的攻击路径，认为是最小元，需要得出一个方法论，这个方法论将适用于更多台受害主机的环境。 如果拿下的受害机在公网开放了端口，并且没有防火墙，可以随意访问它的端口，那么直接可以把它抽象成攻击机。 但是，如果拿下的主机不是开放">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2018-04-06T09:44:56.761Z">
+<meta property="og:updated_time" content="2018-05-23T03:00:30.231Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="渗透中的数据转发技巧">
 <meta name="twitter:description" content="思路渗透测试中，必须使用代理服务器，所以首先假设我们有一台具有公网IP的服务器，作为攻击机。 内网是相对的，有时进入DMZ区，发现要使用VPN进入目标网段。在这里讨论只一台受害主机的攻击路径，认为是最小元，需要得出一个方法论，这个方法论将适用于更多台受害主机的环境。 如果拿下的受害机在公网开放了端口，并且没有防火墙，可以随意访问它的端口，那么直接可以把它抽象成攻击机。 但是，如果拿下的主机不是开放">
@@ -229,7 +229,7 @@
 <p>启用socks4a代理</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">use auxiliary/server/socks4a</div><div class="line"><span class="built_in">set</span> SRVPORT 2080</div><div class="line">exploit -y</div></pre></td></tr></table></figure>
 <p>CobaltStrike可以在目标上开启Socks4A，转发到Teamserver，然后Teamserver监听端口，等待攻击者连接。</p>
-<h3 id="DNS-tunnel"><a href="#DNS-tunnel" class="headerlink" title="DNS tunnel"></a>DNS tunnel</h3><p><a href="https://github.com/yarrick/iodine" target="_blank" rel="external">iodine</a> - 非常好用的DNS隧道<br><a href="https://pkgs.org/download/dns2tcp" target="_blank" rel="external">Dns2tcp</a> - Kali预装的DNS隧道</p>
+<h3 id="DNS-tunnel"><a href="#DNS-tunnel" class="headerlink" title="DNS tunnel"></a>DNS tunnel</h3><p><a href="https://github.com/yarrick/iodine" target="_blank" rel="external">iodine</a> - 非常好用的DNS隧道<br><a href="https://pkgs.org/download/dns2tcp" target="_blank" rel="external">Dns2tcp</a> - Kali预装的DNS隧道<br><a href="https://github.com/iagox86/dnscat2" target="_blank" rel="external">dnscat2</a> - 用Ruby写的DNS隧道，还没用过</p>
 <h3 id="WebShell-tunnel"><a href="#WebShell-tunnel" class="headerlink" title="WebShell tunnel"></a>WebShell tunnel</h3><p><a href="https://github.com/gorgiaxx/reGeorg" target="_blank" rel="external">reGeorg</a> - reGeorg修改版，支持自定义头，优化了连接次数，更加快和稳定<br><a href="https://github.com/SECFORCE/Tunna" target="_blank" rel="external">Tunna</a> - 另一款正向代理，新增了自定义Cookie，基础认证，稳定性一般<br><a href="https://github.com/nccgroup/ABPTTS" target="_blank" rel="external">ABPTTS</a> - 据说是融合了reGeorg和Tunna的优点，更加稳定，兼容性更好，但是不支持自定义HTTP头，找个时间加上去<br><a href="https://github.com/sensepost/reDuh.git" target="_blank" rel="external">reDuh</a> - 考古，reGeorg的前身</p>
 <h3 id="RMI-Deserialized-tunnel"><a href="#RMI-Deserialized-tunnel" class="headerlink" title="RMI Deserialized tunnel"></a>RMI Deserialized tunnel</h3><p>TODO, 上次听N1nty大哥分享的JSPspy on RMI，有了这个灵感，找个时间填上去。</p>
 <h2 id="复用技巧"><a href="#复用技巧" class="headerlink" title="复用技巧"></a>复用技巧</h2><p>有时资源有限，无法再新增资源，这时候需要复用</p>
@@ -254,6 +254,11 @@
 <p>这样有一个缺点，就是加入letmein的ip列表是上级代理的IP，所以开启这项规则会影响正常用户的使用。</p>
 <p>但是觉得这样已经做的很好了，因为经过IP层会变化，没有空余的字段作为标记。TCP层除了Urgent Pointer这个字段其他都有用，所以只能在内容里做识别，但是这样iptables就没有用了，也偏离了最初的目的，就算在非常极端的环境，宁愿去复用应用层的服务，也不愿意去折腾这个。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">## enable LETMEIN</span></div><div class="line"><span class="built_in">echo</span> threathuntercoming | socat - tcp:victim_B:80</div><div class="line"><span class="comment">## disable LETMEIN</span></div><div class="line"><span class="built_in">echo</span> threathunterleaving | socat - tcp:victim_B:80</div></pre></td></tr></table></figure>
+<h2 id="使用IPv6"><a href="#使用IPv6" class="headerlink" title="使用IPv6"></a>使用IPv6</h2><p>如果设备支持IPv6，也许端口不被限制，可以尝试。</p>
+<p>Linux下使用IPv6地址，要加%号指定接口名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ssh root@fe80::2e0:4cff:fe68:eae%eth0</div><div class="line">ping6 fe80::aefa:5908:5d93:44ba%eth0</div></pre></td></tr></table></figure>
+<p>Windows下直接使用</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">ping</span> -<span class="number">6</span> fe80::aefa:<span class="number">5908</span>:<span class="number">5</span>d93:<span class="number">44</span>ba</div></pre></td></tr></table></figure>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这只是渗透中的一个小环节，实战时需要对抗入侵检测系统，这方面还是技术盲点。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://threathunter.org/topic/594545184ea5b2f5516e2033" target="_blank" rel="external">远程遥控 IPTables 进行端口复用</a><br><a href="https://linux.die.net/man/8/iptables" target="_blank" rel="external">iptables - Linux man page</a></p>
 
@@ -289,6 +294,12 @@
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/2018/07/30/去除半次元图片水印和下载限制/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">去除半次元图片水印和下载限制</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
     
     
       <a class="next" href="/2018/03/25/Linux-后渗透笔记-PAM后门/">

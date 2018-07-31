@@ -48,7 +48,7 @@
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/SON-8-Photo.jpg">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/esim_pin_assigment.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/10/eSIM学习笔记/jump_wire.png">
-<meta property="og:updated_time" content="2017-12-30T14:50:32.827Z">
+<meta property="og:updated_time" content="2018-05-23T03:42:37.249Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="eSIM学习笔记">
 <meta name="twitter:description" content="简介SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。 然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所">
@@ -164,7 +164,7 @@
 <li>目前国内集成eSIM卡的设备，普遍是由运营商或指定网络服务方牵头的，无法转网。</li>
 </ol>
 <p>所以目前只有物联网设备使用eSIM。</p>
-<p>eSIM与SIM卡的引脚定义<br><img src="./esim_pin_assigment.png" alt="esim_pin_assigment"><br>根据引脚定义可以把eSIM飞线到SIM卡槽上，RST引脚可以不接。<br><img src="./jump_wire.png" alt="jump_wire"></p>
+<p>eSIM与SIM卡的引脚定义<br><img src="./esim_pin_assigment.png" alt="esim_pin_assigment"><br>根据引脚定义可以把eSIM飞线到SIM卡槽上，VPP引脚可以不接。<br><img src="./jump_wire.png" alt="jump_wire"></p>
 <p>在安全方面，SIM卡使用的是单向鉴权机制：在接入网络时只对SIM卡做身份认证，曾有黑客表示可以在短时间内远程控制任何一个SIM卡号码，甚至复制。而USIM卡使用的则是双向鉴权机制：通过AUTN（认证令牌）实现用户和网络的鉴权，接入网络时不仅对USIM卡进行身份认证，USIM卡同时也要对网络进行身份认证，因此可大幅提升破解难度，还能有效地识别或屏蔽伪基站，提升网络通讯的安全。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://wenku.baidu.com/view/dfc28735a9114431b90d6c85ec3a87c240288aaf.html?from=search" target="_blank" rel="external">eSIM安全性分析及实现方案研究</a></p>
 
