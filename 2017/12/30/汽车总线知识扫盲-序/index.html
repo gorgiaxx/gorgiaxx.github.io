@@ -160,8 +160,8 @@
             <div class="post-content">
             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>汽车行业非常严谨，许多产品都要按照规范设计，首先要搞清楚ISO与SAE的关系。</p>
 <ul>
-<li><a href="https://www.iso.org/home.html" target="_blank" rel="external">国际标准组织(International Organization for Standardization,ISO)</a></li>
-<li><a href="https://www.sae.org" target="_blank" rel="external">美国机动车工程师学会(Society of Automotive Engineers,SAE)</a></li>
+<li><a href="https://www.iso.org/home.html" target="_blank" rel="noopener">国际标准组织(International Organization for Standardization,ISO)</a></li>
+<li><a href="https://www.sae.org" target="_blank" rel="noopener">美国机动车工程师学会(Society of Automotive Engineers,SAE)</a></li>
 </ul>
 <p>SAE的J系列标准是为地面交通工具编写的标准，几乎涉及每一个电子元件，面向美国，而ISO是国际标准，国标欧标都会参考ISO的标准。<br>ISO会参考SAE提供的标准发布新的标准。而且ISO发布的一个标准可能包含多个SAE起草的标准。</p>
 <p>汽车内部由许多电子控制单元(Electronic Control Unit, ECU)，分别负责不同的工作，如门控单元、灯控单元等，起初它们都使用点对点的通信方式，而且每项信息都通过独立的数据线进行交换，随着ECU数量的增加，需要消耗的线束也会成倍增加，导致成本增加，占用更多的空间，增加更多重量，而且内部连接也会变得更加复杂，存在更多的隐患。<br><img src="p2p.jpg" alt="p2p"><br>因此工程师们设计了基于总线通信的方案，每个ECU都连接在一条总线上面，避免了点对点通信方式存在的隐患。<br><img src="bus.jpg" alt="bus"></p>
@@ -291,17 +291,17 @@
 <h2 id="基于CAN的应用层扩展协议"><a href="#基于CAN的应用层扩展协议" class="headerlink" title="基于CAN的应用层扩展协议"></a>基于CAN的应用层扩展协议</h2><p>CAN可以分为高层协议和底层协议，CAN的应用层协议也叫基于CAN的高层扩展协议(HLP)，一般在第七层。</p>
 <p>下面是基于CAN的高层扩展协议。</p>
 <ul>
-<li>1992: <a href="https://www.can-cia.org/standardization/specifications/" target="_blank" rel="external">CiA 201 series (CAN Application Layer)</a></li>
-<li>1994: <a href="http://www.iec.ch/" target="_blank" rel="external">IEC 62026-3 (DeviceNet)</a></li>
-<li>1994: <a href="http://www.sae.org/" target="_blank" rel="external">SAE J1939 series</a></li>
-<li>1994: <a href="https://www.can-cia.org/standardization/specifications/" target="_blank" rel="external">EN 50325-4 (CANopen)</a></li>
-<li>1999: <a href="http://www.iso.org/" target="_blank" rel="external">ISO 11992 series</a></li>
-<li>1999: <a href="http://www.milcan.org/" target="_blank" rel="external">MilCAN</a></li>
-<li>2000: <a href="http://www.iec.ch/" target="_blank" rel="external">IEC 61162-3 (NMEA 2000)</a></li>
-<li>2002: <a href="http://www.iso.org/" target="_blank" rel="external">ISO 11783 series (Isobus)</a></li>
-<li>2004: <a href="http://www.iso.org/" target="_blank" rel="external">ISO 15765 series (OBDII/ISO-TP)</a></li>
-<li>2007: <a href="http://www.arinc.com/" target="_blank" rel="external">Arinc 825/826</a></li>
-<li>2015: <a href="http://uavcan.org/" target="_blank" rel="external">UAVCAN</a></li>
+<li>1992: <a href="https://www.can-cia.org/standardization/specifications/" target="_blank" rel="noopener">CiA 201 series (CAN Application Layer)</a></li>
+<li>1994: <a href="http://www.iec.ch/" target="_blank" rel="noopener">IEC 62026-3 (DeviceNet)</a></li>
+<li>1994: <a href="http://www.sae.org/" target="_blank" rel="noopener">SAE J1939 series</a></li>
+<li>1994: <a href="https://www.can-cia.org/standardization/specifications/" target="_blank" rel="noopener">EN 50325-4 (CANopen)</a></li>
+<li>1999: <a href="http://www.iso.org/" target="_blank" rel="noopener">ISO 11992 series</a></li>
+<li>1999: <a href="http://www.milcan.org/" target="_blank" rel="noopener">MilCAN</a></li>
+<li>2000: <a href="http://www.iec.ch/" target="_blank" rel="noopener">IEC 61162-3 (NMEA 2000)</a></li>
+<li>2002: <a href="http://www.iso.org/" target="_blank" rel="noopener">ISO 11783 series (Isobus)</a></li>
+<li>2004: <a href="http://www.iso.org/" target="_blank" rel="noopener">ISO 15765 series (OBDII/ISO-TP)</a></li>
+<li>2007: <a href="http://www.arinc.com/" target="_blank" rel="noopener">Arinc 825/826</a></li>
+<li>2015: <a href="http://uavcan.org/" target="_blank" rel="noopener">UAVCAN</a></li>
 </ul>
 <h2 id="帧"><a href="#帧" class="headerlink" title="帧"></a>帧</h2><p>物理层把模拟信号转换成数字信号传给数据链路层，帧可以看作是数据链路层控制的协议数据单元(Protocol Data Unit, PDU)，每层PDU的叫法都不一样。物理层称作位(bit)，网络层称作包(packet)，应用层称作报文(message)。</p>
 <p>CAN节点之间数据的发送和接收由4种不同的帧掌控。</p>
@@ -383,7 +383,7 @@
 <p>下图是UDS在CAN上面的实现，标记了每一层用到的规范。其中UDS规范就是ISO 14229。<br><img src="OSI_layers_table2.png" alt="OSI_layers_table2"></p>
 <p>UDS为每个的服务的请求和响应定义了不同的ID<br><img src="UDS_ID.png" alt="UDS_ID"></p>
 <h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2><p>腾讯破解特斯拉给ECU发消息就使用到了UDS，这一部分需要深入，将在下一篇笔记详细学习。</p>
-<h2 id="相关资料"><a href="#相关资料" class="headerlink" title="相关资料"></a>相关资料</h2><p><a href="https://www.can-cia.org/can-knowledge" target="_blank" rel="external">CiA: https://www.can-cia.org/can-knowledge</a><br><a href="https://en.wikipedia.org/wiki/CAN_bus" target="_blank" rel="external">Wiki: CAN bus</a><br><a href="https://automotivetechis.wordpress.com/2012/06/01/can-basics-faq/" target="_blank" rel="external">CAN Basics</a><br><a href="http://mp.weixin.qq.com/s/3H06nKQoMYvNoj7RO-j1PA" target="_blank" rel="external">ZLG致远电子:一文读懂容错CAN！</a><br><a href="https://en.wikipedia.org/wiki/On-board_diagnostics" target="_blank" rel="external">Wiki: On-board diagnostics</a><br><a href="http://opengarages.org/handbook/ebook/" target="_blank" rel="external">THE CAR HACKER’S HANDBOOK</a><br><a href="https://en.wikipedia.org/wiki/Unified_Diagnostic_Services" target="_blank" rel="external">Wiki: Unified Diagnostic Services</a><br><a href="https://automotive.softing.com/fileadmin/sof-files/pdf/de/ae/poster/UDS_Faltposter_softing2016.pdf" target="_blank" rel="external">UDS - ISO 14229 Info - Softing Automotive</a><br><a href="https://www.iso.org/search/x/query/ISO%252011898" target="_blank" rel="external">ISO 11898</a><br><a href="https://www.iso.org/search/x/query/ISO%252014229" target="_blank" rel="external">ISO 14229</a><br><a href="https://www.iso.org/search/x/query/ISO%252015031" target="_blank" rel="external">ISO 15031</a><br><a href="https://www.iso.org/search/x/query/ISO%252015765" target="_blank" rel="external">ISO 15765</a><br><a href="http://standards.sae.org/j1962_201207/" target="_blank" rel="external">SAE J1962</a></p>
+<h2 id="相关资料"><a href="#相关资料" class="headerlink" title="相关资料"></a>相关资料</h2><p><a href="https://www.can-cia.org/can-knowledge" target="_blank" rel="noopener">CiA: https://www.can-cia.org/can-knowledge</a><br><a href="https://en.wikipedia.org/wiki/CAN_bus" target="_blank" rel="noopener">Wiki: CAN bus</a><br><a href="https://automotivetechis.wordpress.com/2012/06/01/can-basics-faq/" target="_blank" rel="noopener">CAN Basics</a><br><a href="http://mp.weixin.qq.com/s/3H06nKQoMYvNoj7RO-j1PA" target="_blank" rel="noopener">ZLG致远电子:一文读懂容错CAN！</a><br><a href="https://en.wikipedia.org/wiki/On-board_diagnostics" target="_blank" rel="noopener">Wiki: On-board diagnostics</a><br><a href="http://opengarages.org/handbook/ebook/" target="_blank" rel="noopener">THE CAR HACKER’S HANDBOOK</a><br><a href="https://en.wikipedia.org/wiki/Unified_Diagnostic_Services" target="_blank" rel="noopener">Wiki: Unified Diagnostic Services</a><br><a href="https://automotive.softing.com/fileadmin/sof-files/pdf/de/ae/poster/UDS_Faltposter_softing2016.pdf" target="_blank" rel="noopener">UDS - ISO 14229 Info - Softing Automotive</a><br><a href="https://www.iso.org/search/x/query/ISO%252011898" target="_blank" rel="noopener">ISO 11898</a><br><a href="https://www.iso.org/search/x/query/ISO%252014229" target="_blank" rel="noopener">ISO 14229</a><br><a href="https://www.iso.org/search/x/query/ISO%252015031" target="_blank" rel="noopener">ISO 15031</a><br><a href="https://www.iso.org/search/x/query/ISO%252015765" target="_blank" rel="noopener">ISO 15765</a><br><a href="http://standards.sae.org/j1962_201207/" target="_blank" rel="noopener">SAE J1962</a></p>
 
             </div>
           
