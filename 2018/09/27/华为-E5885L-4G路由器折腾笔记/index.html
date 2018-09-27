@@ -12,10 +12,12 @@
 
 
 
-  <meta name="description" content="人终究会被其年少不可得之物困扰一生"/>
+  <meta name="description" content="华为 E5885L 4G路由器折腾笔记"/>
 
 
 
+
+  <meta name="keywords" content="eSIM,破解,E5885L,4G路由器,Balong,IMEI,Huawei,华为," />
 
 
 
@@ -33,12 +35,13 @@
 <link rel="canonical" href="https://gorgias.me/2018/09/27/华为-E5885L-4G路由器折腾笔记/"/>
 
 
-<meta name="description" content="华为 E5885L 4G路由器折腾笔记Introduction平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。  拿到手之后第一件事就是拆开，找UART口，可以打印出log，但是发现被密码保护了，长度8位，没办法通过读取NVram的方式解开密码。">
+<meta name="description" content="Introduction平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。  拿到手之后第一件事就是拆开，找UART口，可以打印出log，但是发现被密码保护了，长度8位，没办法通过读取NVram的方式解开密码。 1234567891011121314">
+<meta name="keywords" content="eSIM,破解,E5885L,4G路由器,Balong,IMEI,Huawei,华为">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Gorgias&#39;Blog">
+<meta property="og:title" content="华为 E5885L 4G路由器折腾笔记">
 <meta property="og:url" content="https://gorgias.me/2018/09/27/华为-E5885L-4G路由器折腾笔记/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="华为 E5885L 4G路由器折腾笔记Introduction平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。  拿到手之后第一件事就是拆开，找UART口，可以打印出log，但是发现被密码保护了，长度8位，没办法通过读取NVram的方式解开密码。">
+<meta property="og:description" content="Introduction平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。  拿到手之后第一件事就是拆开，找UART口，可以打印出log，但是发现被密码保护了，长度8位，没办法通过读取NVram的方式解开密码。 1234567891011121314">
 <meta property="og:locale" content="zh-cn">
 <meta property="og:image" content="https://gorgias.me/2018/09/27/华为-E5885L-4G路由器折腾笔记/华为-E5885L-4G路由器折腾笔记/jumpwire.jpg">
 <meta property="og:image" content="https://gorgias.me/2018/09/27/华为-E5885L-4G路由器折腾笔记/华为-E5885L-4G路由器折腾笔记/short_circuit.jpg">
@@ -49,10 +52,10 @@
 <meta property="og:image" content="https://gorgias.me/2018/09/27/华为-E5885L-4G路由器折腾笔记/华为-E5885L-4G路由器折腾笔记/APN.png">
 <meta property="og:image" content="https://gorgias.me/2018/09/27/华为-E5885L-4G路由器折腾笔记/华为-E5885L-4G路由器折腾笔记/verifycode.png">
 <meta property="og:image" content="https://gorgias.me/2018/09/27/华为-E5885L-4G路由器折腾笔记/华为-E5885L-4G路由器折腾笔记/alphabet.png">
-<meta property="og:updated_time" content="2018-09-27T15:47:58.852Z">
+<meta property="og:updated_time" content="2018-09-27T15:51:35.386Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Gorgias&#39;Blog">
-<meta name="twitter:description" content="华为 E5885L 4G路由器折腾笔记Introduction平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。  拿到手之后第一件事就是拆开，找UART口，可以打印出log，但是发现被密码保护了，长度8位，没办法通过读取NVram的方式解开密码。">
+<meta name="twitter:title" content="华为 E5885L 4G路由器折腾笔记">
+<meta name="twitter:description" content="Introduction平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。  拿到手之后第一件事就是拆开，找UART口，可以打印出log，但是发现被密码保护了，长度8位，没办法通过读取NVram的方式解开密码。 1234567891011121314">
 <meta name="twitter:image" content="https://gorgias.me/2018/09/27/华为-E5885L-4G路由器折腾笔记/华为-E5885L-4G路由器折腾笔记/jumpwire.jpg">
 
 
@@ -80,7 +83,7 @@
 
 
 
-    <title>  - Gorgias'Blog </title>
+    <title> 华为 E5885L 4G路由器折腾笔记 - Gorgias'Blog </title>
   </head>
 
   <body>
@@ -135,7 +138,7 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          
+          华为 E5885L 4G路由器折腾笔记
         
       </h1>
 
@@ -148,7 +151,7 @@
 
     
             <div class="post-content">
-            <h1 id="华为-E5885L-4G路由器折腾笔记"><a href="#华为-E5885L-4G路由器折腾笔记" class="headerlink" title="华为 E5885L 4G路由器折腾笔记"></a>华为 E5885L 4G路由器折腾笔记</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。</p>
+            <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。</p>
 <p><img src="华为-E5885L-4G路由器折腾笔记/jumpwire.jpg" alt="jumpwire"></p>
 <p>拿到手之后第一件事就是拆开，找UART口，可以打印出log，但是发现被密码保护了，长度8位，没办法通过读取NVram的方式解开密码。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">þ</span><br><span class="line">onchip</span><br><span class="line">SEB_SecureInit OK, lcs = 7</span><br><span class="line">SOC_ID: 0x00000000, 0x00000000, 0x00000000, 0x00000000,</span><br><span class="line">        0x00000000, 0x00000000, 0x00000000, 0x00000000,</span><br><span class="line">NF id boot!</span><br><span class="line">NF ID 0x98AA9015 0x76160800</span><br><span class="line">NF pagesz 0x00000800B,pagenm 0x00000040,oobsz 0x00000058B,ecc 0x00000008,addrnum 0x00000005,chipsz 0x00000100MB</span><br><span class="line">nand spec save to 0x74650131</span><br><span class="line">len 0x00004888</span><br><span class="line">SEB_XloaderVerification ok.</span><br><span class="line">mddrc init ok</span><br><span class="line"></span><br><span class="line">code_base         = 0x00000055</span><br><span class="line">code_tsensor      = 0x0000005A</span><br><span class="line">code_base_high    = 0x00000000</span><br><span class="line">code_tsensor_high = 0x00000000</span><br><span class="line">trim_a            = 0x00000400</span><br><span class="line">trim_b            = 0xFFFFFB00</span><br><span class="line">123</span><br><span class="line">boot fastboot from fastboot</span><br><span class="line">SEB_XloaderVerification ok.</span><br><span class="line">CHG:read NV success,mode=1</span><br><span class="line">[00000422ms] CHG:read NV success,mode=1</span><br><span class="line">[0000042Ems] CHG:exception_poweroff_poweron_enable=0</span><br><span class="line">[00000430ms] CHG:no_battery_powerup_enable=0</span><br><span class="line">[00000434ms] CHG:chg_boot_chip_init</span><br><span class="line">[00000437ms] CHARGE INIT SUCCESS!</span><br><span class="line">[0000043Dms]hkadc_bbp_convert read battery id voltage return volt=726</span><br><span class="line">[00000440ms][zcw_test]:boot_bq27510 read temp val_low = 0000009b; val_high = 0000000b!</span><br><span class="line">[00000448ms][zcw_test]:boot_bq27510 read temp batt_temp = 00000b9b!</span><br><span class="line">[0000044Ems][zcw_test]:boot_bq27510 read temp val_low = 0000009b; val_high = 0000000b!</span><br><span class="line">[00000456ms][zcw_test]:boot_bq27510 read temp batt_temp = 00000b9b!</span><br><span class="line">[0000045Cms][zcw_test]:boot_bq27510 read volt val_low = 00000044; val_high = 0000000f!</span><br><span class="line">[00000463ms][zcw_test]:boot_bq27510 read volt batt_volt = 00000f44!</span><br><span class="line">[00000469ms]PRE-CHG: trickle charg batt only batt_voltage=3908</span><br><span class="line">[0000046Fms] [zcw_test]:boot_bq27510 read volt val_low = 00000044; val_high = 0000000f!</span><br><span class="line">[00000477ms][zcw_test]:boot_bq27510 read volt batt_volt = 00000f44!</span><br><span class="line">[0000047Dms]EXTCHG:ext-charge limit to 2A in boot!!</span><br><span class="line">[00000579ms]Hello  Welcom to input password</span><br><span class="line">Password:</span><br></pre></td></tr></table></figure>
@@ -196,6 +199,26 @@
 
     
       <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/eSIM/">eSIM</a>
+		  
+			<a href="/tags/破解/">破解</a>
+		  
+			<a href="/tags/E5885L/">E5885L</a>
+		  
+			<a href="/tags/4G路由器/">4G路由器</a>
+		  
+			<a href="/tags/Balong/">Balong</a>
+		  
+			<a href="/tags/IMEI/">IMEI</a>
+		  
+			<a href="/tags/Huawei/">Huawei</a>
+		  
+			<a href="/tags/华为/">华为</a>
+		  
+		</div>
 		
 
         
@@ -260,7 +283,7 @@
   var disqus_shortname = 'gorgiasblog-1';
   var disqus_identifier = '2018/09/27/华为-E5885L-4G路由器折腾笔记/';
 
-  var disqus_title = "";
+  var disqus_title = "华为 E5885L 4G路由器折腾笔记";
 
 
   var disqus = {
