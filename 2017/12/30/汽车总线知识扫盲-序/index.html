@@ -68,7 +68,7 @@
 <meta property="og:image" content="https://gorgias.me/2017/12/30/汽车总线知识扫盲-序/OSI_layers_table.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/30/汽车总线知识扫盲-序/OSI_layers_table2.png">
 <meta property="og:image" content="https://gorgias.me/2017/12/30/汽车总线知识扫盲-序/UDS_ID.png">
-<meta property="og:updated_time" content="2018-06-21T10:35:43.010Z">
+<meta property="og:updated_time" content="2018-09-28T08:10:22.227Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="汽车总线知识扫盲 - 序">
 <meta name="twitter:description" content="前言汽车行业非常严谨，许多产品都要按照规范设计，首先要搞清楚ISO与SAE的关系。  国际标准组织(International Organization for Standardization,ISO) 美国机动车工程师学会(Society of Automotive Engineers,SAE)  SAE的J系列标准是为地面交通工具编写的标准，几乎涉及每一个电子元件，面向美国，而ISO是国际标准">
@@ -212,7 +212,7 @@
 </tbody>
 </table>
 <p>现在国内外汽车内部总线网络大多都使用CAN，也有用LIN，MOST，FlexRay，以太网等网络，目前应用最广泛的还是CAN，本笔记以CAN为中心，延伸到各个知识点。因为众多车企CAN的实现有细节略有差异，也许不符合规范，规范不能满足所有业务要求是一个原因，为了统一，本笔记以ISO规范为准。</p>
-<h2 id="CAN"><a href="#CAN" class="headerlink" title="CAN"></a>CAN</h2><p>CAN (Controller Area Network，符合ISO 11898)是控制器局域网络，是制造业和汽车产业种使用的一种网络协议。嵌入式系统和ECU能够使用CAN协议进行通信。<br>1992年，CAN数据链路层和CAN高速物理层在ISO 11898中已经被国际标准化，由七个部分组成，4、5、6部分稍微看了一下，是对1，2，3的一些缺陷的补充，比较有意义，但是目前国内汽车领域很少使用，所以暂不深入，每部分标题下：</p>
+<h2 id="CAN"><a href="#CAN" class="headerlink" title="CAN"></a>CAN</h2><p>CAN (Controller Area Network，符合ISO 11898)是控制器局域网络，是制造业和汽车产业种使用的一种网络协议，具有速率快，距离远的优点。嵌入式系统和ECU能够使用CAN协议进行通信。<br>1992年，CAN数据链路层和CAN高速物理层在ISO 11898中已经被国际标准化，由七个部分组成，4、5、6部分稍微看了一下，是对1，2，3的一些缺陷的补充，比较有意义，但是目前国内汽车领域很少使用，所以暂不深入，每部分标题下：</p>
 <ul>
 <li>ISO 11898-1 数据链路层和物理层信号</li>
 <li>ISO 11898-2 高速接入单元</li>
@@ -272,7 +272,7 @@
 <p>低速CAN又称容错CAN，是因为差分信号本身就有避免共模信号干扰的特性，而且低速CAN电平变化幅度比高速CAN更急，所以容错CAN可以靠单线传输，可以在CAN_H或CAN_L出现短路、断路时保证通信正常。</p>
 <p>高速CAN的电平波形图<br><img src="ISO11898-2_Waveform.png" alt="ISO11898-2_Waveform.png"><br>低速CAN的电平波形图<br><img src="ISO11898-3_Waveform.png" alt="ISO11898-3_Waveform"></p>
 <p>当一个设备输出低电平，而另一设备输出高电平，总线上的电平还是低电平，所以站在逻辑的角度，CAN bus可以有两种逻辑状态:显性(recesive)和隐性(dominant)。根据电平可称为显性电平和隐性电平，因此可以把它当作二进制流，显态为0，隐态为1。</p>
-<h3 id="分辨CAN总线"><a href="#分辨CAN总线" class="headerlink" title="分辨CAN总线"></a>分辨CAN总线</h3><p>可以通过颜色区分汽车线束上的CAN总线，不同厂商可能数量和颜色都不一样</p>
+<h3 id="分辨CAN总线"><a href="#分辨CAN总线" class="headerlink" title="分辨CAN总线"></a>分辨CAN总线</h3><p>首先找到双绞线，可以通过颜色区分汽车线束上的CAN总线，不同厂商可能数量和颜色都不一样</p>
 <ul>
 <li>CAN_H<ul>
 <li>动力CAN(Powertrain CAN) 橙/黑</li>
