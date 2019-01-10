@@ -35,18 +35,18 @@
 <link rel="canonical" href="https://gorgias.me/2017/10/28/绕过CDN找到源站的思路/"/>
 
 
-<meta name="description" content="绕过CDN的思路 网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。 站在站长的角度，不可能每个站都会用上CDN。 站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。 站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。  DNS历史解析 https://dnshistory.org/ http://whoisrequest.com/histor">
+<meta name="description" content="绕过CDN的思路 网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。 站在站长的角度，不可能每个站都会用上CDN。 站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。 站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。 DNS历史解析 https://dnshistory.org/ http://whoisrequest.com/history/">
 <meta name="keywords" content="网络安全">
 <meta property="og:type" content="article">
 <meta property="og:title" content="绕过CDN找到源站的思路">
 <meta property="og:url" content="https://gorgias.me/2017/10/28/绕过CDN找到源站的思路/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="绕过CDN的思路 网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。 站在站长的角度，不可能每个站都会用上CDN。 站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。 站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。  DNS历史解析 https://dnshistory.org/ http://whoisrequest.com/histor">
+<meta property="og:description" content="绕过CDN的思路 网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。 站在站长的角度，不可能每个站都会用上CDN。 站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。 站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。 DNS历史解析 https://dnshistory.org/ http://whoisrequest.com/history/">
 <meta property="og:locale" content="en-us">
 <meta property="og:updated_time" content="2017-11-26T14:49:05.918Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="绕过CDN找到源站的思路">
-<meta name="twitter:description" content="绕过CDN的思路 网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。 站在站长的角度，不可能每个站都会用上CDN。 站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。 站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。  DNS历史解析 https://dnshistory.org/ http://whoisrequest.com/histor">
+<meta name="twitter:description" content="绕过CDN的思路 网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。 站在站长的角度，不可能每个站都会用上CDN。 站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。 站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。 DNS历史解析 https://dnshistory.org/ http://whoisrequest.com/history/">
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
@@ -150,48 +150,48 @@
 
     
             <div class="post-content">
-            <h1 id="绕过cdn的思路"><a class="markdownIt-Anchor" href="#绕过cdn的思路"></a> 绕过CDN的思路</h1>
-<p>网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。<br>
-站在站长的角度，不可能每个站都会用上CDN。<br>
-站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。<br>
+            <h1>绕过CDN的思路</h1>
+<p>网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。
+站在站长的角度，不可能每个站都会用上CDN。
+站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。
 站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。</p>
-<h2 id="dns历史解析"><a class="markdownIt-Anchor" href="#dns历史解析"></a> DNS历史解析</h2>
-<p><a href="https://dnshistory.org/" target="_blank" rel="noopener">https://dnshistory.org/</a><br>
-<a href="http://whoisrequest.com/history/" target="_blank" rel="noopener">http://whoisrequest.com/history/</a><br>
-<a href="https://completedns.com/dns-history/" target="_blank" rel="noopener">https://completedns.com/dns-history/</a><br>
-<a href="http://dnstrails.com/" target="_blank" rel="noopener">http://dnstrails.com/</a><br>
-<a href="https://who.is/domain-history/" target="_blank" rel="noopener">https://who.is/domain-history/</a><br>
-<a href="http://research.domaintools.com/research/hosting-history/" target="_blank" rel="noopener">http://research.domaintools.com/research/hosting-history/</a><br>
-<a href="http://site.ip138.com/" target="_blank" rel="noopener">http://site.ip138.com/</a><br>
-<a href="http://viewdns.info/iphistory/" target="_blank" rel="noopener">http://viewdns.info/iphistory/</a></p>
-<h3 id="通过大量dns查漏"><a class="markdownIt-Anchor" href="#通过大量dns查漏"></a> 通过大量DNS查漏</h3>
-<p>查询冷门的DNS的解析。或者多地Ping<br>
-<a href="http://ping.chinaz.com/" target="_blank" rel="noopener">http://ping.chinaz.com/</a><br>
-<a href="http://ce.cloud.360.cn/" target="_blank" rel="noopener">http://ce.cloud.360.cn/</a><br>
-<a href="http://www.webkaka.com/ping.aspx" target="_blank" rel="noopener">http://www.webkaka.com/ping.aspx</a><br>
+<h2>DNS历史解析</h2>
+<p>https://dnshistory.org/
+http://whoisrequest.com/history/
+https://completedns.com/dns-history/
+http://dnstrails.com/
+https://who.is/domain-history/
+http://research.domaintools.com/research/hosting-history/
+http://site.ip138.com/
+http://viewdns.info/iphistory/</p>
+<h3>通过大量DNS查漏</h3>
+<p>查询冷门的DNS的解析。或者多地Ping
+<a href="http://ping.chinaz.com/" target="_blank" rel="noopener">http://ping.chinaz.com/</a>
+<a href="http://ce.cloud.360.cn/" target="_blank" rel="noopener">http://ce.cloud.360.cn/</a>
+<a href="http://www.webkaka.com/ping.aspx" target="_blank" rel="noopener">http://www.webkaka.com/ping.aspx</a>
 <a href="https://asm.ca.com/en/ping.php" target="_blank" rel="noopener">https://asm.ca.com/en/ping.php</a></p>
-<h2 id="从目标服务器入手"><a class="markdownIt-Anchor" href="#从目标服务器入手"></a> 从目标服务器入手</h2>
-<h3 id="被动获取"><a class="markdownIt-Anchor" href="#被动获取"></a> 被动获取</h3>
+<h2>从目标服务器入手</h2>
+<h3>被动获取</h3>
 <p>让目标服务器主动链接我们的服务器，获取来源IP</p>
 <ul>
 <li>SSRF</li>
 <li>Mail</li>
 </ul>
-<h3 id="服务器信息"><a class="markdownIt-Anchor" href="#服务器信息"></a> 服务器信息</h3>
+<h3>服务器信息</h3>
 <ul>
 <li>探针文件</li>
 <li>服务器日志文件</li>
 <li>错误信息</li>
 </ul>
-<h2 id="旁站"><a class="markdownIt-Anchor" href="#旁站"></a> 旁站</h2>
+<h2>旁站</h2>
 <ul>
 <li>查找子域名或者父域名对应IP</li>
 <li>查非子域名旁站</li>
 <li>通过搜索引擎查找公网上的相同站点（开发环境，备份站点等）</li>
 <li>MX、TXT记录</li>
 </ul>
-<h3 id="对比全网banner"><a class="markdownIt-Anchor" href="#对比全网banner"></a> 对比全网banner</h3>
-<p>获取目标站点的banner，在全网搜索引擎搜索，也可以使用<a href="https://github.com/michenriksen/aquatone" target="_blank" rel="noopener">AQUATONE</a>，在Shodan上搜索相同指纹站点。<br>
+<h3>对比全网banner</h3>
+<p>获取目标站点的banner，在全网搜索引擎搜索，也可以使用<a href="https://github.com/michenriksen/aquatone" target="_blank" rel="noopener">AQUATONE</a>，在Shodan上搜索相同指纹站点。
 可以通过互联网络信息中心的IP数据，筛选目标地区IP，遍历Web服务的banner用来对比CDN站的banner，可以确定源IP。</p>
 <ul>
 <li>亚洲：<a href="ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest" target="_blank" rel="noopener">ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest</a></li>
@@ -200,10 +200,10 @@
 <li>非洲：<a href="ftp://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest" target="_blank" rel="noopener">ftp://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest</a></li>
 <li>拉美：<a href="ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest" target="_blank" rel="noopener">ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest</a></li>
 </ul>
-<h2 id="cdn服务商"><a class="markdownIt-Anchor" href="#cdn服务商"></a> CDN服务商</h2>
+<h2>CDN服务商</h2>
 <ul>
 <li>入侵CDN服务商</li>
-<li>根据CDN解析特性获取源IP(<a href="http://xn--www-eo8e.crimeflare.com" target="_blank" rel="noopener">如www.crimeflare.com</a>)</li>
+<li>根据CDN解析特性获取源IP(如www.crimeflare.com)</li>
 <li>耗尽CDN服务流量，暴露真实IP</li>
 </ul>
 
@@ -269,7 +269,7 @@
     
         2015 -
     
-    2018
+    2019
     <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
     <span class="power-by">
         Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>

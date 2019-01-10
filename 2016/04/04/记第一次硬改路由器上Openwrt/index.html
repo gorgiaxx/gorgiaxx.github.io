@@ -35,13 +35,13 @@
 <link rel="canonical" href="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/"/>
 
 
-<meta name="description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）   准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU1">
+<meta name="description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）  准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU121">
 <meta name="keywords" content="路由器,openwrt,tplink,改装,硬改">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记第一次硬改路由器上Openwrt">
 <meta property="og:url" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）   准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU1">
+<meta property="og:description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）  准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU121">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/1.jpg">
 <meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/2.jpg">
@@ -59,7 +59,7 @@
 <meta property="og:updated_time" content="2017-10-29T12:45:46.548Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记第一次硬改路由器上Openwrt">
-<meta name="twitter:description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）   准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU1">
+<meta name="twitter:description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）  准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU121">
 <meta name="twitter:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/1.jpg">
 
 
@@ -164,29 +164,29 @@
 
     
             <div class="post-content">
-            <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+            <h1>前言</h1>
 <p>最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）</p>
 <p><img src="./1.jpg" alt="1"></p>
-<h1 id="准备"><a class="markdownIt-Anchor" href="#准备"></a> 准备</h1>
+<h1>准备</h1>
 <p>设备: TP-Link WR845N v4</p>
-<p><img src="./2.jpg" alt="2"><br>
-硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。<br>
-配件:<br>
-Winbond(华邦) 16MB 128MBIT SPI FLASH<br>
-内存颗粒 HY5DU121622CTP-D43 DDR64M16位<br>
+<p><img src="./2.jpg" alt="2">
+硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。
+配件:
+Winbond(华邦) 16MB 128MBIT SPI FLASH
+内存颗粒 HY5DU121622CTP-D43 DDR64M16位
 系统环境：Windows 10，CH341A编程器软件</p>
-<h1 id="硬件改造要点"><a class="markdownIt-Anchor" href="#硬件改造要点"></a> 硬件改造要点</h1>
-<h2 id="拆闪存"><a class="markdownIt-Anchor" href="#拆闪存"></a> 拆闪存</h2>
+<h1>硬件改造要点</h1>
+<h2>拆闪存</h2>
 <p>首先给热风枪装上1cm的出风口，把热风枪温度调到265度，风速6。然后预热路由器主板，接着对着闪存吹，大概十几秒后闪存引脚上的锡变亮，说明锡熔化了，用镊子把它取下。</p>
-<h2 id="拆内存"><a class="markdownIt-Anchor" href="#拆内存"></a> 拆内存</h2>
+<h2>拆内存</h2>
 <p>首先用隔热胶带贴住周围，保护零件，用助焊剂涂满内存颗粒两边引脚，给引脚上锡，一边拖焊一边用镊子顶住左边，力向上，不要太大力，否则焊盘会被扯下。拖焊的时候把烙铁头温度调到380度，轻轻来回滑动碰引脚，让上面的锡变成液态，这样一边就被镊子顶起来了。另一边也这样做。</p>
-<h2 id="焊杜邦头"><a class="markdownIt-Anchor" href="#焊杜邦头"></a> 焊杜邦头</h2>
+<h2>焊杜邦头</h2>
 <p>烙铁头温度调到350度，根据闪存与插孔的走线，把杜邦头插在SOP转接板上，用烙铁头贴着杜邦头接触点，用锡点一下，就焊上去了。</p>
 <p><img src="./a.png" alt="a"></p>
-<h2 id="焊闪存"><a class="markdownIt-Anchor" href="#焊闪存"></a> 焊闪存</h2>
+<h2>焊闪存</h2>
 <p>把闪存焊在SOP转接板上，闪存上面有圆点的那一面对着电路板上有缺口的那一面</p>
 <p><img src="./b.jpg" alt="b"></p>
-<h2 id="焊内存"><a class="markdownIt-Anchor" href="#焊内存"></a> 焊内存</h2>
+<h2>焊内存</h2>
 <p>把内存与焊盘对齐，圆点的那一面对着电路板上有缺口的那一面，对称的两角用锡固定，然后加锡拖焊，可能是我的锡有问题，最后总是连锡，也是因为这个问题，让我焊上去又取下来，导致一个板子焊盘掉了许多。解决办法：用吸锡带或者用细针把锡清理干净。</p>
 <p>失败图：</p>
 <p><img src="./bad.jpg" alt="bad"></p>
@@ -194,14 +194,14 @@ Winbond(华邦) 16MB 128MBIT SPI FLASH<br>
 <p><img src="./complete.jpg" alt="complete"></p>
 <p>加个散热片</p>
 <p><img src="./inside.jpg" alt="inside"></p>
-<h1 id="操作流程"><a class="markdownIt-Anchor" href="#操作流程"></a> 操作流程</h1>
+<h1>操作流程</h1>
 <p><img src="./3.jpg" alt="3"></p>
 <p><img src="./4.jpg" alt="4"></p>
-<p>先拆闪存，用编程器备份原有的固件，因为里面有art，这里面有无线相关的参数，每台机器的配置都有略微不同，很重要。<br>
-然后再下载对应芯片的Bootloader写入16MB的闪存，这里用的Bootloader是<a href="http://blog.hackpascal.net/" target="_blank" rel="noopener">Hackpascal</a>大神的<a href="http://www.right.com.cn/forum/thread-161906-1-1.html" target="_blank" rel="noopener">Breed</a>。<br>
+<p>先拆闪存，用编程器备份原有的固件，因为里面有art，这里面有无线相关的参数，每台机器的配置都有略微不同，很重要。
+然后再下载对应芯片的Bootloader写入16MB的闪存，这里用的Bootloader是<a href="http://blog.hackpascal.net/" target="_blank" rel="noopener">Hackpascal</a>大神的<a href="http://www.right.com.cn/forum/thread-161906-1-1.html" target="_blank" rel="noopener">Breed</a>。
 写入之后焊在主板上。启动，插入网线，用浏览器打开192.168.1.1。</p>
 <p><img src="./breed.jpg" alt="breed"></p>
-<p>然后替换内存，再启动，如果虚焊或者连锡，加电后led会一直全亮。<br>
+<p>然后替换内存，再启动，如果虚焊或者连锡，加电后led会一直全亮。
 这里可以看到内存变成64MB了。</p>
 <p><img src="./a64.png" alt="a64"></p>
 <p>然后进Breed刷入PandoraBox和ART，这里我刷的是Hackpascal编译的Openwrt，假如没有备份art，可以是用Hackspecial提供的<a href="http://www.right.com.cn/forum/thread-136444-1-1.html" target="_blank" rel="noopener">art</a>。</p>
@@ -279,7 +279,7 @@ Winbond(华邦) 16MB 128MBIT SPI FLASH<br>
     
         2015 -
     
-    2018
+    2019
     <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
     <span class="power-by">
         Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
