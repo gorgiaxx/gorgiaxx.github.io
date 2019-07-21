@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="">
-  <head>
+<html lang>
+  <head><meta name="generator" content="Hexo 3.9.0">
     
-<meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
-  <meta name="description" content="子域名收集笔记"/>
+  <meta name="description" content="子域名收集笔记">
 
 
 
 
-  <meta name="keywords" content="子域名,枚举,DNS,信息收集," />
+  <meta name="keywords" content="子域名,枚举,DNS,信息收集,">
 
 
 
@@ -28,34 +28,34 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1">
 
 
 
-<link rel="canonical" href="https://gorgias.me/2017/12/05/子域名收集笔记/"/>
+<link rel="canonical" href="https://gorgias.me/2017/12/05/子域名收集笔记/">
 
 
-<meta name="description" content="前言 思路如下： 公开情报：证书，DNS解析记录，站内URL。 非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎 也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用&amp;quot;-&amp;quot;减号来去除已知子域名 1site:target.com-www-blog 证书 Ce">
+<meta name="description" content="前言 思路如下： 公开情报：证书，DNS解析记录，站内URL。 非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。  搜索引擎 也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用&amp;quot;-&amp;quot;减号来去除已知子域名 1site:target.com-www-blog  证书">
 <meta name="keywords" content="子域名,枚举,DNS,信息收集">
 <meta property="og:type" content="article">
 <meta property="og:title" content="子域名收集笔记">
 <meta property="og:url" content="https://gorgias.me/2017/12/05/子域名收集笔记/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="前言 思路如下： 公开情报：证书，DNS解析记录，站内URL。 非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎 也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用&amp;quot;-&amp;quot;减号来去除已知子域名 1site:target.com-www-blog 证书 Ce">
+<meta property="og:description" content="前言 思路如下： 公开情报：证书，DNS解析记录，站内URL。 非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。  搜索引擎 也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用&amp;quot;-&amp;quot;减号来去除已知子域名 1site:target.com-www-blog  证书">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2017/12/05/子域名收集笔记/SAN.png">
-<meta property="og:updated_time" content="2018-04-08T06:08:24.481Z">
+<meta property="og:updated_time" content="2019-02-28T08:44:16.839Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="子域名收集笔记">
-<meta name="twitter:description" content="前言 思路如下： 公开情报：证书，DNS解析记录，站内URL。 非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。 搜索引擎 也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用&amp;quot;-&amp;quot;减号来去除已知子域名 1site:target.com-www-blog 证书 Ce">
+<meta name="twitter:description" content="前言 思路如下： 公开情报：证书，DNS解析记录，站内URL。 非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。  搜索引擎 也可以用其他搜索引擎，这个效果不是很好，Google hacking如下 1site:target.com 使用&amp;quot;-&amp;quot;减号来去除已知子域名 1site:target.com-www-blog  证书">
 <meta name="twitter:image" content="https://gorgias.me/2017/12/05/子域名收集笔记/SAN.png">
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
-<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 
 
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
 
 
 
@@ -152,76 +152,78 @@
 
     
             <div class="post-content">
-            <h2>前言</h2>
+            <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
 <p>思路如下：</p>
-<p>公开情报：证书，DNS解析记录，站内URL。
+<p>公开情报：证书，DNS解析记录，站内URL。<br>
 非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。</p>
-<h2>搜索引擎</h2>
+<h2 id="搜索引擎"><a class="markdownIt-Anchor" href="#搜索引擎"></a> 搜索引擎</h2>
 <p>也可以用其他搜索引擎，这个效果不是很好，Google hacking如下</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">site:target.com</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">site:target.com</span><br></pre></td></tr></table></figure>
 <p>使用&quot;-&quot;减号来去除已知子域名</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">site:target.com-www-blog</span><br></pre></td></tr></table></figure></p>
-<h2>证书</h2>
-<h3>Certificate Transparency logs</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">site:target.com-www-blog</span><br></pre></td></tr></table></figure>
+<h2 id="证书"><a class="markdownIt-Anchor" href="#证书"></a> 证书</h2>
+<h3 id="certificate-transparency-logs"><a class="markdownIt-Anchor" href="#certificate-transparency-logs"></a> Certificate Transparency logs</h3>
 <p>谷歌Chrome要求2017年所有SSL证书都要支持证书透明，所以可以根据CT log查询支持HTTPS网站的子域名。</p>
-<p><a href="https://crt.sh/" target="_blank" rel="noopener">crt.sh</a>
-<a href="https://censys.io/" target="_blank" rel="noopener">censys.io</a>
-<a href="https://google.com/transparencyreport/https/ct/" target="_blank" rel="noopener">google</a>
+<p><a href="https://crt.sh/" target="_blank" rel="noopener">crt.sh</a><br>
+<a href="https://censys.io/" target="_blank" rel="noopener">censys.io</a><br>
+<a href="https://google.com/transparencyreport/https/ct/" target="_blank" rel="noopener">google</a><br>
 <a href="developers.facebook.com/tools/ct/">facebook</a></p>
-<h3>Subject Alternative Name</h3>
-<p>根据多域名证书的Subject Alternative Name中的内容，可以获取同一公司的其他域名。
+<h3 id="subject-alternative-name"><a class="markdownIt-Anchor" href="#subject-alternative-name"></a> Subject Alternative Name</h3>
+<p>根据多域名证书的Subject Alternative Name中的内容，可以获取同一公司的其他域名。<br>
 <img src="./SAN.png" alt="SAN"></p>
-<h2>DNS域传递</h2>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dig AXFR@nameserver domain</span><br><span class="line">dnsenum domain</span><br></pre></td></tr></table></figure></p>
-<h2>前端</h2>
-<p>爬URL
+<h2 id="dns域传递"><a class="markdownIt-Anchor" href="#dns域传递"></a> DNS域传递</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dig AXFR@nameserver domain</span><br><span class="line">dnsenum domain</span><br></pre></td></tr></table></figure>
+<h2 id="前端"><a class="markdownIt-Anchor" href="#前端"></a> 前端</h2>
+<p>爬URL<br>
 crossdomain.xml</p>
-<h2>国内公开信息</h2>
-<p>工信部，链接地址如下，进去之后无法获取验证码，右键验证码新窗口打开。
+<h2 id="国内公开信息"><a class="markdownIt-Anchor" href="#国内公开信息"></a> 国内公开信息</h2>
+<p>工信部，链接地址如下，进去之后无法获取验证码，右键验证码新窗口打开。<br>
 <a href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action" target="_blank" rel="noopener">http://www.miitbeian.gov.cn/publish/query/indexFirst.action</a></p>
-<p>工商网监,主要涉网信息
+<p>工商网监,主要涉网信息<br>
 <a href="http://szcert.ebs.org.cn" target="_blank" rel="noopener">http://szcert.ebs.org.cn</a></p>
-<h2>NSEC</h2>
+<h2 id="nsec"><a class="markdownIt-Anchor" href="#nsec"></a> NSEC</h2>
 <p>NSEC ldnsutil</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ldns-walk @nameserver domain</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ldns-walk @nameserver domain</span><br></pre></td></tr></table></figure>
 <p>NSEC3 nsec3walker</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">collect inscuredns.com &gt; insecuredns.com.collect</span><br><span class="line"><span class="built_in">unhash</span> insecuredns.com.collect &gt; insecuredns.com.collect.unhash</span><br></pre></td></tr></table></figure></p>
-<h2>域名服务商私有DNS记录</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">collect inscuredns.com &gt; insecuredns.com.collect</span><br><span class="line"><span class="built_in">unhash</span> insecuredns.com.collect &gt; insecuredns.com.collect.unhash</span><br></pre></td></tr></table></figure>
+<h2 id="certdb"><a class="markdownIt-Anchor" href="#certdb"></a> CertDB</h2>
+<p><a href="https://certdb.com/search?q=dvb.corpinter.net" target="_blank" rel="noopener">https://certdb.com/search?q=dvb.corpinter.net</a></p>
+<h2 id="域名服务商私有dns记录"><a class="markdownIt-Anchor" href="#域名服务商私有dns记录"></a> 域名服务商私有DNS记录</h2>
 <p>添加域名，然后查看导入DNS记录</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https://www.cloudflare.com/</span><br><span class="line">https://www.dnspod.cn/</span><br><span class="line">http://www.dnspod.cn/proxy_diagnose/recordscan/doc88.com?callback=a</span><br></pre></td></tr></table></figure></p>
-<h2>网络公开情报</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https://www.cloudflare.com/</span><br><span class="line">https://www.dnspod.cn/</span><br><span class="line">http://www.dnspod.cn/proxy_diagnose/recordscan/doc88.com?callback=a</span><br></pre></td></tr></table></figure>
+<h2 id="网络公开情报"><a class="markdownIt-Anchor" href="#网络公开情报"></a> 网络公开情报</h2>
 <p><a href="https://www.virustotal.com/" target="_blank" rel="noopener">VirusTotal</a>是一个在线检测恶意样本或链接的网站，有自己的DNS数据集。</p>
-<p>HackerTarget上可以根据IP反查相关域名，但是不全
+<p>HackerTarget上可以根据IP反查相关域名，但是不全<br>
 <a href="https://hackertarget.com/reverse-ip-lookup/" target="_blank" rel="noopener">https://hackertarget.com/reverse-ip-lookup/</a></p>
-<p>可以使用HackerTarget收费的服务查看更完全的数据
+<p>可以使用HackerTarget收费的服务查看更完全的数据<br>
 <a href="https://hackertarget.com/domain-profiler/" target="_blank" rel="noopener">https://hackertarget.com/domain-profiler/</a></p>
 <p><a href="https://dnsdumpster.com/" target="_blank" rel="noopener">DNSdumpster</a>是一个免费的域名分析网站，是HackerTarget旗下项目，可以查询相关的子域名或者旁站域名。</p>
 <p><a href="http://viewdns.info/" target="_blank" rel="noopener">ViewDNS</a>是一个DNS工具大全,可以查各种DNS信息。</p>
 <p><a href="https://findsubdomains.com/" target="_blank" rel="noopener">FindSubDomains</a>可以获取其他子域名和IP信息</p>
-<h2>扫描工具</h2>
-<h3>NMap</h3>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmap --script dns-brute --script-args dns-brute.domain=target.com,dns-brute.threads=6,dns-</span><br><span class="line">brute.hostlist=dict.lst</span><br></pre></td></tr></table></figure></p>
-<h3>其他工具</h3>
-<p><a href="https://github.com/TheRook/subbrute" target="_blank" rel="noopener">SubBrute</a> - 是一个开源项目，DNS爬虫，能够使用字典爆破子域名，也是一个python库。
-<a href="https://github.com/aboul3la/Sublist3r" target="_blank" rel="noopener">Sublist3r</a> - 是一个开源项目，整合了SubBrute，并且能够在网上收集公开的域名数据。
-<a href="https://github.com/lijiejie/subDomainsBrute" target="_blank" rel="noopener">subDomainsBrute</a> - 是一个纯粹的子域名爆破脚本。基于字典，扫描速度快，支持多线程。
-<a href="https://github.com/appsecco/bugcrowd-levelup-subdomain-enumeration" target="_blank" rel="noopener">bugcrowd-levelup-subdomain-enumeration</a> - Bharath在Bugcrowd Levelup的议题用到的工具，包含子域名枚举脚本、CTlog查询脚本。
-<a href="https://github.com/darkoperator/dnsrecon" target="_blank" rel="noopener">DNSrecon</a> - DNS枚举脚本
-<a href="https://github.com/davidpepper/fierce-domain-scanner" target="_blank" rel="noopener">Fierce.pl Domain Scanner</a> - perl写的子域名爆破脚本
-<a href="https://github.com/michenriksen/aquatone" target="_blank" rel="noopener">AQUATONE</a> - 一款强大的域名工具，可以查子域名相同指纹站点。
-<a href="https://github.com/laramies/theHarvester" target="_blank" rel="noopener">theHarvester</a> - 一款社会工程学工具，有查询子域名的功能。
-<a href="https://github.com/blechschmidt/massdns.git" target="_blank" rel="noopener">MassDNS</a> - 一款域名解析工具，可以用于爆破子域名。
-<a href="https://github.com/infosec-au/altdns" target="_blank" rel="noopener">Alt-DNS</a> - 根据已知域名排列或关键词生成字典来爆破子域名。
-<a href="https://github.com/jhaddix/domain" target="_blank" rel="noopener">无名的，基于recon-ng和Alt-DNS的域名爆破脚本</a>
-<a href="https://github.com/eldraco/domain_analyzer" target="_blank" rel="noopener">Domain Analyzer</a> - 一个分析域名的工具，可以用来查子域名
-<a href="https://github.com/jfrancois/SDBF" target="_blank" rel="noopener">Smart DNS Brute Forcer</a> - 卢森堡大学的学术型工具，结合Markov chain Models生成域名。
-<a href="https://github.com/evilsocket/xray" target="_blank" rel="noopener">XRay</a> - 一款情报收集工具，有子域名收集功能
-<a href="https://github.com/coco413/DiscoverSubdomain" target="_blank" rel="noopener">DiscoverSubdomain</a> - 自动化收集子域名工具，集成了多类子域名获取功能
-<a href="https://github.com/franccesco/getaltname" target="_blank" rel="noopener">GetAltName</a> - 根据SAN获取其他域名
-<a href="https://github.com/bit4woo/teemo.git" target="_blank" rel="noopener">Teemo</a> - 一款域名和邮箱的信息收集工具，挺全的，就是没SSL的收集路径
+<h2 id="扫描工具"><a class="markdownIt-Anchor" href="#扫描工具"></a> 扫描工具</h2>
+<h3 id="nmap"><a class="markdownIt-Anchor" href="#nmap"></a> NMap</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmap --script dns-brute --script-args dns-brute.domain=target.com,dns-brute.threads=6,dns-</span><br><span class="line">brute.hostlist=dict.lst</span><br></pre></td></tr></table></figure>
+<h3 id="其他工具"><a class="markdownIt-Anchor" href="#其他工具"></a> 其他工具</h3>
+<p><a href="https://github.com/TheRook/subbrute" target="_blank" rel="noopener">SubBrute</a> - 是一个开源项目，DNS爬虫，能够使用字典爆破子域名，也是一个python库。<br>
+<a href="https://github.com/aboul3la/Sublist3r" target="_blank" rel="noopener">Sublist3r</a> - 是一个开源项目，整合了SubBrute，并且能够在网上收集公开的域名数据。<br>
+<a href="https://github.com/lijiejie/subDomainsBrute" target="_blank" rel="noopener">subDomainsBrute</a> - 是一个纯粹的子域名爆破脚本。基于字典，扫描速度快，支持多线程。<br>
+<a href="https://github.com/appsecco/bugcrowd-levelup-subdomain-enumeration" target="_blank" rel="noopener">bugcrowd-levelup-subdomain-enumeration</a> - Bharath在Bugcrowd Levelup的议题用到的工具，包含子域名枚举脚本、CTlog查询脚本。<br>
+<a href="https://github.com/darkoperator/dnsrecon" target="_blank" rel="noopener">DNSrecon</a> - DNS枚举脚本<br>
+<a href="https://github.com/davidpepper/fierce-domain-scanner" target="_blank" rel="noopener">Fierce.pl Domain Scanner</a> - perl写的子域名爆破脚本<br>
+<a href="https://github.com/michenriksen/aquatone" target="_blank" rel="noopener">AQUATONE</a> - 一款强大的域名工具，可以查子域名相同指纹站点。<br>
+<a href="https://github.com/laramies/theHarvester" target="_blank" rel="noopener">theHarvester</a> - 一款社会工程学工具，有查询子域名的功能。<br>
+<a href="https://github.com/blechschmidt/massdns.git" target="_blank" rel="noopener">MassDNS</a> - 一款域名解析工具，可以用于爆破子域名。<br>
+<a href="https://github.com/infosec-au/altdns" target="_blank" rel="noopener">Alt-DNS</a> - 根据已知域名排列或关键词生成字典来爆破子域名。<br>
+<a href="https://github.com/jhaddix/domain" target="_blank" rel="noopener">无名的，基于recon-ng和Alt-DNS的域名爆破脚本</a><br>
+<a href="https://github.com/eldraco/domain_analyzer" target="_blank" rel="noopener">Domain Analyzer</a> - 一个分析域名的工具，可以用来查子域名<br>
+<a href="https://github.com/jfrancois/SDBF" target="_blank" rel="noopener">Smart DNS Brute Forcer</a> - 卢森堡大学的学术型工具，结合Markov chain Models生成域名。<br>
+<a href="https://github.com/evilsocket/xray" target="_blank" rel="noopener">XRay</a> - 一款情报收集工具，有子域名收集功能<br>
+<a href="https://github.com/coco413/DiscoverSubdomain" target="_blank" rel="noopener">DiscoverSubdomain</a> - 自动化收集子域名工具，集成了多类子域名获取功能<br>
+<a href="https://github.com/franccesco/getaltname" target="_blank" rel="noopener">GetAltName</a> - 根据SAN获取其他域名<br>
+<a href="https://github.com/bit4woo/teemo.git" target="_blank" rel="noopener">Teemo</a> - 一款域名和邮箱的信息收集工具，挺全的，就是没SSL的收集路径<br>
 <a href="https://github.com/sawzeeyy/Sanitiz3r.git" target="_blank" rel="noopener">Sanitiz3r</a> - 中规中矩的域名爆破脚本，可以检测HTTP服务</p>
-<h2>参考</h2>
-<p><a href="https://speakerdeck.com/yamakira/esoteric-sub-domain-enumeration-techniques" target="_blank" rel="noopener">Esoteric sub-domain enumeration techniques</a>
+<h2 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h2>
+<p><a href="https://speakerdeck.com/yamakira/esoteric-sub-domain-enumeration-techniques" target="_blank" rel="noopener">Esoteric sub-domain enumeration techniques</a><br>
 <a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types" target="_blank" rel="noopener">List of DNS record types</a></p>
 
             </div>
