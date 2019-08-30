@@ -17,7 +17,7 @@
 
 
 
-  <meta name="keywords" content="NAND,FlashROM,SPI,Raspberry,树莓派,">
+  <meta name="keywords" content="FlashROM,NAND,SPI,Raspberry,树莓派,">
 
 
 
@@ -36,7 +36,7 @@
 
 
 <meta name="description" content="Introduction to FlashROM 半年多没写文章了，固件提取系列已经写到第11部，这一个我觉得没那么难，可以公开。 FlashROM是一款开源的Flash固件提取项目，支持多种硬件平台，SPI Flash和Parallel Flash。 这一次遇到了一款NAND的SPI Flash，型号为IS38SML01G1，车规级存储芯片。起初以为SPI Flash都是NOR芯片，于是没有看">
-<meta name="keywords" content="NAND,FlashROM,SPI,Raspberry,树莓派">
+<meta name="keywords" content="FlashROM,NAND,SPI,Raspberry,树莓派">
 <meta property="og:type" content="article">
 <meta property="og:title" content="固件提取系列-使用FlashROM读取Flash">
 <meta property="og:url" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/index.html">
@@ -72,7 +72,14 @@
 <meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/dump1.png">
 <meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/maps.png">
 <meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/address_calc.png">
-<meta property="og:updated_time" content="2019-07-21T16:48:16.173Z">
+<meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/package.jpg">
+<meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/revelprog.jpg">
+<meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/STM32F103.jpg">
+<meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/reading_with_prog.jpg">
+<meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/reading_with_prog2.png">
+<meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/result.png">
+<meta property="og:image" content="https://gorgias.me/2019/07/20/固件提取系列-使用FlashROM读取Flash/flashdump5.png">
+<meta property="og:updated_time" content="2019-08-30T08:57:44.638Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="固件提取系列-使用FlashROM读取Flash">
 <meta name="twitter:description" content="Introduction to FlashROM 半年多没写文章了，固件提取系列已经写到第11部，这一个我觉得没那么难，可以公开。 FlashROM是一款开源的Flash固件提取项目，支持多种硬件平台，SPI Flash和Parallel Flash。 这一次遇到了一款NAND的SPI Flash，型号为IS38SML01G1，车规级存储芯片。起初以为SPI Flash都是NOR芯片，于是没有看">
@@ -301,6 +308,22 @@
 <p><img src="maps.png" alt="maps"></p>
 <p>计算一下，第一段是实际堆的大小，第二段是实际读取的大小，第三段是正常读取的大小，所以不要去读冗余区。</p>
 <p><img src="address_calc.png" alt="address_calc"></p>
+<h2 id="revelprog-is开箱"><a class="markdownIt-Anchor" href="#revelprog-is开箱"></a> REVELPROG-IS开箱</h2>
+<p>时隔一个多月，购买了REVELPROG-IS，用于验证FlashROM读取的结果是否正确。</p>
+<p><img src="package.jpg" alt="package"></p>
+<p>这是波兰制造，包装和编程器外观都还行</p>
+<p><img src="revelprog.jpg" alt="revelprog"></p>
+<p>电路设计很简单，一颗STM32F103的芯片，价格有点小贵，还好没被抄板子</p>
+<p><img src="STM32F103.jpg" alt="STM32F103"></p>
+<h2 id="验证读取结果"><a class="markdownIt-Anchor" href="#验证读取结果"></a> 验证读取结果</h2>
+<p>WSON8的烧录座还没到货，暂时飞线读取。</p>
+<p><img src="reading_with_prog.jpg" alt="reading_with_prog"></p>
+<p>读取速度超慢，花了几分钟时间。不支持调整速率，还是FlashROM速度最快</p>
+<p><img src="reading_with_prog2.png" alt="reading_with_prog2"></p>
+<p>读取的数据和前面一致</p>
+<p><img src="result.png" alt="result"></p>
+<p>寻址格式和第三种对应，具体顺序忘了，以后就用这个编程器读了。</p>
+<p><img src="flashdump5.png" alt="flashdump5"></p>
 
             </div>
           
@@ -310,9 +333,9 @@
 		
 		<div class="post-tags">
 		  
-			<a href="/tags/NAND/">NAND</a>
-		  
 			<a href="/tags/FlashROM/">FlashROM</a>
+		  
+			<a href="/tags/NAND/">NAND</a>
 		  
 			<a href="/tags/SPI/">SPI</a>
 		  
@@ -326,6 +349,12 @@
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/2019/08/08/浅谈4G通信模组在车联网领域的攻击场景/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">浅谈4G通信模组在车联网领域的攻击场景</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
     
     
       <a class="next" href="/2018/11/30/Visteon固件重打包/">

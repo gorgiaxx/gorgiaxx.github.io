@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="description" content="GL.iNet MIFI 一款差不多的4G便携路由器">
+
+
+
+
+  <meta name="keywords" content="4G模块,GL.iNet,MIFI,EC20,移远,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1">
+
+
+
+<link rel="canonical" href="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/">
+
+
+<meta name="description" content="使用华为E5885L一年多了，对我而言，它不仅是一款完美的4G便携路由器，而且经过改造之后更是一款渗透利器。尽管这是一款非常美好的产品，但是在安全研究的工作中，还是发现有不少痛点。但是在使用了GL.iNet MIFI之后，完全满足了我的测试需求。尽管能够解决问题，但是某些地方太粗糙了。 外壳  在侧面有很特别的出风口，跟眼睛一样o皿o，里面有风扇的形状，又丑又没用。  拆机之后，可以看到简陋的电池">
+<meta name="keywords" content="4G模块,GL.iNet,MIFI,EC20,移远">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GL.iNet MIFI 一款差不多的4G便携路由器">
+<meta property="og:url" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/index.html">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="使用华为E5885L一年多了，对我而言，它不仅是一款完美的4G便携路由器，而且经过改造之后更是一款渗透利器。尽管这是一款非常美好的产品，但是在安全研究的工作中，还是发现有不少痛点。但是在使用了GL.iNet MIFI之后，完全满足了我的测试需求。尽管能够解决问题，但是某些地方太粗糙了。 外壳  在侧面有很特别的出风口，跟眼睛一样o皿o，里面有风扇的形状，又丑又没用。  拆机之后，可以看到简陋的电池">
+<meta property="og:locale" content="en-us">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/external.jpg">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/air_outlet.jpg">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/battery.jpg">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/internal.jpg">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/AT_Commands.png">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/AT_Commands2.png">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/imei.png">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/imei.png">
+<meta property="og:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/openwrt.png">
+<meta property="og:updated_time" content="2019-08-30T09:49:21.124Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GL.iNet MIFI 一款差不多的4G便携路由器">
+<meta name="twitter:description" content="使用华为E5885L一年多了，对我而言，它不仅是一款完美的4G便携路由器，而且经过改造之后更是一款渗透利器。尽管这是一款非常美好的产品，但是在安全研究的工作中，还是发现有不少痛点。但是在使用了GL.iNet MIFI之后，完全满足了我的测试需求。尽管能够解决问题，但是某些地方太粗糙了。 外壳  在侧面有很特别的出风口，跟眼睛一样o皿o，里面有风扇的形状，又丑又没用。  拆机之后，可以看到简陋的电池">
+<meta name="twitter:image" content="https://gorgias.me/2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/external.jpg">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> GL.iNet MIFI 一款差不多的4G便携路由器 - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/links">
+                            
+                            
+                                Links
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/atom.xml">
+                            
+                            
+                                RSS
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          GL.iNet MIFI 一款差不多的4G便携路由器
+        
+      </h1>
+
+      <time class="post-time">
+          Aug 30 2019
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>使用华为E5885L一年多了，对我而言，它不仅是一款完美的4G便携路由器，而且经过改造之后更是一款渗透利器。尽管这是一款非常美好的产品，但是在安全研究的工作中，还是发现有不少痛点。但是在使用了GL.iNet MIFI之后，完全满足了我的测试需求。尽管能够解决问题，但是某些地方太粗糙了。</p>
+<p>外壳</p>
+<p><img src="external.jpg" alt="external"></p>
+<p>在侧面有很特别的出风口，跟眼睛一样o皿o，里面有风扇的形状，又丑又没用。</p>
+<p><img src="air_outlet.jpg" alt="air_outlet"></p>
+<p>拆机之后，可以看到简陋的电池黏在外壳上，用一张墨绿色的纸挡住
+<img src="battery.jpg" alt="battery"></p>
+<p>首先E5885L使用了HiSilicon LTE Cat6的芯片集，基带的型号是hi6932，这个基带芯片实际上还用于车规级的芯片919系列，至少性能是值得肯定的。但是，车规级芯片如果作为NAD，网络负载压力也十分地小，便携路由方案的RAM要比车规级小很多。一旦负载量增大，便会出现网络不稳定的问题，这种场景主要还是容易发生在测试过程中。</p>
+<p>某些场景需要两个RJ45接口，E5885L就不能满足了，但是GL-MIFI有两个RJ45接口，并且WAN口可以配置成LAN口。十分灵活</p>
+<p>有时需要进行ARP欺骗，因为E5885L的配置，导致不能成功实现。</p>
+<p>E5885L修改IMEI要重启系统才能生效，而GL-MIFI的处理器和基带芯片是分开的，因此只需要重置4G模块就能生效</p>
+<p>GL-MIFI支持USB外接3G/4G Modem，很多时候，PC无法使用Modem拨号、有可能是驱动不支持，有可能是pppd配置不正确，此时，我们能把目标Modem放到GL-MIFI上面识别，可以免去E-SIM飞线的工作。</p>
+<h2>使用</h2>
+<p>内部天线也是贴在外壳上，GL-MIFI使用的是移远EC20 4G模块，Mini PCI-E接口，国内版使用EC20-CEHCLG型号，仅支持上网，不能拨打电话。</p>
+<p><img src="internal.jpg" alt="internal"></p>
+<p>在PCB上引出了许多AR9331的GPIO引脚，有助于开发IoT应用。</p>
+<p>/dev/ttyUSB0 DM
+/dev/ttyUSB1 GPS NMEA message output
+/dev/ttyUSB2 AT commands
+/dev/ttyUSB3 PPP connection or AT commands
+wwan0 (QMI mode)USB network adapter</p>
+<p>在Web界面提供了快速AT命令的插件。</p>
+<p><img src="AT_Commands.png" alt="AT_Commands.png"></p>
+<p>很方便的进行基础操作</p>
+<p><img src="AT_Commands2.png" alt="AT_Commands2.png"></p>
+<p>修改IMEI非常方便</p>
+<p><img src="imei.png" alt="imei.png"></p>
+<p>支持配置APN，非常方便</p>
+<p><img src="imei.png" alt="imei.png"></p>
+<p>默认开放SSH服务，基于OpenWRT编译，gl.inet提供的软件源速度快。</p>
+<p><img src="openwrt.png" alt="openwrt.png"></p>
+<h2>其他</h2>
+<p>可以查询官方提供的MIFI的通信模组使用教程</p>
+<p>https://github.com/domino-team/docs/blob/master/docs/mini/mifi.md</p>
+<p>Osmocom也有移远EC20的hack说明</p>
+<p>https://osmocom.org/projects/quectel-modems/wiki/EC20</p>
+<p>新版固件已经禁用了AT+QLINUXCMD，所以不能直接发送命令</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/4G模块/">4G模块</a>
+		  
+			<a href="/tags/GL-iNet/">GL.iNet</a>
+		  
+			<a href="/tags/MIFI/">MIFI</a>
+		  
+			<a href="/tags/EC20/">EC20</a>
+		  
+			<a href="/tags/移远/">移远</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/08/08/浅谈4G通信模组在车联网领域的攻击场景/">
+        <span class="next-text nav-default">浅谈4G通信模组在车联网领域的攻击场景</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+    <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+    </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2019
+    <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+<script type="text/javascript">
+  var disqus_shortname = 'gorgiasblog-1';
+  var disqus_identifier = '2019/08/30/GL.iNet-MIFI-一款差不多的4G便携路由器/';
+
+  var disqus_title = "GL.iNet MIFI 一款差不多的4G便携路由器";
+
+
+  var disqus = {
+    load : function disqus(){
+        if(typeof DISQUS !== 'object') {
+          (function () {
+          var s = document.createElement('script'); s.async = true;
+          s.type = 'text/javascript';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+          $('#load-disqus').remove(); ///加载后移除按钮
+        }
+    }
+  }
+
+  
+    var disqus_config = function () {
+        this.page.url = disqus_url;
+        this.page.identifier = disqus_identifier;
+        this.page.title = disqus_title;
+    };
+  
+
+</script>
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
