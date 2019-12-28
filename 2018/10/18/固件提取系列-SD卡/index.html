@@ -80,7 +80,7 @@
 <meta property="og:image" content="https://gorgias.me/2018/10/18/固件提取系列-SD卡/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-SD%E5%8D%A1/csv_data_exported.png">
 <meta property="og:image" content="https://gorgias.me/2018/10/18/固件提取系列-SD卡/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-SD%E5%8D%A1/parse_key.png">
 <meta property="og:image" content="https://gorgias.me/2018/10/18/固件提取系列-SD卡/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-SD%E5%8D%A1/uhs_command_sequence.png">
-<meta property="og:updated_time" content="2019-07-22T02:28:43.480Z">
+<meta property="og:updated_time" content="2019-12-28T16:06:37.275Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="固件提取系列-SD卡">
 <meta name="twitter:description" content="前言 SD卡(Secure Digital Memory Card)是一种存储介质，基于NAND闪存技术，作为MMC(Multimedia Card)的替代。一般用于多媒体播放器，相机，手机，随后也大量用于IoT设备和汽车电子。根据SD卡尺寸，可以分为SD、miniSD、microSD。  SD卡的速度等级标准当前在用的有两种，一种是普通速度标记，另一种是UHS速度标记，不同速度标准对应的总线模">
@@ -791,7 +791,9 @@ CMD42的参数前4个bit应该是0，CSR的对应状态位bit-25应该由1变为
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dd bs=4M <span class="keyword">if</span>=/home/cygnus/IMG/2018-06-27-raspbian-stretch-lite/2018-06-27-raspbian-stretch-lite.img of=/dev/mmcblk0 status=progress conv=fsync</span><br></pre></td></tr></table></figure>
 <p>下载对应版本的树莓派源代码，并把工具链加入环境变量</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --depth=1 --branch rpi-4.14.y https://github.com/raspberrypi/linux</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/home/cygnus/git/rapi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin</span><br></pre></td></tr></table></figure>
-<p>使用BCM2709配置，并在MENU CONFIG里把SD卡驱动和MMC驱动变为内核模块形式。最后编译zImage，模块，设备树，然后更新SD卡里的文件。</p>
+<p>使用BCM2709配置，并在MENU CONFIG里把SD卡驱动和MMC驱动变为内核模块形式。最后编译zImage，模块，设备树，然后更新SD卡里的文件。<br>
+kernel.img is used by RPi 1B, 1A, A+, B+, 2B (first version) Z, Z (with camera), ZW, CM1<br>
+kernel7.img is used by the RPi2B2, RPi3B, CM3 and CM3L.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">KERNEL=kernel7</span><br><span class="line">make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2709_defconfig</span><br><span class="line">make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig</span><br><span class="line">make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j4 zImage modules dtbs</span><br><span class="line">sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_PATH=/run/media/cygnus/rootfs modules_install</span><br></pre></td></tr></table></figure>
 <p>更新内核</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo cp /run/media/cygnus/boot/<span class="variable">$KERNEL</span>.img /run/media/cygnus/boot/<span class="variable">$KERNEL</span>-backup.img</span><br><span class="line">sudo cp arch/arm/boot/zImage /run/media/cygnus/boot/<span class="variable">$KERNEL</span>.img</span><br></pre></td></tr></table></figure>
