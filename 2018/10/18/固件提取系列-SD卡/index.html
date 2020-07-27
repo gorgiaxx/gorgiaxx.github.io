@@ -192,7 +192,7 @@
 <p>SD卡(Secure Digital Memory Card)是一种存储介质，基于NAND闪存技术，作为MMC(Multimedia Card)的替代。一般用于多媒体播放器，相机，手机，随后也大量用于IoT设备和汽车电子。根据SD卡尺寸，可以分为SD、miniSD、microSD。</p>
 <p><img src="./sd_size.png" alt="sd_size"></p>
 <p>SD卡的速度等级标准当前在用的有两种，一种是普通速度标记，另一种是UHS速度标记，不同速度标准对应的总线模式也不同。现在SD协会又出了新的速度等级标准：Video Speed Class，使用UHS总线。SD卡的容量也有标准，从SDSC到SDUC。</p>
-<p><img src="./Micro-SD-speeds.png" alt="Micro-SD-speeds"><br>
+<p><img src="./Micro-SD-speeds.png" alt="Micro-SD-speeds">
 <img src="./bus_speed_img.jpg" alt="bus_speed_img"></p>
 <p>SD卡的参数可以在SD卡的贴纸或者丝印上看到。</p>
 <p><img src="./sd_sticker.png" alt="sd_sticker"></p>
@@ -278,11 +278,11 @@
 </table>
 <p>下面是我们要研究的SD卡，SDSC，刚好最大2GB，上面印着M2B9 2GB Made in Japan，网上不能搜索到这些信息。</p>
 <p><img src="./SD_card_internal.jpg" alt="SD_card_internal"></p>
-<p>再看SD主控芯片，56X31B002 AC00145R，无法搜索到。<br>
+<p>再看SD主控芯片，56X31B002 AC00145R，无法搜索到。
 但是下面的存储芯片印有镁光Logo，在<a href="https://www.micron.com/decoder" target="_blank" rel="noopener">FBGA &amp; Component Marking Decoder</a>网站可以查询FPGA Code。是SLC NAND Flash，VBGA100封装，但是官网信息不太准确，只有16GB的版本。</p>
 <p><img src="./SD_card_internal2.jpg" alt="SD_card_internal2"></p>
 <h2 id="registers"><a class="markdownIt-Anchor" href="#registers"></a> Registers</h2>
-<p>OCR,CID,CSD,SCR携带了卡的特定信息，RCA和DSR储存着实际的配置参数，SSR和CSR则携带状态信息。<br>
+<p>OCR,CID,CSD,SCR携带了卡的特定信息，RCA和DSR储存着实际的配置参数，SSR和CSR则携带状态信息。
 因为规范制定者有强迫症，所以寄存器都是三位缩写，如果三位不能准确表达意思，就把R去掉。</p>
 <table>
 <thead>
@@ -370,8 +370,8 @@
 <p>通常模式下，数据通过DAT[0-3]引脚传输。和CMD一样，起始位0，结束位1，带有CRC校验。总线宽度默认1-bit。</p>
 <p><img src="./data_packet_format.png" alt="data_packet_format"></p>
 <h3 id="crc7"><a class="markdownIt-Anchor" href="#crc7"></a> CRC7</h3>
-<p>SD卡使用CRC7/MMC算法作为CMD的校验，公式如下<br>
-<img src="./crc7_calc.png" alt="crc7_calc"><br>
+<p>SD卡使用CRC7/MMC算法作为CMD的校验，公式如下
+<img src="./crc7_calc.png" alt="crc7_calc">
 将多项式转化为二进制G(x)</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10001001</span><br></pre></td></tr></table></figure>
 <p>在数据帧M(x)后补上长度位divisor-1，就是7，使用模2除法，数据帧除以10001001得到CRC</p>
@@ -393,10 +393,10 @@
 </ul>
 <h3 id="不同响应对应的格式"><a class="markdownIt-Anchor" href="#不同响应对应的格式"></a> 不同响应对应的格式</h3>
 <p>R1的参数部分是32位，对应了卡的状态，由于版本迭代问题，规范里没有明确说是CSR，CSR寄存器也是后面定义的。R2直接返回CID或CSD的数据。R3返回OCR的数据。</p>
-<p><img src="./response_r1.png" alt="response_r1"><br>
-<img src="./response_r2.png" alt="response_r2"><br>
-<img src="./response_r3.png" alt="response_r3"><br>
-<img src="./response_r6.png" alt="response_r6"><br>
+<p><img src="./response_r1.png" alt="response_r1">
+<img src="./response_r2.png" alt="response_r2">
+<img src="./response_r3.png" alt="response_r3">
+<img src="./response_r6.png" alt="response_r6">
 <img src="./response_r7.png" alt="response_r7"></p>
 <h2 id="function-mode"><a class="markdownIt-Anchor" href="#function-mode"></a> Function mode</h2>
 <p>SD卡的操作模式有两种种，默认是inactive：</p>
@@ -489,13 +489,13 @@
 <li>Task Status</li>
 </ul>
 <p>下面是每一位的类型定义：</p>
-<p>E - Error bit<br>
-S - Status bit<br>
-R - Detected and set for the actual command response<br>
+<p>E - Error bit
+S - Status bit
+R - Detected and set for the actual command response
 X - Detected and set during command execution. 上位机可以通过执行命令的响应获得状态信息</p>
 <p>还有状态位的清除条件：</p>
-<p>A - According to the card current status.<br>
-B - Always related to the previous command. 发送特定CMD来清除<br>
+<p>A - According to the card current status.
+B - Always related to the previous command. 发送特定CMD来清除
 C - Clear by read.</p>
 <p>R1响应携带卡状态信息，长度32-bit，储存在CSR。下面是CSR每一位的定义，预留位已经省略。</p>
 <table>
@@ -688,7 +688,7 @@ C - Clear by read.</p>
 </tr>
 </tbody>
 </table>
-<p>12:9是4位长度，转成10进制，对应着卡的操作阶段<br>
+<p>12:9是4位长度，转成10进制，对应着卡的操作阶段
 <img src="./state_mode.png" alt="state_mode"></p>
 <h2 id="sd-protocol-sniff"><a class="markdownIt-Anchor" href="#sd-protocol-sniff"></a> SD Protocol Sniff</h2>
 <p>等长布线(wiring length maching)是PCB设计领域的术语，一般用于高速IO，比如DDR。飞线尽量使用等长线，控制时钟线与其他信号线之间的距离，这也是SD卡厂商对于PCB设计的要求。</p>
@@ -701,8 +701,8 @@ C - Clear by read.</p>
 <p>解锁的会话只在一次上电中生效，下一次上电时SD卡会自动回到上锁状态。解锁过程首先使用CMD7选择卡，如果设置了FEP，那么需要解锁COP。然后使用CMD16设置所需块长度，8-bit解锁操作 + 8-bit密码长度 + 实际密码的长度，最后发送CMD42解锁。</p>
 <p><img src="./unlock_operations.png" alt="unlock_operations"></p>
 <h3 id="cmd-42"><a class="markdownIt-Anchor" href="#cmd-42"></a> CMD 42</h3>
-<p>CMD42用于解锁设备，有V1.0和V2.0两个版本。解锁方式也有两种，一种是使用强制擦除密码(Force Erase Password, FEP)，另一种是使用密码解锁。只有COP(Card Ownership Protection)特性的SD卡，才带有非易失性的FEP寄存器。COP特性是SD规范6.0中新加的，市面上几乎很少有COP特性的SD卡。<br>
-根据CMD的格式，01代表CMD请求，101010代表42，推断出01101010是CMD42的第一个字节，也就是6A。<br>
+<p>CMD42用于解锁设备，有V1.0和V2.0两个版本。解锁方式也有两种，一种是使用强制擦除密码(Force Erase Password, FEP)，另一种是使用密码解锁。只有COP(Card Ownership Protection)特性的SD卡，才带有非易失性的FEP寄存器。COP特性是SD规范6.0中新加的，市面上几乎很少有COP特性的SD卡。
+根据CMD的格式，01代表CMD请求，101010代表42，推断出01101010是CMD42的第一个字节，也就是6A。
 CMD42的参数前4个bit应该是0，CSR的对应状态位bit-25应该由1变为0，bit-24为0。</p>
 <p><img src="./unlock_parameters.png" alt="unlock_parameters"></p>
 <p>通过逻辑分析仪解析上位机和SD卡之间的通信数据，得到了下面的报文，Command Index,Arguments,CRC7都符合前面的定义。</p>
@@ -791,8 +791,8 @@ CMD42的参数前4个bit应该是0，CSR的对应状态位bit-25应该由1变为
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dd bs=4M <span class="keyword">if</span>=/home/cygnus/IMG/2018-06-27-raspbian-stretch-lite/2018-06-27-raspbian-stretch-lite.img of=/dev/mmcblk0 status=progress conv=fsync</span><br></pre></td></tr></table></figure>
 <p>下载对应版本的树莓派源代码，并把工具链加入环境变量</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --depth=1 --branch rpi-4.14.y https://github.com/raspberrypi/linux</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/home/cygnus/git/rapi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin</span><br></pre></td></tr></table></figure>
-<p>使用BCM2709配置，并在MENU CONFIG里把SD卡驱动和MMC驱动变为内核模块形式。最后编译zImage，模块，设备树，然后更新SD卡里的文件。<br>
-kernel.img is used by RPi 1B, 1A, A+, B+, 2B (first version) Z, Z (with camera), ZW, CM1<br>
+<p>使用BCM2709配置，并在MENU CONFIG里把SD卡驱动和MMC驱动变为内核模块形式。最后编译zImage，模块，设备树，然后更新SD卡里的文件。
+kernel.img is used by RPi 1B, 1A, A+, B+, 2B (first version) Z, Z (with camera), ZW, CM1
 kernel7.img is used by the RPi2B2, RPi3B, CM3 and CM3L.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">KERNEL=kernel7</span><br><span class="line">make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2709_defconfig</span><br><span class="line">make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig</span><br><span class="line">make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j4 zImage modules dtbs</span><br><span class="line">sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_PATH=/run/media/cygnus/rootfs modules_install</span><br></pre></td></tr></table></figure>
 <p>更新内核</p>
@@ -853,8 +853,8 @@ kernel7.img is used by the RPi2B2, RPi3B, CM3 and CM3L.</p>
 </tbody>
 </table>
 <h2 id="reference"><a class="markdownIt-Anchor" href="#reference"></a> Reference</h2>
-<p><a href="https://www.sdcard.org/downloads/pls/index.html" target="_blank" rel="noopener">SD Simplified Specifications</a><br>
-<a href="https://en.wikipedia.org/wiki/Secure_Digital" target="_blank" rel="noopener">Wiki - Secure_Digital</a><br>
+<p><a href="https://www.sdcard.org/downloads/pls/index.html" target="_blank" rel="noopener">SD Simplified Specifications</a>
+<a href="https://en.wikipedia.org/wiki/Secure_Digital" target="_blank" rel="noopener">Wiki - Secure_Digital</a>
 <a href="https://www.sdcard.org/developers/overview/index.html" target="_blank" rel="noopener">SD Standard Overview</a></p>
 
             </div>

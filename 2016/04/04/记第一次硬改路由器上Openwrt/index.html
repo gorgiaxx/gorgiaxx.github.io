@@ -169,11 +169,11 @@
 <p><img src="./1.jpg" alt="1"></p>
 <h1 id="准备"><a class="markdownIt-Anchor" href="#准备"></a> 准备</h1>
 <p>设备: TP-Link WR845N v4</p>
-<p><img src="./2.jpg" alt="2"><br>
-硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。<br>
-配件:<br>
-Winbond(华邦) 16MB 128MBIT SPI FLASH<br>
-内存颗粒 HY5DU121622CTP-D43 DDR64M16位<br>
+<p><img src="./2.jpg" alt="2">
+硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。
+配件:
+Winbond(华邦) 16MB 128MBIT SPI FLASH
+内存颗粒 HY5DU121622CTP-D43 DDR64M16位
 系统环境：Windows 10，CH341A编程器软件</p>
 <h1 id="硬件改造要点"><a class="markdownIt-Anchor" href="#硬件改造要点"></a> 硬件改造要点</h1>
 <h2 id="拆闪存"><a class="markdownIt-Anchor" href="#拆闪存"></a> 拆闪存</h2>
@@ -197,11 +197,11 @@ Winbond(华邦) 16MB 128MBIT SPI FLASH<br>
 <h1 id="操作流程"><a class="markdownIt-Anchor" href="#操作流程"></a> 操作流程</h1>
 <p><img src="./3.jpg" alt="3"></p>
 <p><img src="./4.jpg" alt="4"></p>
-<p>先拆闪存，用编程器备份原有的固件，因为里面有art，这里面有无线相关的参数，每台机器的配置都有略微不同，很重要。<br>
-然后再下载对应芯片的Bootloader写入16MB的闪存，这里用的Bootloader是<a href="http://blog.hackpascal.net/" target="_blank" rel="noopener">Hackpascal</a>大神的<a href="http://www.right.com.cn/forum/thread-161906-1-1.html" target="_blank" rel="noopener">Breed</a>。<br>
+<p>先拆闪存，用编程器备份原有的固件，因为里面有art，这里面有无线相关的参数，每台机器的配置都有略微不同，很重要。
+然后再下载对应芯片的Bootloader写入16MB的闪存，这里用的Bootloader是<a href="http://blog.hackpascal.net/" target="_blank" rel="noopener">Hackpascal</a>大神的<a href="http://www.right.com.cn/forum/thread-161906-1-1.html" target="_blank" rel="noopener">Breed</a>。
 写入之后焊在主板上。启动，插入网线，用浏览器打开192.168.1.1。</p>
 <p><img src="./breed.jpg" alt="breed"></p>
-<p>然后替换内存，再启动，如果虚焊或者连锡，加电后led会一直全亮。<br>
+<p>然后替换内存，再启动，如果虚焊或者连锡，加电后led会一直全亮。
 这里可以看到内存变成64MB了。</p>
 <p><img src="./a64.png" alt="a64"></p>
 <p>然后进Breed刷入PandoraBox和ART，这里我刷的是Hackpascal编译的Openwrt，假如没有备份art，可以是用Hackspecial提供的<a href="http://www.right.com.cn/forum/thread-136444-1-1.html" target="_blank" rel="noopener">art</a>。</p>

@@ -17,7 +17,7 @@
 
 
 
-  <meta name="keywords" content="破解,ckfinder,js,php,">
+  <meta name="keywords" content="ckfinder,破解,js,php,">
 
 
 
@@ -36,7 +36,7 @@
 
 
 <meta name="description" content="前言 CKFinder是基于Web的Ajax文件管理器。很多小网站的后台都会使用CKFinder，方便上传资源的管理。 由于某些原因，需要使用到这个东西，在网上下载了PHP的最新版。用时发现DEMO版本不能删除文件！后来在网上找破解版，居然找不到，作为一个强迫症，我一定要用上最新版。   文件目录  123456789101112CKFinder├─core          核心文件（包括PH">
-<meta name="keywords" content="破解,ckfinder,js,php">
+<meta name="keywords" content="ckfinder,破解,js,php">
 <meta property="og:type" content="article">
 <meta property="og:title" content="简单破解CKFinder3 for PHP">
 <meta property="og:url" content="https://gorgias.me/2015/08/24/简单破解CKFinder3-for-PHP/index.html">
@@ -165,9 +165,9 @@
 <h2 id="文件目录"><a class="markdownIt-Anchor" href="#文件目录"></a> 文件目录</h2>
 <p><img src="./dir.png" alt="dir"></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">CKFinder</span><br><span class="line">├─core          核心文件（包括PHP库文件）</span><br><span class="line">├─lang          语言包</span><br><span class="line">├─libs          JS库文件</span><br><span class="line">├─plugins           插件目录</span><br><span class="line">├─samples           demo页 (可以删掉)</span><br><span class="line">├─skins         皮肤样式</span><br><span class="line">├─userfiles         默认上传目录</span><br><span class="line">├──ckfinder.html        管理器页面</span><br><span class="line">├──ckfinder.js      主要程序代码</span><br><span class="line">├──config.js        配置文件</span><br><span class="line">└──config.php       服务端配置文件</span><br></pre></td></tr></table></figure>
-<p>用户的验证代码就在ckfinder.js里面，我这里只采取解除限制的方法，这样比较简单<br>
-先copy一份，把它解混淆和解压缩，方便分析。<br>
-推荐这个在线工具站，<a href="http://tool.lu/js/" target="_blank" rel="noopener">http://tool.lu/js/</a><br>
+<p>用户的验证代码就在ckfinder.js里面，我这里只采取解除限制的方法，这样比较简单
+先copy一份，把它解混淆和解压缩，方便分析。
+推荐这个在线工具站，<a href="http://tool.lu/js/" target="_blank" rel="noopener">http://tool.lu/js/</a>
 ckfinder就只是限制了删除和文件上传数量，还有一个不知道什么鬼。</p>
 <h2 id="开始"><a class="markdownIt-Anchor" href="#开始"></a> 开始</h2>
 <h3 id="代码1"><a class="markdownIt-Anchor" href="#代码1"></a> 代码1</h3>
@@ -179,18 +179,18 @@ ckfinder就只是限制了删除和文件上传数量，还有一个不知道什
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>((E&amp;&amp;k&amp;&amp;T&amp;&amp;M)||!S)</span><br></pre></td></tr></table></figure>
 <p><img src="./2.png" alt="2"></p>
 <h3 id="代码3"><a class="markdownIt-Anchor" href="#代码3"></a> 代码3</h3>
-<p>setHandler就是把要执行的函数换成自定义的函数，这边是删除的功能换成demo版本提示。也是简单处理一下就好。<br>
+<p>setHandler就是把要执行的函数换成自定义的函数，这边是删除的功能换成demo版本提示。也是简单处理一下就好。
 <img src="./3.png" alt="3">写成这个</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>((s&amp;&amp;l&amp;&amp;u&amp;&amp;a)||!d)</span><br></pre></td></tr></table></figure>
 <p><img src="./4.png" alt="4"></p>
 <h3 id="代码4"><a class="markdownIt-Anchor" href="#代码4"></a> 代码4</h3>
-<p>解除上传数限制<br>
+<p>解除上传数限制
 直接把这一段删除</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="keyword">var</span> y=r.request(<span class="string">"x66x69x6cx65x73u003ax67etCx75x72rx65nx74"</span>).where(&#123;<span class="string">"view:isFolder"</span>:!<span class="number">1</span>&#125;).length;y+a.length&gt;<span class="number">10</span>&amp;&amp;r.request(<span class="string">"u0064iu0061x6cogu003ax69x6eu0066u006f"</span>,&#123;<span class="attr">msg</span>:<span class="string">"Thx65 nu0075u006du0062eru0020x6ffx20x66ilu0065u0073 u0070eru0020x66ou006cu0064x65r u0061u0066u0074x65x72 x74u0068u0065u0020uu0070x6cu006fau0064x20u0063ax6eu006ex6fu0074x20x65x78x63eeu0064u002010u0020x69u006eu0020deu006dox20x6du006fx64u0065x2e"</span>&#125;);<span class="keyword">var</span> b=-(y<span class="number">-10</span>);<span class="number">0</span>&gt;b&amp;&amp;(b=<span class="number">0</span>),a.splice(b,a.length)&#125;</span><br></pre></td></tr></table></figure>
 <p>完成√</p>
 <p><img src="./complete.png" alt="complete"></p>
-<p>另外附上破解后的文件<br>
-<a href="https://drive.google.com/file/d/0B3hbKdJ8eeqfNkQ1ellxRkxaSlk/view?usp=sharing" target="_blank" rel="noopener">Google Drive</a><br>
+<p>另外附上破解后的文件
+<a href="https://drive.google.com/file/d/0B3hbKdJ8eeqfNkQ1ellxRkxaSlk/view?usp=sharing" target="_blank" rel="noopener">Google Drive</a>
 <a href="https://mega.nz/#!jpIgVLia!JNvOu1mbIBm-tL5SleOaku9-CU6x_fdj3b6gmjAwrHQ" target="_blank" rel="noopener">Mega</a></p>
 
             </div>
@@ -201,9 +201,9 @@ ckfinder就只是限制了删除和文件上传数量，还有一个不知道什
 		
 		<div class="post-tags">
 		  
-			<a href="/tags/破解/">破解</a>
-		  
 			<a href="/tags/ckfinder/">ckfinder</a>
+		  
+			<a href="/tags/破解/">破解</a>
 		  
 			<a href="/tags/js/">js</a>
 		  

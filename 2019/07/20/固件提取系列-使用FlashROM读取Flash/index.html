@@ -191,13 +191,13 @@
             <div class="post-content">
             <h2 id="introduction-to-flashrom"><a class="markdownIt-Anchor" href="#introduction-to-flashrom"></a> Introduction to FlashROM</h2>
 <p>半年多没写文章了，固件提取系列已经写到第11部，这一个我觉得没那么难，可以公开。</p>
-<p>FlashROM是一款开源的Flash固件提取项目，支持多种硬件平台，SPI Flash和Parallel Flash。<br>
-这一次遇到了一款NAND的SPI Flash，型号为IS38SML01G1，车规级存储芯片。起初以为SPI Flash都是NOR芯片，于是没有看手册，飞线用编程器读取，通常的编程器无法读取，又使用RT809H读取，也失败。于是查看手册才发现是NAND Flash，目前只有<a href="https://www.reveltronics.com/en/products/revelprog-is-serial-memory-programmer-usb" target="_blank" rel="noopener">REVELPROG-IS</a>支持读写。<br>
+<p>FlashROM是一款开源的Flash固件提取项目，支持多种硬件平台，SPI Flash和Parallel Flash。
+这一次遇到了一款NAND的SPI Flash，型号为IS38SML01G1，车规级存储芯片。起初以为SPI Flash都是NOR芯片，于是没有看手册，飞线用编程器读取，通常的编程器无法读取，又使用RT809H读取，也失败。于是查看手册才发现是NAND Flash，目前只有<a href="https://www.reveltronics.com/en/products/revelprog-is-serial-memory-programmer-usb" target="_blank" rel="noopener">REVELPROG-IS</a>支持读写。
 一开始想使用FT2232HL来读取，发现官方对该芯片的文档支持不是很好，于是使用树莓派3B。</p>
 <p>flashchips.c文件保存了各个芯片的配置信息，设计的非常好，扩展性很强。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    .vendor		= Vendor name</span><br><span class="line">    .name		= Chip name</span><br><span class="line">    .bustype		= Supported flash bus types (Parallel, LPC...)</span><br><span class="line">    .manufacture_id	= Manufacturer chip ID</span><br><span class="line">    .model_id		= Model chip ID</span><br><span class="line">    .total_size		= Total size in (binary) kbytes</span><br><span class="line">    .page_size		= Page or eraseblock(?) size in bytes</span><br><span class="line">    .tested		= Test status</span><br><span class="line">    .probe		= Probe function</span><br><span class="line">    .probe_timing	= Probe function delay</span><br><span class="line">    .block_erasers[]	= Array of erase layouts and erase functions</span><br><span class="line">    &#123;</span><br><span class="line">        .eraseblocks[]	= Array of &#123; blocksize, blockcount &#125;</span><br><span class="line">        .block_erase	= Block erase function</span><br><span class="line">    &#125;</span><br><span class="line">    .printlock		= Chip lock status function</span><br><span class="line">    .unlock		= Chip unlock function</span><br><span class="line">    .write		= Chip write function</span><br><span class="line">    .read		= Chip read function</span><br><span class="line">    .voltage		= Voltage range in millivolt</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>根据文档，加入了38SM的配置信息。<br>
-根据文档信息，一个NAND SPI Flash有1024个Block，每个Block有64Page，一个Page有2K+64字节，其中64是冗余区。<br>
+<p>根据文档，加入了38SM的配置信息。
+根据文档信息，一个NAND SPI Flash有1024个Block，每个Block有64Page，一个Page有2K+64字节，其中64是冗余区。
 这里的Total Size是以KB为单位，因此不需要加上冗余区的大小。电平范围根据文档设置成2.7V~3.6V。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	.vendor		= &quot;ISSI&quot;,</span><br><span class="line">	.name		= &quot;IS38SML01G1&quot;,</span><br><span class="line">	.bustype	= BUS_SPI,</span><br><span class="line">	.manufacture_id	= ISSI_NAND_ID,</span><br><span class="line">	.model_id	= ISSI_NAND_ID_SPI,</span><br><span class="line">	.total_size	= 131072, /* kb */</span><br><span class="line">	.page_size	= 2048, /* bytes, actual page size is 64 */</span><br><span class="line">	.tested		= &#123;.probe = OK, .read = OK, .erase = NA, .write = NA&#125;,</span><br><span class="line">	.probe		= probe_spi_rdid5,</span><br><span class="line">	.probe_timing	= TIMING_ZERO,</span><br><span class="line">	.block_erasers	=</span><br><span class="line">	&#123;</span><br><span class="line">		&#123;</span><br><span class="line">			.eraseblocks = &#123; &#123;64 * 2048, 1024&#125; &#125;,</span><br><span class="line">			.block_erase = spi_block_erase_d8,</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	.write		= NULL,</span><br><span class="line">	.read		= spi_read_issi,</span><br><span class="line">	.voltage	= &#123;2700, 3600&#125;,</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
 <p>要读取Flash的内容，需要实现芯片的初始化和读取功能。因此我们只要对probe和read添加指针。下图是各个Command的定义，包括Op Code字节，寻址用的字节，填充字节和下位机返回的数据字节。数据的传输格式是MSB。</p>
@@ -217,8 +217,8 @@
 <p>在发送完页读取指令后，应该循环发送0x0F 0xC0直到OIP==0。</p>
 <p><img src="status_register.png" alt="status_register"></p>
 <p>因此一次完整的读取流程的CMD如下：</p>
-<p>0x13 页读取<br>
-0x0F 0xC0 轮询状态<br>
+<p>0x13 页读取
+0x0F 0xC0 轮询状态
 0x03 缓存读取</p>
 <p>页读取根据Command定义，寻址字节长度为3，其中有一字节为无效数据，所以最大地址为0xFFFF，换算成10进制长度为65536。1024 Blocks * 64 Pages = 65536 Pages。这里的填充数据暂时先理解为[7:0]，寻址数据为[23:8]</p>
 <p><img src="page_read.png" alt="page_read"></p>
@@ -235,7 +235,7 @@
 <p><img src="wson8.png" alt="wson8"></p>
 <p><img src="jumping1.jpg" alt="jumping1"></p>
 <p><img src="jumping2.jpg" alt="jumping2"></p>
-<p>接至树莓派3B<br>
+<p>接至树莓派3B
 <img src="reading_by_rpi.jpg" alt="reading_by_rpi"></p>
 <p>接线方式如下，HOLD要接在VCC上。</p>
 <table>
@@ -280,15 +280,15 @@
 <p><img src="reading.png" alt="reading"></p>
 <h2 id="目标设备初始化分析"><a class="markdownIt-Anchor" href="#目标设备初始化分析"></a> 目标设备初始化分析</h2>
 <p>读取出来的128MB固件几乎全是0xFF，但是问了厂商，这个芯片存储了一些软件和配置信息。由于ISSI Flash文档没有写清楚页读取寻址的格式，寻址有3字节，高位字节和低位字节连续，所以有两种排列，再与填充字节组合，有4种地址格式，不知道哪一种是正确的。于是我把4种地址格式都读了一遍，只是数据的分布变化了，没有办法确定正确的分布。</p>
-<p><img src="flashdump1.png" alt="flashdump1"><br>
-<img src="flashdump2.png" alt="flashdump2"><br>
-<img src="flashdump3.png" alt="flashdump3"><br>
+<p><img src="flashdump1.png" alt="flashdump1">
+<img src="flashdump2.png" alt="flashdump2">
+<img src="flashdump3.png" alt="flashdump3">
 <img src="flashdump4.png" alt="flashdump4"></p>
-<p>完全按照文档编写的驱动，读取出来几乎全是0xFF，感觉是哪里出问题了，于是上逻辑分析仪。<br>
+<p>完全按照文档编写的驱动，读取出来几乎全是0xFF，感觉是哪里出问题了，于是上逻辑分析仪。
 只需要抓取三个通道的数据，MOSI,MISO,CLK。使用MSB，CPOL和CPHA都设为0。</p>
-<p><img src="spi_mode.png" alt="spi_mode"><br>
+<p><img src="spi_mode.png" alt="spi_mode">
 <img src="kingst_spiconf.png" alt="kingst_spiconf"></p>
-<p>设置成时钟上升沿触发，采样频率200MHz。<br>
+<p>设置成时钟上升沿触发，采样频率200MHz。
 首先抓取树莓派读取Flash的的数据，符合文档规范，</p>
 <p>读取JEDEC ID</p>
 <p><img src="rpi_spi_init.png" alt="rpi_spi_init"></p>
@@ -327,13 +327,13 @@
 <p>寻址格式和第三种对应，具体顺序忘了，以后就用这个编程器读了。</p>
 <p><img src="flashdump5.png" alt="flashdump5"></p>
 <h2 id="勘误"><a class="markdownIt-Anchor" href="#勘误"></a> 勘误</h2>
-<p>在后续的研究中，发现这个文章存在一些坑。<br>
-Address_h 和 address_l 是在不知道读取规则的前提下假设的，因为文档没有写。两者长度都假设是8-bit。<br>
-在阅读了其他几款芯片的文档后，确定存在问题。<br>
-<img src="readpage_address.png" alt="readpage_address"><br>
-实际上这两个参数代表块地址与页地址，块数量1024，占据10位，页地址64，占据6位，加起来刚好16-bits。不同大小的芯片有不同的规则。<br>
+<p>在后续的研究中，发现这个文章存在一些坑。
+Address_h 和 address_l 是在不知道读取规则的前提下假设的，因为文档没有写。两者长度都假设是8-bit。
+在阅读了其他几款芯片的文档后，确定存在问题。
+<img src="readpage_address.png" alt="readpage_address">
+实际上这两个参数代表块地址与页地址，块数量1024，占据10位，页地址64，占据6位，加起来刚好16-bits。不同大小的芯片有不同的规则。
 因此读取的结果会出现重复，加上有效数据刚好分布在存储设备的前面部分，剩余的都是无效数据，即使地址错误，读取出来的结果也不影响，最终呈现和编程器读取一致的结果。</p>
-<p>另外给出的代码里，Status判断存在问题，不一定要为0才能读取数据。BBM LUT FULL(Look-Up Table)也可能为1，ECC Err Status可能是0x20。<br>
+<p>另外给出的代码里，Status判断存在问题，不一定要为0才能读取数据。BBM LUT FULL(Look-Up Table)也可能为1，ECC Err Status可能是0x20。
 <img src="status.png" alt="status"></p>
 
             </div>

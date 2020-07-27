@@ -17,7 +17,7 @@
 
 
 
-  <meta name="keywords" content="NAND,固件提取,UBIFS,MTD,重打包,">
+  <meta name="keywords" content="UBIFS,NAND,MTD,固件提取,重打包,">
 
 
 
@@ -36,7 +36,7 @@
 
 
 <meta name="description" content="固件提取系列-UBI文件系统提取以及重打包  前言 去年写的，不小心把github仓库弄成私有，Readme没了，重新传了个Readme，觉得有点不好意思。先把这篇文章放出来吧 UBI(Unsorted Block Images)全称未分类块镜像。由IBM公司设计，是一个基于Raw Flash设备的卷管理系统，可以在单个物理设备上管理多个逻辑卷，并且支持耗损均衡(wear-leveling)。广">
-<meta name="keywords" content="NAND,固件提取,UBIFS,MTD,重打包">
+<meta name="keywords" content="UBIFS,NAND,MTD,固件提取,重打包">
 <meta property="og:type" content="article">
 <meta property="og:title" content="固件提取系列-UBI文件系统提取以及重打包">
 <meta property="og:url" content="https://gorgias.me/2019/12/27/固件提取系列-UBI文件系统提取以及重打包/index.html">
@@ -207,7 +207,7 @@
 <p>所以我们需要将ID设定正确，驱动会根据ID自动设置容量，页大小等数据。在NANDSim的参数只需要前四项。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> u_char id_bytes[<span class="number">8</span>] = &#123;</span><br><span class="line">    [<span class="number">0</span>] = CONFIG_NANDSIM_FIRST_ID_BYTE,</span><br><span class="line">    [<span class="number">1</span>] = CONFIG_NANDSIM_SECOND_ID_BYTE,</span><br><span class="line">    [<span class="number">2</span>] = CONFIG_NANDSIM_THIRD_ID_BYTE,</span><br><span class="line">    [<span class="number">3</span>] = CONFIG_NANDSIM_FOURTH_ID_BYTE,</span><br><span class="line">    [<span class="number">4</span> ... <span class="number">7</span>] = <span class="number">0xFF</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>如果需要调整模拟NAND的参数，可以根据芯片手册上的数据表来选择。</p>
-<p><img src="./manufacturer_id_a.png" alt="manufacturer_id_a"><br>
+<p><img src="./manufacturer_id_a.png" alt="manufacturer_id_a">
 <img src="./manufacturer_id_b.png" alt="manufacturer_id_b"></p>
 <p>一般情况下，嵌入式设备的bootloader等其他分区都会和系统分区放在同一个芯片内。因此需要对NANDSim分区，该芯片的eraseblocks以128KB为单位，也就是0x20000。</p>
 <p>写一个脚本来寻找UBI的分布</p>
@@ -310,16 +310,16 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mtd5</span></span><br><span class="line">sudo mkfs.ubifs -m 2048 <span class="_">-e</span> 126976 -c 240 -F -r ./UBI_1 rootfs.img</span><br><span class="line"><span class="comment"># mtd9</span></span><br><span class="line">sudo mkfs.ubifs -m 2048 <span class="_">-e</span> 126976 -c 240 -F -r ./UBI_2 rootfs.img</span><br><span class="line">sudo mkfs.ubifs -m 2048 <span class="_">-e</span> 126976 -c 240 -R 1 -x lzo -r ./UBI_1 rootfs.img</span><br><span class="line">sudo mkfs.ubifs -m 2048 <span class="_">-e</span> 126976 -c 240 -x lzo -r ./rootfs rootfs.img</span><br></pre></td></tr></table></figure>
 <p>新建ubi_config.ini文件</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi ubi_config.ini</span><br></pre></td></tr></table></figure>
-<p>vol_size一定要和image的尺寸对应，最后一行为空，否则报错<br>
+<p>vol_size一定要和image的尺寸对应，最后一行为空，否则报错
 ubinize: error!: cannot load the input ini file “ubi_config.ini”</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[rootfs]</span></span><br><span class="line"><span class="attr">mode</span>=ubi</span><br><span class="line"><span class="attr">image</span>=rootfs.img</span><br><span class="line"><span class="attr">vol_id</span>=<span class="number">0</span></span><br><span class="line"><span class="attr">vol_size</span>=<span class="number">9904128</span></span><br><span class="line"><span class="attr">vol_type</span>=dynamic</span><br><span class="line"><span class="attr">vol_name</span>=rootfs</span><br><span class="line"><span class="attr">vol_alignment</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">vol_flags</span>=autoresize</span><br></pre></td></tr></table></figure>
 <p>最后用ubinize生成UBI文件</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ubinize -o rootfs.ubi -p 131072 -m 2048 <span class="_">-s</span> 512 <span class="_">-e</span> 2 -Q 0 -O 2048 -x1 ubi_config.ini</span><br></pre></td></tr></table></figure>
-<p>-e 是擦除块的数量，默认是0，可以用binwalk快速查看<br>
--Q 是映像的顺序号，可用ubi_display_info查看<br>
--x 是UBI的版本，默认是1<br>
--s 是子页大小，不是所有的NAND都有子页，一般来说SLC颗粒的2048字节的NAND页是由4个512字节的子页组成，MLC没有子页<br>
--m 是页大小<br>
+<p>-e 是擦除块的数量，默认是0，可以用binwalk快速查看
+-Q 是映像的顺序号，可用ubi_display_info查看
+-x 是UBI的版本，默认是1
+-s 是子页大小，不是所有的NAND都有子页，一般来说SLC颗粒的2048字节的NAND页是由4个512字节的子页组成，MLC没有子页
+-m 是页大小
 -p 是物理块大小，一个物理块一般有64页，参考NAND Flash手册</p>
 <p>下面是给mtd7烧写rootfs.ubi</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo ubinize -v -o rootfs.ubi -p 131072 -m 2048 <span class="_">-s</span> 512 -O 2048 ubi_config.ini</span><br><span class="line">sudo ubiformat /dev/mtd7 -O 2048 <span class="_">-s</span> 512 <span class="_">-f</span> rootfs.ubi</span><br></pre></td></tr></table></figure>
@@ -327,8 +327,8 @@ ubinize: error!: cannot load the input ini file “ubi_config.ini”</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mksquashfs ./squashfs-root/* rootfs.squashfs</span><br></pre></td></tr></table></figure>
 <p><img src="./UBIFS.png" alt="UBIFS"></p>
 <h2 id="reference"><a class="markdownIt-Anchor" href="#reference"></a> Reference</h2>
-<p><a href="http://www.linux-mtd.infradead.org/" target="_blank" rel="noopener">Memory Technology Devices</a><br>
-<a href="http://www.linux-mtd.infradead.org/doc/ubidesign/ubidesign.pdf" target="_blank" rel="noopener">UBI - Unsorted Block Images</a><br>
+<p><a href="http://www.linux-mtd.infradead.org/" target="_blank" rel="noopener">Memory Technology Devices</a>
+<a href="http://www.linux-mtd.infradead.org/doc/ubidesign/ubidesign.pdf" target="_blank" rel="noopener">UBI - Unsorted Block Images</a>
 <a href="https://baurine.netlify.com/" target="_blank" rel="noopener">挂载和反向制作 ubi 镜像</a></p>
 
             </div>
@@ -339,13 +339,13 @@ ubinize: error!: cannot load the input ini file “ubi_config.ini”</p>
 		
 		<div class="post-tags">
 		  
-			<a href="/tags/NAND/">NAND</a>
-		  
-			<a href="/tags/固件提取/">固件提取</a>
-		  
 			<a href="/tags/UBIFS/">UBIFS</a>
 		  
+			<a href="/tags/NAND/">NAND</a>
+		  
 			<a href="/tags/MTD/">MTD</a>
+		  
+			<a href="/tags/固件提取/">固件提取</a>
 		  
 			<a href="/tags/重打包/">重打包</a>
 		  

@@ -184,7 +184,7 @@
 <p>计划先验证当前版本2.06的漏洞，然后刷入最新固件并验证漏洞。<a href="http://support.dlink.com/ProductInfo.aspx?m=DIR-850L" target="_blank" rel="noopener">DIR-850L/B1</a>官方最新固件版本是2.07B05，发布时间是02/21/17，可知官方没有为其打上补丁。<br>
 然后通过WAN测试是否能直接访问目标设备，结果显示当前设备无法直接通过WAN访问。<br>
 <img src="./port-scan.png" alt="port-scan"><br>
-除非手动开启远程管理才能通过WAN口的非80端口访问路由器<br>
+除非手动开启远程管理才能通过WAN口的非80端口访问路由器
 <img src="./remote.png" alt="remote"></p>
 <h2 id="分析"><a class="markdownIt-Anchor" href="#分析"></a> 分析</h2>
 <p>作者说明远程命令执行由两个漏洞组成，通过这个攻击组合可以执行任意命令。</p>
@@ -245,7 +245,7 @@ hedwigcgi_main把获取到的xml文本解析成参数，然后传递给/htdocs/w
 <img src="./401.png" alt="401"><br>
 没有管理员cookie的情况下，命令注入只有hedwig.cgi能显示OK，pigwidgeon显示no power。<br>
 <img src="./no-power.png" alt="no-power"><br>
-国行版固件authentication.cgi的登录链接变成了webfa_authentication.cgi<br>
+国行版固件authentication.cgi的登录链接变成了webfa_authentication.cgi
 验证未授权访问CGI<br>
 <img src="./access-cgi.png" alt="access-cgi"><br>
 验证本地文件包含读取用户名密码<br>

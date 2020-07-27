@@ -294,8 +294,8 @@
 </tr>
 </tbody>
 </table>
-<p>Sierra不提供硬件资料，但是软件资料却有很多，并且在 Github 有开源项目，文档里有时也会提到安全建议。<br>
-H厂模组代码默认不开源，发邮件给H厂，要求遵循协议（老外就是这么操作的），由于产品是国内的，国外市场的客服把我踢回CN客服，然后CN客服直接装傻。贸易战开始后，H厂把通信模组的代码也开源了。代理商不提供更深层的开发资料，除非签NDA。但是H厂提供的文档有提到安全的建议。<br>
+<p>Sierra不提供硬件资料，但是软件资料却有很多，并且在 Github 有开源项目，文档里有时也会提到安全建议。
+H厂模组代码默认不开源，发邮件给H厂，要求遵循协议（老外就是这么操作的），由于产品是国内的，国外市场的客服把我踢回CN客服，然后CN客服直接装傻。贸易战开始后，H厂把通信模组的代码也开源了。代理商不提供更深层的开发资料，除非签NDA。但是H厂提供的文档有提到安全的建议。
 Q厂官方就提供资料，但是最近有些资料下不到了。跟Q厂签了NDA，提供的资料也就只有源码和一些普通开发文档，并没有安全建议。</p>
 <h3 id="硬件外貌"><a class="markdownIt-Anchor" href="#硬件外貌"></a> 硬件外貌</h3>
 <p>其中H厂在早期的产品使用高通的方案，后期逐渐换成了 HiSilicon LTE Cat6 的方案，一般是 HI6932 。其他厂商使用的都是高通 MDM96xx ，大部分基带芯片是 MDM9615 和 MDM9628 。</p>
@@ -352,38 +352,38 @@ Q厂官方就提供资料，但是最近有些资料下不到了。跟Q厂签了
 <p>对于双向认证的服务器，特别是 ext MCU 方案的 TCU ，通过嗅探 AT 提取出 SSL 客户端证书，对服务端进行访问</p>
 <p><img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/at_ssl.png" alt="at_ssl"></p>
 <h3 id="中间人攻击场景1劫持通信模组网络下发非预期指令"><a class="markdownIt-Anchor" href="#中间人攻击场景1劫持通信模组网络下发非预期指令"></a> 中间人攻击场景1：劫持通信模组网络下发非预期指令</h3>
-<p>客户端没有对服务端做认证，那么只要劫持到恶意的TSP，恶意TSP做中继功能，并可以注入自己的代码<br>
+<p>客户端没有对服务端做认证，那么只要劫持到恶意的TSP，恶意TSP做中继功能，并可以注入自己的代码
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/comm.png" alt="comm"></p>
-<p>通信代码同时支持两套协议，一套没有加密，一套使用AES加密，只要握手时将协议降级，就可以分析出协议格式，并对车辆进行命令注入。<br>
+<p>通信代码同时支持两套协议，一套没有加密，一套使用AES加密，只要握手时将协议降级，就可以分析出协议格式，并对车辆进行命令注入。
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/comm2.png" alt="comm2"></p>
-<p>非预期指令是指 MCU 层实现，但是 TSP 还没有实现的控车指令。<br>
+<p>非预期指令是指 MCU 层实现，但是 TSP 还没有实现的控车指令。
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/comm3.png" alt="comm3"></p>
 <h3 id="中间人攻击场景2使用短信劫持攻击"><a class="markdownIt-Anchor" href="#中间人攻击场景2使用短信劫持攻击"></a> 中间人攻击场景2：使用短信劫持攻击</h3>
 <p>汽车在某些情况，需要用短信来唤醒，但是开发者很聪明，想顺便在无网络的情况也可以远程控车。某共享汽车的模组接收短信的 AT 命令来控制车身，只需要向该设备发送短信就能攻击。是比较傻的。</p>
 <p>另外一款汽车的早期软件版本，控车功能在无网络时，平台会通过短信隧道发送指令。早期既没有认证平台号码，也没用签名措施。使用特定的格式，没有加密算法，只有 VIN 和 Base64。</p>
-<p>可以使用通过外部的AT接口获取短信内容。也可以使用伪基站嗅探，然后使用AT命令向其他手机号发送短信，获得M2M卡号，用其他手机向该号码发送控车指令。<br>
+<p>可以使用通过外部的AT接口获取短信内容。也可以使用伪基站嗅探，然后使用AT命令向其他手机号发送短信，获得M2M卡号，用其他手机向该号码发送控车指令。
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/sms.jpg" alt="sms"></p>
-<p>在下一个版本，加入了消息认证码检验，签名使用 VIN + 唯一的动态的秘钥，动态秘钥走双向认证的云端同步，但是每次休眠都会将秘钥删除。并且和场景1的因此只要让模组的网络无法使用，那么将无法从云端同步秘钥，只能接收短信，因此该版本同时兼容两个协议<br>
+<p>在下一个版本，加入了消息认证码检验，签名使用 VIN + 唯一的动态的秘钥，动态秘钥走双向认证的云端同步，但是每次休眠都会将秘钥删除。并且和场景1的因此只要让模组的网络无法使用，那么将无法从云端同步秘钥，只能接收短信，因此该版本同时兼容两个协议
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/smsdata.png" alt="sms_data"></p>
-<p>security_flag会自动变为00，程序也会跳过消息认证码检验<br>
+<p>security_flag会自动变为00，程序也会跳过消息认证码检验
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/sms_struct.png" alt="sms_struct.png"></p>
 <p>现在的版本不会自动删除秘钥了，也就意味着这一段过程是安全的。</p>
 <h3 id="固件提取场景通过固件提取拿到关键文件"><a class="markdownIt-Anchor" href="#固件提取场景通过固件提取拿到关键文件"></a> 固件提取场景：通过固件提取拿到关键文件</h3>
 <p>将 NAND Flash 从 SoC 上拆下</p>
 <p><img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/takeoffnand.jpg" alt="takeoffnand"></p>
-<p>对引脚飞线，使用编程器提取里面的数据，然后将文件系统还原<br>
+<p>对引脚飞线，使用编程器提取里面的数据，然后将文件系统还原
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/nand_flash_137_0.jpeg" alt="nand_flash_137_0"></p>
-<p>随后就可以对 OpenCPU 方案的客户端程序进行分析，甚至可以拿到客户端的证书。<br>
+<p>随后就可以对 OpenCPU 方案的客户端程序进行分析，甚至可以拿到客户端的证书。
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/files.png" alt="files"></p>
-<p>在这些厂商中，只有 Telit 对 NAND Flash 使用了环氧树脂防拆，强行拆会把PCB也破坏<br>
+<p>在这些厂商中，只有 Telit 对 NAND Flash 使用了环氧树脂防拆，强行拆会把PCB也破坏
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/nand_flash_162_0.jpeg" alt="nand_flash_162_0"></p>
-<p>因此我们使用砂纸打磨，露出焊盘<br>
+<p>因此我们使用砂纸打磨，露出焊盘
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/nand_flash_162_1.jpeg" alt="nand_flash_162_1"></p>
-<p>再进行飞线操作<br>
+<p>再进行飞线操作
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/nand_dump.png" alt="nand_dump"></p>
-<p>如果不想飞线，刚好又能找到 JTAG 的接口，那么就能使用 OpenOCD 对固件进行提取，目前只有H厂有 JTAG 的标注，并且对于 JTAG 调试也有专门的安全建议，只不过开发者无视了这些内容。<br>
+<p>如果不想飞线，刚好又能找到 JTAG 的接口，那么就能使用 OpenOCD 对固件进行提取，目前只有H厂有 JTAG 的标注，并且对于 JTAG 调试也有专门的安全建议，只不过开发者无视了这些内容。
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/jtag1.png" alt="jtag1"></p>
-<p>中断时机需要掌握好<br>
+<p>中断时机需要掌握好
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/jtag2.png" alt="jtag2"></p>
 <p>提取出文件，接下来就是逆向分析和调试了。调试的话 QEMU 是不能满足要求的，毕竟这些系统是都有大量安卓的特征，还有外围接口要模拟，不如直接使用开发板。</p>
 <h3 id="getshell-1通过网络访问调试服务"><a class="markdownIt-Anchor" href="#getshell-1通过网络访问调试服务"></a> GetShell-1：通过网络访问调试服务</h3>
@@ -394,11 +394,11 @@ Q厂官方就提供资料，但是最近有些资料下不到了。跟Q厂签了
 <p>对于某些未隔离的 APN 隧道的私网，可以在拿到一台设备的权限下，再横向拿到其他通信模组的权限。</p>
 <p><img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/adb_no_filter.png" alt="adb_no_filter"></p>
 <h3 id="getshell-2通过硬件调试口拿到root-shell"><a class="markdownIt-Anchor" href="#getshell-2通过硬件调试口拿到root-shell"></a> GetShell-2：通过硬件调试口拿到ROOT Shell</h3>
-<p>有时会 cmdline 会直接配置tty指向外部UART口<br>
+<p>有时会 cmdline 会直接配置tty指向外部UART口
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/UART.jpg" alt="UART"></p>
-<p>使用弱口令就可以拿到 Shell<br>
+<p>使用弱口令就可以拿到 Shell
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/uart_shell.png" alt="uart_shell"></p>
-<p>如果没有直接的 TTY ，也有其他方式通过 UART 拿到 Shell。<br>
+<p>如果没有直接的 TTY ，也有其他方式通过 UART 拿到 Shell。
 对于Q厂的模组，可以使用UART发送 AT+QLINUXCMD=“your command” 执行命令，甚至将回显可以转发到GNSS 的 UART 口，</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AT+QLINUXCMD=&quot;ps&quot; &gt; /dev/ttyGS0</span><br></pre></td></tr></table></figure>
 <p>有时他们会把这种指令禁用、不过不要紧。我们将通信模组的USB线飞出，使用AT切换USB的方法，修改USB的VID和PID，让系统把设备识别成Android设备，使用ADB就能对设备进行访问。</p>
@@ -407,7 +407,7 @@ Q厂官方就提供资料，但是最近有些资料下不到了。跟Q厂签了
 <p>有时 Tier 1 会在系统里预留一些后门，可以通过后门切换 USB 模式从而拿到 Shell</p>
 <p>数据方向如下，在CAN总线或者在 MCU 与 LTE 模块的通信发送触发指令都可以实现，这是 Telit 的模块，后门是 Tier 1 编写的</p>
 <p>CAN-bus-&gt;MCU-&gt;LTE Module</p>
-<p><img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/handler.png" alt="handler"><br>
+<p><img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/handler.png" alt="handler">
 <img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/usb_composite.png" alt="usb_composite"></p>
 <h3 id="固件篡改场景"><a class="markdownIt-Anchor" href="#固件篡改场景"></a> 固件篡改场景</h3>
 <p>对于车规级通信模组， FOTA 大多数是交给第三方公司负责，F厂的设备使用Red Bend。再或者由 Tier 1 负责，一般都有自己的安全协议。有时也会通过 IVI 触发升级。现在的整车厂对传输原来越重视，这两年没有直接劫持移动网络篡改通信模组固件的案例，要么不是 OpenCPU 方案，要么就是使用了安全传输。大多数场景都是拿到 OTA 平台权限直接下发固件。</p>
@@ -433,7 +433,7 @@ Q厂官方就提供资料，但是最近有些资料下不到了。跟Q厂签了
 <p>工信部提出车的联网（智能网联汽车）产业发展行动计划，加上在2020年实施的&quot;国六&quot;排放政策，传统汽车在市场占有率会越来越低，取而代之的是网联汽车。因此，这也意味着未来网联汽车会面临许多安全问题，不论是现在的 Telematics 还是将来的 V2X ，都会用到通信模组。</p>
 <p><img src="http://p0.qhimg.com/d/4g-module-attack-scenarios/connected_car_increasement.jpg" alt="Connected_Car_Increasement"></p>
 <h2 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h2>
-<p><a href="http://www.ndrc.gov.cn/zwfwzx/tztg/201801/W020180105612392352402.pdf" target="_blank" rel="noopener">智能汽车创新发展战略（征求意见稿）</a><br>
+<p><a href="http://www.ndrc.gov.cn/zwfwzx/tztg/201801/W020180105612392352402.pdf" target="_blank" rel="noopener">智能汽车创新发展战略（征求意见稿）</a>
 <a href="https://skygo.360.cn/2018/10/16/penetrate-intranet-via-tbox/" target="_blank" rel="noopener">黑客是如何从T-Box接入车厂内网的</a></p>
 
             </div>

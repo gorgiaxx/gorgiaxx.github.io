@@ -157,11 +157,11 @@
             <div class="post-content">
             <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
 <p>正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。</p>
-<p>周围人都用QQ和微信，需要传文件和图片，我不得不用，但是又不想使用Windows工作，所以安装了VMWare Workstation来跑虚拟机。<br>
+<p>周围人都用QQ和微信，需要传文件和图片，我不得不用，但是又不想使用Windows工作，所以安装了VMWare Workstation来跑虚拟机。
 期初在Debian上跑Win10很流畅，换Arch之后总是因为ntfs3g占用率过高而卡顿，后来把宿主机放虚拟机的分区文件系统换成Ext4缓解了一些，把Win10自带的应用删掉后才好了很多。</p>
-<p>KVM 是 kernel-based Virtual Machine 的简称,是一个开源的系统虚拟化模块,是 Linux 下 x86 硬件平台上的全功能虚拟化解决方案。<br>
-QEMU是一个强大的开源仿真器，仿真系统，仿真各种硬件。<br>
-<img src="./guide_fig.png" alt="guide_fig"><br>
+<p>KVM 是 kernel-based Virtual Machine 的简称,是一个开源的系统虚拟化模块,是 Linux 下 x86 硬件平台上的全功能虚拟化解决方案。
+QEMU是一个强大的开源仿真器，仿真系统，仿真各种硬件。
+<img src="./guide_fig.png" alt="guide_fig">
 QEMU通过KVM虚拟化达到更好的性能，以前从来没有用过QEMU，于是花了很多时间入门，每个细节都不放过，学习过程中收获了很多，对虚拟机也有了更进一步的了解。</p>
 <p><a href="http://www.ibm.com/developerworks/cn/" target="_blank" rel="noopener">IBM开发者社区</a>真是一大堆干货，还有各大产品的官方文档和Wiki。自带的man pages也非常详细。</p>
 <p>也正是开发者们做的伟大贡献，能让我方便地在Linux上进行工作和娱乐。也很惭愧目前自己没有能力做贡献。</p>
@@ -188,8 +188,8 @@ QEMU通过KVM虚拟化达到更好的性能，以前从来没有用过QEMU，于
 <h1 id="把vmdk转换成qcow2"><a class="markdownIt-Anchor" href="#把vmdk转换成qcow2"></a> 把vmdk转换成qcow2</h1>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-img convert <span class="_">-f</span> vmdk -O qcow2 Kali\ 2016\ 64-bit.vmdk Kali_Linux.qcow2</span><br></pre></td></tr></table></figure>
 <h2 id="开启硬件辅助虚拟化"><a class="markdownIt-Anchor" href="#开启硬件辅助虚拟化"></a> 开启硬件辅助虚拟化</h2>
-<p>确保在BIOS里开启了VT。我的电脑是Intel平台，把<code>intel_iommu=on</code>加进内核参数。如果是AMD平台则用<code>amd_iommu=on</code>。<br>
-IOMMU技术可以说是把硬件设备直接映射到虚拟机上，解决外围设备的支持问题和硬件利用效率问题。<br>
+<p>确保在BIOS里开启了VT。我的电脑是Intel平台，把<code>intel_iommu=on</code>加进内核参数。如果是AMD平台则用<code>amd_iommu=on</code>。
+IOMMU技术可以说是把硬件设备直接映射到虚拟机上，解决外围设备的支持问题和硬件利用效率问题。
 在<code>/boot/grub/grub.cfg</code>文件里修改。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">linux   /boot/vmlinuz-linux root=UUID=6bb8eda5<span class="_">-d</span>588-4e6a-8f5e-bbc856cc9f96 rw quiet intel_iommu=on</span><br></pre></td></tr></table></figure>
 <p>重启之后查看IOMMU是否开启</p>
@@ -198,24 +198,24 @@ IOMMU技术可以说是把硬件设备直接映射到虚拟机上，解决外围
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S xf86-video-vmware xf86-input-vmmouse</span><br></pre></td></tr></table></figure>
 <p>尝试启动虚拟机，参数：使用Kali_Linux.qcow2硬盘镜像，内存2GB，使用vmware图形驱动，仿真Q35芯片组，使用KVM，开启iommu。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-x86_64 /home/gorgias/media/Lancer/KVM/Kali\ Linux/Kali_Linux.qcow2 -enable-kvm -m 2048 -vga vmware -machine q35,accel=kvm,<span class="built_in">type</span>=q35 -device intel-iommu</span><br></pre></td></tr></table></figure>
-<p>用起来挺流畅的<br>
+<p>用起来挺流畅的
 <img src="./demo.png" alt="demo"></p>
 <h2 id="qemu-monitor"><a class="markdownIt-Anchor" href="#qemu-monitor"></a> QEMU monitor</h2>
-<p>QEMU提供一个检查虚拟机运行状态的监视器，<br>
-在QEMU界面按Ctrl + Alt + 2(不是小键盘)可以切换到QEMU monitor。如果不能，请检查快捷键是否冲突。<br>
+<p>QEMU提供一个检查虚拟机运行状态的监视器，
+在QEMU界面按Ctrl + Alt + 2(不是小键盘)可以切换到QEMU monitor。如果不能，请检查快捷键是否冲突。
 也可以在启动虚拟机的时候，添加<code>-monitor dev</code>参数，比如<code>-monitor stdio</code>将允许使用标准输入作为 monitor 命令源。</p>
 <p>在monitor输入info kvm检查kvm模块是否开启。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(qemu) info kvm</span><br><span class="line">kvm support: enabled</span><br></pre></td></tr></table></figure>
 <p><img src="./QEMU_monitor.png" alt="QEMU_monitor"></p>
 <h2 id="aqemu"><a class="markdownIt-Anchor" href="#aqemu"></a> AQEMU</h2>
-<p>配置是不可能全手动配置的，这辈子不可能全手动配置的。<br>
+<p>配置是不可能全手动配置的，这辈子不可能全手动配置的。
 QEMU是非常强大的工具，值得深入研究，吾等还是随便玩玩就好。</p>
-<p><img src="./AQEMU.png" alt="AQEMU"><br>
-界面有点像Virtual Box，功能齐全。像VMware一样配置就能跑起虚拟机了。<br>
+<p><img src="./AQEMU.png" alt="AQEMU">
+界面有点像Virtual Box，功能齐全。像VMware一样配置就能跑起虚拟机了。
 不管是性能还是易用性，VMware都要强很多。</p>
 <h2 id="reference"><a class="markdownIt-Anchor" href="#reference"></a> Reference</h2>
-<p><a href="https://wiki.archlinux.org/index.php/QEMU#Running_virtualized_system" target="_blank" rel="noopener">Arch Linux Wiki - QEMU</a><br>
-<a href="https://en.wikibooks.org/wiki/QEMU/Monitor" target="_blank" rel="noopener">WIKIBOOKS - QEMU/Monitor</a><br>
+<p><a href="https://wiki.archlinux.org/index.php/QEMU#Running_virtualized_system" target="_blank" rel="noopener">Arch Linux Wiki - QEMU</a>
+<a href="https://en.wikibooks.org/wiki/QEMU/Monitor" target="_blank" rel="noopener">WIKIBOOKS - QEMU/Monitor</a>
 <a href="http://www.linux-kvm.org/" target="_blank" rel="noopener">linux-kvm.org</a></p>
 
             </div>

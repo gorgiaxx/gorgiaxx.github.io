@@ -151,25 +151,25 @@
     
             <div class="post-content">
             <h1 id="绕过cdn的思路"><a class="markdownIt-Anchor" href="#绕过cdn的思路"></a> 绕过CDN的思路</h1>
-<p>网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。<br>
-站在站长的角度，不可能每个站都会用上CDN。<br>
-站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。<br>
+<p>网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。
+站在站长的角度，不可能每个站都会用上CDN。
+站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。
 站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。</p>
 <h2 id="dns历史解析"><a class="markdownIt-Anchor" href="#dns历史解析"></a> DNS历史解析</h2>
-<p><a href="https://dnshistory.org/" target="_blank" rel="noopener">https://dnshistory.org/</a><br>
-<a href="http://whoisrequest.com/history/" target="_blank" rel="noopener">http://whoisrequest.com/history/</a><br>
-<a href="https://completedns.com/dns-history/" target="_blank" rel="noopener">https://completedns.com/dns-history/</a><br>
-<a href="http://dnstrails.com/" target="_blank" rel="noopener">http://dnstrails.com/</a><br>
-<a href="https://who.is/domain-history/" target="_blank" rel="noopener">https://who.is/domain-history/</a><br>
-<a href="http://research.domaintools.com/research/hosting-history/" target="_blank" rel="noopener">http://research.domaintools.com/research/hosting-history/</a><br>
-<a href="http://site.ip138.com/" target="_blank" rel="noopener">http://site.ip138.com/</a><br>
+<p><a href="https://dnshistory.org/" target="_blank" rel="noopener">https://dnshistory.org/</a>
+<a href="http://whoisrequest.com/history/" target="_blank" rel="noopener">http://whoisrequest.com/history/</a>
+<a href="https://completedns.com/dns-history/" target="_blank" rel="noopener">https://completedns.com/dns-history/</a>
+<a href="http://dnstrails.com/" target="_blank" rel="noopener">http://dnstrails.com/</a>
+<a href="https://who.is/domain-history/" target="_blank" rel="noopener">https://who.is/domain-history/</a>
+<a href="http://research.domaintools.com/research/hosting-history/" target="_blank" rel="noopener">http://research.domaintools.com/research/hosting-history/</a>
+<a href="http://site.ip138.com/" target="_blank" rel="noopener">http://site.ip138.com/</a>
 <a href="http://viewdns.info/iphistory/" target="_blank" rel="noopener">http://viewdns.info/iphistory/</a></p>
 <h3 id="通过大量dns查漏"><a class="markdownIt-Anchor" href="#通过大量dns查漏"></a> 通过大量DNS查漏</h3>
-<p>查询冷门的DNS的解析。或者多地Ping<br>
-<a href="http://ping.chinaz.com/" target="_blank" rel="noopener">http://ping.chinaz.com/</a><br>
-<a href="http://ce.cloud.360.cn/" target="_blank" rel="noopener">http://ce.cloud.360.cn/</a><br>
-<a href="http://www.webkaka.com/ping.aspx" target="_blank" rel="noopener">http://www.webkaka.com/ping.aspx</a><br>
-<a href="https://asm.ca.com/en/ping.php" target="_blank" rel="noopener">https://asm.ca.com/en/ping.php</a><br>
+<p>查询冷门的DNS的解析。或者多地Ping
+<a href="http://ping.chinaz.com/" target="_blank" rel="noopener">http://ping.chinaz.com/</a>
+<a href="http://ce.cloud.360.cn/" target="_blank" rel="noopener">http://ce.cloud.360.cn/</a>
+<a href="http://www.webkaka.com/ping.aspx" target="_blank" rel="noopener">http://www.webkaka.com/ping.aspx</a>
+<a href="https://asm.ca.com/en/ping.php" target="_blank" rel="noopener">https://asm.ca.com/en/ping.php</a>
 <a href="https://x.threatbook.cn/en" target="_blank" rel="noopener">https://x.threatbook.cn/en</a></p>
 <h2 id="从目标服务器入手"><a class="markdownIt-Anchor" href="#从目标服务器入手"></a> 从目标服务器入手</h2>
 <h3 id="被动获取"><a class="markdownIt-Anchor" href="#被动获取"></a> 被动获取</h3>
@@ -193,7 +193,7 @@
 <li>MX、TXT记录</li>
 </ul>
 <h3 id="对比全网banner"><a class="markdownIt-Anchor" href="#对比全网banner"></a> 对比全网banner</h3>
-<p>获取目标站点的banner，在全网搜索引擎搜索，也可以使用<a href="https://github.com/michenriksen/aquatone" target="_blank" rel="noopener">AQUATONE</a>，在Shodan上搜索相同指纹站点。<br>
+<p>获取目标站点的banner，在全网搜索引擎搜索，也可以使用<a href="https://github.com/michenriksen/aquatone" target="_blank" rel="noopener">AQUATONE</a>，在Shodan上搜索相同指纹站点。
 可以通过互联网络信息中心的IP数据，筛选目标地区IP，遍历Web服务的banner用来对比CDN站的banner，可以确定源IP。</p>
 <ul>
 <li>亚洲：<a href="ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest" target="_blank" rel="noopener">ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest</a></li>
@@ -209,7 +209,7 @@
 <li>耗尽CDN服务流量，暴露真实IP</li>
 </ul>
 <h2 id="f5-ltm"><a class="markdownIt-Anchor" href="#f5-ltm"></a> F5 LTM</h2>
-<p>F5 LTM解码法<br>
+<p>F5 LTM解码法
 当服务器使用F5 LTM做负载均衡时，通过对set-cookie关键字的解码真实ip也可被获取，例如：Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000，先把第一小节的十进制数即487098378取出来，然后将其转为十六进制数1d08880a，接着从后至前，以此取四位数出来，也就是0a.88.08.1d，最后依次把他们转为十进制数10.136.8.29，也就是最后的真实ip。</p>
 
             </div>
