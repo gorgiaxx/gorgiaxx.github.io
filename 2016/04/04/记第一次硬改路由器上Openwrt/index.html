@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="description" content="记第一次硬改路由器上Openwrt">
+
+
+
+
+  <meta name="keywords" content="路由器,openwrt,tplink,改装,硬改,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1">
+
+
+
+<link rel="canonical" href="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/">
+
+
+<meta name="description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）  准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU121">
+<meta name="keywords" content="路由器,openwrt,tplink,改装,硬改">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记第一次硬改路由器上Openwrt">
+<meta property="og:url" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/index.html">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）  准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU121">
+<meta property="og:locale" content="en-us">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/1.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/2.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/a.png">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/b.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/bad.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/complete.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/inside.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/3.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/4.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/breed.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/a64.png">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/ssh.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/appearance.jpg">
+<meta property="og:updated_time" content="2017-10-29T12:45:46.548Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记第一次硬改路由器上Openwrt">
+<meta name="twitter:description" content="前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）  准备 设备: TP-Link WR845N v4  硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。 配件: Winbond(华邦) 16MB 128MBIT SPI FLASH 内存颗粒 HY5DU121">
+<meta name="twitter:image" content="https://gorgias.me/2016/04/04/记第一次硬改路由器上Openwrt/1.jpg">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 记第一次硬改路由器上Openwrt - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/links">
+                            
+                            
+                                Links
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/atom.xml">
+                            
+                            
+                                RSS
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          记第一次硬改路由器上Openwrt
+        
+      </h1>
+
+      <time class="post-time">
+          Apr 04 2016
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h1>前言</h1>
+<p>最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）</p>
+<p><img src="./1.jpg" alt="1"></p>
+<h1>准备</h1>
+<p>设备: TP-Link WR845N v4</p>
+<p><img src="./2.jpg" alt="2">
+硬件工具: 热风焊台，恒温内热烙铁（尖头，刀头）。CH341A编程器，SOP 8/16转接板，吸锡带，吸锡器，助焊剂，松香，镊子，锡丝，隔热胶带。
+配件:
+Winbond(华邦) 16MB 128MBIT SPI FLASH
+内存颗粒 HY5DU121622CTP-D43 DDR64M16位
+系统环境：Windows 10，CH341A编程器软件</p>
+<h1>硬件改造要点</h1>
+<h2>拆闪存</h2>
+<p>首先给热风枪装上1cm的出风口，把热风枪温度调到265度，风速6。然后预热路由器主板，接着对着闪存吹，大概十几秒后闪存引脚上的锡变亮，说明锡熔化了，用镊子把它取下。</p>
+<h2>拆内存</h2>
+<p>首先用隔热胶带贴住周围，保护零件，用助焊剂涂满内存颗粒两边引脚，给引脚上锡，一边拖焊一边用镊子顶住左边，力向上，不要太大力，否则焊盘会被扯下。拖焊的时候把烙铁头温度调到380度，轻轻来回滑动碰引脚，让上面的锡变成液态，这样一边就被镊子顶起来了。另一边也这样做。</p>
+<h2>焊杜邦头</h2>
+<p>烙铁头温度调到350度，根据闪存与插孔的走线，把杜邦头插在SOP转接板上，用烙铁头贴着杜邦头接触点，用锡点一下，就焊上去了。</p>
+<p><img src="./a.png" alt="a"></p>
+<h2>焊闪存</h2>
+<p>把闪存焊在SOP转接板上，闪存上面有圆点的那一面对着电路板上有缺口的那一面</p>
+<p><img src="./b.jpg" alt="b"></p>
+<h2>焊内存</h2>
+<p>把内存与焊盘对齐，圆点的那一面对着电路板上有缺口的那一面，对称的两角用锡固定，然后加锡拖焊，可能是我的锡有问题，最后总是连锡，也是因为这个问题，让我焊上去又取下来，导致一个板子焊盘掉了许多。解决办法：用吸锡带或者用细针把锡清理干净。</p>
+<p>失败图：</p>
+<p><img src="./bad.jpg" alt="bad"></p>
+<p>成功图：</p>
+<p><img src="./complete.jpg" alt="complete"></p>
+<p>加个散热片</p>
+<p><img src="./inside.jpg" alt="inside"></p>
+<h1>操作流程</h1>
+<p><img src="./3.jpg" alt="3"></p>
+<p><img src="./4.jpg" alt="4"></p>
+<p>先拆闪存，用编程器备份原有的固件，因为里面有art，这里面有无线相关的参数，每台机器的配置都有略微不同，很重要。
+然后再下载对应芯片的Bootloader写入16MB的闪存，这里用的Bootloader是<a href="http://blog.hackpascal.net/" target="_blank" rel="noopener">Hackpascal</a>大神的<a href="http://www.right.com.cn/forum/thread-161906-1-1.html" target="_blank" rel="noopener">Breed</a>。
+写入之后焊在主板上。启动，插入网线，用浏览器打开192.168.1.1。</p>
+<p><img src="./breed.jpg" alt="breed"></p>
+<p>然后替换内存，再启动，如果虚焊或者连锡，加电后led会一直全亮。
+这里可以看到内存变成64MB了。</p>
+<p><img src="./a64.png" alt="a64"></p>
+<p>然后进Breed刷入PandoraBox和ART，这里我刷的是Hackpascal编译的Openwrt，假如没有备份art，可以是用Hackspecial提供的<a href="http://www.right.com.cn/forum/thread-136444-1-1.html" target="_blank" rel="noopener">art</a>。</p>
+<p><img src="./ssh.jpg" alt="ssh"></p>
+<p>贴上水果的logo，perfect！</p>
+<p><img src="./appearance.jpg" alt="appearance"></p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/路由器/">路由器</a>
+		  
+			<a href="/tags/openwrt/">openwrt</a>
+		  
+			<a href="/tags/tplink/">tplink</a>
+		  
+			<a href="/tags/改装/">改装</a>
+		  
+			<a href="/tags/硬改/">硬改</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/05/09/给网站添加免费SSL证书/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/03/11/Windows-安装-MySQL-5.7-Zip版/">
+        <span class="next-text nav-default">Windows 安装 MySQL 5.7 Zip版</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+    <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+    </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2020
+    <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+<script type="text/javascript">
+  var disqus_shortname = 'gorgiasblog-1';
+  var disqus_identifier = '2016/04/04/记第一次硬改路由器上Openwrt/';
+
+  var disqus_title = "记第一次硬改路由器上Openwrt";
+
+
+  var disqus = {
+    load : function disqus(){
+        if(typeof DISQUS !== 'object') {
+          (function () {
+          var s = document.createElement('script'); s.async = true;
+          s.type = 'text/javascript';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+          $('#load-disqus').remove(); ///加载后移除按钮
+        }
+    }
+  }
+
+  
+    var disqus_config = function () {
+        this.page.url = disqus_url;
+        this.page.identifier = disqus_identifier;
+        this.page.title = disqus_title;
+    };
+  
+
+</script>
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

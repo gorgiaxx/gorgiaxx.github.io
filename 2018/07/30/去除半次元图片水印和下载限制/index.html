@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="description" content="去除半次元图片水印和下载限制">
+
+
+
+
+  <meta name="keywords" content="Xposed,hook,Frida,半次元,下载限制,水印,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1">
+
+
+
+<link rel="canonical" href="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/">
+
+
+<meta name="description" content="前言 最近吃饭的时候都在刷半次元，Cosplay区太多漂亮的小姐姐，可惜图片加了水印，并且有的图片不允许下载，不能方便随时欣赏，太煞心情了。 最近经常转发漂亮的小姐姐给朋友们，但是带了水印，被大家发现我沉迷半次元了。很是困扰，打算绕过这些限制。 抓包分析 半次元使用了HTTPS通信，以及使用了证书绑定（HPKP），通过使用Xposed框架的JustTrustMe插件，可以绕过证书验证。 于是使用B">
+<meta name="keywords" content="Xposed,hook,Frida,半次元,下载限制,水印">
+<meta property="og:type" content="article">
+<meta property="og:title" content="去除半次元图片水印和下载限制">
+<meta property="og:url" content="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/index.html">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="前言 最近吃饭的时候都在刷半次元，Cosplay区太多漂亮的小姐姐，可惜图片加了水印，并且有的图片不允许下载，不能方便随时欣赏，太煞心情了。 最近经常转发漂亮的小姐姐给朋友们，但是带了水印，被大家发现我沉迷半次元了。很是困扰，打算绕过这些限制。 抓包分析 半次元使用了HTTPS通信，以及使用了证书绑定（HPKP），通过使用Xposed框架的JustTrustMe插件，可以绕过证书验证。 于是使用B">
+<meta property="og:locale" content="en-us">
+<meta property="og:image" content="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/burp.png">
+<meta property="og:image" content="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/imageMogr2.png">
+<meta property="og:image" content="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/volley.png">
+<meta property="og:image" content="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/key_string.png">
+<meta property="og:image" content="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/getpath.png">
+<meta property="og:image" content="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/diamond.jpg">
+<meta property="og:updated_time" content="2018-07-31T02:47:19.939Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="去除半次元图片水印和下载限制">
+<meta name="twitter:description" content="前言 最近吃饭的时候都在刷半次元，Cosplay区太多漂亮的小姐姐，可惜图片加了水印，并且有的图片不允许下载，不能方便随时欣赏，太煞心情了。 最近经常转发漂亮的小姐姐给朋友们，但是带了水印，被大家发现我沉迷半次元了。很是困扰，打算绕过这些限制。 抓包分析 半次元使用了HTTPS通信，以及使用了证书绑定（HPKP），通过使用Xposed框架的JustTrustMe插件，可以绕过证书验证。 于是使用B">
+<meta name="twitter:image" content="https://gorgias.me/2018/07/30/去除半次元图片水印和下载限制/burp.png">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 去除半次元图片水印和下载限制 - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/links">
+                            
+                            
+                                Links
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/atom.xml">
+                            
+                            
+                                RSS
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          去除半次元图片水印和下载限制
+        
+      </h1>
+
+      <time class="post-time">
+          Jul 30 2018
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2>前言</h2>
+<p>最近吃饭的时候都在刷半次元，Cosplay区太多漂亮的小姐姐，可惜图片加了水印，并且有的图片不允许下载，不能方便随时欣赏，太煞心情了。
+最近经常转发漂亮的小姐姐给朋友们，但是带了水印，被大家发现我沉迷半次元了。很是困扰，打算绕过这些限制。</p>
+<h2>抓包分析</h2>
+<p>半次元使用了HTTPS通信，以及使用了证书绑定（HPKP），通过使用Xposed框架的JustTrustMe插件，可以绕过证书验证。</p>
+<p>于是使用BurpSuite抓包。</p>
+<p><img src="burp.png" alt="burp"></p>
+<p>分析Response可以得知，download为false是禁止下载的标识。图片的路径添加了imageMogr2后缀，即七牛云的高级图片处理，因为这两个内容都是写死在HTTP响应里的，所以只hook响应内容也是一个不错的方法。</p>
+<p><img src="imageMogr2.png" alt="imageMogr2"></p>
+<h2>分析代码逻辑</h2>
+<p><img src="volley.png" alt="volley"></p>
+<p>使用JADX-GUI打开半次元的APK，发现代码被混淆，网络请求使用了Volley框架。</p>
+<p>查阅官方文档，实现一个请求需要设置RequestQueue，然后使用onResponse处理响应事件。</p>
+<p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">RequestQueue mRequestQueue;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Instantiate the cache</span></span><br><span class="line">Cache cache = <span class="keyword">new</span> DiskBasedCache(getCacheDir(), <span class="number">1024</span> * <span class="number">1024</span>); <span class="comment">// 1MB cap</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Set up the network to use HttpURLConnection as the HTTP client.</span></span><br><span class="line">Network network = <span class="keyword">new</span> BasicNetwork(<span class="keyword">new</span> HurlStack());</span><br><span class="line"></span><br><span class="line"><span class="comment">// Instantiate the RequestQueue with the cache and network.</span></span><br><span class="line">mRequestQueue = <span class="keyword">new</span> RequestQueue(cache, network);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Start the queue</span></span><br><span class="line">mRequestQueue.start();</span><br><span class="line"></span><br><span class="line">String url =<span class="string">"http://www.example.com"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Formulate the request and handle the response.</span></span><br><span class="line">StringRequest stringRequest = <span class="keyword">new</span> StringRequest(Request.Method.GET, url,</span><br><span class="line">        <span class="keyword">new</span> Response.Listener&lt;String&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(String response)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Do something with the response</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br><span class="line">    <span class="keyword">new</span> Response.ErrorListener() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onErrorResponse</span><span class="params">(VolleyError error)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// Handle error</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add the request to the RequestQueue.</span></span><br><span class="line">mRequestQueue.add(stringRequest);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure></p>
+<p>根据抓包的结果，可以提取出下列关键词。</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">image/postCover</span><br><span class="line">download</span><br><span class="line">multi</span><br><span class="line">path</span><br></pre></td></tr></table></figure></p>
+<p>在这里以URL中的<code>image/postCover</code>为关键词，全局搜索，被封装在m1750b方法里。然后找到调用它的代码。</p>
+<p><img src="key_string.png" alt="key_string"></p>
+<p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m6896a</span><span class="params">(DetailType detailType, <span class="keyword">final</span> C2271b c2271b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (detailType != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">final</span> Context context = (Context) <span class="keyword">this</span>.f6216a.get();</span><br><span class="line">        <span class="keyword">if</span> (context != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// image/postCover 字符串拼接</span></span><br><span class="line">            String str = HttpUtils.f7520b + C0701m.m1750b();</span><br><span class="line">            List arrayList = <span class="keyword">new</span> ArrayList();</span><br><span class="line">            arrayList.add(<span class="keyword">new</span> C2753c(<span class="string">"session_key"</span>, C0766a.m2185b(context).getToken()));</span><br><span class="line">            arrayList.add(<span class="keyword">new</span> C2753c(<span class="string">"id"</span>, detailType.getItem_id()));</span><br><span class="line">            arrayList.add(<span class="keyword">new</span> C2753c(<span class="string">"type"</span>, detailType.getType()));</span><br><span class="line">            <span class="keyword">this</span>.f6217b.add(<span class="keyword">new</span> C2764l(<span class="number">1</span>, str, HttpUtils.m8132a(arrayList), <span class="keyword">new</span> Listener&lt;String&gt;(<span class="keyword">this</span>) &#123;</span><br><span class="line">                <span class="comment">/* renamed from: c */</span></span><br><span class="line">                <span class="keyword">final</span> <span class="comment">/* synthetic */</span> C2296a f6186c;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">public</span> <span class="comment">/* synthetic */</span> <span class="function"><span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">                    m6855a((String) obj);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/* renamed from: a */</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m6855a</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">                    <span class="comment">// 判断 status 是否为1，如果为1则执行mo2699a。</span></span><br><span class="line">                    <span class="keyword">if</span> (C2763k.m8211a(str, context).booleanValue()) &#123;</span><br><span class="line">                        c2271b.mo2699a(str);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        c2271b.mo2700b(<span class="string">""</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;, <span class="keyword">new</span> ErrorListener(<span class="keyword">this</span>) &#123;</span><br><span class="line">                <span class="comment">/* renamed from: b */</span></span><br><span class="line">                <span class="keyword">final</span> <span class="comment">/* synthetic */</span> C2296a f6188b;</span><br><span class="line"></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onErrorResponse</span><span class="params">(VolleyError volleyError)</span> </span>&#123;</span><br><span class="line">                    c2271b.mo2700b(<span class="string">""</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在com.banciyuan.bcywebview.biz.picshow.ViewPictureActivity2这个类中，找到了名为mo2699a的方法，不过这里是一个闭包，不方便编写hook代码。</p>
+<p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">mo2523h</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">new</span> C2296a(<span class="keyword">this</span>).m6896a(<span class="keyword">this</span>.f6170i, <span class="keyword">new</span> C2271b(<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="comment">/* renamed from: a */</span></span><br><span class="line">        <span class="keyword">final</span> <span class="comment">/* synthetic */</span> ViewPictureActivity2 f6149a;</span><br><span class="line"></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">this</span>.f6149a = r1;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* renamed from: a */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mo2699a</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                String string = <span class="keyword">new</span> JSONObject(str).getString(<span class="string">"data"</span>);</span><br><span class="line">                <span class="keyword">this</span>.f6149a.f6172k = (OrignPic) <span class="keyword">new</span> Gson().fromJson(string, OrignPic.class);</span><br><span class="line">                <span class="keyword">this</span>.f6149a.m6848w();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">this</span>.f6149a.m6847v();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* renamed from: b */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mo2700b</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.f6149a.m6847v();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>想更优雅一点，直接在要下载的地方hook，而不是每个请求都hook，往下翻找到m6849x方法。</p>
+<p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">m6849x</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (i &lt; <span class="keyword">this</span>.f6171j.size()) &#123;</span><br><span class="line">        Fragment c2290a = <span class="keyword">new</span> C2290a();</span><br><span class="line">        Bundle bundle = <span class="keyword">new</span> Bundle();</span><br><span class="line">        <span class="keyword">if</span> (i &lt; <span class="keyword">this</span>.f6172k.getMultis().size() &amp;&amp; m6832c(((Multi) <span class="keyword">this</span>.f6172k.getMultis().get(i)).getPath()).booleanValue()) &#123;</span><br><span class="line">            bundle.putBoolean(<span class="string">"is_big"</span>, <span class="keyword">true</span>);</span><br><span class="line">            <span class="comment">// 可以看到在getMultis方法后面取值然后接上了getPath方法，和抓包过程中的Response层级一致</span></span><br><span class="line">            <span class="keyword">this</span>.f6171j.set(i, ((Multi) <span class="keyword">this</span>.f6172k.getMultis().get(i)).getPath());</span><br><span class="line">            <span class="keyword">this</span>.f6164c.put(i, <span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (i == <span class="keyword">this</span>.f6178q) &#123;</span><br><span class="line">                m6833c(<span class="number">8</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        bundle.putString(<span class="string">"path"</span>, (String) <span class="keyword">this</span>.f6171j.get(i));</span><br><span class="line">        bundle.putInt(<span class="string">"index"</span>, i);</span><br><span class="line">        bundle.putSerializable(<span class="string">"uname"</span>, <span class="keyword">this</span>.f6180s);</span><br><span class="line">        bundle.putBoolean(<span class="string">"water_mark"</span>, <span class="keyword">this</span>.f6181t);</span><br><span class="line">        c2290a.setArguments(bundle);</span><br><span class="line">        <span class="keyword">this</span>.f6169h.add(c2290a);</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.f6165d.setAdapter(<span class="keyword">new</span> C2282a(<span class="keyword">this</span>, getSupportFragmentManager()));</span><br><span class="line">    <span class="keyword">this</span>.f6165d.setCurrentItem(<span class="keyword">this</span>.f6178q);</span><br><span class="line">    <span class="keyword">this</span>.f6179r = <span class="keyword">this</span>.f6171j.size();</span><br><span class="line">    <span class="keyword">this</span>.f6166e.setText((<span class="keyword">this</span>.f6178q + <span class="number">1</span>) + <span class="string">"/"</span> + <span class="keyword">this</span>.f6179r);</span><br><span class="line">    <span class="keyword">this</span>.f6166e.setVisibility(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在上面这个方法中，并不是用setPath这种方式赋值，而是先放入一个bundle对象中，再批量给属性赋值。如果在这里hook，每次赋值都要判断，会非常不优雅。
+既然有getMultis和getPath，那么肯定有判断是否允许下载的方法。还是全局搜索，发现使用greenDAO这个ORM框架，在de.greenrobot.daoexample下面找到了关键方法，只要修改下面方法就能绕过限制。</p>
+<p><img src="getpath.png" alt="getpath"></p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">de.greenrobot.daoexample.model.Multi.getPath()</span><br><span class="line">de.greenrobot.daoexample.model.PostItem.getPath()</span><br><span class="line">de.greenrobot.daoexample.model.OrignPic.isDownload()</span><br></pre></td></tr></table></figure></p>
+<h2>Frida Hook</h2>
+<p>先使用Frida验证一下hook这些方法是否可行，这台电脑还没装Frida，先安装一下。</p>
+<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo pip install frida-tools</span><br><span class="line">wget https://github.com/frida/frida/releases/download/12.0.7/frida-server-12.0.7-android-arm64.xz</span><br><span class="line">xz <span class="_">-d</span> frida-server-12.0.7-android-arm64.xz</span><br></pre></td></tr></table></figure></p>
+<p>在安卓设备上运行Frida Server</p>
+<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb push frida-server-12.0.7-android-arm64 /data/<span class="built_in">local</span>/tmp</span><br><span class="line">adb shell su -c <span class="string">"/data/local/tmp/frida-server-12.0.7-android-arm64"</span></span><br></pre></td></tr></table></figure></p>
+<p>使用<code>frida-ps</code>查看进程名称</p>
+<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">frida-ps aU | grep banciyuan</span><br><span class="line">半次元  com.banciyuan.bcywebview</span><br></pre></td></tr></table></figure></p>
+<p>编写调试脚本，hook并修改逻辑，输出为bcy.js。</p>
+<p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">    Java.perform(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> pathRe = <span class="regexp">/\?imageMogr2.*$/g</span>;</span><br><span class="line">        <span class="keyword">var</span> Multi = Java.use(<span class="string">"de.greenrobot.daoexample.model.Multi"</span>);</span><br><span class="line">        Multi.getPath.implementation = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> path = <span class="keyword">this</span>.getPath().replace(pathRe, <span class="string">''</span>);</span><br><span class="line">            <span class="built_in">console</span>.log(path);</span><br><span class="line">            <span class="keyword">return</span> path;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> PostItem = Java.use(<span class="string">"de.greenrobot.daoexample.model.PostItem"</span>);</span><br><span class="line">        PostItem.getPath.implementation = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> path = <span class="keyword">this</span>.getPath().replace(pathRe, <span class="string">''</span>);</span><br><span class="line">            <span class="built_in">console</span>.log(path);</span><br><span class="line">            <span class="keyword">return</span> path;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> OrignPic = Java.use(<span class="string">"de.greenrobot.daoexample.model.OrignPic"</span>);</span><br><span class="line">        OrignPic.isDownload.implementation = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="keyword">this</span>.isDownload());</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">&#125;, <span class="number">0</span>);</span><br></pre></td></tr></table></figure></p>
+<p>运行调试脚本</p>
+<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">frida -U <span class="_">-f</span> com.banciyuan.bcywebview <span class="_">-l</span> bcy.js --no-pause</span><br></pre></td></tr></table></figure></p>
+<p>普通预览存在水印，但是原图图片水印已经去除，已经绕过下载限制，并且实际保存的图片没有水印。</p>
+<p><img src="diamond.jpg" alt="diamond"></p>
+<h2>Xposed Module</h2>
+<p>直接贴代码</p>
+<p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(<span class="keyword">final</span> XC_LoadPackage.LoadPackageParam loadPackageParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!loadPackageParam.packageName.equals(<span class="string">"com.banciyuan.bcywebview"</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        findAndHookMethod(<span class="string">"de.greenrobot.daoexample.model.Multi"</span>, loadPackageParam.classLoader, <span class="string">"getPath"</span>, <span class="keyword">new</span> XC_MethodReplacement() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> Object <span class="title">replaceHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    String path = (String) XposedHelpers.getObjectField(param.thisObject, <span class="string">"path"</span>);</span><br><span class="line">                    <span class="keyword">int</span> imageMogrIndex = path.indexOf(<span class="string">"?"</span>);</span><br><span class="line">                    <span class="keyword">if</span> (imageMogrIndex &gt; <span class="number">1</span>) &#123;</span><br><span class="line">                        path = path.substring(<span class="number">0</span>, imageMogrIndex);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">return</span> path;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                    XposedBridge.log(t);</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        findAndHookMethod(<span class="string">"de.greenrobot.daoexample.model.PostItem"</span>, loadPackageParam.classLoader, <span class="string">"getPath"</span>, <span class="keyword">new</span> XC_MethodReplacement() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> Object <span class="title">replaceHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    XposedBridge.log(<span class="string">"PostItem"</span>);</span><br><span class="line">                    String path = (String) XposedHelpers.getObjectField(param.thisObject, <span class="string">"path"</span>);</span><br><span class="line">                    <span class="keyword">int</span> imageMogrIndex = path.indexOf(<span class="string">"?"</span>);</span><br><span class="line">                    <span class="keyword">if</span> (imageMogrIndex &gt; <span class="number">1</span>) &#123;</span><br><span class="line">                        path = path.substring(<span class="number">0</span>, imageMogrIndex);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">return</span> path;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                    XposedBridge.log(t);</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        findAndHookMethod(<span class="string">"de.greenrobot.daoexample.model.OrignPic"</span>, loadPackageParam.classLoader, <span class="string">"isDownload"</span>, <span class="keyword">new</span> XC_MethodReplacement() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> Object <span class="title">replaceHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>附上GitHub链接</p>
+<p><a href="https://github.com/gorgiaxx/bcyhelper" target="_blank" rel="noopener">https://github.com/gorgiaxx/bcyhelper</a></p>
+<h2>Reference</h2>
+<p><a href="https://developer.android.com/training/volley" target="_blank" rel="noopener">Volley overview</a>
+<a href="https://api.xposed.info/reference/packages.html" target="_blank" rel="noopener">Xposed Framework API</a>
+<a href="https://www.frida.re/docs/javascript-api/" target="_blank" rel="noopener">Frida JavaScript API</a></p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/Xposed/">Xposed</a>
+		  
+			<a href="/tags/hook/">hook</a>
+		  
+			<a href="/tags/Frida/">Frida</a>
+		  
+			<a href="/tags/半次元/">半次元</a>
+		  
+			<a href="/tags/下载限制/">下载限制</a>
+		  
+			<a href="/tags/水印/">水印</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2018/09/27/华为-E5885L-4G路由器折腾笔记/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">华为 E5885L 4G路由器折腾笔记</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2018/04/04/渗透中的数据转发技巧/">
+        <span class="next-text nav-default">渗透中的数据转发技巧</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+    <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+    </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2020
+    <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+<script type="text/javascript">
+  var disqus_shortname = 'gorgiasblog-1';
+  var disqus_identifier = '2018/07/30/去除半次元图片水印和下载限制/';
+
+  var disqus_title = "去除半次元图片水印和下载限制";
+
+
+  var disqus = {
+    load : function disqus(){
+        if(typeof DISQUS !== 'object') {
+          (function () {
+          var s = document.createElement('script'); s.async = true;
+          s.type = 'text/javascript';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+          $('#load-disqus').remove(); ///加载后移除按钮
+        }
+    }
+  }
+
+  
+    var disqus_config = function () {
+        this.page.url = disqus_url;
+        this.page.identifier = disqus_identifier;
+        this.page.title = disqus_title;
+    };
+  
+
+</script>
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
