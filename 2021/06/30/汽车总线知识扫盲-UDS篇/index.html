@@ -35,20 +35,20 @@
 <link rel="canonical" href="https://gorgias.me/2021/06/30/汽车总线知识扫盲-UDS篇/">
 
 
-<meta name="description" content="UDS诊断 请求格式 Service ID 服务ID Sub-Function Byte 子功能字节 Response Code 响应码  A_PDU, Application Protocol Data Unit Specification 应用层协议数据单元直接由A_SDU和A_PCI构成  A_PCI, Application Protocol Control Information A_">
+<meta name="description" content="UDS诊断 请求格式 Service ID 服务ID Sub-Function Byte 子功能字节 Response Code 响应码 A_PDU, Application Protocol Data Unit Specification 应用层协议数据单元直接由A_SDU和A_PCI构成 A_PCI, Application Protocol Control Information A_PCI">
 <meta name="keywords" content="汽车总线,CAN,bus,CAN-bus,OBD,UDS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="汽车总线知识扫盲 - 序">
 <meta property="og:url" content="https://gorgias.me/2021/06/30/汽车总线知识扫盲-UDS篇/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="UDS诊断 请求格式 Service ID 服务ID Sub-Function Byte 子功能字节 Response Code 响应码  A_PDU, Application Protocol Data Unit Specification 应用层协议数据单元直接由A_SDU和A_PCI构成  A_PCI, Application Protocol Control Information A_">
+<meta property="og:description" content="UDS诊断 请求格式 Service ID 服务ID Sub-Function Byte 子功能字节 Response Code 响应码 A_PDU, Application Protocol Data Unit Specification 应用层协议数据单元直接由A_SDU和A_PCI构成 A_PCI, Application Protocol Control Information A_PCI">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2021/06/30/汽车总线知识扫盲-UDS篇/%E6%B1%BD%E8%BD%A6%E6%80%BB%E7%BA%BF%E7%9F%A5%E8%AF%86%E6%89%AB%E7%9B%B2-UDS%E7%AF%87/SID.png">
 <meta property="og:image" content="https://gorgias.me/2021/06/30/汽车总线知识扫盲-UDS篇/%E6%B1%BD%E8%BD%A6%E6%80%BB%E7%BA%BF%E7%9F%A5%E8%AF%86%E6%89%AB%E7%9B%B2-UDS%E7%AF%87/session_service_access_table.png">
 <meta property="og:updated_time" content="2021-07-09T02:20:11.215Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="汽车总线知识扫盲 - 序">
-<meta name="twitter:description" content="UDS诊断 请求格式 Service ID 服务ID Sub-Function Byte 子功能字节 Response Code 响应码  A_PDU, Application Protocol Data Unit Specification 应用层协议数据单元直接由A_SDU和A_PCI构成  A_PCI, Application Protocol Control Information A_">
+<meta name="twitter:description" content="UDS诊断 请求格式 Service ID 服务ID Sub-Function Byte 子功能字节 Response Code 响应码 A_PDU, Application Protocol Data Unit Specification 应用层协议数据单元直接由A_SDU和A_PCI构成 A_PCI, Application Protocol Control Information A_PCI">
 <meta name="twitter:image" content="https://gorgias.me/2021/06/30/汽车总线知识扫盲-UDS篇/%E6%B1%BD%E8%BD%A6%E6%80%BB%E7%BA%BF%E7%9F%A5%E8%AF%86%E6%89%AB%E7%9B%B2-UDS%E7%AF%87/SID.png">
 
 
@@ -153,55 +153,55 @@
 
     
             <div class="post-content">
-            <h2 id="uds诊断"><a class="markdownIt-Anchor" href="#uds诊断"></a> UDS诊断</h2>
+            <h2>UDS诊断</h2>
 <p>请求格式</p>
-<p>Service ID 服务ID<br>
-Sub-Function Byte 子功能字节<br>
+<p>Service ID 服务ID
+Sub-Function Byte 子功能字节
 Response Code 响应码</p>
-<h2 id="a_pdu-application-protocol-data-unit-specification"><a class="markdownIt-Anchor" href="#a_pdu-application-protocol-data-unit-specification"></a> A_PDU, Application Protocol Data Unit Specification</h2>
+<h2>A_PDU, Application Protocol Data Unit Specification</h2>
 <p>应用层协议数据单元直接由A_SDU和A_PCI构成</p>
-<h2 id="a_pci-application-protocol-control-information"><a class="markdownIt-Anchor" href="#a_pci-application-protocol-control-information"></a> A_PCI, Application Protocol Control Information</h2>
+<h2>A_PCI, Application Protocol Control Information</h2>
 <p>A_PCI, Application Protocol control information, 应用协议控制信息，参数字段总共有两种格式</p>
-<p>服务请求和服务响应格式: SI<br>
+<p>服务请求和服务响应格式: SI
 消极响应: NR_SI, SI</p>
-<h2 id="si-service-identifier"><a class="markdownIt-Anchor" href="#si-service-identifier"></a> SI, Service Identifier</h2>
-<p>SID, 服务ID。范围0x00至0xFF<br>
+<h2>SI, Service Identifier</h2>
+<p>SID, 服务ID。范围0x00至0xFF
 其中有ISO 14229-1定义的ID、预留ID、系统供应商设置的ID。</p>
 <p><img src="./%E6%B1%BD%E8%BD%A6%E6%80%BB%E7%BA%BF%E7%9F%A5%E8%AF%86%E6%89%AB%E7%9B%B2-UDS%E7%AF%87/SID.png" alt="SID"></p>
-<h3 id="nr_si-negative-response-service-identifier"><a class="markdownIt-Anchor" href="#nr_si-negative-response-service-identifier"></a> NR_SI, Negative Response Service Identifier</h3>
+<h3>NR_SI, Negative Response Service Identifier</h3>
 <p>消极响应ID</p>
-<h3 id="nrc_-supported-negative-response-codes"><a class="markdownIt-Anchor" href="#nrc_-supported-negative-response-codes"></a> NRC_, Supported negative response codes</h3>
+<h3>NRC_, Supported negative response codes</h3>
 <p>消极响应码</p>
-<h3 id="请求"><a class="markdownIt-Anchor" href="#请求"></a> 请求</h3>
-<p>不带功能ID的请求<br>
+<h3>请求</h3>
+<p>不带功能ID的请求
 不带功能ID的积极响应</p>
 <p>服务ID + 子功能字节</p>
-<h3 id="uudt-response"><a class="markdownIt-Anchor" href="#uudt-response"></a> UUDT-Response</h3>
+<h3>UUDT-Response</h3>
 <p>数据参数</p>
-<h3 id="消极响应"><a class="markdownIt-Anchor" href="#消极响应"></a> 消极响应</h3>
+<h3>消极响应</h3>
 <p>消极响应ID + 请求服务ID +　响应码</p>
-<h2 id="diagnosticsessioncontrol-0x10-service"><a class="markdownIt-Anchor" href="#diagnosticsessioncontrol-0x10-service"></a> DiagnosticSessionControl (0x10) service</h2>
+<h2>DiagnosticSessionControl (0x10) service</h2>
 <p>诊断会话控制</p>
 <p><img src="./%E6%B1%BD%E8%BD%A6%E6%80%BB%E7%BA%BF%E7%9F%A5%E8%AF%86%E6%89%AB%E7%9B%B2-UDS%E7%AF%87/session_service_access_table.png" alt="session_service_access_table"></p>
-<h2 id="ecureset-0x11-service"><a class="markdownIt-Anchor" href="#ecureset-0x11-service"></a> ECUReset (0x11) service</h2>
-<p>0x01 hardReset，硬重置，重启电源<br>
-0x02 keyOffOnReset， 点火开关重置<br>
-0x03 softReset, 软重置，重启软件<br>
-0x04 enableRapidPowerShutDown，启用快速电源关闭<br>
+<h2>ECUReset (0x11) service</h2>
+<p>0x01 hardReset，硬重置，重启电源
+0x02 keyOffOnReset， 点火开关重置
+0x03 softReset, 软重置，重启软件
+0x04 enableRapidPowerShutDown，启用快速电源关闭
 0x05 disableRapidPowerShutDown，禁用快速电源关闭</p>
-<p>0x06-0x3F ISOSAEReserved SAE预留<br>
-0x40-0x5F 车厂预留<br>
-0x60-0x7E 系统供应商预留<br>
+<p>0x06-0x3F ISOSAEReserved SAE预留
+0x40-0x5F 车厂预留
+0x60-0x7E 系统供应商预留
 0x7F 预留</p>
 <p>因为UDS在应用层实现，所以使用各类总线协议，以下是ISO 14229每一部分的主题</p>
-<p>ISO 14229-1 规格和需求<br>
-ISO 14229-2 会话层服务<br>
-ISO 14229-3 UDS在CAN上的实现(UDSonCAN)<br>
-ISO 14229-4 UDS在FlexRay上的实现(UDSonFR)<br>
-ISO 14229-5 UDS在以太网协议上的实现(UDSonIP)<br>
-ISO 14229-6 UDS在K-line上的实现(UDSonK-Line)<br>
+<p>ISO 14229-1 规格和需求
+ISO 14229-2 会话层服务
+ISO 14229-3 UDS在CAN上的实现(UDSonCAN)
+ISO 14229-4 UDS在FlexRay上的实现(UDSonFR)
+ISO 14229-5 UDS在以太网协议上的实现(UDSonIP)
+ISO 14229-6 UDS在K-line上的实现(UDSonK-Line)
 ISO 14229-7 UDS在LIN上的实现(UDSonLIN)</p>
-<h3 id="pdu"><a class="markdownIt-Anchor" href="#pdu"></a> PDU</h3>
+<h3>PDU</h3>
 <p>协议数据单元(PDU)格式如下，前三个是必选参数：</p>
 <ul>
 <li>Mtype, 消息类型，1字节</li>
