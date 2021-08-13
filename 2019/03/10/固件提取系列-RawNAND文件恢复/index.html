@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="description" content="固件提取系列-RawNAND文件恢复">
+
+
+
+
+  <meta name="keywords" content="NAND,FTL,OOB,Flash,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1">
+
+
+
+<link rel="canonical" href="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/">
+
+
+<meta name="description" content="前言 这是两年半前写的笔记，记录了还原车机内NAND Flash文件系统的过程，已脱敏。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BG">
+<meta name="keywords" content="NAND,FTL,OOB,Flash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="固件提取系列-RawNAND文件恢复">
+<meta property="og:url" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/index.html">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="前言 这是两年半前写的笔记，记录了还原车机内NAND Flash文件系统的过程，已脱敏。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BG">
+<meta property="og:locale" content="en-us">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/tearoff.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/features.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/bga63.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/socket.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/reading.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/bytes_diff.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/CSR3703.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/CSR3703pin.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/soc_block_diagram.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/binwalk.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/dts1.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/dts2.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/dts3.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/reball1.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/reball2.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/reball3.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/compact_flash_system.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/nand_driver.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/reball_again.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/binalk_again.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/hex_workshop.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/010editor.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/files_1.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/files_2.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/modification_time.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/modification_time2.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/struct.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/fixed_diff.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/fdisk.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/nand_info.png">
+<meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/fixed.png">
+<meta property="og:updated_time" content="2021-08-13T10:17:31.689Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="固件提取系列-RawNAND文件恢复">
+<meta name="twitter:description" content="前言 这是两年半前写的笔记，记录了还原车机内NAND Flash文件系统的过程，已脱敏。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BG">
+<meta name="twitter:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/tearoff.png">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 固件提取系列-RawNAND文件恢复 - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/links">
+                            
+                            
+                                Links
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/atom.xml">
+                            
+                            
+                                RSS
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          固件提取系列-RawNAND文件恢复
+        
+      </h1>
+
+      <time class="post-time">
+          Mar 10 2019
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>这是两年半前写的笔记，记录了还原车机内NAND Flash文件系统的过程，已脱敏。</p>
+<h2 id="恢复过程"><a class="markdownIt-Anchor" href="#恢复过程"></a> 恢复过程</h2>
+<p>车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。<br>
+在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。</p>
+<p><img src="./tearoff.png" alt="tearoff"></p>
+<p>其芯片信息如下，是一块512MB的SLC NAND</p>
+<p><img src="./features.png" alt="features"></p>
+<p>芯片采用BGA63封装，其引脚定义如下</p>
+<p><img src="./bga63.png" alt="bga63"></p>
+<p>以下为提取过程，使用的是Proman编程器</p>
+<p><img src="./socket.png" alt="socket"></p>
+<p><img src="./reading.png" alt="reading"></p>
+<p>随后我对此芯片的固件进行了多次的读取，并相互比对，保留出现次数多的字节，尽量减小翻转位的影响，保证固件的正确性。</p>
+<p><img src="./bytes_diff.png" alt="bytes_diff"></p>
+<p>车机使用高通CSR3703 SoC方案。</p>
+<p><img src="./CSR3703.png" alt="CSR3703"></p>
+<p>互联网上并未公开该芯片的数据手册，尝试了_________，无法获取数据手册，他们对数据手册非常保密。</p>
+<p>手动拆解芯片，也无法从BGA排列判断芯片类型。</p>
+<p><img src="./CSR3703pin.png" alt="CSR3703pin"></p>
+<p>通过盲测，确定了SoC内存映射表在NAND主控中，因此固件转储文件的逻辑块顺序无法确定。</p>
+<p><img src="./soc_block_diagram.png" alt="soc_block_diagram"></p>
+<p>因此只能对提取的固件盲测，通过分析NAND Dump的二进制数据，暂时把系统底层部分文件提取出来，包括U-Boot。</p>
+<p><img src="./binwalk.png" alt="binwalk"></p>
+<p>可以对U-Boot逆向分析，但是重要信息在系统分区内。</p>
+<p>CSR Visor 128KB</p>
+<p><img src="./dts1.png" alt="dts1"></p>
+<p>Device Tree，显示控制台为ttySiRF1，波特率115200</p>
+<p><img src="./dts2.png" alt="dts2"></p>
+<p>NAND主控配置信息。</p>
+<p><img src="./dts3.png" alt="dts3"></p>
+<p>由于上一台车机的NAND转储文件擦除块过于随机，因此从另一台车机拆解了NAND Flash读取</p>
+<p><img src="./reball1.png" alt="reball1"><br>
+<img src="./reball2.png" alt="reball2"></p>
+<p>为了继续使用车机，对芯片重植球，使用光学焊台进行对位修复。</p>
+<p><img src="./reball3.png" alt="reball3"></p>
+<p>查阅了一些资料，WL模式可能是混合模式，参考了现有公开的FTL代码，并没有找到能匹配的映射逻辑，猜测FTL Table可能存放在NAND Controller的ROM内。</p>
+<p><img src="./compact_flash_system.png" alt="compact_flash_system"></p>
+<p>通过分析U-Boot，确定使用了专有的NANDDisk驱动，使用IOCtl来读写NAND，映射算法不在此处。</p>
+<p><img src="./nand_driver.png" alt="nand_driver"></p>
+<p>因此只能得到碎片化的文件，而非文件系统。为了测试映射表是否真的存放在SoC内，我将两台相同的车机的NAND Flash进行替换实验，控制变量，并进行多次植球拆焊，使用其他车机的NAND Flash没有一次能启动。最后，我将自带的NAND Flash植球分别装回原先的车机，能成功启动，证明了SoC内存在映射。</p>
+<p><img src="./reball_again.png" alt="reball_again"></p>
+<p>经过多次对比，将完整性高于50%的RAMdisk提取出来，可以成功读取到前半部分的数据。</p>
+<p><img src="./binalk_again.png" alt="binalk_again"></p>
+<p><img src="./hex_workshop.png" alt="hex_workshop"></p>
+<p>但是可以确定使用了Linux EXT文件系统，根据MBR信息有三个分区</p>
+<p><img src="./010editor.png" alt="010editor"></p>
+<p>Parititon1: 30MB</p>
+<p>Partition2: 400MB</p>
+<p>Partition3: 61.75MB</p>
+<p>其他文件只是一些资源文件和碎片化的ELF文件，因为ELF碎片化，无法正常逆向分析。</p>
+<p><img src="./files_1.png" alt="files_1"></p>
+<p>于是我手动尝试寻找擦除块顺序逻辑，将每个擦除块分离出来，分析每个块的特征，由于最前面一部分的OOB区域和后面不一样，影响了我当时的判断，只找出了页的顺序，所以只能还原出体积较小的zImage和Ramdisk，整体逻辑无法猜解。</p>
+<p><img src="./files_2.png" alt="files_2"></p>
+<p>在NAND转储文件中也没找到Map Table，因此无法在短时间内获取文件，需要分析清楚块的规律，才能得到映射逻辑。</p>
+<p>我把最后另一台车机的NAND Flash拆下并进行了读取。</p>
+<p>发现两个车机系统版本不一致，无法继续分析。</p>
+<p>XXXXX_IHU_LOW_A7_LINUX_18.0F40</p>
+<p>XXXXX_IHU_LOW_A7_LINUX_18.0F43</p>
+<p>Kernel和ramdisk的编译时间页不一致，因此没有办法通过盲测来猜解映射算法</p>
+<p><img src="./modification_time.png" alt="modification_time"><br>
+<img src="./modification_time2.png" alt="modification_time2"></p>
+<p>因为使用了混合映射，通过USB HID GetShell的方式获取了相同版本的固件进行分析，得到了映射算法。</p>
+<p><img src="./struct.png" alt="struct"></p>
+<p>这是修复NAND dump的脚本，我也忘了当时写了些啥东西</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> binascii</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> len(sys.argv) &lt; <span class="number">3</span>:</span><br><span class="line">    print(<span class="string">"Usage: fuckftl.py ftl.bin raw.bin"</span>)</span><br><span class="line">    sys.exit(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bin2hex</span><span class="params">(bin)</span>:</span></span><br><span class="line">    x = str(binascii.b2a_hex(bin), <span class="string">"utf-8"</span>)</span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hex2int</span><span class="params">(hex)</span>:</span></span><br><span class="line">    x = int(<span class="string">'0x'</span> + hex, <span class="number">16</span>)</span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_hex_tens_place</span><span class="params">(num)</span>:</span></span><br><span class="line">    x = int((num / <span class="number">0x10</span>) % <span class="number">0x10</span>) * <span class="number">0x10</span> + int((num / <span class="number">1</span>) % <span class="number">0x10</span>)</span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_le_int16</span><span class="params">(be)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> struct.unpack(<span class="string">"&lt;H"</span>, be)[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">proman_file_path = sys.argv[<span class="number">1</span>]</span><br><span class="line">raw_file_path = sys.argv[<span class="number">2</span>]</span><br><span class="line">nanddisk_path = sys.argv[<span class="number">3</span>]</span><br><span class="line"></span><br><span class="line">readable_block_addr = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">"sp_.bin"</span>, <span class="string">'wb'</span>) <span class="keyword">as</span> sp:</span><br><span class="line">        <span class="keyword">with</span> open(proman_file_path, <span class="string">'rb'</span>) <span class="keyword">as</span> proman_file:</span><br><span class="line">            promanbin = proman_file.read()</span><br><span class="line">            proman_file.close()</span><br><span class="line">            <span class="keyword">with</span> open(raw_file_path, <span class="string">'wb'</span>) <span class="keyword">as</span> raw_file:</span><br><span class="line">                <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>, len(promanbin), <span class="number">0x840</span>):</span><br><span class="line">                    pbuffer = promanbin[x:x+<span class="number">0x840</span>]</span><br><span class="line">                    page_a = pbuffer[:<span class="number">0x400</span>]</span><br><span class="line">                    page_b = pbuffer[<span class="number">0x415</span>:<span class="number">0x800</span>]</span><br><span class="line">                    page_c = pbuffer[<span class="number">0x816</span>:<span class="number">0x82B</span>]</span><br><span class="line"></span><br><span class="line">                    sparea_b = pbuffer[<span class="number">0x800</span>:<span class="number">0x816</span>]</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> sparea_b[<span class="number">0</span>:<span class="number">4</span>] == <span class="string">b'\xFF\x42\x00\x00'</span> <span class="keyword">or</span> (sparea_b[<span class="number">0</span>:<span class="number">4</span>] == <span class="string">b'\xFF\x41\xFF\xFF'</span> <span class="keyword">and</span> sparea_b[<span class="number">6</span>:<span class="number">8</span>] == <span class="string">b'\x00\x00'</span>):</span><br><span class="line">                        x_addr = get_le_int16(sparea_b[<span class="number">4</span>:<span class="number">6</span>])</span><br><span class="line">                        <span class="keyword">if</span> x_addr <span class="keyword">in</span> readable_block_addr:</span><br><span class="line">                            cur_wl_version =  get_le_int16(sparea_b[<span class="number">6</span>:<span class="number">8</span>])</span><br><span class="line">                            <span class="keyword">if</span> readable_block_addr[x_addr][<span class="number">1</span>] &gt; cur_wl_version:</span><br><span class="line">                                readable_block_addr[x_addr] = [int(x / <span class="number">0x840</span> * <span class="number">0x800</span>), get_le_int16(sparea_b[<span class="number">6</span>:<span class="number">8</span>])]</span><br><span class="line">                        <span class="keyword">else</span>:</span><br><span class="line">                            readable_block_addr[x_addr] = [int(x / <span class="number">0x840</span> * <span class="number">0x800</span>), get_le_int16(sparea_b[<span class="number">6</span>:<span class="number">8</span>])]</span><br><span class="line"></span><br><span class="line">                    pbuffer = page_a + page_b + page_c</span><br><span class="line">                    raw_file.write(pbuffer)</span><br><span class="line">                    sp.write(sparea_b[:<span class="number">10</span>])</span><br><span class="line">            raw_file.close()</span><br><span class="line">    sp.close()</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    print(e)</span><br><span class="line"></span><br><span class="line">readable_block_addr_sorted = sorted(readable_block_addr.items(),key=<span class="keyword">lambda</span> x:x[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(raw_file_path, <span class="string">'rb'</span>) <span class="keyword">as</span> raw_file:</span><br><span class="line">    rawbin = raw_file.read()</span><br><span class="line">    raw_file.close()</span><br><span class="line">    cur_index = <span class="number">-1</span></span><br><span class="line">    <span class="keyword">with</span> open(nanddisk_path, <span class="string">'wb'</span>) <span class="keyword">as</span> nand_file:</span><br><span class="line">        <span class="keyword">for</span> (k,v) <span class="keyword">in</span> readable_block_addr_sorted:</span><br><span class="line">            <span class="keyword">if</span> k&lt;<span class="number">0xfff</span>:</span><br><span class="line">                print(<span class="string">"fix block &#123;:x&#125;, off &#123;:x&#125;"</span>.format(k, v[<span class="number">0</span>]))</span><br><span class="line">                <span class="comment"># print(hex(k))</span></span><br><span class="line">                skip = k-cur_index</span><br><span class="line">                <span class="keyword">if</span> (skip) == <span class="number">1</span>:</span><br><span class="line">                    nand_file.write(rawbin[v[<span class="number">0</span>]:v[<span class="number">0</span>]+<span class="number">0x20000</span>])</span><br><span class="line">                cur_index = cur_index + skip</span><br><span class="line">        nand_file.close()</span><br></pre></td></tr></table></figure>
+<p>最终还原出固件，由于NAND位翻转特性，还需要使用Hanming ECC修复错误。另外因为该系统重启过多次，部分内容不一致，所以下图显示存在大量差异。</p>
+<p><img src="./fixed_diff.png" alt="fixed_diff"></p>
+<p>文件大小与类型都没有错误</p>
+<p><img src="./fdisk.png" alt="fdisk"></p>
+<p>还原出固件的大小与实际运行中的系统显示的496.6MiB匹配</p>
+<p><img src="./nand_info.png" alt="nand_info"></p>
+<p>打开其中的第二个分区，可以看到正常显示目录</p>
+<p><img src="./fixed.png" alt="fixed"></p>
+<p>但是由于位翻转，我估计肯定有一些文件是损坏的，因为时间限制，没有继续研究下去。</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/NAND/">NAND</a>
+		  
+			<a href="/tags/FTL/">FTL</a>
+		  
+			<a href="/tags/OOB/">OOB</a>
+		  
+			<a href="/tags/Flash/">Flash</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2019/04/20/固件提取系列-SATA硬盘解锁/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">固件提取系列-SATA硬盘解锁</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2018/11/30/Visteon固件重打包/">
+        <span class="next-text nav-default">Visteon固件重打包</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+    <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+    </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2021
+    <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+<script type="text/javascript">
+  var disqus_shortname = 'gorgiasblog-1';
+  var disqus_identifier = '2019/03/10/固件提取系列-RawNAND文件恢复/';
+
+  var disqus_title = "固件提取系列-RawNAND文件恢复";
+
+
+  var disqus = {
+    load : function disqus(){
+        if(typeof DISQUS !== 'object') {
+          (function () {
+          var s = document.createElement('script'); s.async = true;
+          s.type = 'text/javascript';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+          $('#load-disqus').remove(); ///加载后移除按钮
+        }
+    }
+  }
+
+  
+    var disqus_config = function () {
+        this.page.url = disqus_url;
+        this.page.identifier = disqus_identifier;
+        this.page.title = disqus_title;
+    };
+  
+
+</script>
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
