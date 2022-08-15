@@ -35,13 +35,13 @@
 <link rel="canonical" href="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/">
 
 
-<meta name="description" content="前言 这是两年半前写的笔记，记录了还原车机内NAND Flash文件系统的过程，已脱敏。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BG">
+<meta name="description" content="前言 本文记录了还原车机内NAND Flash文件系统的过程。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BGA63封装，其引脚定义如下">
 <meta name="keywords" content="NAND,FTL,OOB,Flash">
 <meta property="og:type" content="article">
 <meta property="og:title" content="固件提取系列-RawNAND文件恢复">
 <meta property="og:url" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="前言 这是两年半前写的笔记，记录了还原车机内NAND Flash文件系统的过程，已脱敏。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BG">
+<meta property="og:description" content="前言 本文记录了还原车机内NAND Flash文件系统的过程。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BGA63封装，其引脚定义如下">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/tearoff.png">
 <meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/features.png">
@@ -74,10 +74,10 @@
 <meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/fdisk.png">
 <meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/nand_info.png">
 <meta property="og:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/fixed.png">
-<meta property="og:updated_time" content="2021-08-13T10:17:31.689Z">
+<meta property="og:updated_time" content="2021-08-13T14:33:24.216Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="固件提取系列-RawNAND文件恢复">
-<meta name="twitter:description" content="前言 这是两年半前写的笔记，记录了还原车机内NAND Flash文件系统的过程，已脱敏。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BG">
+<meta name="twitter:description" content="前言 本文记录了还原车机内NAND Flash文件系统的过程。  恢复过程 车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。  其芯片信息如下，是一块512MB的SLC NAND  芯片采用BGA63封装，其引脚定义如下">
 <meta name="twitter:image" content="https://gorgias.me/2019/03/10/固件提取系列-RawNAND文件恢复/tearoff.png">
 
 
@@ -183,7 +183,7 @@
     
             <div class="post-content">
             <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
-<p>这是两年半前写的笔记，记录了还原车机内NAND Flash文件系统的过程，已脱敏。</p>
+<p>本文记录了还原车机内NAND Flash文件系统的过程。</p>
 <h2 id="恢复过程"><a class="markdownIt-Anchor" href="#恢复过程"></a> 恢复过程</h2>
 <p>车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。<br>
 在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。</p>
@@ -326,7 +326,7 @@
     
         2015 -
     
-    2021
+    2022
     <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
     <span class="power-by">
         Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>

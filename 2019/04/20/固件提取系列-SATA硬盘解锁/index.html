@@ -35,13 +35,13 @@
 <link rel="canonical" href="https://gorgias.me/2019/04/20/固件提取系列-SATA硬盘解锁/">
 
 
-<meta name="description" content="前言 终于在网盘翻到了以前拍的照片。这是大约两年前写的，关于从加锁的硬盘提取信息的那些事，走了很多弯路。 以前买了NTG55的Head Unit，装配在奔驰E系车型。  将目标设备拆开后，可以发现一块车规级HDD 硬盘信息如下 MQ01AAD032C Serial ATA 2.6 / ATA8 3.0 Gbit/s , 1.5 Gbit/s 320 GB 右侧是旧款 Head Unit 使用的硬">
+<meta name="description" content="前言 关于从加锁的硬盘提取信息的那些事，走了很多弯路。 以前买了NTG55的Head Unit，装配在奔驰E系车型。  将目标设备拆开后，可以发现一块车规级HDD 硬盘信息如下 MQ01AAD032C Serial ATA 2.6 / ATA8 3.0 Gbit/s , 1.5 Gbit/s 320 GB 右侧是旧款 Head Unit 使用的硬盘，左边是新款，再新也不过是NTG55，现在已经到">
 <meta name="keywords" content="NTG64,SATA,unlock,HDD,Hard Drive">
 <meta property="og:type" content="article">
 <meta property="og:title" content="固件提取系列-SATA硬盘解锁">
 <meta property="og:url" content="https://gorgias.me/2019/04/20/固件提取系列-SATA硬盘解锁/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="前言 终于在网盘翻到了以前拍的照片。这是大约两年前写的，关于从加锁的硬盘提取信息的那些事，走了很多弯路。 以前买了NTG55的Head Unit，装配在奔驰E系车型。  将目标设备拆开后，可以发现一块车规级HDD 硬盘信息如下 MQ01AAD032C Serial ATA 2.6 / ATA8 3.0 Gbit/s , 1.5 Gbit/s 320 GB 右侧是旧款 Head Unit 使用的硬">
+<meta property="og:description" content="前言 关于从加锁的硬盘提取信息的那些事，走了很多弯路。 以前买了NTG55的Head Unit，装配在奔驰E系车型。  将目标设备拆开后，可以发现一块车规级HDD 硬盘信息如下 MQ01AAD032C Serial ATA 2.6 / ATA8 3.0 Gbit/s , 1.5 Gbit/s 320 GB 右侧是旧款 Head Unit 使用的硬盘，左边是新款，再新也不过是NTG55，现在已经到">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2019/04/20/固件提取系列-SATA硬盘解锁/NTG55.jpg">
 <meta property="og:image" content="https://gorgias.me/2019/04/20/固件提取系列-SATA硬盘解锁/hdd_compare.jpg">
@@ -51,10 +51,10 @@
 <meta property="og:image" content="https://gorgias.me/2019/04/20/固件提取系列-SATA硬盘解锁/HDD_unlock.png">
 <meta property="og:image" content="https://gorgias.me/2019/04/20/固件提取系列-SATA硬盘解锁/ida1.png">
 <meta property="og:image" content="https://gorgias.me/2019/04/20/固件提取系列-SATA硬盘解锁/ida2.png">
-<meta property="og:updated_time" content="2021-08-13T09:19:08.996Z">
+<meta property="og:updated_time" content="2021-08-13T14:33:42.179Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="固件提取系列-SATA硬盘解锁">
-<meta name="twitter:description" content="前言 终于在网盘翻到了以前拍的照片。这是大约两年前写的，关于从加锁的硬盘提取信息的那些事，走了很多弯路。 以前买了NTG55的Head Unit，装配在奔驰E系车型。  将目标设备拆开后，可以发现一块车规级HDD 硬盘信息如下 MQ01AAD032C Serial ATA 2.6 / ATA8 3.0 Gbit/s , 1.5 Gbit/s 320 GB 右侧是旧款 Head Unit 使用的硬">
+<meta name="twitter:description" content="前言 关于从加锁的硬盘提取信息的那些事，走了很多弯路。 以前买了NTG55的Head Unit，装配在奔驰E系车型。  将目标设备拆开后，可以发现一块车规级HDD 硬盘信息如下 MQ01AAD032C Serial ATA 2.6 / ATA8 3.0 Gbit/s , 1.5 Gbit/s 320 GB 右侧是旧款 Head Unit 使用的硬盘，左边是新款，再新也不过是NTG55，现在已经到">
 <meta name="twitter:image" content="https://gorgias.me/2019/04/20/固件提取系列-SATA硬盘解锁/NTG55.jpg">
 
 
@@ -160,7 +160,7 @@
     
             <div class="post-content">
             <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
-<p>终于在网盘翻到了以前拍的照片。这是大约两年前写的，关于从加锁的硬盘提取信息的那些事，走了很多弯路。</p>
+<p>关于从加锁的硬盘提取信息的那些事，走了很多弯路。</p>
 <p>以前买了NTG55的Head Unit，装配在奔驰E系车型。</p>
 <p><img src="./NTG55.jpg" alt="NTG55"></p>
 <p>将目标设备拆开后，可以发现一块车规级HDD</p>
@@ -300,7 +300,7 @@ Serial ATA 2.6 / ATA8<br>
     
         2015 -
     
-    2021
+    2022
     <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
     <span class="power-by">
         Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
