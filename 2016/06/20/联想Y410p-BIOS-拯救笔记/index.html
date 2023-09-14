@@ -35,13 +35,13 @@
 <link rel="canonical" href="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/">
 
 
-<meta name="description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。  开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶">
+<meta name="description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。 开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶带，">
 <meta name="keywords" content="BIOS,救砖,砖,编程器,联想">
 <meta property="og:type" content="article">
 <meta property="og:title" content="联想Y410p BIOS 拯救笔记">
 <meta property="og:url" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。  开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶">
+<meta property="og:description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。 开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶带，">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0398.jpg">
 <meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0376.jpg">
@@ -58,7 +58,7 @@
 <meta property="og:updated_time" content="2017-10-29T12:36:11.581Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="联想Y410p BIOS 拯救笔记">
-<meta name="twitter:description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。  开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶">
+<meta name="twitter:description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。 开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶带，">
 <meta name="twitter:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0398.jpg">
 
 
@@ -163,34 +163,34 @@
 
     
             <div class="post-content">
-            <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
-<p>昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！<br>
-<img src="./IMG_0398.jpg" alt="IMG_0398"><br>
-黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。<br>
-<img src="./IMG_0376.jpg" alt="IMG_0376"><br>
+            <h2>前言</h2>
+<p>昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！
+<img src="./IMG_0398.jpg" alt="IMG_0398">
+黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。
+<img src="./IMG_0376.jpg" alt="IMG_0376">
 依然没用，只能今天去再用编程器烧写。</p>
-<h2 id="开始折腾"><a class="markdownIt-Anchor" href="#开始折腾"></a> 开始折腾</h2>
-<p>准备工具：焊台，其他辅助工具，编程器，一台能用的电脑<br>
-<a href="https://drive.google.com/open?id=0B3hbKdJ8eeqfRUZpeG1ZTFRyWHc" target="_blank" rel="noopener">工具和原厂镜像打包下载</a><br>
+<h2>开始折腾</h2>
+<p>准备工具：焊台，其他辅助工具，编程器，一台能用的电脑
+<a href="https://drive.google.com/open?id=0B3hbKdJ8eeqfRUZpeG1ZTFRyWHc" target="_blank" rel="noopener">工具和原厂镜像打包下载</a>
 <img src="./IMG_0380.jpg" alt="IMG_0380"></p>
-<p>这是直插式的SOP-16烧录座,不用再焊来焊去了<br>
+<p>这是直插式的SOP-16烧录座,不用再焊来焊去了
 <img src="./IMG_0385.jpg" alt="IMG_0385"></p>
-<p>贴上隔热胶带，防止损坏其他元件<br>
+<p>贴上隔热胶带，防止损坏其他元件
 <img src="./IMG_0387.jpg" alt="IMG_0387"></p>
-<p>这是双BIOS的主板，先用风枪以370的温度，风速3，把右边那个4MB的SOP-8闪存吹下，8秒左右。<br>
+<p>这是双BIOS的主板，先用风枪以370的温度，风速3，把右边那个4MB的SOP-8闪存吹下，8秒左右。
 <img src="./IMG_0389.jpg" alt="IMG_0389"></p>
-<p>然后放在烧录座上，写入原厂固件。<br>
+<p>然后放在烧录座上，写入原厂固件。
 <img src="./IMG_0390.jpg" alt="IMG_0390"></p>
-<p>再吹下另一个2MB的闪存，写入对应的固件<br>
+<p>再吹下另一个2MB的闪存，写入对应的固件
 <img src="./IMG_0392.jpg" alt="IMG_0392"></p>
 <p><img src="./IMG_0393.jpg" alt="IMG_0393"></p>
-<p>刷入2.07版未写保护的BIOS，方便刷入自定义的固件<br>
+<p>刷入2.07版未写保护的BIOS，方便刷入自定义的固件
 <img src="./IMG_0395.jpg" alt="IMG_0395"></p>
-<p>然后进DOS重新刷之前备份好的解锁版BIOS，GPU超频，除去了网卡白名单<br>
-<img src="./IMG_0396.jpg" alt="IMG_0396"><br>
-刷EC<br>
+<p>然后进DOS重新刷之前备份好的解锁版BIOS，GPU超频，除去了网卡白名单
+<img src="./IMG_0396.jpg" alt="IMG_0396">
+刷EC
 <img src="./IMG_0397.jpg" alt="IMG_0397"></p>
-<p>大功告成！<br>
+<p>大功告成！
 再也不作死了！这不是第一次弄坏BIOS了，下次再作死就，就。。。（〃｀д´ ) ?</p>
 
             </div>
