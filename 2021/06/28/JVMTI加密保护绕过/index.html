@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="description" content="JVMTI加密保护绕过">
+
+
+
+
+  <meta name="keywords" content="JVMTI,逆向工程,java,解密,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1">
+
+
+
+<link rel="canonical" href="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/">
+
+
+<meta name="description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsap">
+<meta name="keywords" content="JVMTI,逆向工程,java,解密">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVMTI加密保护绕过">
+<meta property="og:url" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/index.html">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsap">
+<meta property="og:locale" content="en-us">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/files.png">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/winpe.png">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/jdgui.png">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/onload.png">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/eventcallback.png">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/agent_related_tools.jpg">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/decryption_cmd.png">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/jdgui2.png">
+<meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/intranet.png">
+<meta property="og:updated_time" content="2021-06-29T02:03:58.315Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVMTI加密保护绕过">
+<meta name="twitter:description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsap">
+<meta name="twitter:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/files.png">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> JVMTI加密保护绕过 - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/links">
+                            
+                            
+                                Links
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/atom.xml">
+                            
+                            
+                                RSS
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          JVMTI加密保护绕过
+        
+      </h1>
+
+      <time class="post-time">
+          Jun 28 2021
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="研究过程"><a class="markdownIt-Anchor" href="#研究过程"></a> 研究过程</h2>
+<p>最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。</p>
+<p>安装完成，目录有jar文件又有exe文件。</p>
+<p><img src="./files.png" alt="files"></p>
+<p>执行start.exe之后可以看到启动了两个Java进程</p>
+<p><img src="./winpe.png" alt="winpe"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsapro\lib\jna -Dfile.encoding=utf-8 -classpath C:\LC\Elsapro -cp C:\LC\Elsapro\ElsaPro.jar com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui</span><br></pre></td></tr></table></figure>
+<p>猜测第二个进程可能是内置浏览器，第一个进程是关键进程</p>
+<p>使用jdgui打开，发现部分类显示Internel Error，并且关键类没有显示。使用其他java反编译工具也一样。</p>
+<p><img src="./jdgui.png" alt="jdgui"></p>
+<p>简单逆向start.exe文件，发现只是用作ClassLoader，可能用于在线更新。</p>
+<p>在启动参数看到了agentlib指向jvmprotect，使用IDA Pro打开jvmprotect，发现使用了JVMTI作为agent，猜测可能作为解密模块。</p>
+<p>JVMTI支持包括但不限于取证，调试，监控，线程分析，覆盖率分析等工具。</p>
+<p>简单查阅JVMTI文档，得知如下三个主要方法，可以作为逆向切入点</p>
+<ul>
+<li>Agent_OnLoad   启动时调用</li>
+<li>Agent_OnAttach 附加时调用</li>
+<li>Agent_OnUnload 卸载时调用</li>
+</ul>
+<p>使用IDA Pro打开这个agent。得知<code>Agent_OnLoad</code>是启动函数，由于代码基于JNI和JVMTI，打开阅读不太方便。我整合了一个jvmti_all.h头文件，方便逆向。（由于这个回调函数太简单，并且没有用到其他功能，所以没有派上什么用场）。</p>
+<p><img src="./onload.png" alt="onload"></p>
+<p>启动时设置<code>SetEventCallbacks</code>，此时会把jar包的class文件逐个传入这个回调函数。然后把每个类解密，并且输出日志。</p>
+<p><img src="./eventcallback.png" alt="eventcallback"></p>
+<p>我很懒，不想还原算法，打算用frida或者unicorn engine去解密。</p>
+<p>阅读完这篇文章 <a href="http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/" target="_blank" rel="noopener">Yilun Fan - 谈谈Java Intrumentation和相关应用</a>，发现Instrumentation API基于JVMTI，因此可以使用Java Agent来导出class文件</p>
+<p><img src="./agent_related_tools.jpg" alt="agent_related_tools"></p>
+<p>参考<a href="https://www.cnblogs.com/yougewe/p/9651555.html" target="_blank" rel="noopener">等你归去来 - 如何获取java运行时动态生成的class文件？</a>，我打包了名为ClazzDumpAgent.jar的Agent。d参数代表dump路径，-f参数是匹配提取的前缀，-r文件代表包名。</p>
+<p>agentlib和javaagent存在先后顺序，一定要先解密完再导出。</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jre</span>\<span class="title">bin</span>\<span class="title">java.exe</span> -<span class="title">Xms256m</span> -<span class="title">Xmx512m</span> -<span class="title">XX:MetaspaceSize</span>=256<span class="title">m</span> -<span class="title">XX:MaxMetaspaceSize</span>=512<span class="title">m</span> -<span class="title">agentlib:C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jna</span>\<span class="title">JvmtiCry</span> -<span class="title">Djava.library.path</span>=<span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jna</span> -<span class="title">javaagent:C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">ClazzDumpAgent.jar</span>=-<span class="title">d</span>=<span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">clazzDump</span>\;-<span class="title">f</span>=<span class="title">com</span>/<span class="title">qqw</span>/<span class="title">lcst</span>;-<span class="title">r</span>=<span class="title">lcst</span> -<span class="title">Dfile.encoding</span>=<span class="title">utf</span>-8 -<span class="title">classpath</span> <span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span> -<span class="title">cp</span> <span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">ElsaPro.jar</span> <span class="title">com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui</span></span></span><br></pre></td></tr></table></figure>
+<p>执行这段脚本，可以看到解密完每个class之后，都会导出这个class。</p>
+<p><img src="./decryption_cmd.png" alt="decryption_cmd.png"></p>
+<p>随后将路径打包成zip文件，用 Java 反编译软件打开，相比较第一张图，可以看到之前显示为null的class已经出现率，但是有些显示Internal Error的类没有出现。这是因为没有执行的class不会被解密，这时候主动触发这个功能，在命令行可以看到相关的类被实时解密。</p>
+<p><img src="./jdgui2.png" alt="jdgui2"></p>
+<p>建议用CFR去反编译，报错更少。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cfrd -jar ./decypted.zip ./out</span><br></pre></td></tr></table></figure>
+<h2 id="彩蛋"><a class="markdownIt-Anchor" href="#彩蛋"></a> 彩蛋</h2>
+<p><img src="./intranet.png" alt="intranet.png"></p>
+<h2 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h2>
+<p><a href="https://docs.oracle.com/javase/7/docs/technotes/guides/jpda/architecture.html" target="_blank" rel="noopener">JDPA</a></p>
+<p><a href="https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html" target="_blank" rel="noopener">JVMTI Documentation</a></p>
+<p><a href="http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/" target="_blank" rel="noopener">谈谈Java Intrumentation和相关应用</a></p>
+<p><a href="https://www.cnblogs.com/yougewe/p/9651555.html" target="_blank" rel="noopener">等你归去来 如何获取java运行时动态生成的class文件</a></p>
+<p><a href="http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/" target="_blank" rel="noopener">Yilun Fan - 谈谈Java Intrumentation和相关应用</a></p>
+<p><a href="https://mega.nz/folder/C9oEFBDJ#KVpF5qunEq_e44R7VglDgg" target="_blank" rel="noopener">JVMTI.h and ClazzDumpAgent</a></p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/JVMTI/">JVMTI</a>
+		  
+			<a href="/tags/逆向工程/">逆向工程</a>
+		  
+			<a href="/tags/java/">java</a>
+		  
+			<a href="/tags/解密/">解密</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2022/08/15/固件逆向的通用技巧/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">固件逆向的通用技巧</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2019/12/28/固件提取系列-固件载体/">
+        <span class="next-text nav-default">固件提取系列-固件载体</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+    <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+    </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2023
+    <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+<script type="text/javascript">
+  var disqus_shortname = 'gorgiasblog-1';
+  var disqus_identifier = '2021/06/28/JVMTI加密保护绕过/';
+
+  var disqus_title = "JVMTI加密保护绕过";
+
+
+  var disqus = {
+    load : function disqus(){
+        if(typeof DISQUS !== 'object') {
+          (function () {
+          var s = document.createElement('script'); s.async = true;
+          s.type = 'text/javascript';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+          $('#load-disqus').remove(); ///加载后移除按钮
+        }
+    }
+  }
+
+  
+    var disqus_config = function () {
+        this.page.url = disqus_url;
+        this.page.identifier = disqus_identifier;
+        this.page.title = disqus_title;
+    };
+  
+
+</script>
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

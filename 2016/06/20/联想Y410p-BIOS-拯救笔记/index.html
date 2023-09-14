@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang>
+  <head><meta name="generator" content="Hexo 3.9.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="description" content="联想Y410p BIOS 拯救笔记">
+
+
+
+
+  <meta name="keywords" content="BIOS,救砖,砖,编程器,联想,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Gorgias'Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1">
+
+
+
+<link rel="canonical" href="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/">
+
+
+<meta name="description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。  开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶">
+<meta name="keywords" content="BIOS,救砖,砖,编程器,联想">
+<meta property="og:type" content="article">
+<meta property="og:title" content="联想Y410p BIOS 拯救笔记">
+<meta property="og:url" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/index.html">
+<meta property="og:site_name" content="Gorgias&#39;Blog">
+<meta property="og:description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。  开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶">
+<meta property="og:locale" content="en-us">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0398.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0376.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0380.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0385.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0387.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0389.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0390.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0392.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0393.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0395.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0396.jpg">
+<meta property="og:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0397.jpg">
+<meta property="og:updated_time" content="2017-10-29T12:36:11.581Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="联想Y410p BIOS 拯救笔记">
+<meta name="twitter:description" content="前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！  黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。  依然没用，只能今天去再用编程器烧写。  开始折腾 准备工具：焊台，其他辅助工具，编程器，一台能用的电脑 工具和原厂镜像打包下载  这是直插式的SOP-16烧录座,不用再焊来焊去了  贴上隔热胶">
+<meta name="twitter:image" content="https://gorgias.me/2016/06/20/联想Y410p-BIOS-拯救笔记/IMG_0398.jpg">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 联想Y410p BIOS 拯救笔记 - Gorgias'Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Gorgias'Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/links">
+                            
+                            
+                                Links
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/atom.xml">
+                            
+                            
+                                RSS
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          联想Y410p BIOS 拯救笔记
+        
+      </h1>
+
+      <time class="post-time">
+          Jun 20 2016
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！<br>
+<img src="./IMG_0398.jpg" alt="IMG_0398"><br>
+黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。<br>
+<img src="./IMG_0376.jpg" alt="IMG_0376"><br>
+依然没用，只能今天去再用编程器烧写。</p>
+<h2 id="开始折腾"><a class="markdownIt-Anchor" href="#开始折腾"></a> 开始折腾</h2>
+<p>准备工具：焊台，其他辅助工具，编程器，一台能用的电脑<br>
+<a href="https://drive.google.com/open?id=0B3hbKdJ8eeqfRUZpeG1ZTFRyWHc" target="_blank" rel="noopener">工具和原厂镜像打包下载</a><br>
+<img src="./IMG_0380.jpg" alt="IMG_0380"></p>
+<p>这是直插式的SOP-16烧录座,不用再焊来焊去了<br>
+<img src="./IMG_0385.jpg" alt="IMG_0385"></p>
+<p>贴上隔热胶带，防止损坏其他元件<br>
+<img src="./IMG_0387.jpg" alt="IMG_0387"></p>
+<p>这是双BIOS的主板，先用风枪以370的温度，风速3，把右边那个4MB的SOP-8闪存吹下，8秒左右。<br>
+<img src="./IMG_0389.jpg" alt="IMG_0389"></p>
+<p>然后放在烧录座上，写入原厂固件。<br>
+<img src="./IMG_0390.jpg" alt="IMG_0390"></p>
+<p>再吹下另一个2MB的闪存，写入对应的固件<br>
+<img src="./IMG_0392.jpg" alt="IMG_0392"></p>
+<p><img src="./IMG_0393.jpg" alt="IMG_0393"></p>
+<p>刷入2.07版未写保护的BIOS，方便刷入自定义的固件<br>
+<img src="./IMG_0395.jpg" alt="IMG_0395"></p>
+<p>然后进DOS重新刷之前备份好的解锁版BIOS，GPU超频，除去了网卡白名单<br>
+<img src="./IMG_0396.jpg" alt="IMG_0396"><br>
+刷EC<br>
+<img src="./IMG_0397.jpg" alt="IMG_0397"></p>
+<p>大功告成！<br>
+再也不作死了！这不是第一次弄坏BIOS了，下次再作死就，就。。。（〃｀д´ ) ?</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/BIOS/">BIOS</a>
+		  
+			<a href="/tags/救砖/">救砖</a>
+		  
+			<a href="/tags/砖/">砖</a>
+		  
+			<a href="/tags/编程器/">编程器</a>
+		  
+			<a href="/tags/联想/">联想</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/10/08/五太子不能退休，快当我的备用机！/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">五太子不能退休，快当我的备用机！</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/05/09/给网站添加免费SSL证书/">
+        <span class="next-text nav-default">给网站添加免费SSL证书 + 启用 Certificate Transparency 策略 + 开启 HTTP/2 协议</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+    <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+    </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2023
+    <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+<script type="text/javascript">
+  var disqus_shortname = 'gorgiasblog-1';
+  var disqus_identifier = '2016/06/20/联想Y410p-BIOS-拯救笔记/';
+
+  var disqus_title = "联想Y410p BIOS 拯救笔记";
+
+
+  var disqus = {
+    load : function disqus(){
+        if(typeof DISQUS !== 'object') {
+          (function () {
+          var s = document.createElement('script'); s.async = true;
+          s.type = 'text/javascript';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+          $('#load-disqus').remove(); ///加载后移除按钮
+        }
+    }
+  }
+
+  
+    var disqus_config = function () {
+        this.page.url = disqus_url;
+        this.page.identifier = disqus_identifier;
+        this.page.title = disqus_title;
+    };
+  
+
+</script>
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
