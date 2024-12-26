@@ -35,13 +35,13 @@
 <link rel="canonical" href="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/">
 
 
-<meta name="description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsapr">
+<meta name="description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsap">
 <meta name="keywords" content="JVMTI,逆向工程,java,解密">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVMTI加密保护绕过">
 <meta property="og:url" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsapr">
+<meta property="og:description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsap">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/files.png">
 <meta property="og:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/winpe.png">
@@ -55,7 +55,7 @@
 <meta property="og:updated_time" content="2021-06-29T02:03:58.315Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVMTI加密保护绕过">
-<meta name="twitter:description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsapr">
+<meta name="twitter:description" content="研究过程 最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。 安装完成，目录有jar文件又有exe文件。  执行start.exe之后可以看到启动了两个Java进程  1C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsap">
 <meta name="twitter:image" content="https://gorgias.me/2021/06/28/JVMTI加密保护绕过/files.png">
 
 
@@ -160,13 +160,13 @@
 
     
             <div class="post-content">
-            <h2>研究过程</h2>
+            <h2 id="研究过程"><a class="markdownIt-Anchor" href="#研究过程"></a> 研究过程</h2>
 <p>最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。</p>
 <p>安装完成，目录有jar文件又有exe文件。</p>
 <p><img src="./files.png" alt="files"></p>
 <p>执行start.exe之后可以看到启动了两个Java进程</p>
 <p><img src="./winpe.png" alt="winpe"></p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsapro\lib\jna -Dfile.encoding=utf-8 -classpath C:\LC\Elsapro -cp C:\LC\Elsapro\ElsaPro.jar com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsapro\lib\jna -Dfile.encoding=utf-8 -classpath C:\LC\Elsapro -cp C:\LC\Elsapro\ElsaPro.jar com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui</span><br></pre></td></tr></table></figure>
 <p>猜测第二个进程可能是内置浏览器，第一个进程是关键进程</p>
 <p>使用jdgui打开，发现部分类显示Internel Error，并且关键类没有显示。使用其他java反编译工具也一样。</p>
 <p><img src="./jdgui.png" alt="jdgui"></p>
@@ -188,16 +188,16 @@
 <p><img src="./agent_related_tools.jpg" alt="agent_related_tools"></p>
 <p>参考<a href="https://www.cnblogs.com/yougewe/p/9651555.html" target="_blank" rel="noopener">等你归去来 - 如何获取java运行时动态生成的class文件？</a>，我打包了名为ClazzDumpAgent.jar的Agent。d参数代表dump路径，-f参数是匹配提取的前缀，-r文件代表包名。</p>
 <p>agentlib和javaagent存在先后顺序，一定要先解密完再导出。</p>
-<p><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jre</span>\<span class="title">bin</span>\<span class="title">java.exe</span> -<span class="title">Xms256m</span> -<span class="title">Xmx512m</span> -<span class="title">XX:MetaspaceSize</span>=256<span class="title">m</span> -<span class="title">XX:MaxMetaspaceSize</span>=512<span class="title">m</span> -<span class="title">agentlib:C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jna</span>\<span class="title">JvmtiCry</span> -<span class="title">Djava.library.path</span>=<span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jna</span> -<span class="title">javaagent:C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">ClazzDumpAgent.jar</span>=-<span class="title">d</span>=<span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">clazzDump</span>\;-<span class="title">f</span>=<span class="title">com</span>/<span class="title">qqw</span>/<span class="title">lcst</span>;-<span class="title">r</span>=<span class="title">lcst</span> -<span class="title">Dfile.encoding</span>=<span class="title">utf</span>-8 -<span class="title">classpath</span> <span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span> -<span class="title">cp</span> <span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">ElsaPro.jar</span> <span class="title">com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui</span></span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">C:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jre</span>\<span class="title">bin</span>\<span class="title">java.exe</span> -<span class="title">Xms256m</span> -<span class="title">Xmx512m</span> -<span class="title">XX:MetaspaceSize</span>=256<span class="title">m</span> -<span class="title">XX:MaxMetaspaceSize</span>=512<span class="title">m</span> -<span class="title">agentlib:C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jna</span>\<span class="title">JvmtiCry</span> -<span class="title">Djava.library.path</span>=<span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">lib</span>\<span class="title">jna</span> -<span class="title">javaagent:C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">ClazzDumpAgent.jar</span>=-<span class="title">d</span>=<span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">clazzDump</span>\;-<span class="title">f</span>=<span class="title">com</span>/<span class="title">qqw</span>/<span class="title">lcst</span>;-<span class="title">r</span>=<span class="title">lcst</span> -<span class="title">Dfile.encoding</span>=<span class="title">utf</span>-8 -<span class="title">classpath</span> <span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span> -<span class="title">cp</span> <span class="title">C</span>:\<span class="title">LC</span>\<span class="title">Elsapro</span>\<span class="title">ElsaPro.jar</span> <span class="title">com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui</span></span></span><br></pre></td></tr></table></figure>
 <p>执行这段脚本，可以看到解密完每个class之后，都会导出这个class。</p>
 <p><img src="./decryption_cmd.png" alt="decryption_cmd.png"></p>
 <p>随后将路径打包成zip文件，用 Java 反编译软件打开，相比较第一张图，可以看到之前显示为null的class已经出现率，但是有些显示Internal Error的类没有出现。这是因为没有执行的class不会被解密，这时候主动触发这个功能，在命令行可以看到相关的类被实时解密。</p>
 <p><img src="./jdgui2.png" alt="jdgui2"></p>
 <p>建议用CFR去反编译，报错更少。</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cfrd -jar ./decypted.zip ./out</span><br></pre></td></tr></table></figure></p>
-<h2>彩蛋</h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cfrd -jar ./decypted.zip ./out</span><br></pre></td></tr></table></figure>
+<h2 id="彩蛋"><a class="markdownIt-Anchor" href="#彩蛋"></a> 彩蛋</h2>
 <p><img src="./intranet.png" alt="intranet.png"></p>
-<h2>参考</h2>
+<h2 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h2>
 <p><a href="https://docs.oracle.com/javase/7/docs/technotes/guides/jpda/architecture.html" target="_blank" rel="noopener">JDPA</a></p>
 <p><a href="https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html" target="_blank" rel="noopener">JVMTI Documentation</a></p>
 <p><a href="http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/" target="_blank" rel="noopener">谈谈Java Intrumentation和相关应用</a></p>
@@ -273,7 +273,7 @@
     
         2015 -
     
-    2023
+    2024
     <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
     <span class="power-by">
         Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>

