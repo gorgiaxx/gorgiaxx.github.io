@@ -53,7 +53,7 @@
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/extracted_files.png">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/pitch_symbols.png">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/kill_disk.png">
-<meta property="og:updated_time" content="2025-05-17T14:37:31.307Z">
+<meta property="og:updated_time" content="2025-05-17T14:43:11.560Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IGS Arcade 逆向系列（一）- E2000平台分析">
 <meta name="twitter:description" content="前言 2010年是街机的黄金时代，随着移动终端和家用游戏机普及，街机行业也逐渐走向没落，尽管国内出台了一些政策鼓励游戏游艺设备行业发展，但此行业在未来一直都不被资本看好。2020 疫情更是给电玩行业带来了很大的打击。 在以前，100元可能只能买50个币，现在100元可以买200个币。 我喜欢赛车游戏，湾岸Midnight、头文字D、Speed Driver是近几年电玩城最火的游戏，因为它有账号功">
@@ -308,7 +308,7 @@ e2000_shield_1.jpeg<br>
 <p>将上述文件header，移植到cramfs-tools和squashfs-tools，就可以完美提取文件系统，并且还可以发现文件是否损坏。我已经将代码上传至github。<a href="https://github.com/gorgiaxx/igs-toolkits" target="_blank" rel="noopener">https://github.com/gorgiaxx/igs-toolkits</a></p>
 <p>这个版本提取难度不高，但下个版本E3000就用上加密了。</p>
 <p><img src="extracted_files.png" alt="extracted_files"></p>
-<p>玩家 @novacosmic00 之前请我帮忙提取 GoGoBall 的文件，但他说他已经解密了其他游戏的文件。唯 独 GoGoBall 解不了。用我修改的工具尝试提取，发现文件CRC不对，但还是能提取出大部分。</p>
+<p>玩家 @novacosmic00 之前请我帮忙提取 GoGoBall 的文件，但他说他已经解密了其他游戏的文件。唯独 GoGoBall 解不了。用我修改的工具尝试提取，发现文件CRC不对，但还是能提取出大部分。</p>
 <p>在我提取完固件之后，和玩家 @novacosmic00 沟通，才知道两年前有人研究过这个，并写了提取脚本。</p>
 <p><a href="https://github.com/batteryshark/igstools/tree/main/scripts" target="_blank" rel="noopener">https://github.com/batteryshark/igstools/tree/main/scripts</a></p>
 <p>作者可能是根据文件系统内容，找出地址规律反推结构体的，这也是一种办法，但缺点是提取出来的文件可能比较混乱，而且无法检测CRC错误。</p>
