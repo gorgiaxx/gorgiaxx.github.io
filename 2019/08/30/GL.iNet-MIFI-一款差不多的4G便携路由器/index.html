@@ -172,11 +172,11 @@
 <p>有时需要进行ARP欺骗，因为E5885L的配置，导致不能成功实现。</p>
 <p>E5885L修改IMEI要重启系统才能生效，而GL-MIFI的处理器和基带芯片是分开的，因此只需要重置4G模块就能生效</p>
 <p>GL-MIFI支持USB外接3G/4G Modem，很多时候，PC无法使用Modem拨号、有可能是驱动不支持，有可能是pppd配置不正确，此时，我们能把目标Modem放到GL-MIFI上面识别，可以免去E-SIM飞线的工作。</p>
-<h2>使用</h2>
+<h2 id="使用"><a class="markdownIt-Anchor" href="#使用"></a> 使用</h2>
 <p>内部天线也是贴在外壳上，GL-MIFI使用的是移远EC20 4G模块，Mini PCI-E接口，国内版使用EC20-CEHCLG型号，仅支持上网，不能拨打电话。</p>
 <p><img src="internal.jpg" alt="internal"></p>
 <p>在PCB上引出了许多AR9331的GPIO引脚，有助于开发IoT应用。</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/dev/ttyUSB0 DM</span><br><span class="line">/dev/ttyUSB1 GPS NMEA message output</span><br><span class="line">/dev/ttyUSB2 AT commands</span><br><span class="line">/dev/ttyUSB3 PPP connection or AT commands</span><br><span class="line">wwan0 (QMI mode)USB network adapter</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/dev/ttyUSB0 DM</span><br><span class="line">/dev/ttyUSB1 GPS NMEA message output</span><br><span class="line">/dev/ttyUSB2 AT commands</span><br><span class="line">/dev/ttyUSB3 PPP connection or AT commands</span><br><span class="line">wwan0 (QMI mode)USB network adapter</span><br></pre></td></tr></table></figure>
 <p>在Web界面提供了快速AT命令的插件。</p>
 <p><img src="AT_Commands.png" alt="AT_Commands.png"></p>
 <p>很方便的进行基础操作</p>
@@ -187,9 +187,9 @@
 <p><img src="imei.png" alt="imei.png"></p>
 <p>默认开放SSH服务，基于OpenWRT编译，gl.inet提供的软件源速度快。</p>
 <p><img src="openwrt.png" alt="openwrt.png"></p>
-<h2>配置opkg装到SD卡</h2>
-<p>https://forum.gl-inet.com/t/mifi-install-package-on-external-storage-usb-or-sd-card/4332</p>
-<h2>其他</h2>
+<h2 id="配置opkg装到sd卡"><a class="markdownIt-Anchor" href="#配置opkg装到sd卡"></a> 配置opkg装到SD卡</h2>
+<p><a href="https://forum.gl-inet.com/t/mifi-install-package-on-external-storage-usb-or-sd-card/4332" target="_blank" rel="noopener">https://forum.gl-inet.com/t/mifi-install-package-on-external-storage-usb-or-sd-card/4332</a></p>
+<h2 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h2>
 <p>可以查询官方提供的MIFI的通信模组使用教程</p>
 <p><a href="https://github.com/domino-team/docs/blob/master/docs/mini/mifi.md" target="_blank" rel="noopener">https://github.com/domino-team/docs/blob/master/docs/mini/mifi.md</a></p>
 <p>Osmocom也有移远EC20的hack说明</p>
@@ -266,7 +266,7 @@
     
         2015 -
     
-    2024
+    2025
     <span class="footer-author">Gorgias.  <a href="https://gorgias.me/atom.xml">[RSS]</a></span>
     <span class="power-by">
         Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
