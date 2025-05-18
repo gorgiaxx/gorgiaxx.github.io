@@ -55,7 +55,7 @@
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/extracted_files.png">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/pitch_symbols.png">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/kill_disk.png">
-<meta property="og:updated_time" content="2025-05-18T02:26:10.223Z">
+<meta property="og:updated_time" content="2025-05-18T02:34:51.121Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IGS Arcade 逆向系列（一）- E2000平台分析">
 <meta name="twitter:description" content="前言 2010年是街机的黄金时代，随着移动终端和家用游戏机普及，街机行业也逐渐走向没落，尽管国内出台了一些政策鼓励游戏游艺设备行业发展，但此行业在未来一直都不被资本看好。2020 疫情更是给电玩行业带来了很大的打击。 在以前，100元可能只能买50个币，现在100元可以买200个币。 我喜欢赛车游戏，湾岸Midnight、头文字D、Speed Driver是近几年电玩城最火的游戏，因为它有账号功">
@@ -246,7 +246,7 @@
 <p>我有很多种办法拿硬件的root shell，但我对游戏加载的过程更感兴趣，因此先做软件逆向分析吧。</p>
 <p><img src="e2000_board.jpg" alt></p>
 <h2 id="io板分析"><a class="markdownIt-Anchor" href="#io板分析"></a> I/O板分析</h2>
-<p>这几块板子又称控制板，应该是用于连接游戏控制zzzz器，比如方向盘、刹车油门、投币器之类的。</p>
+<p>这几块板子又称控制板，应该是用于连接游戏控制器，比如方向盘、刹车油门、投币器之类的。</p>
 <p>通过连接主板的25pin + 30pin 的I/O口 进行通信</p>
 <p>价格可能比主机本体还贵</p>
 <p>应该可以使用逻辑分析仪来捕获这些传感器信号，然后实现控制功能。但据说控制信号由V21芯片（ASIC）处理，可能会加密。我也不打算去仿制一个控制板。这种街机游戏没有地平线5好玩。现在电玩城也便宜，真想玩的话，就直接花钱去电玩城，或者买一套方向盘在家里玩。</p>
