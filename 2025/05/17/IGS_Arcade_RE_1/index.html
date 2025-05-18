@@ -43,6 +43,8 @@
 <meta property="og:site_name" content="Gorgias&#39;Blog">
 <meta property="og:description" content="前言 2010年是街机的黄金时代，随着移动终端和家用游戏机普及，街机行业也逐渐走向没落，尽管国内出台了一些政策鼓励游戏游艺设备行业发展，但此行业在未来一直都不被资本看好。2020 疫情更是给电玩行业带来了很大的打击。 在以前，100元可能只能买50个币，现在100元可以买200个币。 我喜欢赛车游戏，湾岸Midnight、头文字D、Speed Driver是近几年电玩城最火的游戏，因为它有账号功">
 <meta property="og:locale" content="en-us">
+<meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/e2000_shield_1.jpeg">
+<meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/e2000_shield_2.jpg">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/e2000_board.jpg">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/sd2_io.jpg">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/sd2_io2.jpg">
@@ -53,11 +55,11 @@
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/extracted_files.png">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/pitch_symbols.png">
 <meta property="og:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/kill_disk.png">
-<meta property="og:updated_time" content="2025-05-17T14:43:11.560Z">
+<meta property="og:updated_time" content="2025-05-18T02:26:10.223Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IGS Arcade 逆向系列（一）- E2000平台分析">
 <meta name="twitter:description" content="前言 2010年是街机的黄金时代，随着移动终端和家用游戏机普及，街机行业也逐渐走向没落，尽管国内出台了一些政策鼓励游戏游艺设备行业发展，但此行业在未来一直都不被资本看好。2020 疫情更是给电玩行业带来了很大的打击。 在以前，100元可能只能买50个币，现在100元可以买200个币。 我喜欢赛车游戏，湾岸Midnight、头文字D、Speed Driver是近几年电玩城最火的游戏，因为它有账号功">
-<meta name="twitter:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/e2000_board.jpg">
+<meta name="twitter:image" content="https://gorgias.me/2025/05/17/IGS_Arcade_RE_1/e2000_shield_1.jpeg">
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1">
@@ -188,17 +190,17 @@
 </tr>
 <tr>
 <td>极速 3</td>
-<td>E3000</td>
+<td>E3000, E3100</td>
 <td>2010</td>
 </tr>
 <tr>
 <td>极速 4</td>
-<td>E3000, V3000</td>
+<td>E3000, E3100, S3000</td>
 <td>2013</td>
 </tr>
 <tr>
 <td>极速 5</td>
-<td>V3000</td>
+<td>S3000</td>
 <td>2019</td>
 </tr>
 </tbody>
@@ -209,9 +211,9 @@
 <p>在这里可以查询到每个设备的硬件信息和支持的游戏 <a href="https://github.com/shizmob/arcade-docs/" target="_blank" rel="noopener">https://github.com/shizmob/arcade-docs/</a><br>
 凭借我擅长的淘电子垃圾能力，已经搞到一台E2000主机。国外有不少爱好者购买，所以价格涨上去了。</p>
 <h2 id="外部接口分析"><a class="markdownIt-Anchor" href="#外部接口分析"></a> 外部接口分析</h2>
-<p>正面有两个RS-485接口，并且CF卡可以从外部拆卸<br>
-e2000_shield_1.jpeg<br>
-背面接口，具有千禧年PC的接口特点</p>
+<p>正面有两个RS-485接口，并且CF卡可以从外部拆卸</p>
+<p><img src="e2000_shield_1.jpeg" alt></p>
+<p>背面接口，具有千禧年PC的接口特点</p>
 <ul>
 <li>12V DC</li>
 <li>2 x DB9 COM</li>
@@ -220,7 +222,7 @@ e2000_shield_1.jpeg<br>
 <li>3.5mm Audio Out</li>
 <li>25pin + 30pin 的I/O口</li>
 </ul>
-<p>e2000_shield_2.jpg</p>
+<p><img src="e2000_shield_2.jpg" alt></p>
 <h2 id="主板分析"><a class="markdownIt-Anchor" href="#主板分析"></a> 主板分析</h2>
 <p>考虑到这个破解难度不高，其他贴了贴纸遮盖丝印的元件就不分析了，太麻烦</p>
 <p>我买的这个主机安装了 Percussion Master 2008 游戏，但极速2也能运行</p>
@@ -244,7 +246,7 @@ e2000_shield_1.jpeg<br>
 <p>我有很多种办法拿硬件的root shell，但我对游戏加载的过程更感兴趣，因此先做软件逆向分析吧。</p>
 <p><img src="e2000_board.jpg" alt></p>
 <h2 id="io板分析"><a class="markdownIt-Anchor" href="#io板分析"></a> I/O板分析</h2>
-<p>这几块板子又称控制板，应该是用于连接游戏控制器，比如方向盘、刹车油门、投币器之类的。</p>
+<p>这几块板子又称控制板，应该是用于连接游戏控制zzzz器，比如方向盘、刹车油门、投币器之类的。</p>
 <p>通过连接主板的25pin + 30pin 的I/O口 进行通信</p>
 <p>价格可能比主机本体还贵</p>
 <p>应该可以使用逻辑分析仪来捕获这些传感器信号，然后实现控制功能。但据说控制信号由V21芯片（ASIC）处理，可能会加密。我也不打算去仿制一个控制板。这种街机游戏没有地平线5好玩。现在电玩城也便宜，真想玩的话，就直接花钱去电玩城，或者买一套方向盘在家里玩。</p>
