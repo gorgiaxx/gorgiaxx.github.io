@@ -6,7 +6,7 @@ Linux-PAM是可插入认证模块(Pluggable Authentication Modules)，PAM使用�
 <meta name="twitter:title" content="Linux 后渗透笔记 PAM后门" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">Linux 后渗透笔记 PAM后门</h1><p class="article date">2018-03-25</p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+    <h1 class="article title">Linux 后渗透笔记 PAM后门</h1><p class="article date">Sunday, March 25, 2018</p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
 <p>Linux-PAM是可插入认证模块(Pluggable Authentication Modules)，PAM使用配置/etc/pam.d/下的文件，来管理对程序的认证方式。</p>
 <p>根据/etc/pam.d/下的各种服务配置文件，调用/lib/security下相应的模块，以加载动态链接库的形式实现需要的认证方式。</p>
 <p>后渗透阶段中，当拿到root权限，刚好管理员只用root账户，想获得管理员密码进行横向渗透时，可以利用PAM获取管理员的明文密码。</p>

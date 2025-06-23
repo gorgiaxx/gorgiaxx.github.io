@@ -6,7 +6,7 @@
 <meta name="twitter:title" content="固件提取系列 - 使用FlashROM读取Flash" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">固件提取系列 - 使用FlashROM读取Flash</h1><p class="article date">2019-07-20</p></section><article class="article markdown-body"><h2 id="introduction-to-flashrom">Introduction to FlashROM</h2>
+    <h1 class="article title">固件提取系列 - 使用FlashROM读取Flash</h1><p class="article date">Saturday, July 20, 2019</p></section><article class="article markdown-body"><h2 id="introduction-to-flashrom">Introduction to FlashROM</h2>
 <p>半年多没写文章了，固件提取系列已经写到第11部，这一个我觉得没那么难，可以公开。</p>
 <p>FlashROM是一款开源的Flash固件提取项目，支持多种硬件平台，SPI Flash和Parallel Flash。
 这一次遇到了一款NAND的SPI Flash，型号为IS38SML01G1，车规级存储芯片。起初以为SPI Flash都是NOR芯片，于是没有看手册，飞线用编程器读取，通常的编程器无法读取，又使用RT809H读取，也失败。于是查看手册才发现是NAND Flash，目前只有<a href="https://www.reveltronics.com/en/products/revelprog-is-serial-memory-programmer-usb"target="_blank" rel="noopener noreferrer">REVELPROG-IS</a>支持读写。

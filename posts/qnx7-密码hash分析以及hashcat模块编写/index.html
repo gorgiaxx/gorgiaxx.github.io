@@ -6,7 +6,7 @@
 <meta name="twitter:title" content="QNX7 密码 hash 算法分析以及 Hashcat 模块编写" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">QNX7 密码 hash 算法分析以及 Hashcat 模块编写</h1><p class="article date">2023-09-14</p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+    <h1 class="article title">QNX7 密码 hash 算法分析以及 Hashcat 模块编写</h1><p class="article date">Thursday, September 14, 2023</p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
 <p>在 2021 年想要碰撞 QNX Hash 发现 hashcat 不支持 QNX 6.6.0版本。当时 issue 就有人提了这个需求，但我一直很忙没时间开发。</p>
 <p>直到2023年9月的艰难单刷工信部车联网攻防演练，又遇到了 QNX 7 的 Hash，发现那么多年过去了还是没支持。</p>
 <p>为了防止下次又遇到这个需求，于是就抽空研究了 qnx 的库还有 hashcat，为了编写 hashcat 模块走了一点弯路。</p>

@@ -6,7 +6,7 @@
 <meta name="twitter:title" content="固件提取系列 固件载体" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">固件提取系列 固件载体</h1><p class="article date">2019-12-28</p></section><article class="article markdown-body"><h2 id="固件载体">固件载体</h2>
+    <h1 class="article title">固件提取系列 固件载体</h1><p class="article date">Saturday, December 28, 2019</p></section><article class="article markdown-body"><h2 id="固件载体">固件载体</h2>
 <p>固件 (Firmware), 在港澳台称作韧体, 在手机领域又称作字库。它位于非易失性存储(Non-Volatile Memory，NVM)中，可以被读写。在嵌入式领域，最常见的NVM类型是ROM(read-only memory)和Flash Memory， 其中ROM包括Mask ROM、PROM、EPROM、EEPROM；现在主流的ROM就是EEPROM，一般是在MCU内部；而更加主流的外存一般都是Flash Memory。</p>
 <p>在嵌入式设备中，除了使用最基本的NAND或者NOR Flash芯片，还可能会使用eMMC；扩展存储会用到SD卡，CF卡，HDD等；这些都是有一个主控再加一个存储区，主控和上位机通信，只要能访问主控，就能读写存储芯片的内容。对于eMMC、SD卡、CF卡、HDD之类的设备，它的主控对外有通用的接口，只要用读卡器或者烧录座就可以读取。但是对于SoC直接管理的存储芯片，并没有对外部的通用接口，但是主控都是驱动控制的，所以只要能访问内存（外围设备的地址）就行了，因此有一些JTAG读固件、IAP读取固件、U-Boot读取固件的技巧，是而且理论上主控坏了，我们还能从存储区读取出固件。</p>
 <p>只要是这些设备存放了操作系统，我把这原始的文件都称作固件。在嵌入式安全研究中，固件提取总是最初的工作，也是最重要的工作，决定了研究是否能继续下去。因此我决定整理这几年关于固件提取的知识分享出来。</p>

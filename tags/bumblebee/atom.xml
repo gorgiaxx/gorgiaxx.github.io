@@ -17,8 +17,21 @@
       <pubDate>Mon, 23 Jun 2025 23:03:18 +0800</pubDate>
       
       <guid>http://localhost:1313/posts/igs_arcade_re_3/</guid>
-      <description>&lt;p&gt;我对前两篇文章做了一些勘误&lt;/p&gt;
-&lt;p&gt;要高效分析&lt;/p&gt;
+      <description>&lt;p&gt;这段时间有不少进展，但是遇到瓶颈了，大概还有有三篇的量，最近很忙，先更新第三篇。&lt;/p&gt;
+&lt;p&gt;我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/igs_arcade_re_1&#34;&gt;IGS Arcade 逆向系列（一）- E2000平台分析&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/igs_arcade_re_2&#34;&gt;IGS Arcade 逆向系列（二）- 游戏文件恢复&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;要高效分析游戏主程序，就需要先拿个shell再说。&lt;/p&gt;
+&lt;h2 id=&#34;正文&#34;&gt;正文&lt;/h2&gt;
+&lt;p&gt;要高效分析游戏主程序，最好是设备上动态调试，首先需要shell权限。
+除了CF卡和IO口，我目前几乎没有任何对这个设备输入内容的途径。
+如果走串口调试，第一步找到硬件调试口，下一步修改kernel内置的boot command。很麻烦，还要重打包回去，而且不够优雅。
+CF卡有两个分区我可以直接写入，一个就是Kernel所在的Boot分区，另一个是日志和临时文件分区，那个说不定可以getshell，但是Pwn这个硬件不是我的目的。
+之前我根据IGS魔改的cramfs特征，二次开发了cramfs-tools，但是它只能解包，不能重打包。它是不完美的，我有一点强迫症，想要让它作为真正的toolkits。&lt;/p&gt;
+&lt;p&gt;接下来就要再完善代码了，在get_cramfs_inode，有一个暗桩，用inode_magic异或根inode的magic，判断是否等于0x705DE1，如果不等于就出错。
+下图的可读性看起来不错，是因为我做了一些费时间的工作。其实这里IDA的反编译一开始是识别错误的，和汇编完全不一样。要把结构体先还原了，这里的分支才会正确，不然就会丢失很多代码。&lt;/p&gt;
+&lt;p&gt;太晚了，最近Linux电脑坏了，迁移博客到Hugo用了很多时间，以前的Hexo框架 8年没有动过，那一对乱七八糟的依赖，在新版Mac跑不起来，周末再更新。
+TODO&lt;/p&gt;
 </description>
     </item>
     

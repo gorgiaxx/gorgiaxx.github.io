@@ -6,7 +6,7 @@
 <meta name="twitter:title" content="IGS Arcade 逆向系列（二）- 游戏文件恢复" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">IGS Arcade 逆向系列（二）- 游戏文件恢复</h1><p class="article date">2025-05-25</p></section><article class="article markdown-body"><p>上一篇文章写到游戏有个破坏分区的保护机制，本篇将深入分析。</p>
+    <h1 class="article title">IGS Arcade 逆向系列（二）- 游戏文件恢复</h1><p class="article date">Sunday, May 25, 2025</p></section><article class="article markdown-body"><p>上一篇文章写到游戏有个破坏分区的保护机制，本篇将深入分析。</p>
 <p>作为2007年发布的游戏，此游戏加固机制还是比较落后的，主要是靠一些拼接，修改特征的方法来加固。并没有现代APP加固的那么卷的特性。主要是加固的环节有点多，并且每个游戏都不一样。然后由于开发上的特性，（编译优化，代码风格），使得逆向分析变麻烦了。</p>
 <p>要提取游戏其实比较简单，等游戏运行时通过shell从内存或者从文件系统（如果文件落地）dump就行了。但是如果要提取不同游戏，这样就太麻烦了，还是先静态分析吧。</p>
 <p>总之，这个逆向过程像是在做MISC题一样，需要一些逻辑推理。</p>

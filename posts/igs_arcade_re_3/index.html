@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.147.8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark"><meta name="description" content="这段时间有不少进展，但是遇到瓶颈了，大概有三篇的量，先更新两篇。
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="这段时间有不少进展，但是遇到瓶颈了，大概还有有三篇的量，最近很忙，先更新第三篇。
 我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。"><title>IGS Arcade 逆向系列（三）- Getshell&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.63f706677e61b4ee62b8daf083358d3bbf8ac8ab03c7d171af3180fab3a3ebb83efb79fb98674f13dde6db11de2bf694.css" integrity="sha384-Y/cGZ35htO5iuNrwgzWNO7&#43;KyKsDx9FxrzGA&#43;rOj67g&#43;&#43;3n7mGdPE93m2xHeK/aU"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="IGS Arcade 逆向系列（三）- Getshell" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">IGS Arcade 逆向系列（三）- Getshell</h1><p class="article date">2025-06-23</p></section><article class="article markdown-body"><p>这段时间有不少进展，但是遇到瓶颈了，大概有三篇的量，先更新两篇。</p>
+    <h1 class="article title">IGS Arcade 逆向系列（三）- Getshell</h1><p class="article date">Monday, June 23, 2025</p></section><article class="article markdown-body"><p>这段时间有不少进展，但是遇到瓶颈了，大概还有有三篇的量，最近很忙，先更新第三篇。</p>
 <p>我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。</p>
 <p><a href="/posts/igs_arcade_re_1">IGS Arcade 逆向系列（一）- E2000平台分析</a></p>
 <p><a href="/posts/igs_arcade_re_2">IGS Arcade 逆向系列（二）- 游戏文件恢复</a></p>
 <p>要高效分析游戏主程序，就需要先拿个shell再说。</p>
-<p>TODO</p>
+<h2 id="正文">正文</h2>
+<p>要高效分析游戏主程序，最好是设备上动态调试，首先需要shell权限。
+除了CF卡和IO口，我目前几乎没有任何对这个设备输入内容的途径。
+如果走串口调试，第一步找到硬件调试口，下一步修改kernel内置的boot command。很麻烦，还要重打包回去，而且不够优雅。
+CF卡有两个分区我可以直接写入，一个就是Kernel所在的Boot分区，另一个是日志和临时文件分区，那个说不定可以getshell，但是Pwn这个硬件不是我的目的。
+之前我根据IGS魔改的cramfs特征，二次开发了cramfs-tools，但是它只能解包，不能重打包。它是不完美的，我有一点强迫症，想要让它作为真正的toolkits。</p>
+<p>接下来就要再完善代码了，在get_cramfs_inode，有一个暗桩，用inode_magic异或根inode的magic，判断是否等于0x705DE1，如果不等于就出错。
+下图的可读性看起来不错，是因为我做了一些费时间的工作。其实这里IDA的反编译一开始是识别错误的，和汇编完全不一样。要把结构体先还原了，这里的分支才会正确，不然就会丢失很多代码。</p>
+<p>太晚了，最近Linux电脑坏了，迁移博客到Hugo用了很多时间，以前的Hexo框架 8年没有动过，那一对乱七八糟的依赖，在新版Mac跑不起来，周末再更新。
+TODO</p>
 </article><section class="article labels"><a class="category" href=/categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/>逆向工程</a><a class="tag" href=/tags/igs/>IGS</a><a class="tag" href=/tags/arcade/>Arcade</a><a class="tag" href=/tags/crack/>Crack</a><a class="tag" href=/tags/%E9%88%8A%E8%B1%A1%E7%94%B5%E5%AD%90/>鈊象电子</a><a class="tag" href=/tags/e2000/>E2000</a></section>
 </div>
 <div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/igs_arcade_re_2/"><span class="iconfont icon-article"></span>IGS Arcade 逆向系列（二）- 游戏文件恢复</a></p></section></div></section><section id="footer"><div class="footer-wrap">
