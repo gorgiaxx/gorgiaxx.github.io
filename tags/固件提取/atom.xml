@@ -855,7 +855,17 @@ rm -rf /mnt &amp;amp;&amp;gt;/dev/null
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;vm&#34;&gt;__name__&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;修复后，虽然避开了多个版本的glibc特征，但这个ELF还是有问题的，因为每个游戏的主程序恢复算法还是有略微差异。PM2008的恢复逻辑输入就比SD2多两个参数，先分析PM2008吧。&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;(base) ➜ python ./recover_game.py ./head.img ./part2/etc/rc.d ./pm2008_game
+rc2.d size: 0x00080000, write 0x0001C000 bytes to game file, write block 112 skip block_num: 400
+rc1.d size: 0x00080000, write 0x0001DC00 bytes to game file, write block 119 skip block_num: 393
+rc3.d size: 0x00080000, write 0x0001F800 bytes to game file, write block 126 skip block_num: 386
+rc5.d size: 0x00080000, write 0x00021400 bytes to game file, write block 133 skip block_num: 379
+rc8.d size: 0x00080000, write 0x00023000 bytes to game file, write block 140 skip block_num: 372
+rc4.d size: 0x00080000, write 0x00024C00 bytes to game file, write block 147 skip block_num: 365
+rc7.d size: 0x00080000, write 0x00026800 bytes to game file, write block 154 skip block_num: 358
+rc6.d size: 0x00080000, write 0x00028400 bytes to game file, write block 161 skip block_num: 351
+rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 skip block_num: 344
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;修复后，虽然避开了多个版本的glibc特征，但ELF可能还有问题，因为每个游戏的主程序恢复算法还是有略微差异。PM2008的恢复逻辑输入就比SD2多两个参数，先分析PM2008吧。&lt;/p&gt;
 &lt;p&gt;还需要动态分析一下内存里的ELF文件是怎么装载的，但是现在发现，在游戏机接网线或者键盘，就会自动死机，不知道是不是安全机制。下一篇将分析如何在设备上动态调试。&lt;/p&gt;
 </description>
     </item>

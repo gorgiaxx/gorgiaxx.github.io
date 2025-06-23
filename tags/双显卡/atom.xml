@@ -21,15 +21,94 @@
 &lt;p&gt;我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/igs_arcade_re_1&#34;&gt;IGS Arcade 逆向系列（一）- E2000平台分析&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/igs_arcade_re_2&#34;&gt;IGS Arcade 逆向系列（二）- 游戏文件恢复&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;要高效分析游戏主程序，就需要先拿个shell再说。&lt;/p&gt;
-&lt;h2 id=&#34;正文&#34;&gt;正文&lt;/h2&gt;
-&lt;p&gt;要高效分析游戏主程序，最好是设备上动态调试，首先需要shell权限。
-除了CF卡和IO口，我目前几乎没有任何对这个设备输入内容的途径。
-如果走串口调试，第一步找到硬件调试口，下一步修改kernel内置的boot command。很麻烦，还要重打包回去，而且不够优雅。
-CF卡有两个分区我可以直接写入，一个就是Kernel所在的Boot分区，另一个是日志和临时文件分区，那个说不定可以getshell，但是Pwn这个硬件不是我的目的。
-之前我根据IGS魔改的cramfs特征，二次开发了cramfs-tools，但是它只能解包，不能重打包。它是不完美的，我有一点强迫症，想要让它作为真正的toolkits。&lt;/p&gt;
-&lt;p&gt;接下来就要再完善代码了，在get_cramfs_inode，有一个暗桩，用inode_magic异或根inode的magic，判断是否等于0x705DE1，如果不等于就出错。
+&lt;p&gt;要高效分析游戏主程序，最好是设备上动态调试，首先需要shell权限。除了CF卡和IO口，我目前几乎没有任何对这个设备输入内容的途径。&lt;/p&gt;
+&lt;p&gt;如果走串口调试，第一步找到硬件调试口，下一步修改kernel内置的boot command。很麻烦，还要重打包回去，不够优雅。&lt;/p&gt;
+&lt;p&gt;CF卡有两个分区我可以直接写入，一个就是Kernel所在的Boot分区，另一个是日志和临时文件分区，那个说不定可以getshell，但是Pwn这个硬件不是我的目的。&lt;/p&gt;
+&lt;h2 id=&#34;igs-cramfs-重打包&#34;&gt;IGS CRAMFS 重打包&lt;/h2&gt;
+&lt;p&gt;之前我根据IGS魔改的cramfs特征，二次开发了cramfs-tools，但是它只能解包，不能重打包。它是不完美的，我有一点强迫症，想要让它作为真正的toolkits。&lt;/p&gt;
+&lt;p&gt;IGS 魔改了cramfs的结构体，在cramfs_inode加入了校验值，也就是每次读取inode就会检查。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;struct cramfs_super {
+	unsigned int magic1;
+	unsigned int future;	/* future = CRAMFS_MAGIC ^ IGS_MAGIC_MASK2 ^ IGS_MAGIC_MASK1 */ 
+    char igs_info[64];
+	unsigned int size;	
+	unsigned int magic2;
+	unsigned int flags;	
+	unsigned int padding;	
+	struct cramfs_info fsid;
+	char name[64];	
+	struct cramfs_inode root;
+};
+struct cramfs_inode {
+	u32 inode_magic;
+	u32 namelen:CRAMFS_NAMELEN_WIDTH, offset:CRAMFS_OFFSET_WIDTH;
+	u32 size:CRAMFS_SIZE_WIDTH, gid:CRAMFS_GID_WIDTH;
+	u32 mode:CRAMFS_MODE_WIDTH, uid:CRAMFS_UID_WIDTH;
+};
+struct cramfs_info {
+	u32 crc;
+	u32 edition;
+	u32 blocks;
+	u32 files;
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;在get_cramfs_inode，有一个暗桩，用inode_magic异或根inode的magic，判断是否等于0x705DE1，如果不等于就出错。虽然简单，但是每个游戏都不一样，重复的patch工作也挺烦人的。
 下图的可读性看起来不错，是因为我做了一些费时间的工作。其实这里IDA的反编译一开始是识别错误的，和汇编完全不一样。要把结构体先还原了，这里的分支才会正确，不然就会丢失很多代码。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./get_inode.png&#34;
+        alt=&#34;get_inode&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;我已经实现了cramfs重打包的功能 &lt;a href=&#34;https://github.com/gorgiaxx/igs-toolkits/tree/master/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;igs-toolkits cramfs-tools&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Unpack&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sudo ./igs-toolkits/cramfs-tools/cramfsck -v -x./out ./test.img
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Repack&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sudo ./igs-toolkits/cramfs-tools/mkcramfs ./out test.img
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;修复-shell-环境&#34;&gt;修复 Shell 环境&lt;/h2&gt;
+&lt;p&gt;IGS 在新版的PM2008，做了很多阻止破解的措施。这个Kernel非常老，我花了大量时间解决兼容性问题。操作系统，编译工具链，源代码反复测试了许多版本，终于找到了稳定的编译环境。&lt;/p&gt;
+&lt;h3 id=&#34;修复agetty&#34;&gt;修复agetty&lt;/h3&gt;
+&lt;p&gt;现在的系统初始化后是没有tty shell的，因为IGS移除了agetty。这个组件位于util-linux。需要重新编译，静态链接。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;CC=&amp;#34;/opt/gcc_3.2.2/bin/gcc&amp;#34;
+LDFLAGS=&amp;#34;-static&amp;#34;
+DESTDIR=/root/build-linux-utils
+export LDFLAGS CC DESTDIR
+./configure --enable-static
+make
+make install
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后在 /etc/inittab，增加下面这行命令。看起来是有115200的串口输出，我还没有在COM口尝试。因为在卧室里研究，场地有限，我喜欢更优雅的调试方式。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;1:4:respawn:/sbin/agetty ttyS1 115200 vt102
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;修复ssh-services&#34;&gt;修复SSH Services&lt;/h3&gt;
+&lt;p&gt;IGS移除了ssh服务，本来想用现成的dropbear，结果没一个能运行。花了大量时间找到个兼容的dropbear版本，完成静态编译（解决了很多错误），甚至做了patch，但还会出现奇怪的问题。
+于是只能选择ssh，新版的ssh由于弃用了过时加密算法，连接旧版ssh都要指定算法。因此要选择较新版本的openssh，以及openssl。&lt;/p&gt;
+&lt;p&gt;编译好后生成密钥对，因为算法和格式有差异，所以要重新生成&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ssh-keygen -q -t rsa -f ssh_host_key
+ssh-keygen -q -t rsa -f ssh_host_rsa_key
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;sshd_config 需要手动配置这些&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;HostKey /home/ssh_host_key
+HostKey /home/ssh_host_rsa_key
+SyslogFacility AUTHPRIV
+LogLevel INFO
+PermitRootLogin yes
+AuthorizedKeysFile	.ssh/authorized_keys
+PermitEmptyPasswords yes
+X11Forwarding yes
+Subsystem	sftp	/home/sftp-server
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;最后需要修复sshd的权限，否则会出错&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mkdir /var/empty
+echo &amp;#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin&amp;#34; &amp;gt;&amp;gt; /etc/passwd
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;在前文提到的启动脚本添加ssh启动命令&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;/home/sshd -f /home/sshd_config -h /home/ssh_host_rsa_key -p 22 -E /PM2008v2/pm2_data/sshd.log &amp;gt; /PM2008v2/pm2_data/sshd_run.log 2&amp;gt;&amp;amp;1
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;修复ifconfig并且启用网络&#34;&gt;修复ifconfig并且启用网络&lt;/h3&gt;
+&lt;p&gt;IGS 禁止了网络连接，我在游戏代码里看到是可以联网的，甚至还有DHCP服务。但是配置IP的逻辑写在代码里，尚不清楚是如何触发的（可能需要完整的台架环境）。&lt;/p&gt;
+&lt;p&gt;ifconfig被失效了，懒得分析，自己重新编译一个。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;/home/ifconfig eth0 up mtu 1500 &amp;gt;&amp;gt; /PM2008v2/pm2_data/game_stdout.log 2&amp;gt;&amp;amp;1
+/home/ifconfig eth0 192.168.2.128 netmask 255.255.255.0 broadcast 192.168.2.255 &amp;gt;&amp;gt; /PM2008v2/pm2_data/game_stdout.log 2&amp;gt;&amp;amp;1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这样就可以连接外部网络了。&lt;/p&gt;
+&lt;p&gt;我还编译了一版 busybox，遇到大量兼容性问题，做了一些patch，也花了很多时间才编译成功。二进制文件可以在这里下载&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/gorgiaxx/igs-toolkits/tree/master/E2000_binaries&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;https://github.com/gorgiaxx/igs-toolkits/tree/master/E2000_binaries&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;将这些文件放到指定目录，然后重打包，写入CF卡，重启设备，ssh服务就可以直接访问了。&lt;/p&gt;
+&lt;p&gt;由于没有回显，只能将stdout输出到rdisk4s4，也就是ext3分区，读取并挂在查看回显。花了很多时间才调试成功，这两条命令用了无数次。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sudo dd if=/dev/rdisk4s4 of=./rdisk4s4.img bs=1M &amp;amp;&amp;amp; rm -rf ./part4 &amp;amp;&amp;amp; 7z x ./rdisk4s4.img -o./part4
+&lt;/code&gt;&lt;/pre&gt;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sudo ../igs-toolkits/cramfs-tools/mkcramfs ./out test.img &amp;amp;&amp;amp; sudo dd if=./test.img of=/dev/rdisk4s2 bs=1M
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;游戏环境分析&#34;&gt;游戏环境分析&lt;/h2&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./shell.png&#34;
+        alt=&#34;shell&#34;/&gt;&lt;/p&gt;
 &lt;p&gt;太晚了，最近Linux电脑坏了，迁移博客到Hugo用了很多时间，以前的Hexo框架 8年没有动过，那一对乱七八糟的依赖，在新版Mac跑不起来，周末再更新。
 TODO&lt;/p&gt;
 </description>
@@ -879,7 +958,17 @@ rm -rf /mnt &amp;amp;&amp;gt;/dev/null
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;vm&#34;&gt;__name__&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;修复后，虽然避开了多个版本的glibc特征，但这个ELF还是有问题的，因为每个游戏的主程序恢复算法还是有略微差异。PM2008的恢复逻辑输入就比SD2多两个参数，先分析PM2008吧。&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;(base) ➜ python ./recover_game.py ./head.img ./part2/etc/rc.d ./pm2008_game
+rc2.d size: 0x00080000, write 0x0001C000 bytes to game file, write block 112 skip block_num: 400
+rc1.d size: 0x00080000, write 0x0001DC00 bytes to game file, write block 119 skip block_num: 393
+rc3.d size: 0x00080000, write 0x0001F800 bytes to game file, write block 126 skip block_num: 386
+rc5.d size: 0x00080000, write 0x00021400 bytes to game file, write block 133 skip block_num: 379
+rc8.d size: 0x00080000, write 0x00023000 bytes to game file, write block 140 skip block_num: 372
+rc4.d size: 0x00080000, write 0x00024C00 bytes to game file, write block 147 skip block_num: 365
+rc7.d size: 0x00080000, write 0x00026800 bytes to game file, write block 154 skip block_num: 358
+rc6.d size: 0x00080000, write 0x00028400 bytes to game file, write block 161 skip block_num: 351
+rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 skip block_num: 344
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;修复后，虽然避开了多个版本的glibc特征，但ELF可能还有问题，因为每个游戏的主程序恢复算法还是有略微差异。PM2008的恢复逻辑输入就比SD2多两个参数，先分析PM2008吧。&lt;/p&gt;
 &lt;p&gt;还需要动态分析一下内存里的ELF文件是怎么装载的，但是现在发现，在游戏机接网线或者键盘，就会自动死机，不知道是不是安全机制。下一篇将分析如何在设备上动态调试。&lt;/p&gt;
 </description>
     </item>
