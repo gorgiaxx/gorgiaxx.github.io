@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.147.8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="上一篇文章写到游戏有个破坏分区的保护机制，本篇将深入分析。
+作为2007年发布的游戏，此游戏加固机制还是比较落后的，主要是靠一些拼接，修改特征的方法来加固。并没有现代APP加固的那么卷的特性。主要是加固的环节有点多，并且每个游戏都不一样。然后由于开发上的特性，（编译优化，代码风格），使得逆向分析变麻烦了。"><title>IGS Arcade 逆向系列（二）- 游戏文件恢复&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.63f706677e61b4ee62b8daf083358d3bbf8ac8ab03c7d171af3180fab3a3ebb83efb79fb98674f13dde6db11de2bf694.css" integrity="sha384-Y/cGZ35htO5iuNrwgzWNO7&#43;KyKsDx9FxrzGA&#43;rOj67g&#43;&#43;3n7mGdPE93m2xHeK/aU"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="IGS Arcade 逆向系列（二）- 游戏文件恢复" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">IGS Arcade 逆向系列（二）- 游戏文件恢复</h1><p class="article date">2025-05-25</p></section><article class="article markdown-body"><p>上一篇文章写到游戏有个破坏分区的保护机制，本篇将深入分析。</p>
+<p>作为2007年发布的游戏，此游戏加固机制还是比较落后的，主要是靠一些拼接，修改特征的方法来加固。并没有现代APP加固的那么卷的特性。主要是加固的环节有点多，并且每个游戏都不一样。然后由于开发上的特性，（编译优化，代码风格），使得逆向分析变麻烦了。</p>
+<p>要提取游戏其实比较简单，等游戏运行时通过shell从内存或者从文件系统（如果文件落地）dump就行了。但是如果要提取不同游戏，这样就太麻烦了，还是先静态分析吧。</p>
+<p>总之，这个逆向过程像是在做MISC题一样，需要一些逻辑推理。</p>
+<h2 id="逆向陷阱">逆向陷阱</h2>
+<p>一般情况下，分析文件系统的内容，很少会先从内核入手，一般先看init相关文件。
+第一步一般都是看 /etc/inittab，脚本首先启动rc，然后启动图形界面</p>
+<pre tabindex="0"><code># Begin /etc/inittab
+id:4:initdefault:
+si::sysinit:/etc/rc.d/init.d/rc
+x:4:respawn:/etc/X11/IGS &amp;&gt; /dev/null
+# End /etc/inittab
+</code></pre><h3 id="etcrcdinitdrc">/etc/rc.d/init.d/rc</h3>
+<pre tabindex="0"><code>#!/bin/bash
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH
+
+mount -n -o remount,rw /
+mount -n -t ramfs tmp /tmp
+mount -n -t proc proc /proc
+mount -n -t usbdevfs usbdevfs /proc/bus/usb
+
+#echo &#34;copy for etc&#34;
+cp -a /etc/* /tmp
+mount -n -t ramfs etc /etc
+cp -a /tmp/* /etc
+rm -rf /tmp/*
+
+#echo &#34;copy for dev&#34;
+cp -a /dev/* /tmp
+mount -n -t ramfs dev /dev
+cp -a /tmp/* /dev
+rm -rf /tmp/*
+mount -n -t devpts pts /dev/pts
+mount -n -t tmpfs shm /dev/shm
+
+#echo &#34;copy for var&#34;
+cp -a /var/* /tmp
+mount -n -t ramfs var /var
+cp -a /tmp/* /var
+rm -rf /tmp/*
+
+#echo &#34;copy for root&#34;
+cp -a /root/.b* /tmp
+mount -n -t ramfs root /root
+cp -a /tmp/.b* /root
+rm -rf /tmp/.b*
+
+/sbin/hdparm  -c1 -d1 -k1 -Xudma4 /dev/hdc &amp;&gt; /dev/null
+</code></pre><h3 id="etcx11igs">/etc/X11/IGS</h3>
+<p>配置环境变量，启动X，然后启动读卡器，最后启动游戏，除了这个循环有一点反常，其他都非常正常。到这个时候肯定就认为/PM2008v2/PM2008v2是游戏本体了</p>
+<pre tabindex="0"><code>#!/bin/sh
+
+TZ=&#34;UCT&#34;
+TERM=&#34;xterm&#34;
+TempFile=&#34;/tmp/XTemp&#34;
+HZ=&#34;100&#34;
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin
+LD_LIBRARY_PATH=/usr/X11R6/lib:/usr/X11R6/lib/modules/extensions
+DISPLAY=:0
+
+export PATH LD_LIBRARY_PATH DISPLAY TERM HZ TZ
+
+ps -A | grep XFree86 | ( while read pid tty time command; do kill -9 $pid; done )
+XFree86 &amp;&gt; /dev/null&amp;
+mwm &amp;&gt; /dev/null &amp;
+
+/usr/X11R6/bin/xsetroot -cursor /usr/X11R6/bitmaps/empty_ptr /usr/X11R6/bitmaps/empty_ptr
+
+if [ -f $TempFile ];then
+        rm -rf $TempFile
+        sleep 10
+        exit 0
+else
+        touch $TempFile
+fi
+
+
+/etc/rc.d/init.d/cardreader &amp;&gt; /dev/null&amp;
+export TZ=&#34;CST&#34;
+
+#Run Game
+cd /PM2008v2
+
+while [ 1 ]
+do
+	./PM2008v2 &amp;&gt; /dev/null
+	sleep 5
+done
+</code></pre><p>接下来分析 PM2008v2，第一眼看上去，里面有很多程序装载的代码。联想到之前有很多文件没有magic，猜测可能是拿来动态加载代码文件还原成elf的。但是后来 Nova 和我说这东西不是游戏，我才知道了它的异常。这个文件有很多glibc特征，感觉就是一个静态链接glibc的程序。</p>
+<p>为了方便逆向和后期的游戏移植，我需要确认GCC和GLibc版本，PM2008v2: GCC: (GNU) 3.3.1，但是没有GLibc的版本信息。
+因此我直接找到系统的libc.so，版本暂定为glibc 2.3.2。在最新的linux下不好编译，docker下也出了问题。</p>
+<h2 id="分析伪游戏程序">分析伪游戏程序</h2>
+<h3 id="编译-gcc-331">编译 GCC 3.3.1</h3>
+<p>由于目标版本内核是i686的，我使用CentOS4编译，运行在VMware，为了保证优化之后的汇编代码一致，我要使用相同GCC的版本，然后编译。并且搭建这个环境，也能方便以后对辅助分析该平台其他游戏，也有一些帮助。前期准备工作多一点，后期就可以少走一些弯路。</p>
+<pre tabindex="0"><code>wget http://mirrors.aliyun.com/gnu/gcc/gcc-3.3.1/gcc-3.3.1.tar.gz
+</code></pre><p>使用阿里云的<a href="https://mirrors.aliyun.com/centos-vault/"target="_blank" rel="noopener noreferrer">vault源</a>，先安装开发环境依赖。</p>
+<pre tabindex="0"><code>yum groupinstall &#34;Development Tools&#34;
+</code></pre><p>使用下列配置，指定版本为i686，旧版的gcc，最好不要并发编译，可能会出问题（3.3.1没有遇到，3.2.2遇到了），然后删除系统自带的gcc，再安装。</p>
+<pre tabindex="0"><code>../gcc-3.3.1/configure --prefix=/opt/gcc_3.3.1 --infodir=/usr/share/info --enable-shared --enable-threads=posix --disable-checking --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --host=i686-pc-gnu-linux --build=i686-pc-linux-gnu --target=i686-pc-linux-gnu
+make -j8
+yum remove gcc
+make install
+</code></pre><h3 id="编译-glibc-232">编译 Glibc 2.3.2</h3>
+<pre tabindex="0"><code>wget http://mirrors.aliyun.com/gnu/glibc/glibc-2.3.2.tar.gz
+wget http://mirrors.aliyun.com/gnu/glibc/glibc-linuxthreads-2.3.2.tar.gz
+</code></pre><p>linuxthreads要解压到glibc目录</p>
+<pre tabindex="0"><code>tar -zxvf glibc-2.3.2.tar.gz
+cd glibc-2.3.2
+tar -zxvf ../glibc-linuxthreads-2.3.2.tar.gz
+</code></pre><p>GCC 2.3.2编译可能会遇到一些bug，需要打patch，刚好E2000平台的Linux也是LFS版本，可以去这里下载 <a href="https://www.linuxfromscratch.org/patches/downloads/glibc/"target="_blank" rel="noopener noreferrer">LFS Glibc patches</a></p>
+<pre tabindex="0"><code>patch -p1 &lt; ../patches/glibc-2.3.2-sscanf-1.patch
+patch -p1 &lt; ../patches/glibc-2.3.2-inlining_fixes-2.patch 
+patch -p1 &lt; ../patches/glibc-2.3.2-test_lfs-1.patch
+</code></pre><p>接下来配置编译选项，先暂时这么用吧，因为即使设置细分的优化选项，最后的汇编内容都和目标文件差异很大。</p>
+<pre tabindex="0"><code>CC=/opt/gcc_3.3.1/bin/gcc CFLAGS=&#34;-march=pentium4 -O2&#34; ../glibc-2.3.2/configure --prefix=/lib --disable-profile --enable-add-ons --libexecdir=/usr/lib --with-headers=/usr/include
+</code></pre><p>差异项：</p>
+<ol>
+<li>栈帧：目标程序大部分的函数返回都是 <code>0xC9 leave</code>，而我编译的都是先move esp, ebp，然后pop ebp。</li>
+<li>内链函数：目标程序函数内部的call，一些中等长度的函数，会被优化成内联函数。</li>
+</ol>
+<p>上述内容，即使我将编译优化级别设为O3，也几乎没有变化。手动配置fomit-frame-pointer、-finline-limit=n等信息，也没用。也许需要手动设置__inline__吧，我没时间去验证。
+这个情况，用flare生成signature，几乎还原不了那种函数内部带有call的符号。</p>
+<p>经过分析，PM2008v2这个程序，就是一个killdisk函数，静态编译了glibc。</p>
+<p><img loading="lazy"  src="killdisk.png"
+        alt="killdisk.png"/></p>
+<p>因此，如果执行inittab，是不可能启动游戏的。</p>
+<h2 id="系统初始化分析">系统初始化分析</h2>
+<h3 id="网友的逆向成果">网友的逆向成果</h3>
+<p>Nova之前告诉了我一些信息，实际上，仅从这个笔记，我看不出具体的加载流程，只能看出文件头需要还原，然后rc.0实际上是elf文件，启动时会执行。而且Submarine Crisis游戏文件和我的PM2008游戏文件又一些差异。</p>
+<p><img loading="lazy"  src="notes_for_hwtest.png"
+        alt="notes_for_hwtest.png"/></p>
+<p><a href="https://github.com/batteryshark/igstools/blob/main/scripts/igs_rofsv1_dumpexec.py"target="_blank" rel="noopener noreferrer">https://github.com/batteryshark/igstools/blob/main/scripts/igs_rofsv1_dumpexec.py</a></p>
+<p>这个脚本是用于还原游戏文件的，我尝试了一下，可以生成一个ELF，但是放到IDA分析会出错。我并不知道生成的文件要如何运行。因此还是需要自己分析一遍。</p>
+<h3 id="分析内核启动过程">分析内核启动过程</h3>
+<p>通过分析依赖和其他环境变量，并没有找到任何能启动游戏的路径。在上一篇文章，分析了文件系统挂载，在挂载之后，还有一系列操作。IDA遇到长度过大的函数，可能就会出错，无法反编译。但是问题不大，麻烦的不在这里。</p>
+<p><img loading="lazy"  src="call_usermodehelper.png"
+        alt="call_usermodehelper.png"/></p>
+<p>上一篇文章由于是分析基于开源代码魔改的filesystem，可以直接对照逆向，因此不还原其他符号，问题也不大。该内核版本是2.4，bzImage没有携带符号表。这里的代码很多是IGS自己开发的，有些系统调用不是通过int来调用的。如果有用到syscall，在符号没还原的情况下分析，还是有一些麻烦，如果用bindiff，就需要在ida 8下用。我没有时间去移植到Mac上。Linux Kernel有一个syscall table，如果IGS没有自定义过syscall，那么可以直接将自己编译的kernel的syscall 符号照搬过来。</p>
+<p>另外，IDA9对这个老的Linux 2.4内核解析不太好，很多交叉引用和汇编指令都没有识别出来，需要手动修复。</p>
+<h3 id="修复立即数交叉引用">修复立即数交叉引用</h3>
+<pre tabindex="0"><code>import ida_ida
+import ida_bytes
+import ida_ua
+import idautils
+
+def find_immediate_values_and_convert_to_offset(start_range, end_range):
+    converted_count = 0
+    checked_count = 0
+    min_ea = ida_ida.inf_get_min_ea()
+    max_ea = ida_ida.inf_get_max_ea()
+    print(f&#34;EA range: 0x{start_range:X} - 0x{end_range:X}&#34;)
+    print(f&#34;Immediate Value Range：0x{min_ea:X} - 0x{max_ea:X}&#34;)
+
+    for ea in idautils.Heads():
+        if not ida_bytes.is_code(ida_bytes.get_flags(ea)):
+            continue
+
+        insn = ida_ua.insn_t()
+        if ida_ua.decode_insn(insn, ea) == 0:
+            continue
+
+        if  start_range &lt;= ea and ea &lt;= end_range:
+            for op_num in range(ida_ida.UA_MAXOP):
+                op = insn.ops[op_num]
+                if op.type == ida_ua.o_void:
+                    break
+                if op.type == ida_ua.o_imm:
+                    imm_value = op.value
+                    if op.value &gt; 0xFFFFFFFF:
+                        imm_value = (0xFFFFFFFF &amp; op.value)
+                    checked_count += 1
+                    if min_ea &lt;= imm_value and imm_value &lt;= max_ea:
+                        if idc.op_offset(ea, op_num, REF_OFF32):
+                            converted_count += 1
+                        else:
+                            print(f&#34;  -&gt; Convert Failed: 0x{ea:X}[{op_num}]&#34;)
+
+    print(f&#34;Immediate Value: {checked_count}, Converted: {converted_count}&#34;)
+</code></pre><h3 id="修复字符串数据">修复字符串数据</h3>
+<p>可能是因为交叉引用没有识别完全，字符串识别总是会错失前面几个bytes，需要手动修复字符串。</p>
+<pre tabindex="0"><code>def get_the_firsstr_ea(ea):
+    addr = ea - 1
+    last_byte = ida_bytes.get_byte(addr)
+    if 32 &lt; last_byte and last_byte &lt; 127:
+        ea = get_the_firsstr_ea(addr)
+    return ea
+
+def find_str_address(start_ea, end_ea):
+    current_ea = start_ea
+    found_count = 0
+    while current_ea &lt; end_ea:
+        if current_ea == ida_idaapi.BADADDR:
+            break
+        address_flags = ida_bytes.get_flags(current_ea)
+        if ida_bytes.is_strlit(address_flags):
+            str_size = ida_bytes.get_item_size(current_ea)
+            the_first_str_addr = get_the_firsstr_ea(current_ea)
+            if the_first_str_addr != current_ea:
+                len = current_ea - the_first_str_addr + str_size
+                ida_bytes.create_strlit(the_first_str_addr, len, 0)
+                print(f&#34;Fix str at 0x{current_ea:X}, before: {str_size}, after: {len}&#34;)
+        current_ea += ida_bytes.get_item_size(current_ea)
+        continue
+</code></pre><h3 id="kernel-thread">Kernel Thread</h3>
+<p><img loading="lazy"  src="call_usermodehelper1.png"
+        alt="call_usermodehelper1.png"/></p>
+<p>根据上图代码，可以得知游戏初始化的第一步是先运行/bin/zsh，并且携带这些参数。</p>
+<pre tabindex="0"><code>export HOME=/
+export TERM=linux
+export PATH=/bin:/usr/bin:/sbin:/usr/sbin
+/bin/zsh /etc/rc.d/rc0.d __KERNEL__ -no-print -PM2008v2
+</code></pre><p>下一步就是运行/mnt/GECA文件</p>
+<pre tabindex="0"><code>export HOME=/
+export TERM=linux
+export PATH=/bin:/usr/bin:/sbin:/usr/sbin
+/mnt/GECA /etc/rc.d/rc0.d __KERNEL__ -no-print -PM2008v2
+</code></pre><p>最后运行这些</p>
+<pre tabindex="0"><code>if ( execute_command )
+      run_init_process((const char *)execute_command);
+run_init_process(&#34;/sbin/init&#34;); // 存在
+run_init_process(&#34;/etc/init&#34;);  // 不存在
+run_init_process(&#34;/bin/init&#34;);  // 不存在
+run_init_process(&#34;/bin/sh&#34;);    // 指向bash
+</code></pre><p>Kernel Cmdline可以在parse_cmdline_early找到，并非LILO控制。</p>
+<p>如果从外部设置了bootcmdline，其中有一个暗桩，会检测bootloader参数是否等于”JBoot“，如果不等于，就进入死循环。</p>
+<p><img loading="lazy"  src="jboot.png"
+        alt="jboot.png"/></p>
+<p>这个JBoot是不是代表James写的Bootloader？👀</p>
+<pre tabindex="0"><code>bootloader=JBoot
+</code></pre><p>内核自带的启动命令</p>
+<pre tabindex="0"><code>root=/dev/hdc2 ro console=ttyS1,115200 BOOT_IMAGE=PM2008v2
+</code></pre><p>并没有设置init=，因此肯定会执行/sbin/init，然后执行/etc/inittab</p>
+<h3 id="恢复zsh符号受阻">恢复ZSH符号受阻</h3>
+<p>线索到了/bin/zsh，这个程序入口和PM2008v2一样，我判断也是基于glibc改的，但是我导入FLIRT Signature，只能识别出最里层的函数，还是那个编译优化的原因。</p>
+<pre tabindex="0"><code>/Applications/IDA\ Professional\ 9.1.app/Contents/MacOS/tools/flair/sigmake ~/RE/igs/libc.pat ~/RE/igs/libc2.3.2.o2.sig
+/Applications/IDA\ Professional\ 9.1.app/Contents/MacOS/tools/flair/pelf ~/RE/igs/libc.a ~/RE/igs/libc.pat
+</code></pre><p><img loading="lazy"  src="zsh.png"
+        alt="zsh.png"/></p>
+<p>目前不知道到底是基于什么GCC和GLibc改的，考虑到后面可能有很多程序也会用到glibc，所以需要确定是什么版本，看看有没有快速恢复符号的办法。</p>
+<h4 id="依赖关系分析">依赖关系分析</h4>
+<p>使用我五年前开发的YAFAF，可以很快找到相关的依赖关系。rc*.d应该是游戏的代码。</p>
+<p><img loading="lazy"  src="gcc_glibc.png"
+        alt="gcc_glibc.png"/>
+rc0.d</p>
+<pre tabindex="0"><code>GLIBC_2.1
+GLIBC_2.0
+GCC: (GNU) 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
+</code></pre><p>rc2.d</p>
+<pre tabindex="0"><code>GCC_3.0
+GLIBC_2.0
+GLIBC_2.1
+GLIBC_2.2.3
+GLIBC_2.1.3
+GLIBC_2.3
+GLIBC_2.2
+GLIBC_2.3.2
+GLIBC_2.0
+GLIBC_2.1
+GLIBCPP_3.2
+GLIBC_2.2
+GLIBC_2.1.3
+GLIBC_2.3
+GLIBC_2.3.2
+</code></pre><p>rc9</p>
+<pre tabindex="0"><code>GCC: (GNU) 3.3.1
+GCC: (GNU) 3.2.1 20021207 (Red Hat Linux 8.0 3.2.1-2)
+GCC: (GNU) 3.2.1 20030202 (Red Hat Linux 8.0 3.2.1-7)
+GCC: (GNU) 3.2.2 20030222 (Red Hat Linux 3.2.2-4)
+GCC: (GNU) 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
+</code></pre><p>从这些特征来看，这几个文件，应该是多个不同环境编译的elf文件的碎片构成。</p>
+<p>并且/sbin/init也是基于glibc2.3.X，所以用gcc3.2.2编译glibc2.3.2吧，基于centos3，编译这一版GCC，不能用并发，否则会出错。还好我以前编译openwrt遇到过类似错误，不然又要卡很久，搜都搜不到是啥原因。</p>
+<pre tabindex="0"><code>../gcc-3.2.2/configure --prefix=/opt/gcc_3.2.2 --infodir=/usr/share/info --enable-shared --enable-threads=posix --disable-checking --with-system-zlib --enable-__cxa_atexit
+
+make
+make install
+</code></pre><p>编译GLibc，不管是用O2还是O3，最后几乎都没有内联函数优化。目前还搞不明白是什么原因，也搜不到，问AI也没用。</p>
+<pre tabindex="0"><code>CC=/opt/gcc_3.2.2/bin/gcc CFLAGS=&#34;-march=pentium4 -O2&#34; ../glibc-2.3.2/configure --prefix=/lib --disable-profile --enable-add-ons --libexecdir=/usr/lib --with-headers=/usr/include
+CC=/opt/gcc_3.2.2/bin/gcc CFLAGS=&#34;-O3&#34; ../glibc-2.3.2/configure --prefix=/lib --disable-profile --enable-add-ons --libexecdir=/usr/lib --with-headers=/usr/include
+</code></pre><h3 id="恢复分析-zsh-符号">恢复分析 ZSH 符号</h3>
+<p>我不喜欢做机械而重复的工作，如果要我直接逆向zsh，我会觉得非常无聊。
+这个版本ida对识别instruments不是太好，很多地方需要手动恢复。用下图脚本恢复完后，下一步就是恢复function entry，在我上一篇文章有类似的脚本。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">find_and_make_instrument</span><span class="p">(</span><span class="n">start_ea</span><span class="p">,</span> <span class="n">end_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">image_base</span> <span class="o">=</span> <span class="n">idaapi</span><span class="o">.</span><span class="n">get_imagebase</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">current_ea</span> <span class="o">=</span> <span class="n">start_ea</span>
+</span></span><span class="line"><span class="cl">    <span class="n">found_count</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">current_ea</span> <span class="o">&lt;</span> <span class="n">end_ea</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">current_ea</span> <span class="o">==</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="n">address_flags</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">get_flags</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">is_code</span><span class="p">(</span><span class="n">address_flags</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_ea</span> <span class="o">+=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">get_item_size</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ida_bytes</span><span class="o">.</span><span class="n">del_items</span><span class="p">(</span><span class="mh">0x8052606</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">can_decode</span><span class="p">(</span><span class="n">current_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Decode instruments at 0x</span><span class="si">{:X}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_ea</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="n">insn_size</span> <span class="o">=</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">decode_insn</span><span class="p">(</span><span class="n">ida_ua</span><span class="o">.</span><span class="n">insn_t</span><span class="p">(),</span> <span class="n">current_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ida_bytes</span><span class="o">.</span><span class="n">del_items</span><span class="p">(</span><span class="n">current_ea</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">insn_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">offset</span> <span class="o">=</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">create_insn</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">offset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">found_count</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="n">idc</span><span class="o">.</span><span class="n">get_func_flags</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">current_ea</span> <span class="o">+=</span> <span class="n">offset</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Decode instruments failed at 0x</span><span class="si">{:X}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_ea</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">return</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Create instruments failed at 0x</span><span class="si">{:X}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_ea</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Search finished, </span><span class="si">{}</span><span class="s2"> instruments created&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">found_count</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">find_and_make_instrument</span><span class="p">(</span><span class="mh">0x080480B4</span><span class="p">,</span> <span class="mh">0x0808F000</span><span class="p">)</span>
+</span></span></code></pre></div><p>因为没有办法用glibc的signature，我想了一个比较傻的办法，但是速度比调用MCP分析要快。</p>
+<p>先把文件A（自己编译的）的glibc字符串完全恢复，恢复函数入口。
+在文件B，先修复函数入口，修复立即数偏移，修复字符串，去重，去除过短字符串，然后逐个匹配文件A的字符串，并筛选。
+从筛选结果遍历交叉引用，将不重复且为函数的筛选出来。</p>
+<ol>
+<li>如果文件A的这些函数有符号，就恢复到文件B；</li>
+<li>字符串作为参数入栈的函数，找到当前函数空间的所有call，如果目标地址没有符号，也用这个办法去还原入栈的函数符号。</li>
+<li>递归设置符号，比如恢复了这个call的函数，然后再去call函数内部寻找其他的函数。这个感觉没什么必要，因为会遇到很多情况。</li>
+</ol>
+<h4 id="ida-pro-脚本从目标a提取字符串和函数交叉引用">IDA Pro 脚本，从目标A提取字符串和函数交叉引用</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># -*- coding: utf-8 -*-</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_funcs</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_name</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_bytes</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_xref</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_idaapi</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_ua</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_segment</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">idautils</span>
+</span></span><span class="line"><span class="cl"><span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">import</span> <span class="nn">ida_allins</span>
+</span></span><span class="line"><span class="cl">    <span class="n">HAS_ALLINS</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl"><span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">HAS_ALLINS</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">find_target_function</span><span class="p">(</span><span class="n">xref_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">insn</span> <span class="o">=</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">insn_t</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">decode_insn</span><span class="p">(</span><span class="n">insn</span><span class="p">,</span> <span class="n">xref_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="n">current_func</span> <span class="o">=</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func</span><span class="p">(</span><span class="n">xref_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">search_ea</span> <span class="o">=</span> <span class="n">xref_ea</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">search_ea</span> <span class="o">&lt;</span> <span class="n">current_func</span><span class="o">.</span><span class="n">end_ea</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">search_ea</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">next_head</span><span class="p">(</span><span class="n">search_ea</span><span class="p">,</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">search_ea</span> <span class="o">==</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">decode_insn</span><span class="p">(</span><span class="n">insn</span><span class="p">,</span> <span class="n">search_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">itype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ida_allins</span><span class="o">.</span><span class="n">NN_call</span><span class="p">,</span> <span class="n">ida_allins</span><span class="o">.</span><span class="n">NN_callfi</span><span class="p">,</span> <span class="n">ida_allins</span><span class="o">.</span><span class="n">NN_callni</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">target_ea</span> <span class="o">=</span> <span class="n">insn</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">addr</span> <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">o_near</span> <span class="k">else</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">target_ea</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">target_func_name</span> <span class="o">=</span> <span class="n">ida_name</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">target_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">target_func_name</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">return</span> <span class="n">target_func_name</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">func</span> <span class="o">=</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func</span><span class="p">(</span><span class="n">target_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="n">func</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">return</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func_name</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_string_xrefs_with_functions</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    获取IDAPro中所有字符串及其交叉引用信息
+</span></span></span><span class="line"><span class="cl"><span class="s2">    返回JSON格式数据，包含字符串地址、内容、长度和引用它的函数名
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 初始化字符串列表</span>
+</span></span><span class="line"><span class="cl">    <span class="n">strings</span> <span class="o">=</span> <span class="n">idautils</span><span class="o">.</span><span class="n">Strings</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">strings</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;[+] 开始扫描字符串...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">string_item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strings</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 获取字符串基本信息</span>
+</span></span><span class="line"><span class="cl">        <span class="n">str_ea</span> <span class="o">=</span> <span class="n">string_item</span><span class="o">.</span><span class="n">ea</span>
+</span></span><span class="line"><span class="cl">        <span class="n">str_length</span> <span class="o">=</span> <span class="n">string_item</span><span class="o">.</span><span class="n">length</span>
+</span></span><span class="line"><span class="cl">        <span class="n">str_type</span> <span class="o">=</span> <span class="n">string_item</span><span class="o">.</span><span class="n">strtype</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 获取字符串内容</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">str_content</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">string_item</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">str_content</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 获取段信息</span>
+</span></span><span class="line"><span class="cl">        <span class="n">seg</span> <span class="o">=</span> <span class="n">ida_segment</span><span class="o">.</span><span class="n">getseg</span><span class="p">(</span><span class="n">str_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">seg</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_start</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">start_ea</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_name</span> <span class="o">=</span> <span class="n">ida_segment</span><span class="o">.</span><span class="n">get_segm_name</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="n">seg_name</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">seg_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;seg_</span><span class="si">{</span><span class="n">seg_start</span><span class="si">:</span><span class="s2">08X</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_start</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_name</span> <span class="o">=</span> <span class="s2">&#34;unknown&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 收集所有引用该字符串的地址</span>
+</span></span><span class="line"><span class="cl">        <span class="n">xref_functions</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 获取段信息</span>
+</span></span><span class="line"><span class="cl">        <span class="n">seg</span> <span class="o">=</span> <span class="n">ida_segment</span><span class="o">.</span><span class="n">getseg</span><span class="p">(</span><span class="n">str_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">seg</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_start</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">start_ea</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_name</span> <span class="o">=</span> <span class="n">ida_segment</span><span class="o">.</span><span class="n">get_segm_name</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="n">seg_name</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">seg_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;seg_</span><span class="si">{</span><span class="n">seg_start</span><span class="si">:</span><span class="s2">08X</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_start</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_name</span> <span class="o">=</span> <span class="s2">&#34;unknown&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target_functions</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 存储目标函数名</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 使用XrefsTo获取所有引用</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">xref</span> <span class="ow">in</span> <span class="n">idautils</span><span class="o">.</span><span class="n">XrefsTo</span><span class="p">(</span><span class="n">str_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">xref_ea</span> <span class="o">=</span> <span class="n">xref</span><span class="o">.</span><span class="n">frm</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># 获取引用地址所在的函数</span>
+</span></span><span class="line"><span class="cl">            <span class="n">func</span> <span class="o">=</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func</span><span class="p">(</span><span class="n">xref_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">func</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># 获取函数名</span>
+</span></span><span class="line"><span class="cl">                <span class="n">func_name</span> <span class="o">=</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func_name</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">func_name</span> <span class="ow">and</span> <span class="n">func_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">xref_functions</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">xref_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func_name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1"># 分析目标函数</span>
+</span></span><span class="line"><span class="cl">                <span class="n">target_func</span> <span class="o">=</span> <span class="n">find_target_function</span><span class="p">(</span><span class="n">xref_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">target_func</span> <span class="ow">and</span> <span class="n">target_func</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target_functions</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">target_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_func</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># else:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#     # 如果不在函数中，尝试获取该地址的名称</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#     name = ida_name.get_name(xref_ea)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#     if name and name not in xref_functions:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#         xref_functions.append(f&#34;@{name}&#34;)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#     else:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#         # 如果没有名称，使用地址</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#         addr_name = f&#34;addr_0x{xref_ea:X}&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#         if addr_name not in xref_functions:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#             xref_functions.append(addr_name)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 添加数据引用</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># for xref_ea in idautils.DataRefsTo(str_ea):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#     func = ida_funcs.get_func(xref_ea)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#     if func:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#         func_name = ida_funcs.get_func_name(func.start_ea)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#         if func_name and func_name not in xref_functions:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#             xref_functions.append(func_name)</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">        <span class="c1">#         # 分析目标函数</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#         target_func = find_target_function(xref_ea)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#         if target_func and target_func not in target_functions:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#             target_functions.append(target_func)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#     else:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#         name = ida_name.get_name(xref_ea)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#         if name and name not in xref_functions:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#             xref_functions.append(f&#34;@{name}&#34;)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#         else:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#             addr_name = f&#34;addr_0x{xref_ea:X}&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#             if addr_name not in xref_functions:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#                 xref_functions.append(addr_name)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 创建结果条目</span>
+</span></span><span class="line"><span class="cl">        <span class="n">string_info</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;ea&#34;</span><span class="p">:</span> <span class="n">str_ea</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;str&#34;</span><span class="p">:</span> <span class="n">str_content</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;len&#34;</span><span class="p">:</span> <span class="n">str_length</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;seg_addr&#34;</span><span class="p">:</span> <span class="n">seg_start</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;seg_name&#34;</span><span class="p">:</span> <span class="n">seg_name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;xrefs&#34;</span><span class="p">:</span> <span class="n">xref_functions</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;target_func_name&#34;</span><span class="p">:</span> <span class="n">target_functions</span>  <span class="c1"># 新增字段</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string_info</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[+] 已处理 </span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> 个字符串...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[+] 总共找到 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个字符串&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">results</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 获取并保存字符串信息</span>
+</span></span><span class="line"><span class="cl">    <span class="n">strings_data</span> <span class="o">=</span> <span class="n">get_string_xrefs_with_functions</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">unique_data</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">string_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strings_data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">duplicated</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">string_info</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">string_info</span><span class="p">[</span><span class="s1">&#39;seg_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.rodata&#39;</span> <span class="ow">and</span> <span class="n">string_info</span><span class="p">[</span><span class="s1">&#39;xrefs&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">string_info1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strings_data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">string_info1</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">string_info</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">string_info</span><span class="p">[</span><span class="s1">&#39;ea&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">string_info1</span><span class="p">[</span><span class="s1">&#39;ea&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">. 重复内容地址: 0x</span><span class="si">{</span><span class="n">string_info</span><span class="p">[</span><span class="s1">&#39;ea&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">08X</span><span class="si">}</span><span class="s2"> 0x</span><span class="si">{</span><span class="n">string_info1</span><span class="p">[</span><span class="s1">&#39;ea&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">08X</span><span class="si">}</span><span class="s2">  字符串: </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">string_info1</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">duplicated</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">break</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="n">duplicated</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">unique_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string_info</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&#34;strings_with_xrefs.json&#34;</span><span class="p">,</span> <span class="s2">&#34;w&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">unique_data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">[+] 分析完成! 总共发现 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_data</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个字符串&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div><h4 id="ida-pro-脚本将a到交叉引用符号加载到b">IDA Pro 脚本，将A到交叉引用符号加载到B</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># -*- coding: utf-8 -*-</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_bytes</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_name</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_funcs</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_xref</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_kernwin</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_segment</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">idautils</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_idaapi</span>
+</span></span><span class="line"><span class="cl"><span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">import</span> <span class="nn">ida_allins</span>
+</span></span><span class="line"><span class="cl">    <span class="n">HAS_ALLINS</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl"><span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">HAS_ALLINS</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">find_target_function</span><span class="p">(</span><span class="n">xref_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">insn</span> <span class="o">=</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">insn_t</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">decode_insn</span><span class="p">(</span><span class="n">insn</span><span class="p">,</span> <span class="n">xref_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="n">current_func</span> <span class="o">=</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func</span><span class="p">(</span><span class="n">xref_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">search_ea</span> <span class="o">=</span> <span class="n">xref_ea</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">search_ea</span> <span class="o">&lt;</span> <span class="n">current_func</span><span class="o">.</span><span class="n">end_ea</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">search_ea</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">next_head</span><span class="p">(</span><span class="n">search_ea</span><span class="p">,</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">search_ea</span> <span class="o">==</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">decode_insn</span><span class="p">(</span><span class="n">insn</span><span class="p">,</span> <span class="n">search_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">itype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ida_allins</span><span class="o">.</span><span class="n">NN_call</span><span class="p">,</span> <span class="n">ida_allins</span><span class="o">.</span><span class="n">NN_callfi</span><span class="p">,</span> <span class="n">ida_allins</span><span class="o">.</span><span class="n">NN_callni</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">target_ea</span> <span class="o">=</span> <span class="n">insn</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">addr</span> <span class="k">if</span> <span class="n">insn</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">o_near</span> <span class="k">else</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">target_ea</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">target_func_name</span> <span class="o">=</span> <span class="n">ida_name</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">target_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">target_func_name</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">return</span> <span class="n">target_func_name</span><span class="p">,</span> <span class="n">target_ea</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">func</span> <span class="o">=</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func</span><span class="p">(</span><span class="n">target_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="n">func</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">return</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func_name</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start_ea</span><span class="p">),</span> <span class="n">func</span><span class="o">.</span><span class="n">start_ea</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">                    
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">process_string_data</span><span class="p">(</span><span class="n">json_file_path</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    从JSON文件读取字符串数据，在rodata段搜索字符串，
+</span></span></span><span class="line"><span class="cl"><span class="s2">    跳转到第一个交叉引用的函数，并根据需要重命名函数
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    参数:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        json_file_path: JSON文件路径
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 读取JSON文件</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">string_data_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;成功读取JSON文件，包含 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">string_data_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个字符串条目&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 获取.rodata段</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rodata_seg</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">idautils</span><span class="o">.</span><span class="n">Segments</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">            <span class="n">seg_name</span> <span class="o">=</span> <span class="n">ida_segment</span><span class="o">.</span><span class="n">get_segm_name</span><span class="p">(</span><span class="n">ida_segment</span><span class="o">.</span><span class="n">getseg</span><span class="p">(</span><span class="n">seg</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">seg_name</span> <span class="o">==</span> <span class="s2">&#34;.rodata&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rodata_seg</span> <span class="o">=</span> <span class="n">ida_segment</span><span class="o">.</span><span class="n">getseg</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">rodata_seg</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;错误：无法找到.rodata段&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;找到.rodata段: 0x</span><span class="si">{</span><span class="n">rodata_seg</span><span class="o">.</span><span class="n">start_ea</span><span class="si">:</span><span class="s2">X</span><span class="si">}</span><span class="s2"> - 0x</span><span class="si">{</span><span class="n">rodata_seg</span><span class="o">.</span><span class="n">end_ea</span><span class="si">:</span><span class="s2">X</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 处理每个字符串条目</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">string_data_list</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># print(f&#34;\n[{idx + 1}/{len(string_data_list)}] 处理字符串: &#39;{item[&#39;str&#39;]}&#39;&#34;)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># 在rodata段搜索字符串</span>
+</span></span><span class="line"><span class="cl">            <span class="n">string_to_search</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">found_ea</span> <span class="o">=</span> <span class="n">search_string_in_segment</span><span class="p">(</span><span class="n">string_to_search</span><span class="p">,</span> <span class="n">rodata_seg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">found_ea</span> <span class="o">==</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># print(f&#34;  未在.rodata段找到字符串 &#39;{string_to_search}&#39;&#34;)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># 获取字符串的交叉引用</span>
+</span></span><span class="line"><span class="cl">            <span class="n">xrefs</span> <span class="o">=</span> <span class="n">get_xrefs_to_address</span><span class="p">(</span><span class="n">found_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="n">xrefs</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  字符串在 0x</span><span class="si">{</span><span class="n">found_ea</span><span class="si">:</span><span class="s2">X</span><span class="si">}</span><span class="s2"> 没有交叉引用&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  找到 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">xrefs</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个交叉引用&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># 获取第一个交叉引用</span>
+</span></span><span class="line"><span class="cl">            <span class="n">first_xref</span> <span class="o">=</span> <span class="n">xrefs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># 找到包含该交叉引用的函数</span>
+</span></span><span class="line"><span class="cl">            <span class="n">func</span> <span class="o">=</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func</span><span class="p">(</span><span class="n">first_xref</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="n">func</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  0x</span><span class="si">{</span><span class="n">first_xref</span><span class="si">:</span><span class="s2">X</span><span class="si">}</span><span class="s2"> 不在任何函数中&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">target_func_name</span><span class="p">,</span> <span class="n">target_func_ea</span> <span class="o">=</span> <span class="n">find_target_function</span><span class="p">(</span><span class="n">first_xref</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">target_func_name</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">target_func_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;sub_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;target_func_name&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rename_function</span><span class="p">(</span><span class="n">target_func_ea</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;target_func_name&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">func_ea</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">start_ea</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_func_name</span> <span class="o">=</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">get_func_name</span><span class="p">(</span><span class="n">func_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  目标函数地址: 0x</span><span class="si">{</span><span class="n">func_ea</span><span class="si">:</span><span class="s2">X</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  当前函数名: </span><span class="si">{</span><span class="n">current_func_name</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># 检查函数是否有自定义名称</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">is_auto_generated_name</span><span class="p">(</span><span class="n">current_func_name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># 使用JSON中提供的xrefs第一项作为新的函数名</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="s1">&#39;xrefs&#39;</span> <span class="ow">in</span> <span class="n">item</span> <span class="ow">and</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;xrefs&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;xrefs&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">new_name</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;xrefs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="n">rename_function</span><span class="p">(</span><span class="n">func_ea</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  ✓ 函数重命名为: </span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  ✗ 函数重命名失败&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  未提供xrefs信息，跳过重命名&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  函数已有自定义名称，跳过重命名&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># 跳转到函数</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ida_kernwin</span><span class="o">.</span><span class="n">jumpto</span><span class="p">(</span><span class="n">func_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  已跳转到函数 0x</span><span class="si">{</span><span class="n">func_ea</span><span class="si">:</span><span class="s2">X</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">处理完成！共处理了 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">string_data_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个字符串条目&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;错误：无法找到文件 </span><span class="si">{</span><span class="n">json_file_path</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;错误：JSON文件格式错误 - </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;错误：处理过程中出现异常 - </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">search_string_in_segment</span><span class="p">(</span><span class="n">target_string</span><span class="p">,</span> <span class="n">segment</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    在指定段中搜索字符串
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    参数:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        target_string: 要搜索的字符串
+</span></span></span><span class="line"><span class="cl"><span class="s2">        segment: 目标段
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    返回:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        找到的地址，如果未找到则返回BADADDR
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">start_ea</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">start_ea</span>
+</span></span><span class="line"><span class="cl">    <span class="n">end_ea</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">end_ea</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 尝试搜索字符串</span>
+</span></span><span class="line"><span class="cl">    <span class="n">found_ea</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">find_string</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target_string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">start_ea</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">range_end</span><span class="o">=</span><span class="n">end_ea</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">flags</span><span class="o">=</span><span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_FORWARD</span> <span class="o">|</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_NOSHOW</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 如果在段范围内找到，返回地址</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">found_ea</span> <span class="o">!=</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span> <span class="ow">and</span> <span class="n">start_ea</span> <span class="o">&lt;=</span> <span class="n">found_ea</span> <span class="o">&lt;</span> <span class="n">end_ea</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">found_ea</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_xrefs_to_address</span><span class="p">(</span><span class="n">ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    获取指向指定地址的所有交叉引用
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    参数:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        ea: 目标地址
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    返回:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        交叉引用地址列表
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">xrefs</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 获取数据引用</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">xref</span> <span class="ow">in</span> <span class="n">idautils</span><span class="o">.</span><span class="n">DataRefsTo</span><span class="p">(</span><span class="n">ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">xrefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xref</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 获取代码引用</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">xref</span> <span class="ow">in</span> <span class="n">idautils</span><span class="o">.</span><span class="n">CodeRefsTo</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">xrefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xref</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">xrefs</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">is_auto_generated_name</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    检查函数名是否为自动生成的名称
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    参数:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        func_name: 函数名
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    返回:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        True 如果是自动生成的名称，False 否则
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># IDA自动生成的函数名通常以sub_、loc_、unk_等开头</span>
+</span></span><span class="line"><span class="cl">    <span class="n">auto_prefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sub_&#39;</span><span class="p">,</span> <span class="s1">&#39;loc_&#39;</span><span class="p">,</span> <span class="s1">&#39;unk_&#39;</span><span class="p">,</span> <span class="s1">&#39;nullsub_&#39;</span><span class="p">,</span> <span class="s1">&#39;j_&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">auto_prefixes</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">func_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rename_function</span><span class="p">(</span><span class="n">func_ea</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    重命名函数
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    参数:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        func_ea: 函数地址
+</span></span></span><span class="line"><span class="cl"><span class="s2">        new_name: 新函数名
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
+</span></span></span><span class="line"><span class="cl"><span class="s2">    返回:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        True 如果重命名成功，False 否则
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 使用ida_name.set_name设置函数名</span>
+</span></span><span class="line"><span class="cl">        <span class="n">result</span> <span class="o">=</span> <span class="n">ida_name</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">func_ea</span><span class="p">,</span> <span class="n">new_name</span><span class="p">,</span> <span class="n">ida_name</span><span class="o">.</span><span class="n">SN_CHECK</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;重命名函数时出错: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    主函数 - 提示用户选择JSON文件并开始处理
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 获取JSON文件路径</span>
+</span></span><span class="line"><span class="cl">    <span class="n">json_file</span> <span class="o">=</span> <span class="n">ida_kernwin</span><span class="o">.</span><span class="n">ask_file</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&#34;*.json&#34;</span><span class="p">,</span> <span class="s2">&#34;选择包含字符串数据的JSON文件&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">json_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;开始处理文件: </span><span class="si">{</span><span class="n">json_file</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">process_string_data</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;未选择文件，操作取消&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div><p>这些这几个脚本比较糙，还需打磨，主要是现在够用了。而且可能作用不是很大，因为做了这几项优化后，很快就能看出这几个ELF，实际上没有魔改Glibc，只是静态链接了而已。并且都是用 libc_start_main 来启动主函数。</p>
+<h3 id="修复geca和rc0d">修复GECA和rc0.d</h3>
+<p>从 /dev/hdc1 的 0x1B44 * 512 位置读取 0x400 字节，这个是一个ELF Header，写入到 /mnt/head 里。</p>
+<p>IGS应该是把这个ELF头藏在了FAT分区的空白处。因为分区是连续的，无法直接从分区布局看出藏了内容。</p>
+<p>从 /bin/arch 的末尾的位置读取 0x400 字节，写入到 /mnt/GECA 里。</p>
+<p>然后将 /etc/init.d/rc0.d 追加到 /mnt/GECA 末尾</p>
+<h3 id="修复游戏文件">修复游戏文件</h3>
+<p>在我开始分析之前，Nova 把他和 BatteryShark 研究的进度分享给我了，他们已经将 Speed Driver 2 的ELF还原，但是这个ELF还是有问题的，并且不能用在其他游戏，比如Percussion Master 2008。
+<a href="https://github.com/batteryshark/igstools/blob/main/scripts/igs_rofsv1_dumpexec.py"target="_blank" rel="noopener noreferrer">IGS Dump EXEC</a></p>
+<p>因此还是要自己动手，恰好我也要逆向分析还原游戏文件的代码。</p>
+<p>在内核启动阶段，GECA 被 zsh 修复后，立刻就会用相同的环境变量和参数运行。</p>
+<p>rc* 的拼接顺序，是通过一个字符串变量来设定的，每个游戏都不一样。</p>
+<p><img loading="lazy"  src="geca_params.png"
+        alt="geca_params.png"/></p>
+<p>这个数字字符，刚好对应 /etc/rc.d 的文件顺序</p>
+<pre tabindex="0"><code>2 1 3 5 8 4 7 6 9
+</code></pre><p>GECA 代码运行过程：先将/etc/rc.d的碎片，根据不同顺序来设置剪切尺寸，输出到/mnt目录</p>
+<pre tabindex="0"><code>dd if=/etc/rc.d/rc2.d of=/mnt/rc2 bs=1K count=[file_size / 1024 - 400] &amp;&gt; /dev/null
+dd if=/etc/rc.d/rc1.d of=/mnt/rc1 bs=1K count=[file_size / 1024 - 400 + 7] &amp;&gt; /dev/null
+dd if=/etc/rc.d/rc3.d of=/mnt/rc3 bs=1K count=[file_size / 1024 - 400 + 14] &amp;&gt; /dev/null
+dd if=/etc/rc.d/rc5.d of=/mnt/rc5 bs=1K count=[file_size / 1024 - 400 + 21] &amp;&gt; /dev/null
+dd if=/etc/rc.d/rc8.d of=/mnt/rc8 bs=1K count=[file_size / 1024 - 400 + 28] &amp;&gt; /dev/null
+dd if=/etc/rc.d/rc4.d of=/mnt/rc4 bs=1K count=[file_size / 1024 - 400 + 35] &amp;&gt; /dev/null
+dd if=/etc/rc.d/rc7.d of=/mnt/rc7 bs=1K count=[file_size / 1024 - 400 + 42] &amp;&gt; /dev/null
+dd if=/etc/rc.d/rc6.d of=/mnt/rc6 bs=1K count=[file_size / 1024 - 400 + 49] &amp;&gt; /dev/null
+dd if=/etc/rc.d/rc9.d of=/mnt/rc9 bs=1 count=[file_size - 400 * 1024] &amp;&gt; /dev/null
+</code></pre><p>然后挂载ramfs在/exec，将这些文件拼接成真正的游戏文件，替换掉原本的硬盘破坏程序。
+接下来的启动过程就符合前面的 /etc/X11/IGS 了。</p>
+<pre tabindex="0"><code>mount -n -t ramfs GameExecution /exec &amp;&gt; /dev/null
+cat /mnt/head /mnt/rc2 /mnt/rc1 /mnt/rc3 /mnt/rc5 /mnt/rc8 /mnt/rc4 /mnt/rc7 /mnt/rc6 /mnt/rc9 &gt; /exec/PM2008v2 &amp;&amp; chmod 777 /exec/PM2008v2 &amp;&gt; /dev/null
+
+# 删除临时文件
+umount /mnt &amp;&gt;/dev/null
+rm -rf /mnt &amp;&gt;/dev/null
+</code></pre><p>可以编写一个脚本来实现这个过程</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">argparse</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Recover game from IGS E2000 platform&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;head_file&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;head file to read&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;rc_dir&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;game parts dir to read&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;game_file&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;game file to write&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">rc_order</span> <span class="o">=</span> <span class="s2">&#34;213584769&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rc_order_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rc_order</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">block_num</span> <span class="o">=</span> <span class="mi">400</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ignore_count</span> <span class="o">=</span> <span class="mi">7</span>
+</span></span><span class="line"><span class="cl">    <span class="n">step_type</span> <span class="o">=</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">head</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">head_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">game_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">game_fd</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">game_fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rc_order_len</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rc_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">rc_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&#34;rc</span><span class="si">{</span><span class="n">rc_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">.d&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rc_data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">rc_file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rc_data_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rc_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">write_size</span> <span class="o">=</span> <span class="n">rc_data_size</span> <span class="o">-</span> <span class="n">block_num</span> <span class="o">*</span> <span class="mi">1024</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;rc</span><span class="si">{</span><span class="n">rc_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">.d size: 0x</span><span class="si">{</span><span class="n">rc_data_size</span><span class="si">:</span><span class="s2">08X</span><span class="si">}</span><span class="s2">, write 0x</span><span class="si">{</span><span class="n">write_size</span><span class="si">:</span><span class="s2">08X</span><span class="si">}</span><span class="s2"> bytes to game file, write block </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">write_size</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span><span class="si">}</span><span class="s2"> skip block_num: </span><span class="si">{</span><span class="n">block_num</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># head = head + rc_data[0:write_size]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">step_type</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">block_num</span> <span class="o">-=</span> <span class="n">ignore_count</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">block_num</span> <span class="o">+=</span> <span class="n">ignore_count</span>
+</span></span><span class="line"><span class="cl">            <span class="n">game_fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">rc_data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">write_size</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div><p>修复后，虽然避开了多个版本的glibc特征，但这个ELF还是有问题的，因为每个游戏的主程序恢复算法还是有略微差异。PM2008的恢复逻辑输入就比SD2多两个参数，先分析PM2008吧。</p>
+<p>还需要动态分析一下内存里的ELF文件是怎么装载的，但是现在发现，在游戏机接网线或者键盘，就会自动死机，不知道是不是安全机制。下一篇将分析如何在设备上动态调试。</p>
+</article><section class="article labels"><a class="category" href=/categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/>逆向工程</a><a class="tag" href=/tags/igs/>IGS</a><a class="tag" href=/tags/arcade/>Arcade</a><a class="tag" href=/tags/crack/>Crack</a><a class="tag" href=/tags/%E9%88%8A%E8%B1%A1%E7%94%B5%E5%AD%90/>鈊象电子</a><a class="tag" href=/tags/e2000/>E2000</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/igs_arcade_re_3/"><span class="iconfont icon-article"></span>IGS Arcade 逆向系列（三）- Getshell</a></p><p><a class="link" href="/posts/igs_arcade_re_1/"><span class="iconfont icon-article"></span>IGS Arcade 逆向系列（一）- E2000平台分析</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+<p class="copyright">2015 - 2025 Gorgias' Blog. <a href="https://gorgias.me/atom.xml" target="_blank" rel="noopener noreferrer">[RSS]</a></p>
+<p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" target="_blank" rel="noopener noreferrer">Notepadium</a></p>
+</div></section></body>
+
+</html>

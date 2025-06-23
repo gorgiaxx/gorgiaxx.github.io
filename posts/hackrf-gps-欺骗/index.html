@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.147.8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+Leader把他的两个HackRF One借给我玩，我打算用它来做GPS欺骗实验。
+第一次接触软件无线电，开始感兴趣了，也打算把它学好。"><title>HackRF GPS 欺骗笔记&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.63f706677e61b4ee62b8daf083358d3bbf8ac8ab03c7d171af3180fab3a3ebb83efb79fb98674f13dde6db11de2bf694.css" integrity="sha384-Y/cGZ35htO5iuNrwgzWNO7&#43;KyKsDx9FxrzGA&#43;rOj67g&#43;&#43;3n7mGdPE93m2xHeK/aU"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="HackRF GPS 欺骗笔记" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">HackRF GPS 欺骗笔记</h1><p class="article date">2017-07-30</p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>Leader把他的两个HackRF One借给我玩，我打算用它来做GPS欺骗实验。
+第一次接触软件无线电，开始感兴趣了，也打算把它学好。</p>
+<p><img loading="lazy"  src="./hackrf-one.jpg"
+        alt="hackrf"/></p>
+<h2 id="测试环境">测试环境</h2>
+<p>HackRF One 市面上有两个版本，一个是美国原版，一个是星天无限版。
+作者Mike Ossmann在第一版HackRF Jawbreaker时通过Kickstart融资成功，之后Mike Ossmann开始进行了第二版HackRF One的开发，刚开始开源项目的代码和文档都在github上，2014年3月13日一个名叫星天无限的中国厂商&quot;提前&quot;发布了HackRF One。
+经过实际测试，同样固件版本的情况下，星天版因为有功放，信号强度比美版要强并且稳定很多。
+天线使用的是带吸盘的加感鞭状天线。</p>
+<ul>
+<li>Computer: HP 840 G3</li>
+<li>System: Kali 2016.2</li>
+<li>SDR: HackRF One 星天版/美版</li>
+</ul>
+<h2 id="环境准备">环境准备</h2>
+<h3 id="hackrf">HackRF</h3>
+<p>玩SDR可以下载 <a href="http://s3-dist.gnuradio.org/ubuntu-16.04.2-desktop-amd64-gnuradio-3.7.11.iso"target="_blank" rel="noopener noreferrer">GNU Radio Live</a> 镜像。
+也可以使用其他Linux发行版，Arch Linux官方源自带SDR相关的工具，Kali 自带HackRF的驱动和工具，所以接上电脑直接在terminal输入hackrf_info能看到信息。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hackrf_info version: 2017.02.1
+</span></span><span class="line"><span class="cl">libhackrf version: 2017.02.1 <span class="o">(</span>0.5<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Found HackRF
+</span></span><span class="line"><span class="cl">Index: <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Serial number: 0000000000000000583064c028624e4b
+</span></span><span class="line"><span class="cl">Board ID Number: <span class="m">2</span> <span class="o">(</span>HackRF One<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Firmware Version: 2017.02.1 <span class="o">(</span>API:1.02<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Part ID Number: 0xa000cb3c 0x005d4f47
+</span></span></code></pre></div><p>在此之前我升级了hackrf的固件，所以这边看到的信息是新版。
+附带一下升级的过程，先刷入SPI固件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/mossmann/hackrf
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ./firmware-bin/
+</span></span><span class="line"><span class="cl">hackrf_spiflash -Rw hackrf_one_usb.bin
+</span></span></code></pre></div><p>按一下Reset按钮，再更新CPLD</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hackrf_cpldjtag -x hackrf_cpld_default.xsvf
+</span></span></code></pre></div><h3 id="gps-sdr-sim">GPS-SDR-SIM</h3>
+<p>GPS-SDR-SIM用于生成GPS基带数据流，可用于bladeRF, HackRF, and USRP等SDR平台。
+下载并编译GPS-SDR-SIM</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/osqzss/gps-sdr-sim
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> gps-sdr-sim
+</span></span><span class="line"><span class="cl">gcc gpssim.c -lm -O3 -o gps-sdr-sim
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Usage: gps-sdr-sim <span class="o">[</span>options<span class="o">]</span>
+</span></span><span class="line"><span class="cl">Options:
+</span></span><span class="line"><span class="cl">  -e &lt;gps_nav&gt;     RINEX navigation file <span class="k">for</span> GPS ephemerides <span class="o">(</span>required<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -u &lt;user_motion&gt; User motion file <span class="o">(</span>dynamic mode<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -g &lt;nmea_gga&gt;    NMEA GGA stream <span class="o">(</span>dynamic mode<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -l &lt;location&gt;    Lat,Lon,Hgt <span class="o">(</span>static mode<span class="o">)</span> e.g. 35.681298,139.766247,10.0
+</span></span><span class="line"><span class="cl">  -t &lt;date,time&gt;   Scenario start <span class="nb">time</span> YYYY/MM/DD,hh:mm:ss
+</span></span><span class="line"><span class="cl">  -T &lt;date,time&gt;   Overwrite TOC and TOE to scenario start <span class="nb">time</span>
+</span></span><span class="line"><span class="cl">  -d &lt;duration&gt;    Duration <span class="o">[</span>sec<span class="o">]</span> <span class="o">(</span>dynamic mode max: 300, static mode max: 86400<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -o &lt;output&gt;      I/Q sampling data file <span class="o">(</span>default: gpssim.bin<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -s &lt;frequency&gt;   Sampling frequency <span class="o">[</span>Hz<span class="o">]</span> <span class="o">(</span>default: 2600000<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -b &lt;iq_bits&gt;     I/Q data format <span class="o">[</span>1/8/16<span class="o">]</span> <span class="o">(</span>default: 16<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -i               Disable ionospheric delay <span class="k">for</span> spacecraft scenario
+</span></span><span class="line"><span class="cl">  -v               Show details about simulated channels
+</span></span></code></pre></div><h3 id="gps">GPS</h3>
+<p>GPS(Global Positioning System)全称是全球定位系统，GPS接收机至少要收到4颗卫星的信号才能精确定位，三颗测量用<a href="https://en.wikipedia.org/wiki/World_Geodetic_System"target="_blank" rel="noopener noreferrer">WGS-84</a>作为标准的坐标，还有一颗用于提供时间数据，用于减少电磁波传播时间导致的误差。收到的星数越多，定位越精确。关于GPS更多的知识可以参考<a href="https://en.wikipedia.org/wiki/Global_Positioning_System"target="_blank" rel="noopener noreferrer">Wiki Global Positioning System</a>
+从NASA的CDDIS数据中心服务器，下载GPS导航的广播星历数据，然后解压，结尾是n的。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ftp://cddis.gsfc.nasa.gov/pub/gps/data/daily/2017/brdc/brdc2060.17n.Z
+</span></span></code></pre></div><p>国内网络环境几乎下载不了，建议走代理下载</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">proxychains4 -q wget ftp://cddis.gsfc.nasa.gov/pub/gps/data/daily/2017/brdc/brdc2060.17n.Z
+</span></span><span class="line"><span class="cl">7z e brdc2060.17n.Z
+</span></span></code></pre></div><p>文件每天都在更新，其实哪一天都无所谓。
+这是星历文件名的格式</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">YYYY/brdc/brdcDDD0.YYn.Z
+</span></span></code></pre></div><p>关于格式命名规则可以参考<a href="https://cddis.nasa.gov/Data_and_Derived_Products/GNSS/broadcast_ephemeris_data.html"target="_blank" rel="noopener noreferrer">Broadcast ephemeris data</a></p>
+<p>解压之后可以看到星历数据是RINEX(Receiver Independent Exchange Format)的2.0格式。
+GPS-SDR-SIM通过星历数据生成采样数据。-T选项可以指定时间。
+选择高德地图上钓鱼岛的坐标，四舍五入到小数点后6位，随便加上一个海拔，放在location参数名后面。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./gps-sdr-sim -e brdc2060.17n -l 25.771450,123.528900,100 -b <span class="m">8</span> -d <span class="m">200</span>
+</span></span></code></pre></div><p><img loading="lazy"  src="./gps-sdr-sim.png"
+        alt="gps-sdr-sim"/>
+持续时间和文件大小有关，默认300秒，把它改成200秒，占1GB空间。HackRF的数据位宽是8位，所以iq_bits设成8。
+下面是hackrf_transfer的详细说明</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">specify one of: -t, -c, -r, -w
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">        -h <span class="c1"># this help</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-d serial_number<span class="o">]</span> <span class="c1"># Serial number of desired HackRF.</span>
+</span></span><span class="line"><span class="cl">        -r &lt;filename&gt; <span class="c1"># Receive data into file (use &#39;-&#39; for stdout).</span>
+</span></span><span class="line"><span class="cl">        -t &lt;filename&gt; <span class="c1"># Transmit data from file (use &#39;-&#39; for stdin).</span>
+</span></span><span class="line"><span class="cl">        -w <span class="c1"># Receive data into file with WAV header and automatic name.</span>
+</span></span><span class="line"><span class="cl">           <span class="c1"># This is for SDR# compatibility and may not work with other software.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-f freq_hz<span class="o">]</span> <span class="c1"># Frequency in Hz [0MHz to 7250MHz].</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-i if_freq_hz<span class="o">]</span> <span class="c1"># Intermediate Frequency (IF) in Hz [2150MHz to 2750MHz].</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-o lo_freq_hz<span class="o">]</span> <span class="c1"># Front-end Local Oscillator (LO) frequency in Hz [84MHz to 5400MHz].</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-m image_reject<span class="o">]</span> <span class="c1"># Image rejection filter selection, 0=bypass, 1=low pass, 2=high pass.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-a amp_enable<span class="o">]</span> <span class="c1"># RX/TX RF amplifier 1=Enable, 0=Disable.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-p antenna_enable<span class="o">]</span> <span class="c1"># Antenna port power, 1=Enable, 0=Disable.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-l gain_db<span class="o">]</span> <span class="c1"># RX LNA (IF) gain, 0-40dB, 8dB steps</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-g gain_db<span class="o">]</span> <span class="c1"># RX VGA (baseband) gain, 0-62dB, 2dB steps</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-x gain_db<span class="o">]</span> <span class="c1"># TX VGA (IF) gain, 0-47dB, 1dB steps</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-s sample_rate_hz<span class="o">]</span> <span class="c1"># Sample rate in Hz (4/8/10/12.5/16/20MHz, default 10MHz).</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-n num_samples<span class="o">]</span> <span class="c1"># Number of samples to transfer (default is unlimited).</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-S buf_size<span class="o">]</span> <span class="c1"># Enable receive streaming with buffer size buf_size.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-c amplitude<span class="o">]</span> <span class="c1"># CW signal source mode, amplitude 0-127 (DC value to DAC).</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-R<span class="o">]</span> <span class="c1"># Repeat TX mode (default is off)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-b baseband_filter_bw_hz<span class="o">]</span> <span class="c1"># Set baseband filter bandwidth in Hz.</span>
+</span></span><span class="line"><span class="cl">        Possible values: 1.75/2.5/3.5/5/5.5/6/7/8/9/10/12/14/15/20/24/28MHz, default &lt;<span class="o">=</span> 0.75 * sample_rate_hz.
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-C ppm<span class="o">]</span> <span class="c1"># Set Internal crystal clock error in ppm.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-H hw_sync_enable<span class="o">]</span> <span class="c1"># Synchronise USB transfer using GPIO pins.</span>
+</span></span></code></pre></div><p>生成的gpssim.bin的采样频率为2.6MHz，使用hackrf_transfer设定的采样频率也要与之对应。-x代表TX VGA增益，先设为0db，如果搜不到再加，最大47db。下面是民用的频段，这里我们使用L1的频段。</p>
+<ul>
+<li>L1 1575.42MHz</li>
+<li>L2 1227.60MHz</li>
+<li>L3 1381.05MHz</li>
+<li>L4 1841.40MHz</li>
+<li>L5 1176.45MHz</li>
+</ul>
+<p>使用hackrf_transfer发射无线电信号，开启增益并设成最大，循环发射。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hackrf_transfer -t gpssim.bin -f <span class="m">1575420000</span> -s <span class="m">2600000</span> -a <span class="m">1</span> -x <span class="m">47</span> -R
+</span></span></code></pre></div><p><img loading="lazy"  src="./hackrf_transfer.png"
+        alt="hackrf_transfer"/>
+使用USB的GPS接收器也能收到伪造符合<a href="https://en.wikipedia.org/wiki/NMEA_0183"target="_blank" rel="noopener noreferrer">NMEA</a>(National Marine Electronics Association)规范的数据。
+关于数据格式可以参考<a href="http://www.gpsinformation.org/dale/nmea.htm"target="_blank" rel="noopener noreferrer">NMEA data</a>
+<img loading="lazy"  src="./GPS_USB.jpg"
+        alt="gps_usb"/></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo microcom -s <span class="m">4800</span> -p /dev/ttyUSB0
+</span></span></code></pre></div><p><img loading="lazy"  src="./gps_usb_serial.png"
+        alt="gps_usb_serial"/>
+这里使用美版HackRF，不到一分钟目标设备的坐标定位就被欺骗到了海岛
+<img loading="lazy"  src="./dongfeng_test.jpg"
+        alt="dongfeng_test"/></p>
+<p>这是使用星天版欺骗成功的结果
+<img loading="lazy"  src="./xingtian.jpg"
+        alt="xintian"/></p>
+<h2 id="参考">参考</h2>
+<p><a href="http://www.cnblogs.com/k1two2/p/5164172.html"target="_blank" rel="noopener noreferrer">HackRF实现GPS欺骗教程</a></p>
+<p><a href="http://www.cnblogs.com/k1two2/p/6387701.html"target="_blank" rel="noopener noreferrer">利用Hackrf One进行GPS定位欺骗制作超级跑马机</a></p>
+</article><section class="article labels"><a class="category" href=/categories/%E7%A1%AC%E4%BB%B6%E5%AE%89%E5%85%A8/>硬件安全</a><a class="tag" href=/tags/hackrf/>HackRF</a><a class="tag" href=/tags/gps/>GPS</a><a class="tag" href=/tags/spoofing/>Spoofing</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/fios-g1100-%E8%8E%B7%E5%8F%96root%E6%9D%83%E9%99%90/"><span class="iconfont icon-article"></span>Verizon FIOS-G1100 获取ROOT权限</a></p><p><a class="link" href="/posts/d-link-dir-850l-%E8%B7%AF%E7%94%B1%E5%99%A8%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81%E6%8A%A5%E5%91%8A/"><span class="iconfont icon-article"></span>D-Link DIR 850L 路由器漏洞验证报告</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+<p class="copyright">2015 - 2025 Gorgias' Blog. <a href="https://gorgias.me/atom.xml" target="_blank" rel="noopener noreferrer">[RSS]</a></p>
+<p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" target="_blank" rel="noopener noreferrer">Notepadium</a></p>
+</div></section></body>
+
+</html>
