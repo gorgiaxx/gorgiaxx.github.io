@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.147.8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.147.8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content=""><title>Posts&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.63f706677e61b4ee62b8daf083358d3bbf8ac8ab03c7d171af3180fab3a3ebb83efb79fb98674f13dde6db11de2bf694.css" integrity="sha384-Y/cGZ35htO5iuNrwgzWNO7&#43;KyKsDx9FxrzGA&#43;rOj67g&#43;&#43;3n7mGdPE93m2xHeK/aU"><link rel="alternate" type="application/rss+xml" href="/posts/atom.xml" title="Gorgias' Blog" /><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Posts" /><body><section id="header">
@@ -28,11 +28,6 @@
             <p class="note title">源码编译OpenWrt固件笔记</p><p class="note date">2017-02-24</p><p class="note content">前言 最近学校的移动宽带运营商开始搞事情，搞流量劫持，下载投毒，步入电信联通之流。这个学期也不能多拨了，会被系统检测到，封停半个小时。 去年夏天乔治学长送我的路由器，OYE-0001，用了半年多了，软件上挺稳定的，就是接口太松，不小心碰到会掉线。 之前改装的TP-Link WR845N刷Hackpascal的固件会定期宕机，因为不能多拨了，所以打算换回原来的路由器刷官方固件稳定一点，反正不在寝室住了，对于流控也没有要求。 但是官方似乎放弃了WR845N V4版本，已经下载不到固件了，其他版本固件刷入后不能开机。 于是打算自己尝试编译，踩了不少坑呢。 记录下步骤吧！
 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="category" href="/categories/iot/">IoT</a><a class="tag" href="/tags/openwrt/">openwrt</a><a class="tag" href="/tags/tp-link/">TP-Link</a></p></li><li class="item">
         
-        <a class="note" href="/posts/arch-linux-%E5%8F%8C%E6%98%BE%E5%8D%A1-%E5%AE%89%E8%A3%85-nvidia-%E9%97%AD%E6%BA%90%E9%A9%B1%E5%8A%A8/">
-        
-            <p class="note title">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</p><p class="note date">2017-01-17</p><p class="note content">前言 我的笔记本电脑是联想Y410P，双显卡GT755M + HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。 但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。
-<span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/tags/arch/">arch</a><a class="tag" href="/tags/bumblebee/">bumblebee</a><a class="tag" href="/tags/%E5%8F%8C%E6%98%BE%E5%8D%A1/">双显卡</a></p></li><li class="item">
-        
         <a class="note" href="/posts/qemu%E5%88%9D%E4%BD%93%E9%AA%8C/">
         
             <p class="note title">KVM/QEMU初体验</p><p class="note date">2016-11-13</p><p class="note content">前言 正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。
@@ -56,11 +51,17 @@
         
             <p class="note title">给网站添加免费SSL证书</p><p class="note date">2016-05-09</p><p class="note content">
 为什么要添加SSL证书/使用HTTPS协议 目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。 近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。
-<span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/tags/certbot/">certbot</a><a class="tag" href="/tags/ssl/">SSL</a><a class="tag" href="/tags/%E8%AF%81%E4%B9%A6/">证书</a></p></li></ul><div class="pagination">
+<span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/tags/certbot/">certbot</a><a class="tag" href="/tags/ssl/">SSL</a><a class="tag" href="/tags/%E8%AF%81%E4%B9%A6/">证书</a></p></li><li class="item">
+        
+        <a class="note" href="/posts/%E8%AE%B0%E7%AC%AC%E4%B8%80%E6%AC%A1%E7%A1%AC%E6%94%B9%E8%B7%AF%E7%94%B1%E5%99%A8%E4%B8%8Aopenwrt/">
+        
+            <p class="note title">记第一次硬改路由器上Openwrt</p><p class="note date">2016-04-04</p><p class="note content">前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）
+<span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/tags/openwrt/">Openwrt</a><a class="tag" href="/tags/tplink/">tplink</a><a class="tag" href="/tags/%E7%A1%AC%E6%94%B9/">硬改</a></p></li></ul><div class="pagination">
     <ul><li><a class="" href="/posts/">1</a></li><li><a class="" href="/posts/page/2/">2</a></li><li><a class="" href="/posts/page/3/">3</a></li><li><a class="active" href="/posts/page/4/">4</a></li><li><a class="" href="/posts/page/5/">5</a></li></ul>
 </div></section><section id="footer"><div class="footer-wrap">
-<p class="copyright">2015 - 2025 Gorgias' Blog. <a href="https://gorgias.me/atom.xml" target="_blank" rel="noopener noreferrer">[RSS]</a></p>
-<p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" target="_blank" rel="noopener noreferrer">Notepadium</a></p>
-</div></section></body>
+    <p class="copyright">2015 - 2025 Gorgias' Blog. </p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
 
 </html>

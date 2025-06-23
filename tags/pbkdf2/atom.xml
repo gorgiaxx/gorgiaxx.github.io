@@ -1,33 +1,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>PBKDF2 on Gorgias&#39; Blog</title>
-    <link>http://localhost:1313/tags/pbkdf2/</link>
+    <link>https://gorgias.me/tags/pbkdf2/</link>
     <description>Recent content in PBKDF2 on Gorgias&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>2015 - 2025 Gorgias&#39; Blog. </copyright>
     <lastBuildDate>Thu, 14 Sep 2023 22:04:11 +0800</lastBuildDate>
     
-        <atom:link href="http://localhost:1313/tags/pbkdf2/atom.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="https://gorgias.me/tags/pbkdf2/atom.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>IGS Arcade 逆向系列（三）- Getshell</title>
-      <link>http://localhost:1313/posts/igs_arcade_re_3/</link>
-      <pubDate>Mon, 23 Jun 2025 23:03:18 +0800</pubDate>
-      
-      <guid>http://localhost:1313/posts/igs_arcade_re_3/</guid>
-      <description>&lt;p&gt;我对前两篇文章做了一些勘误&lt;/p&gt;
-&lt;p&gt;要高效分析&lt;/p&gt;
-</description>
-    </item>
     
     <item>
       <title>IGS Arcade 逆向系列（二）- 游戏文件恢复</title>
-      <link>http://localhost:1313/posts/igs_arcade_re_2/</link>
+      <link>https://gorgias.me/posts/igs_arcade_re_2/</link>
       <pubDate>Sun, 25 May 2025 20:37:31 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/igs_arcade_re_2/</guid>
+      <guid>https://gorgias.me/posts/igs_arcade_re_2/</guid>
       <description>&lt;p&gt;上一篇文章写到游戏有个破坏分区的保护机制，本篇将深入分析。&lt;/p&gt;
 &lt;p&gt;作为2007年发布的游戏，此游戏加固机制还是比较落后的，主要是靠一些拼接，修改特征的方法来加固。并没有现代APP加固的那么卷的特性。主要是加固的环节有点多，并且每个游戏都不一样。然后由于开发上的特性，（编译优化，代码风格），使得逆向分析变麻烦了。&lt;/p&gt;
 &lt;p&gt;要提取游戏其实比较简单，等游戏运行时通过shell从内存或者从文件系统（如果文件落地）dump就行了。但是如果要提取不同游戏，这样就太麻烦了，还是先静态分析吧。&lt;/p&gt;
@@ -873,10 +862,10 @@ rm -rf /mnt &amp;amp;&amp;gt;/dev/null
     
     <item>
       <title>IGS Arcade 逆向系列（一）- E2000平台分析</title>
-      <link>http://localhost:1313/posts/igs_arcade_re_1/</link>
+      <link>https://gorgias.me/posts/igs_arcade_re_1/</link>
       <pubDate>Sat, 17 May 2025 22:34:31 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/igs_arcade_re_1/</guid>
+      <guid>https://gorgias.me/posts/igs_arcade_re_1/</guid>
       <description>&lt;h1 id=&#34;前言&#34;&gt;前言&lt;/h1&gt;
 &lt;p&gt;2010年是街机的黄金时代，随着移动终端和家用游戏机普及，街机行业也逐渐走向没落，尽管国内出台了一些政策鼓励游戏游艺设备行业发展，但此行业在未来一直都不被资本看好。2020 疫情更是给电玩行业带来了很大的打击。&lt;/p&gt;
 &lt;p&gt;在以前，100元可能只能买50个币，现在100元可以买200个币。&lt;/p&gt;
@@ -1207,10 +1196,10 @@ test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
     
     <item>
       <title>VW ID.4 ICAS1 车控分析</title>
-      <link>http://localhost:1313/posts/vw-id.4-%E8%BD%A6%E6%8E%A7%E5%88%86%E6%9E%90/</link>
+      <link>https://gorgias.me/posts/vw-id.4-%E8%BD%A6%E6%8E%A7%E5%88%86%E6%9E%90/</link>
       <pubDate>Thu, 26 Dec 2024 22:04:11 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/vw-id.4-%E8%BD%A6%E6%8E%A7%E5%88%86%E6%9E%90/</guid>
+      <guid>https://gorgias.me/posts/vw-id.4-%E8%BD%A6%E6%8E%A7%E5%88%86%E6%9E%90/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;2021年在360搭了一套ID.4台架环境，本来快要出成果了（拿到了ODIS内网权限，还有ICAS3的root），被安排出差去搭建展示车，后续工作计划被打乱。这期间不管是工作还是生活都遇到了许多糟心事，便停止了研究。&lt;/p&gt;
 &lt;p&gt;算是一个怨念项目吧，今年5月我在机缘巧合下又研究了ID.4的ICAS1的车控逻辑，还有一个怨念项目是CAN-Pick NG，写了一半又搁置了，不知道2025可不可以完成。&lt;/p&gt;
@@ -1829,10 +1818,10 @@ for i in range(20):
     
     <item>
       <title>QNX7 密码 hash 算法分析以及 Hashcat 模块编写</title>
-      <link>http://localhost:1313/posts/qnx7-%E5%AF%86%E7%A0%81hash%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8Ahashcat%E6%A8%A1%E5%9D%97%E7%BC%96%E5%86%99/</link>
+      <link>https://gorgias.me/posts/qnx7-%E5%AF%86%E7%A0%81hash%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8Ahashcat%E6%A8%A1%E5%9D%97%E7%BC%96%E5%86%99/</link>
       <pubDate>Thu, 14 Sep 2023 22:04:11 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/qnx7-%E5%AF%86%E7%A0%81hash%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8Ahashcat%E6%A8%A1%E5%9D%97%E7%BC%96%E5%86%99/</guid>
+      <guid>https://gorgias.me/posts/qnx7-%E5%AF%86%E7%A0%81hash%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8Ahashcat%E6%A8%A1%E5%9D%97%E7%BC%96%E5%86%99/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;在 2021 年想要碰撞 QNX Hash 发现 hashcat 不支持 QNX 6.6.0版本。当时 issue 就有人提了这个需求，但我一直很忙没时间开发。&lt;/p&gt;
 &lt;p&gt;直到2023年9月的艰难单刷工信部车联网攻防演练，又遇到了 QNX 7 的 Hash，发现那么多年过去了还是没支持。&lt;/p&gt;
@@ -2153,10 +2142,10 @@ for i in range(20):
     
     <item>
       <title>固件逆向的通用技巧</title>
-      <link>http://localhost:1313/posts/%E5%9B%BA%E4%BB%B6%E9%80%86%E5%90%91%E7%9A%84%E9%80%9A%E7%94%A8%E6%8A%80%E5%B7%A7/</link>
+      <link>https://gorgias.me/posts/%E5%9B%BA%E4%BB%B6%E9%80%86%E5%90%91%E7%9A%84%E9%80%9A%E7%94%A8%E6%8A%80%E5%B7%A7/</link>
       <pubDate>Mon, 15 Aug 2022 21:39:11 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/%E5%9B%BA%E4%BB%B6%E9%80%86%E5%90%91%E7%9A%84%E9%80%9A%E7%94%A8%E6%8A%80%E5%B7%A7/</guid>
+      <guid>https://gorgias.me/posts/%E5%9B%BA%E4%BB%B6%E9%80%86%E5%90%91%E7%9A%84%E9%80%9A%E7%94%A8%E6%8A%80%E5%B7%A7/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;这个是多年前自己为了方便查阅的写的笔记，记录的是碎片话思路，很乱，没有操作步骤，持续更新。&lt;/p&gt;
 &lt;p&gt;这里指的固件是从存储芯片提取的原始文件或升级文件。&lt;/p&gt;
@@ -2313,10 +2302,10 @@ kfree&lt;/p&gt;
     
     <item>
       <title>JVMTI加密保护绕过</title>
-      <link>http://localhost:1313/posts/jvmti%E5%8A%A0%E5%AF%86%E4%BF%9D%E6%8A%A4%E7%BB%95%E8%BF%87/</link>
+      <link>https://gorgias.me/posts/jvmti%E5%8A%A0%E5%AF%86%E4%BF%9D%E6%8A%A4%E7%BB%95%E8%BF%87/</link>
       <pubDate>Mon, 28 Jun 2021 21:39:11 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/jvmti%E5%8A%A0%E5%AF%86%E4%BF%9D%E6%8A%A4%E7%BB%95%E8%BF%87/</guid>
+      <guid>https://gorgias.me/posts/jvmti%E5%8A%A0%E5%AF%86%E4%BF%9D%E6%8A%A4%E7%BB%95%E8%BF%87/</guid>
       <description>&lt;h2 id=&#34;研究过程&#34;&gt;研究过程&lt;/h2&gt;
 &lt;p&gt;最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。&lt;/p&gt;
 &lt;p&gt;安装完成，目录有jar文件又有exe文件。&lt;/p&gt;
@@ -2375,10 +2364,10 @@ kfree&lt;/p&gt;
     
     <item>
       <title>固件提取系列 UBI文件系统提取以及重打包</title>
-      <link>http://localhost:1313/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-ubi%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8F%90%E5%8F%96%E4%BB%A5%E5%8F%8A%E9%87%8D%E6%89%93%E5%8C%85/</link>
+      <link>https://gorgias.me/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-ubi%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8F%90%E5%8F%96%E4%BB%A5%E5%8F%8A%E9%87%8D%E6%89%93%E5%8C%85/</link>
       <pubDate>Sat, 28 Dec 2019 21:39:11 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-ubi%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8F%90%E5%8F%96%E4%BB%A5%E5%8F%8A%E9%87%8D%E6%89%93%E5%8C%85/</guid>
+      <guid>https://gorgias.me/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-ubi%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%8F%90%E5%8F%96%E4%BB%A5%E5%8F%8A%E9%87%8D%E6%89%93%E5%8C%85/</guid>
       <description>&lt;h2 id=&#34;固件载体&#34;&gt;固件载体&lt;/h2&gt;
 &lt;p&gt;固件 (Firmware), 在港澳台称作韧体, 在手机领域又称作字库。它位于非易失性存储(Non-Volatile Memory，NVM)中，可以被读写。在嵌入式领域，最常见的NVM类型是ROM(read-only memory)和Flash Memory， 其中ROM包括Mask ROM、PROM、EPROM、EEPROM；现在主流的ROM就是EEPROM，一般是在MCU内部；而更加主流的外存一般都是Flash Memory。&lt;/p&gt;
 &lt;p&gt;在嵌入式设备中，除了使用最基本的NAND或者NOR Flash芯片，还可能会使用eMMC；扩展存储会用到SD卡，CF卡，HDD等；这些都是有一个主控再加一个存储区，主控和上位机通信，只要能访问主控，就能读写存储芯片的内容。对于eMMC、SD卡、CF卡、HDD之类的设备，它的主控对外有通用的接口，只要用读卡器或者烧录座就可以读取。但是对于SoC直接管理的存储芯片，并没有对外部的通用接口，但是主控都是驱动控制的，所以只要能访问内存（外围设备的地址）就行了，因此有一些JTAG读固件、IAP读取固件、U-Boot读取固件的技巧，是而且理论上主控坏了，我们还能从存储区读取出固件。&lt;/p&gt;
@@ -2596,10 +2585,10 @@ NAND以块为单位来访问数据，而NOR Flash可以随机访问数据。&lt;
     
     <item>
       <title>固件提取系列 固件载体</title>
-      <link>http://localhost:1313/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-%E5%9B%BA%E4%BB%B6%E8%BD%BD%E4%BD%93/</link>
+      <link>https://gorgias.me/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-%E5%9B%BA%E4%BB%B6%E8%BD%BD%E4%BD%93/</link>
       <pubDate>Sat, 28 Dec 2019 21:39:11 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-%E5%9B%BA%E4%BB%B6%E8%BD%BD%E4%BD%93/</guid>
+      <guid>https://gorgias.me/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-%E5%9B%BA%E4%BB%B6%E8%BD%BD%E4%BD%93/</guid>
       <description>&lt;h2 id=&#34;固件载体&#34;&gt;固件载体&lt;/h2&gt;
 &lt;p&gt;固件 (Firmware), 在港澳台称作韧体, 在手机领域又称作字库。它位于非易失性存储(Non-Volatile Memory，NVM)中，可以被读写。在嵌入式领域，最常见的NVM类型是ROM(read-only memory)和Flash Memory， 其中ROM包括Mask ROM、PROM、EPROM、EEPROM；现在主流的ROM就是EEPROM，一般是在MCU内部；而更加主流的外存一般都是Flash Memory。&lt;/p&gt;
 &lt;p&gt;在嵌入式设备中，除了使用最基本的NAND或者NOR Flash芯片，还可能会使用eMMC；扩展存储会用到SD卡，CF卡，HDD等；这些都是有一个主控再加一个存储区，主控和上位机通信，只要能访问主控，就能读写存储芯片的内容。对于eMMC、SD卡、CF卡、HDD之类的设备，它的主控对外有通用的接口，只要用读卡器或者烧录座就可以读取。但是对于SoC直接管理的存储芯片，并没有对外部的通用接口，但是主控都是驱动控制的，所以只要能访问内存（外围设备的地址）就行了，因此有一些JTAG读固件、IAP读取固件、U-Boot读取固件的技巧，是而且理论上主控坏了，我们还能从存储区读取出固件。&lt;/p&gt;
@@ -2817,10 +2806,10 @@ NAND以块为单位来访问数据，而NOR Flash可以随机访问数据。&lt;
     
     <item>
       <title>GL.iNet MIFI 一款差不多的4G便携路由器</title>
-      <link>http://localhost:1313/posts/gl.inet-mifi-%E4%B8%80%E6%AC%BE%E5%B7%AE%E4%B8%8D%E5%A4%9A%E7%9A%844g%E4%BE%BF%E6%90%BA%E8%B7%AF%E7%94%B1%E5%99%A8/</link>
+      <link>https://gorgias.me/posts/gl.inet-mifi-%E4%B8%80%E6%AC%BE%E5%B7%AE%E4%B8%8D%E5%A4%9A%E7%9A%844g%E4%BE%BF%E6%90%BA%E8%B7%AF%E7%94%B1%E5%99%A8/</link>
       <pubDate>Fri, 30 Aug 2019 13:39:11 +0800</pubDate>
       
-      <guid>http://localhost:1313/posts/gl.inet-mifi-%E4%B8%80%E6%AC%BE%E5%B7%AE%E4%B8%8D%E5%A4%9A%E7%9A%844g%E4%BE%BF%E6%90%BA%E8%B7%AF%E7%94%B1%E5%99%A8/</guid>
+      <guid>https://gorgias.me/posts/gl.inet-mifi-%E4%B8%80%E6%AC%BE%E5%B7%AE%E4%B8%8D%E5%A4%9A%E7%9A%844g%E4%BE%BF%E6%90%BA%E8%B7%AF%E7%94%B1%E5%99%A8/</guid>
       <description>&lt;p&gt;使用华为E5885L一年多了，对我而言，它不仅是一款完美的4G便携路由器，而且经过改造之后更是一款渗透利器。尽管这是一款非常美好的产品，但是在安全研究的工作中，还是发现有不少痛点。但是在使用了GL.iNet MIFI之后，完全满足了我的测试需求。尽管能够解决问题，但是某些地方太粗糙了。&lt;/p&gt;
 &lt;p&gt;外壳&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;external.jpg&#34;
@@ -2869,6 +2858,299 @@ wwan0 (QMI mode)USB network adapter
 &lt;p&gt;Osmocom也有移远EC20的hack说明&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://osmocom.org/projects/quectel-modems/wiki/EC20&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;https://osmocom.org/projects/quectel-modems/wiki/EC20&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;新版固件已经禁用了AT+QLINUXCMD，所以不能直接发送命令&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>汽车总线知识扫盲 序</title>
+      <link>https://gorgias.me/posts/%E6%B1%BD%E8%BD%A6%E6%80%BB%E7%BA%BF%E7%9F%A5%E8%AF%86%E6%89%AB%E7%9B%B2-%E5%BA%8F/</link>
+      <pubDate>Thu, 08 Aug 2019 00:30:20 +0800</pubDate>
+      
+      <guid>https://gorgias.me/posts/%E6%B1%BD%E8%BD%A6%E6%80%BB%E7%BA%BF%E7%9F%A5%E8%AF%86%E6%89%AB%E7%9B%B2-%E5%BA%8F/</guid>
+      <description>&lt;h2 id=&#34;通信模组概览&#34;&gt;通信模组概览&lt;/h2&gt;
+&lt;p&gt;在车联网领域，TCU（Telematics control unit）是联网汽车不可缺少的一个单元（也叫T-Box，Telematics Box），TCU 的联网功能由通信模组实现（也称作 M2M 模块），通信模组使用的基带芯片几乎都支持全网通，选择网络  运营商更加灵活。&lt;/p&gt;
+&lt;p&gt;在研究车联网的4年时间里，我们已经完成了几十款国产主流汽车Telematics的安全研究，对多家主机厂和 Tier 1 的 TCU 的安全性做了分析，也更加深入了解到了目前国内汽车使用的TCU产品的安全现状。通信模组作为车辆对外互联网的通信接口，是最需要做好安全重视的地方，因为范围最广的远程攻击总是会涉及到通信模组。&lt;/p&gt;
+&lt;p&gt;Tier1供应商有很多，TCU的产品也不尽相同。然而国内使用的车规级的通信模组却总是这么几款。我们先对这些通信模组的供应商进行简单分类。不管是吹还是黑，对于国内的通信模组供应商，我们不指出具体的厂商名称。&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;厂商&lt;/th&gt;
+          &lt;th&gt;简介&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;H厂&lt;/td&gt;
+          &lt;td&gt;有多种车规级模组，国内市场占有率很高，技术实力强大，价格较贵&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Q厂&lt;/td&gt;
+          &lt;td&gt;在通信模组领域占据一席之地的厂商，车规级模块主要用在中低端车型，与H厂模块一样好用&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Z厂&lt;/td&gt;
+          &lt;td&gt;主要用在 IoT 设备，也有车规级模组，但占有率很低&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;F厂&lt;/td&gt;
+          &lt;td&gt;Tier1，模组可能是H厂代工的，主要用在中低端车型，&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;L厂&lt;/td&gt;
+          &lt;td&gt;中规中矩的厂商&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;S厂&lt;/td&gt;
+          &lt;td&gt;市场份额很大的通信模组厂商，在车联网领域份额不高&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Sierra&lt;/td&gt;
+          &lt;td&gt;规模很大的 M2M 无线通信产品和解决方案厂商&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Telit&lt;/td&gt;
+          &lt;td&gt;总部设在意大利的泰利特是全球领先的 M2M 无线通信产品和解决方案厂商&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;开发资料&#34;&gt;开发资料&lt;/h3&gt;
+&lt;p&gt;在测试之前，需要查阅官方资料，如果没有资料、很可能无法继续研究。我们对这些厂商的资料相关属性做了对比，如下表所示。其中丰富程度体现在是否有调试或者是启动过程的参考文档，安全建议只要有地方提到过就算有，比如设置调试秘钥、关闭调试口。&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;厂商&lt;/th&gt;
+          &lt;th&gt;资料保密程度&lt;/th&gt;
+          &lt;th&gt;资料丰富程度&lt;/th&gt;
+          &lt;th&gt;安全建议&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;H厂&lt;/td&gt;
+          &lt;td&gt;代码开源、资料不公开&lt;/td&gt;
+          &lt;td&gt;高&lt;/td&gt;
+          &lt;td&gt;有&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Q厂&lt;/td&gt;
+          &lt;td&gt;代码不开源、资料部分公开&lt;/td&gt;
+          &lt;td&gt;中&lt;/td&gt;
+          &lt;td&gt;无&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Z厂&lt;/td&gt;
+          &lt;td&gt;代码不开源、资料部分对外国人公开&lt;/td&gt;
+          &lt;td&gt;低&lt;/td&gt;
+          &lt;td&gt;无&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;F厂&lt;/td&gt;
+          &lt;td&gt;代码不开源、资料不公开&lt;/td&gt;
+          &lt;td&gt;未知&lt;/td&gt;
+          &lt;td&gt;未知&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;L厂&lt;/td&gt;
+          &lt;td&gt;代码不开源、资料不公开&lt;/td&gt;
+          &lt;td&gt;低&lt;/td&gt;
+          &lt;td&gt;未知&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;S厂&lt;/td&gt;
+          &lt;td&gt;代码不开源、资料不公开&lt;/td&gt;
+          &lt;td&gt;未知&lt;/td&gt;
+          &lt;td&gt;未知&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Sierra&lt;/td&gt;
+          &lt;td&gt;代码开源、硬件资料不公开&lt;/td&gt;
+          &lt;td&gt;中&lt;/td&gt;
+          &lt;td&gt;有&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Telit&lt;/td&gt;
+          &lt;td&gt;代码不开源、资料部分公开&lt;/td&gt;
+          &lt;td&gt;高&lt;/td&gt;
+          &lt;td&gt;未知&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Sierra不提供硬件资料，但是软件资料却有很多，并且在 Github 有开源项目，文档里有时也会提到安全建议。
+H厂模组代码默认不开源，发邮件给H厂，要求遵循协议（老外就是这么操作的），由于产品是国内的，国外市场的客服把我踢回CN客服，然后CN客服直接装傻。贸易战开始后，H厂把通信模组的代码也开源了。代理商不提供更深层的开发资料，除非签NDA。但是H厂提供的文档有提到安全的建议。
+Q厂官方就提供资料，但是最近有些资料下不到了。跟Q厂签了NDA，提供的资料也就只有源码和一些普通开发文档，并没有安全建议。&lt;/p&gt;
+&lt;h3 id=&#34;硬件外貌&#34;&gt;硬件外貌&lt;/h3&gt;
+&lt;p&gt;其中H厂在早期的产品使用高通的方案，后期逐渐换成了 HiSilicon LTE Cat6 的方案，一般是 HI6932 。其他厂商使用的都是高通 MDM96xx ，大部分基带芯片是 MDM9615 和 MDM9628 。&lt;/p&gt;
+&lt;p&gt;左图为 HiSilicon 方案，右图为 Qualcomm 方案，存储芯片一般是 DDR2+NAND Flash 的 MCP 封装芯片，绝大多数存储芯片是镁光颗粒。模组的封装大多是 LGA ，这样可以防止引脚直接暴露。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/hisilicon_vs_qualcomm.jpg&#34;
+        alt=&#34;hisilicon_vs_qualcomm&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;非车规级模块，比如Z厂在充电桩的方案，有可能是 LCC 封装，所有引脚都暴露在外部&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/IoT_Module.jpg&#34;
+        alt=&#34;IoT_Module&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;但是也有车规级芯片使用 LCC 封装，比如左图L厂的模组。右图是 Tier 1 使用 S 厂的非车规级的模组。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/LCC.jpg&#34;
+        alt=&#34;LCC&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;拿到硬件设计资料，我们可以对封装的每个引脚标记，找到对外能利用的接口&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/LGA.png&#34;
+        alt=&#34;LGA&#34;/&gt;&lt;/p&gt;
+&lt;h3 id=&#34;tcu解决方案&#34;&gt;TCU解决方案&lt;/h3&gt;
+&lt;p&gt;通信模组在 TCU 的解决方案主要有两个大类，MCU 外挂模块 和 OpenCPU 方案。&lt;/p&gt;
+&lt;p&gt;MCU 外挂模块方案简单来说就是业务逻辑全部在 MCU 上，通信模组仅作为网卡，或者提供 TCP/IP 和 SSL 协议栈。这种方案对 MCU 的各方面要求较高，也不能充分利用通信模组的性能。非车规级模块性能一般，这种解决方案适合传统 IoT 设备。但是某些 Tier 1 的 TCU 也使用这种方式，非常奇怪。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/extMCU.png&#34;
+        alt=&#34;extMCU&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;对于后者，实际上就是把业务逻辑放在通信模组里， MCU 只负责控制电源管理和外围接口。别的厂商应该用过这种方案，但不是叫 OpenCPU 。 OpenCPU 这个名字国外几乎没有，貌似是H厂在国内掀起的概念，作为行业老大，后面的国内厂商也跟着使用了，路毕竟是人踩出来的，所以后面的文章也会使用这个词。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/OpenCPU.png&#34;
+        alt=&#34;OpenCPU&#34;/&gt;&lt;/p&gt;
+&lt;h2 id=&#34;攻击面&#34;&gt;攻击面&lt;/h2&gt;
+&lt;p&gt;攻击入口主要如下&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;网络层面&lt;/li&gt;
+&lt;li&gt;CAN-Bus&lt;/li&gt;
+&lt;li&gt;Ethernet&lt;/li&gt;
+&lt;li&gt;WLAN&lt;/li&gt;
+&lt;li&gt;Bluetooth&lt;/li&gt;
+&lt;li&gt;Celluar&lt;/li&gt;
+&lt;li&gt;硬件层面&lt;/li&gt;
+&lt;li&gt;UART&lt;/li&gt;
+&lt;li&gt;JTAG&lt;/li&gt;
+&lt;li&gt;SDIO&lt;/li&gt;
+&lt;li&gt;SPI&lt;/li&gt;
+&lt;li&gt;SWD&lt;/li&gt;
+&lt;li&gt;E-SIM&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对于通信模组本身，攻击场景的方向大概有下面几种&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;信息泄露：从各个调试入口获取和隐私相关或者有利于攻击的数据。&lt;/li&gt;
+&lt;li&gt;中间人攻击：对协议进行攻击，注入恶意的数据，实现非预期的功能。&lt;/li&gt;
+&lt;li&gt;固件提取：使用各种手段将 NAND Flash 的数据提取并解析出来。&lt;/li&gt;
+&lt;li&gt;Get Shell：拿到命令执行权限，进一步攻击。&lt;/li&gt;
+&lt;li&gt;固件篡改：通过各种途径刷入带有后门的恶意固件并成功启动。&lt;/li&gt;
+&lt;li&gt;网络设备：通过对 USB 接口飞线，作为 4G 上网卡渗透内网。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;根据上述方向，可以确定好攻击场景，最后一点实在太简单，没必要展开叙述。&lt;/p&gt;
+&lt;h3 id=&#34;信息泄露场景获取用于对内网渗透测试的信息&#34;&gt;信息泄露场景：获取用于对内网渗透测试的信息。&lt;/h3&gt;
+&lt;p&gt;对于 ext MCU 方案的 TCU ，嗅探 MCU 与 LTE Module 的 UART 通信，获取到 APN 配置信息。或者直接飞线到负责AT命令的UART接口，发送查询网络配置信息。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/private_apn.png&#34;
+        alt=&#34;private_apn&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;也可以提取外置的 EMMC ，对 log 文件分析，提取出 APN 配置信息。或者通过 UART log 拿到调试用的 APN 信息。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/private_apn2.png&#34;
+        alt=&#34;private_apn2&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;再通过 E-SIM 飞线，对车厂或 Tier 1 内网进行渗透。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/esim_jumpwire.png&#34;
+        alt=&#34;esim_jumpwire&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;通过UART日志口获得TSP服务地址&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/url_logs.png&#34;
+        alt=&#34;url_logs&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;对于双向认证的服务器，特别是 ext MCU 方案的 TCU ，通过嗅探 AT 提取出 SSL 客户端证书，对服务端进行访问&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/at_ssl.png&#34;
+        alt=&#34;at_ssl&#34;/&gt;&lt;/p&gt;
+&lt;h3 id=&#34;中间人攻击场景1劫持通信模组网络下发非预期指令&#34;&gt;中间人攻击场景1：劫持通信模组网络下发非预期指令&lt;/h3&gt;
+&lt;p&gt;客户端没有对服务端做认证，那么只要劫持到恶意的TSP，恶意TSP做中继功能，并可以注入自己的代码
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/comm.png&#34;
+        alt=&#34;comm&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;通信代码同时支持两套协议，一套没有加密，一套使用AES加密，只要握手时将协议降级，就可以分析出协议格式，并对车辆进行命令注入。
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/comm2.png&#34;
+        alt=&#34;comm2&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;非预期指令是指 MCU 层实现，但是 TSP 还没有实现的控车指令。
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/comm3.png&#34;
+        alt=&#34;comm3&#34;/&gt;&lt;/p&gt;
+&lt;h3 id=&#34;中间人攻击场景2使用短信劫持攻击&#34;&gt;中间人攻击场景2：使用短信劫持攻击&lt;/h3&gt;
+&lt;p&gt;汽车在某些情况，需要用短信来唤醒，但是开发者很聪明，想顺便在无网络的情况也可以远程控车。某共享汽车的模组接收短信的 AT 命令来控制车身，只需要向该设备发送短信就能攻击。是比较傻的。&lt;/p&gt;
+&lt;p&gt;另外一款汽车的早期软件版本，控车功能在无网络时，平台会通过短信隧道发送指令。早期既没有认证平台号码，也没用签名措施。使用特定的格式，没有加密算法，只有 VIN 和 Base64。&lt;/p&gt;
+&lt;p&gt;可以使用通过外部的AT接口获取短信内容。也可以使用伪基站嗅探，然后使用AT命令向其他手机号发送短信，获得M2M卡号，用其他手机向该号码发送控车指令。
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/sms.jpg&#34;
+        alt=&#34;sms&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;在下一个版本，加入了消息认证码检验，签名使用 VIN + 唯一的动态的秘钥，动态秘钥走双向认证的云端同步，但是每次休眠都会将秘钥删除。并且和场景1的因此只要让模组的网络无法使用，那么将无法从云端同步秘钥，只能接收短信，因此该版本同时兼容两个协议
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/smsdata.png&#34;
+        alt=&#34;sms_data&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;security_flag会自动变为00，程序也会跳过消息认证码检验
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/sms_struct.png&#34;
+        alt=&#34;sms_struct.png&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;现在的版本不会自动删除秘钥了，也就意味着这一段过程是安全的。&lt;/p&gt;
+&lt;h3 id=&#34;固件提取场景通过固件提取拿到关键文件&#34;&gt;固件提取场景：通过固件提取拿到关键文件&lt;/h3&gt;
+&lt;p&gt;将 NAND Flash 从 SoC 上拆下&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/takeoffnand.jpg&#34;
+        alt=&#34;takeoffnand&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;对引脚飞线，使用编程器提取里面的数据，然后将文件系统还原
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/nand_flash_137_0.jpeg&#34;
+        alt=&#34;nand_flash_137_0&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;随后就可以对 OpenCPU 方案的客户端程序进行分析，甚至可以拿到客户端的证书。
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/files.png&#34;
+        alt=&#34;files&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;在这些厂商中，只有 Telit 对 NAND Flash 使用了环氧树脂防拆，强行拆会把PCB也破坏
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/nand_flash_162_0.jpeg&#34;
+        alt=&#34;nand_flash_162_0&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;因此我们使用砂纸打磨，露出焊盘
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/nand_flash_162_1.jpeg&#34;
+        alt=&#34;nand_flash_162_1&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;再进行飞线操作
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/nand_dump.png&#34;
+        alt=&#34;nand_dump&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;如果不想飞线，刚好又能找到 JTAG 的接口，那么就能使用 OpenOCD 对固件进行提取，目前只有H厂有 JTAG 的标注，并且对于 JTAG 调试也有专门的安全建议，只不过开发者无视了这些内容。
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/jtag1.png&#34;
+        alt=&#34;jtag1&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;中断时机需要掌握好
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/jtag2.png&#34;
+        alt=&#34;jtag2&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;提取出文件，接下来就是逆向分析和调试了。调试的话 QEMU 是不能满足要求的，毕竟这些系统是都有大量安卓的特征，还有外围接口要模拟，不如直接使用开发板。&lt;/p&gt;
+&lt;h3 id=&#34;getshell-1通过网络访问调试服务&#34;&gt;GetShell-1：通过网络访问调试服务&lt;/h3&gt;
+&lt;p&gt;有些设备默认就开启了网络 ADB ，监听0.0.0.0。任何处于同一网络的设备都可以访问该服务。如果该 TCU 有 WLAN 功能，那么可以通过 AT 开启 WLAN ，或者使用已有的 WLAN 来访问网络 ADB 服务。否则就劫持移动网络吧。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/fakebts.png&#34;
+        alt=&#34;fakebts&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;只是速度不太理想&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/adb.png&#34;
+        alt=&#34;adb&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;对于某些未隔离的 APN 隧道的私网，可以在拿到一台设备的权限下，再横向拿到其他通信模组的权限。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/adb_no_filter.png&#34;
+        alt=&#34;adb_no_filter&#34;/&gt;&lt;/p&gt;
+&lt;h3 id=&#34;getshell-2通过硬件调试口拿到root-shell&#34;&gt;GetShell-2：通过硬件调试口拿到ROOT Shell&lt;/h3&gt;
+&lt;p&gt;有时会 cmdline 会直接配置tty指向外部UART口
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/UART.jpg&#34;
+        alt=&#34;UART&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;使用弱口令就可以拿到 Shell
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/uart_shell.png&#34;
+        alt=&#34;uart_shell&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;如果没有直接的 TTY ，也有其他方式通过 UART 拿到 Shell。
+对于Q厂的模组，可以使用UART发送 AT+QLINUXCMD=&amp;ldquo;your command&amp;rdquo; 执行命令，甚至将回显可以转发到GNSS 的 UART 口，&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;AT+QLINUXCMD=&amp;#34;ps&amp;#34; &amp;gt; /dev/ttyGS0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;有时他们会把这种指令禁用、不过不要紧。我们将通信模组的USB线飞出，使用AT切换USB的方法，修改USB的VID和PID，让系统把设备识别成Android设备，使用ADB就能对设备进行访问。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/USB_ID.png&#34;
+        alt=&#34;USB_ID&#34;/&gt;&lt;/p&gt;
+&lt;h3 id=&#34;getshell-3从下位机触发usb调试&#34;&gt;GetShell-3：从下位机触发USB调试&lt;/h3&gt;
+&lt;p&gt;有时 Tier 1 会在系统里预留一些后门，可以通过后门切换 USB 模式从而拿到 Shell&lt;/p&gt;
+&lt;p&gt;数据方向如下，在CAN总线或者在 MCU 与 LTE 模块的通信发送触发指令都可以实现，这是 Telit 的模块，后门是 Tier 1 编写的&lt;/p&gt;
+&lt;p&gt;CAN-bus-&amp;gt;MCU-&amp;gt;LTE Module&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/handler.png&#34;
+        alt=&#34;handler&#34;/&gt;
+&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/usb_composite.png&#34;
+        alt=&#34;usb_composite&#34;/&gt;&lt;/p&gt;
+&lt;h3 id=&#34;固件篡改场景&#34;&gt;固件篡改场景&lt;/h3&gt;
+&lt;p&gt;对于车规级通信模组， FOTA 大多数是交给第三方公司负责，F厂的设备使用Red Bend。再或者由 Tier 1 负责，一般都有自己的安全协议。有时也会通过 IVI 触发升级。现在的整车厂对传输原来越重视，这两年没有直接劫持移动网络篡改通信模组固件的案例，要么不是 OpenCPU 方案，要么就是使用了安全传输。大多数场景都是拿到 OTA 平台权限直接下发固件。&lt;/p&gt;
+&lt;p&gt;另外一种则是本地篡改，首先要获得固件，可以是提取也可以是源码编译。然后进入特定的模式，在 Telit 模块操作相应Pin 脚可以进去高通 9008 模式和 Fastboot 模式，这个 MDM96xx 系列没有公开的 Sahara，所以不能像手机取证那样提取固件，也不能像救砖那样刷写文件。但是重启到 Fastboot 就可以随便刷了。可以随便刷但不能随便启动，Telit 会验证签名。比如Q厂和H厂的有一些特殊的方式本地刷写固件，比如使用开发版固件、或者利用JTAG刷写。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;对于没有安全传输机制的 FOTA ，可以对传输的升级包篡改。&lt;/li&gt;
+&lt;li&gt;如果升级程序没有签名验证，那么固件可以成功刷入系统，大多数模组都支持签名验证。&lt;/li&gt;
+&lt;li&gt;如果修改了Boot等分区，有安全启动机制的通信模组，可以防止这种攻击，比如H厂，Q厂。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;思考&#34;&gt;思考&lt;/h2&gt;
+&lt;h3 id=&#34;这些攻击能造成哪些危害&#34;&gt;这些攻击能造成哪些危害？&lt;/h3&gt;
+&lt;p&gt;TCU有 CAN-bus 接口，对于 OpenCPU 方案，只要拿到了通信模组的ROOT权限，大多数场景可以刷写 MCU 固件，接入 TCU 所在 CAN-bus 域，从而进一步侵入汽车，甚至会影响到人身安全。&lt;/p&gt;
+&lt;h3 id=&#34;这些攻击到底是因为谁的错&#34;&gt;这些攻击到底是因为谁的错？&lt;/h3&gt;
+&lt;p&gt;以上攻击场景的漏洞，并不完全是通信模组厂商的问题，除了一些“硬伤”。最主要的还是 Tier 1 厂商设计初期没有考虑到安全问题。但是通信模组厂商也有义务唤醒 Tier 1 厂商的安全意识。&lt;/p&gt;
+&lt;h3 id=&#34;应该怎么做才不会发生这些问题&#34;&gt;应该怎么做才不会发生这些问题？&lt;/h3&gt;
+&lt;p&gt;这些通信模组在安全方面的差距，主要体现在产品开发过程和内置的系统。&lt;/p&gt;
+&lt;p&gt;首先，并不是不公开资料就能让模块变得安全。H厂公开的东西比Q厂多，但是如果考虑安全建议，H厂的设备还是要比Q厂安全一点。通信模组厂商应该在每个可能导致攻击的地方，给出生产环境应该注意的事项，让开发者知道。&lt;/p&gt;
+&lt;p&gt;另外在产品定位方面，Tier 1 厂商应该谨慎选择通信模组，如果是汽车，就应该使用车规级的模组。&lt;/p&gt;
+&lt;p&gt;开发者应该提高安全意识，攻击场景列出的不是配置问题就是自己加了后门。原理都很简单。&lt;/p&gt;
+&lt;p&gt;并不是每个 Tier 1 厂商都有能力开发出安全的系统，国内厂商的通信模组都是直接用的ROOT权限，既然是 OpenCPU 方案，就应该考虑到权限分配的问题。Sierra 通信模组就提供 legato 的系统，每个 Telematics 应用都在独立的沙箱。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/legato.png&#34;
+        alt=&#34;legato&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Telit 的通信模组，不仅在硬件层做了防护，里面的系统还用到了一些技巧，表面上是ROOT权限，实际上是 chroot 到了其他目录，而且没有完整的权限，连字符设备都访问不了。&lt;/p&gt;
+&lt;p&gt;工信部提出车的联网（智能网联汽车）产业发展行动计划，加上在2020年实施的&amp;quot;国六&amp;quot;排放政策，传统汽车在市场占有率会越来越低，取而代之的是网联汽车。因此，这也意味着未来网联汽车会面临许多安全问题，不论是现在的 Telematics 还是将来的 V2X ，都会用到通信模组。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;http://p0.qhimg.com/d/4g-module-attack-scenarios/connected_car_increasement.jpg&#34;
+        alt=&#34;Connected_Car_Increasement&#34;/&gt;&lt;/p&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.ndrc.gov.cn/zwfwzx/tztg/201801/W020180105612392352402.pdf&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;智能汽车创新发展战略（征求意见稿）&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://skygo.360.cn/2018/10/16/penetrate-intranet-via-tbox/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;黑客是如何从T-Box接入车厂内网的&lt;/a&gt;&lt;/p&gt;
 </description>
     </item>
     
