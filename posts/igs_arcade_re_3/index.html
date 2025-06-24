@@ -40,11 +40,11 @@ struct cramfs_info {
 	u32 blocks;
 	u32 files;
 };
-</code></pre><p>在get_cramfs_inode，有一个暗桩，用inode_magic异或根inode的magic，判断是否等于0x705DE1，如果不等于就出错。虽然简单，但是每个游戏都不一样，重复的patch工作也挺烦人的。
-下图的可读性看起来不错，是因为我做了一些费时间的工作。其实这里IDA的反编译一开始是识别错误的，和汇编完全不一样。要把结构体先还原了，这里的分支才会正确，不然就会丢失很多代码。</p>
+</code></pre><p>在get_cramfs_inode，有一个暗桩，用inode_magic异或根inode的magic，判断是否等于0x705DE1，如果不等于就出错。虽然简单，但是每个游戏都不一样，重复的patch工作也挺烦人的。</p>
+<p>下图的可读性看起来不错，是因为我做了一些费时间的工作。其实这里IDA的反编译一开始是识别错误的，和汇编完全不一样。要把结构体先还原了，这里的分支才会正确，不然就会丢失很多代码。</p>
 <p><img loading="lazy"  src="./get_inode.png"
         alt="get_inode"/></p>
-<p>我已经实现了cramfs重打包的功能 <a href="https://github.com/gorgiaxx/igs-toolkits/tree/master/"target="_blank" rel="noopener noreferrer">igs-toolkits cramfs-tools</a></p>
+<p>我已经实现了IGS cramfs重打包的功能 <a href="https://github.com/gorgiaxx/igs-toolkits/tree/master/"target="_blank" rel="noopener noreferrer">igs-toolkits cramfs-tools</a></p>
 <p>Unpack</p>
 <pre tabindex="0"><code>sudo ./igs-toolkits/cramfs-tools/cramfsck -v -x./out ./test.img
 </code></pre><p>Repack</p>
@@ -84,18 +84,24 @@ echo &#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin&#34
 </code></pre><p>在前文提到的启动脚本添加ssh启动命令</p>
 <pre tabindex="0"><code>/home/sshd -f /home/sshd_config -h /home/ssh_host_rsa_key -p 22 -E /PM2008v2/pm2_data/sshd.log &gt; /PM2008v2/pm2_data/sshd_run.log 2&gt;&amp;1
 </code></pre><h3 id="修复ifconfig并且启用网络">修复ifconfig并且启用网络</h3>
-<p>IGS 禁止了网络连接，我在游戏代码里看到是可以联网的，甚至还有DHCP服务。但是配置IP的逻辑写在代码里，尚不清楚是如何触发的（可能需要完整的台架环境）。</p>
-<p>ifconfig被失效了，懒得分析，自己重新编译一个。</p>
+<p>IGS 禁止了网络连接，我在游戏代码里看到是可以联网的，游戏有一个OnlineMode，早期是有全球排名的，但当前版本不支持，代码里有明显的修改痕迹。没有地方可以触发进入OnlineMode。</p>
+<p><img loading="lazy"  src="./nullsub.png"
+        alt="nullsub"/></p>
+<p>系统甚至还有DHCP服务。配置IP的逻辑写在代码里。</p>
+<p><img loading="lazy"  src="./network_enable.png"
+        alt="network_enable"/></p>
+<p>ifconfig被失效了，应该也是被魔改了，自己重新编译一个。</p>
 <pre tabindex="0"><code>/home/ifconfig eth0 up mtu 1500 &gt;&gt; /PM2008v2/pm2_data/game_stdout.log 2&gt;&amp;1
 /home/ifconfig eth0 192.168.2.128 netmask 255.255.255.0 broadcast 192.168.2.255 &gt;&gt; /PM2008v2/pm2_data/game_stdout.log 2&gt;&amp;1
 </code></pre><p>这样就可以连接外部网络了。</p>
 <p>我还编译了一版 busybox，遇到大量兼容性问题，做了一些patch，也花了很多时间才编译成功。二进制文件可以在这里下载</p>
 <p><a href="https://github.com/gorgiaxx/igs-toolkits/tree/master/E2000_binaries"target="_blank" rel="noopener noreferrer">https://github.com/gorgiaxx/igs-toolkits/tree/master/E2000_binaries</a></p>
 <p>将这些文件放到指定目录，然后重打包，写入CF卡，重启设备，ssh服务就可以直接访问了。</p>
-<p>由于没有回显，只能将stdout输出到rdisk4s4，也就是ext3分区，读取并挂在查看回显。花了很多时间才调试成功，这两条命令用了无数次。</p>
+<p>由于没有回显，只能将stdout输出到rdisk4s4，也就是ext3分区，读取并挂载查看回显。花了很多时间才调试成功，这两条命令用了无数次。</p>
 <pre tabindex="0"><code>sudo dd if=/dev/rdisk4s4 of=./rdisk4s4.img bs=1M &amp;&amp; rm -rf ./part4 &amp;&amp; 7z x ./rdisk4s4.img -o./part4
 </code></pre><pre tabindex="0"><code>sudo ../igs-toolkits/cramfs-tools/mkcramfs ./out test.img &amp;&amp; sudo dd if=./test.img of=/dev/rdisk4s2 bs=1M
 </code></pre><h2 id="游戏环境分析">游戏环境分析</h2>
+<p>E2000主机有两个I/O接口，控制指令来自外部，即使拿到root也玩不了游戏。</p>
 <h3 id="游戏主程序">游戏主程序</h3>
 <p>游戏主程序实际运行在/exec/PM2008v2 会启动3个进程</p>
 <p><img loading="lazy"  src="./shell.png"
@@ -247,12 +253,16 @@ Get Virtual address!!
 Clear CommandPort Complete.
 start
 </code></pre><p>代码里将dprintf逻辑移除了，所以不会打印日志。</p>
-<h2 id="吐槽">吐槽</h2>
-<p>上个月我都Linux电脑CPU缩肛了，死因是长期运行，散热不好，花了大量时间排查，然后迁移工具。
-以前写博客都是nvm到旧版node，运行Hexo框架生成静态页面，8年没有动过，那一堆乱七八糟的依赖，在MacOS很难跑起来，我不理解一个nodejs程序为什么要用到python3.8。
-迁移版hexo又遇到大量依赖问题，我都用asdf了，怎么还能这样？果断放弃Hexo，迁移博客到Hugo用了很多时间。</p>
-<p>现在遇到瓶颈了，因为节奏游戏的判断，是放到ASIC，ASIC把判定状态传递到CPU。主程序是没有判断逻辑的，自己写倒是没问题，但这还叫破解吗😂？只有破解了ASIC，才能完美模拟这些游戏。不知道今年能不能把ASIC破解。</p>
-<p>下一篇将分析PLXPCI协议，以及一些patch工作。</p>
+<h2 id="瓶颈">瓶颈</h2>
+<p>现在遇到瓶颈了，因为节奏游戏的命中判定，是放到ASIC，ASIC把判定状态传递到CPU。主程序是没有判定逻辑的。目前把ASIC27协议分析出来了，自己写判定逻辑倒是没问题，但这就不叫破解了。只有破解了ASIC，才能完美模拟这些游戏。接下来需要Dump ASIC的固件，难度很高，不知道今年能不能搞定。</p>
+<p>接下来还有两篇已经完成的工作，等有空再写。</p>
+<p>IGS Arcade 逆向系列（四）- ASIC27协议和TSGROM文件静态分析
+IGS Arcade 逆向系列（五）- ASIC27协议Hook和主程序patch工作</p>
+<h2 id="吐槽-hexo">吐槽 Hexo</h2>
+<p>上个月我都Linux电脑CPU缩肛了，死因是长期运行，散热不好，我花了大量时间排查，迁移工具，然后把博客环境迁移到新电脑。</p>
+<p>以前写博客都是nvm到旧版node，运行Hexo框架生成静态页面，8年没有动过。因为从那时起，hexo的依赖就很烦人，更新必出问题，导致我不敢更新。</p>
+<p>旧环境在MacOS很难跑起来，不管是源码安装还是brew安装都不行。我不理解一个nodejs项目为什么要用到python3.8。</p>
+<p>那一堆乱七八糟的依赖，用最新版Hexo也不行，很多主题都不兼容。我都用asdf了，怎么还能这样？果断放弃Hexo，迁移博客到Hugo用了很多时间。</p>
 </article><section class="article labels"><a class="category" href=/categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/>逆向工程</a><a class="tag" href=/tags/igs/>IGS</a><a class="tag" href=/tags/arcade/>Arcade</a><a class="tag" href=/tags/crack/>Crack</a><a class="tag" href=/tags/%E9%88%8A%E8%B1%A1%E7%94%B5%E5%AD%90/>鈊象电子</a><a class="tag" href=/tags/e2000/>E2000</a></section>
 </div>
 <div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/igs_arcade_re_2/"><span class="iconfont icon-article"></span>IGS Arcade 逆向系列（二）- 游戏文件恢复</a></p></section></div></section><section id="footer"><div class="footer-wrap">
