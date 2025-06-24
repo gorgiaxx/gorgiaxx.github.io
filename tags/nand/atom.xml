@@ -17,7 +17,7 @@
       <pubDate>Mon, 23 Jun 2025 23:03:18 +0800</pubDate>
       
       <guid>https://gorgias.me/posts/igs_arcade_re_3/</guid>
-      <description>&lt;p&gt;这段时间有不少进展，但是遇到瓶颈了，大概还有有三篇的量，最近很忙，先更新第三篇。&lt;/p&gt;
+      <description>&lt;p&gt;这段时间有不少进展，但是遇到瓶颈了，大概还有三篇的量，最近很忙，先更新第三篇。&lt;/p&gt;
 &lt;p&gt;我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -213,7 +213,7 @@ echo &amp;#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 4423c000-44322000 rw-p 01196000 00:00 0 
 443a7000-444b0000 rw-p 01301000 00:00 0 
 bfde2000-c0000000 rwxp ffde3000 00:00 0
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;游戏程序本身有大量符号，看起来像是编码后的数据，在此之前，我从来没接触过Big5编码，直接让deepseek帮我写了个脚本识别。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;游戏程序本身有大量字符串，看起来像是编码后的数据，在此之前，我从来没接触过Big5编码，直接让deepseek帮我写了个脚本识别。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;chardet&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;encodings.aliases&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;aliases&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
