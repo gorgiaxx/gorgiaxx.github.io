@@ -8,8 +8,14 @@
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
     <h1 class="article title">IGS Arcade 逆向系列（三）- Getshell</h1><p class="article date">Monday, June 23, 2025</p></section><article class="article markdown-body"><p>这段时间有不少进展，但是遇到瓶颈了，大概还有有三篇的量，最近很忙，先更新第三篇。</p>
 <p>我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。</p>
+<ul>
+<li>
 <p><a href="/posts/igs_arcade_re_1">IGS Arcade 逆向系列（一）- E2000平台分析</a></p>
+</li>
+<li>
 <p><a href="/posts/igs_arcade_re_2">IGS Arcade 逆向系列（二）- 游戏文件恢复</a></p>
+</li>
+</ul>
 <p>要高效分析游戏主程序，最好是设备上动态调试，首先需要shell权限。除了CF卡和IO口，我目前几乎没有任何对这个设备输入内容的途径。</p>
 <p>如果走串口调试，第一步找到硬件调试口，下一步修改kernel内置的boot command。很麻烦，还要重打包回去，不够优雅。</p>
 <p>CF卡有两个分区我可以直接写入，一个就是Kernel所在的Boot分区，另一个是日志和临时文件分区，那个说不定可以getshell，但是Pwn这个硬件不是我的目的。</p>
@@ -256,8 +262,10 @@ start
 <h2 id="瓶颈">瓶颈</h2>
 <p>现在遇到瓶颈了，因为节奏游戏的命中判定，是放到ASIC，ASIC把判定状态传递到CPU。主程序是没有判定逻辑的。目前把ASIC27协议分析出来了，自己写判定逻辑倒是没问题，但这就不叫破解了。只有破解了ASIC，才能完美模拟这些游戏。接下来需要Dump ASIC的固件，难度很高，不知道今年能不能搞定。</p>
 <p>接下来还有两篇已经完成的工作，等有空再写。</p>
-<p>IGS Arcade 逆向系列（四）- ASIC27协议和TSGROM文件静态分析
-IGS Arcade 逆向系列（五）- ASIC27协议Hook和主程序patch工作</p>
+<ul>
+<li>IGS Arcade 逆向系列（四）- ASIC27协议和TSGROM文件静态分析</li>
+<li>IGS Arcade 逆向系列（五）- ASIC27协议Hook和主程序patch工作</li>
+</ul>
 <h2 id="吐槽-hexo">吐槽 Hexo</h2>
 <p>上个月我都Linux电脑CPU缩肛了，死因是长期运行，散热不好，我花了大量时间排查，迁移工具，然后把博客环境迁移到新电脑。</p>
 <p>以前写博客都是nvm到旧版node，运行Hexo框架生成静态页面，8年没有动过。因为从那时起，hexo的依赖就很烦人，更新必出问题，导致我不敢更新。</p>
