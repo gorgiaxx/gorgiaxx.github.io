@@ -1,223 +1,513 @@
 <!DOCTYPE html>
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.147.8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark"><meta name="description" content="固件载体
-固件 (Firmware), 在港澳台称作韧体, 在手机领域又称作字库。它位于非易失性存储(Non-Volatile Memory，NVM)中，可以被读写。在嵌入式领域，最常见的NVM类型是ROM(read-only memory)和Flash Memory， 其中ROM包括Mask ROM、PROM、EPROM、EEPROM；现在主流的ROM就是EEPROM，一般是在MCU内部；而更加主流的外存一般都是Flash Memory。"><title>固件提取系列 UBI文件系统提取以及重打包&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.63f706677e61b4ee62b8daf083358d3bbf8ac8ab03c7d171af3180fab3a3ebb83efb79fb98674f13dde6db11de2bf694.css" integrity="sha384-Y/cGZ35htO5iuNrwgzWNO7&#43;KyKsDx9FxrzGA&#43;rOj67g&#43;&#43;3n7mGdPE93m2xHeK/aU"><meta name="twitter:card" content="summary" />
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+去年写的，不小心把github仓库弄成私有，Readme没了，重新传了个Readme，觉得有点不好意思。先把这篇文章放出来吧"><title>固件提取系列 UBI文件系统提取以及重打包&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.63f706677e61b4ee62b8daf083358d3bbf8ac8ab03c7d171af3180fab3a3ebb83efb79fb98674f13dde6db11de2bf694.css" integrity="sha384-Y/cGZ35htO5iuNrwgzWNO7&#43;KyKsDx9FxrzGA&#43;rOj67g&#43;&#43;3n7mGdPE93m2xHeK/aU"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="固件提取系列 UBI文件系统提取以及重打包" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="/about">About</a><a class="nav item" href="/links">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">固件提取系列 UBI文件系统提取以及重打包</h1><p class="article date">Saturday, December 28, 2019</p></section><article class="article markdown-body"><h2 id="固件载体">固件载体</h2>
-<p>固件 (Firmware), 在港澳台称作韧体, 在手机领域又称作字库。它位于非易失性存储(Non-Volatile Memory，NVM)中，可以被读写。在嵌入式领域，最常见的NVM类型是ROM(read-only memory)和Flash Memory， 其中ROM包括Mask ROM、PROM、EPROM、EEPROM；现在主流的ROM就是EEPROM，一般是在MCU内部；而更加主流的外存一般都是Flash Memory。</p>
-<p>在嵌入式设备中，除了使用最基本的NAND或者NOR Flash芯片，还可能会使用eMMC；扩展存储会用到SD卡，CF卡，HDD等；这些都是有一个主控再加一个存储区，主控和上位机通信，只要能访问主控，就能读写存储芯片的内容。对于eMMC、SD卡、CF卡、HDD之类的设备，它的主控对外有通用的接口，只要用读卡器或者烧录座就可以读取。但是对于SoC直接管理的存储芯片，并没有对外部的通用接口，但是主控都是驱动控制的，所以只要能访问内存（外围设备的地址）就行了，因此有一些JTAG读固件、IAP读取固件、U-Boot读取固件的技巧，是而且理论上主控坏了，我们还能从存储区读取出固件。</p>
-<p>只要是这些设备存放了操作系统，我把这原始的文件都称作固件。在嵌入式安全研究中，固件提取总是最初的工作，也是最重要的工作，决定了研究是否能继续下去。因此我决定整理这几年关于固件提取的知识分享出来。</p>
-<h2 id="eeprom-vs-nor-vs-nand-flash">EEPROM vs NOR vs NAND-Flash</h2>
-<p>由于EEPROM产品比Flash产品在擦写次数上有着更大的优势，再加上更小的尺寸和较低的擦写电流，因此成为车载应用中首选的存储技术。</p>
-<p>但是对于性能较高的设备，就要用到Flash。NAND对比NOR，支持XIP，而且读取速度很快，但是写入和擦除速度很慢。NAND 的容量要大很多，速度快，价格也相对便宜，但是可靠性较低。
-NAND以块为单位来访问数据，而NOR Flash可以随机访问数据。</p>
-<p>要与固件载体通信，修改里面的数据，就要有相应的协议。对于EEPROM，协议主要有I2C, SPI，其中SPI有多种模式。而NAND Flash使用的是Raw NAND协议，现在几乎都遵循ONFI标准。对于NOR Flash一般有SPI协议；SPI的Flash一般遵循JEDEC SFDP(JESD216)标准，而Parallel NOR支持JEDEC CFI(JESD68)标准。</p>
-<p>JEDEC：全称是Joint Electron Device Engineering Council 即电子元件工业联合会。JEDEC是由生产厂商们制定的国际性协议，JEDEC用来帮助程序读取Flash的制造商ID和设备ID，以确定Flash的大小和算法。</p>
-<p>注意：不一定所有芯片都遵循这些标准。</p>
-<h2 id="nor-package">NOR Package</h2>
-<p>NOR Flash 有并行和串行两种，串行一般是SOP封装，使用SPI协议。并行只有极少数BGA封装，一般是TSOP封装，TSOP-56, TFBGA-56, LFBGA-64。</p>
-<h2 id="nor-flash-pin-assignment">NOR Flash Pin Assignment</h2>
-<p>NOR Flash支持随机访问，因此擦除单位是Byte。这里指的是并行信号引脚，NOR的信号线和SRAM基本上是一样的。如果飞线会特别麻烦。</p>
+    <h1 class="article title">固件提取系列 UBI文件系统提取以及重打包</h1><p class="article date">Saturday, December 28, 2019</p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>去年写的，不小心把github仓库弄成私有，Readme没了，重新传了个Readme，觉得有点不好意思。先把这篇文章放出来吧</p>
+<p>UBI(Unsorted Block Images)全称未分类块镜像。由IBM公司设计，是一个基于Raw Flash设备的卷管理系统，可以在单个物理设备上管理多个逻辑卷，并且支持耗损均衡(wear-leveling)。广泛应用于嵌入式设备。</p>
+<p>提到Raw Flash，就要解释一下什么是MTD(Memory Technology Device)。MTD是用于访问Memory设备(尤其是Flash设备)的一个Linux子系统，作为硬件和文件系统之间的抽象层。以NAND Flash为例，MTD对NAND flash封装，为上层文件系统驱动提供抽象接口。MTD设备由擦除块(Eraseblocks)组成，MTD驱动提供了读写和擦除三种操作，但是在修改每个块之前都要先擦除。</p>
+<p><img loading="lazy"  src="./MTD_subsystem.png"
+        alt="MTD_subsystem"/></p>
+<h2 id="ubi结构">UBI结构</h2>
+<p>UBI有点像LVM(Logical Volume Management)，LVM提供逻辑扇区到物理扇区的映射，而UBI提供逻辑擦除块(LEB)到物理擦除块(PEB)的映射。从上述可知，UBI是以块为单位操作的。</p>
+<p>在每个UBI块（非坏块）的头部，有两个长度为64字节的头信息。</p>
+<ul>
+<li>EC header(erase counter header)，包含了每个PEB的信息(VID的偏移，数据的偏移)。</li>
+<li>VID Header(volume identifier header)，包含了卷ID和LEB对应PEB的编号。</li>
+</ul>
+<p>在Linux源码/linux/drivers/mtd/ubi目录，ubi-media.h内，有EC header和VID header的定义。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">ubi_ec_hdr</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">magic</span><span class="p">;</span> <span class="c1">// UBI#
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">version</span><span class="p">;</span> <span class="c1">// 01
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">padding1</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be64</span>  <span class="n">ec</span><span class="p">;</span> <span class="cm">/* Warning: the current limit is 31-bit anyway! */</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">vid_hdr_offset</span><span class="p">;</span> <span class="c1">// VID Header 的偏移
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__be32</span>  <span class="n">data_offset</span><span class="p">;</span>    <span class="c1">// 数据的偏移
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__be32</span>  <span class="n">image_seq</span><span class="p">;</span>      <span class="c1">// 物理块序号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">padding2</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">hdr_crc</span><span class="p">;</span>        <span class="c1">// CRC32
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="n">__packed</span><span class="p">;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * UBI volume type constants.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @UBI_DYNAMIC_VOLUME: dynamic volume
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @UBI_STATIC_VOLUME:  static volume
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="k">enum</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">UBI_DYNAMIC_VOLUME</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="n">UBI_STATIC_VOLUME</span>  <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">ubi_vid_hdr</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">magic</span><span class="p">;</span>      <span class="c1">// UBI!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">version</span><span class="p">;</span>    <span class="c1">// 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">vol_type</span><span class="p">;</span>   <span class="c1">// 一般是UBI_DYNAMIC_VOLUME
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">copy_flag</span><span class="p">;</span>  <span class="c1">// 是否从另一个物理块拷贝过来的(wear-leveling)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">compat</span><span class="p">;</span>     <span class="c1">// 卷兼容性
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__be32</span>  <span class="n">vol_id</span><span class="p">;</span>     <span class="c1">// 卷ID
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__be32</span>  <span class="n">lnum</span><span class="p">;</span>       <span class="c1">// LEB编号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">padding1</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">data_size</span><span class="p">;</span>  <span class="c1">// 数据大小
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__be32</span>  <span class="n">used_ebs</span><span class="p">;</span>   <span class="c1">// 用户LEB数量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__be32</span>  <span class="n">data_pad</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">data_crc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__u8</span>    <span class="n">padding2</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be64</span>  <span class="n">sqnum</span><span class="p">;</span>      <span class="c1">// 序号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">padding3</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">hdr_crc</span><span class="p">;</span>   <span class="c1">// CRC32
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="n">__packed</span><span class="p">;</span>
+</span></span></code></pre></div><p>ID为UBI_INTERNAL_VOL_START的卷，专门用来存放分卷表的记录。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define UBI_INTERNAL_VOL_START (0x7FFFFFFF - 4096)
+</span></span></span></code></pre></div><p>其中包含卷名</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">ubi_vtbl_record</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">reserved_pebs</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">alignment</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">data_pad</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__u8</span>    <span class="n">vol_type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__u8</span>    <span class="n">upd_marker</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be16</span>  <span class="n">name_len</span><span class="p">;</span>    <span class="c1">// 卷名长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">name</span><span class="p">[</span><span class="n">UBI_VOL_NAME_MAX</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>  <span class="c1">// 卷名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__u8</span>    <span class="n">flags</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__u8</span>    <span class="n">padding</span><span class="p">[</span><span class="mi">23</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">crc</span><span class="p">;</span>   <span class="c1">// CRC32
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="n">__packed</span><span class="p">;</span>
+</span></span></code></pre></div><p>一个MTD设备前面的部分一般用于存放Bootloader，后面用于UBI。下图只是一个简单的举例，实际情况可能是多个UBI和其他分区间接排列。UBI使用fastmap将LEB到映射到乱序的PEB，为UBIFS提供抽象接口。</p>
+<p><img loading="lazy"  src="./UBI_map.png"
+        alt="UBI_map"/></p>
+<h2 id="挂载ubifs">挂载UBIFS</h2>
+<p>MTD为提供了直接操作UBI的工具：MTD-Utils</p>
+<p><a href="http://git.infradead.org/mtd-utils.git"target="_blank" rel="noopener noreferrer">http://git.infradead.org/mtd-utils.git</a></p>
+<ul>
+<li>ubinfo - provides information about UBI devices and volumes found in the system;</li>
+<li>ubiattach - attaches MTD devices (which describe raw flash) to UBI and creates corresponding UBI devices;</li>
+<li>ubidetach - detaches MTD devices from UBI devices (the opposite to what ubiattach does);</li>
+<li>ubimkvol - creates UBI volumes on UBI devices;</li>
+<li>ubirmvol - removes UBI volumes from UBI devices;</li>
+<li>ubiblock - manages block interfaces for UBI volumes. See here for more information;</li>
+<li>ubiupdatevol - updates UBI volumes; this tool uses the UBI volume update feature which leaves the volume in &ldquo;corrupted&rdquo; state if the update was interrupted; additionally, this tool may be used to wipe out UBI volumes;</li>
+<li>ubicrc32 - calculates CRC-32 checksum of a file with the same initial seed as UBI would use;</li>
+<li>ubinize - generates UBI images;</li>
+<li>ubiformat - formats empty flash, erases flash and preserves erase counters, flashes UBI images to MTD devices;</li>
+<li>mtdinfo - reports information about MTD devices found in the system.</li>
+</ul>
+<p>上面的工具只能操作UBI，而一般电脑上没有MTD设备。当从嵌入式设备提取了原始的Flash固件，想要在电脑上读取，可以使用来模拟一个MTD设备。一般情况下，会使用到NANDSim。</p>
+<ul>
+<li>mtdram which simulates NOR flash in RAM;</li>
+<li>nandsim which simulates NAND flash in RAM;</li>
+<li>block2mtd which simulates NOR flash on top of a block device;</li>
+</ul>
+<p>首先看NANDSim的参数，一大堆参数该如何配置呢？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">$ modinfo nandsim
+</span></span><span class="line"><span class="cl">filename:       /lib/modules/4.18.10-arch1-1-ARCH/kernel/drivers/mtd/nand/raw/nandsim.ko.xz
+</span></span><span class="line"><span class="cl">description:    The NAND flash simulator
+</span></span><span class="line"><span class="cl">author:         Artem B. Bityuckiy
+</span></span><span class="line"><span class="cl">license:        GPL
+</span></span><span class="line"><span class="cl">srcversion:     D2FD00330F9BE30A9B28365
+</span></span><span class="line"><span class="cl">depends:        mtd,nand
+</span></span><span class="line"><span class="cl">retpoline:      Y
+</span></span><span class="line"><span class="cl">intree:         Y
+</span></span><span class="line"><span class="cl">name:           nandsim
+</span></span><span class="line"><span class="cl">vermagic:       4.18.10-arch1-1-ARCH SMP preempt mod_unload modversions
+</span></span><span class="line"><span class="cl">sig_id:         PKCS#7
+</span></span><span class="line"><span class="cl">signer:
+</span></span><span class="line"><span class="cl">sig_key:
+</span></span><span class="line"><span class="cl">sig_hashalgo:   md4
+</span></span><span class="line"><span class="cl">signature:
+</span></span><span class="line"><span class="cl">parm:           id_bytes:The ID bytes returned by NAND Flash &#39;read ID&#39; command (array of byte)
+</span></span><span class="line"><span class="cl">parm:           first_id_byte:The first byte returned by NAND Flash &#39;read ID&#39; command (manufacturer ID) (obsolete) (byte)
+</span></span><span class="line"><span class="cl">parm:           second_id_byte:The second byte returned by NAND Flash &#39;read ID&#39; command (chip ID) (obsolete) (byte)
+</span></span><span class="line"><span class="cl">parm:           third_id_byte:The third byte returned by NAND Flash &#39;read ID&#39; command (obsolete) (byte)
+</span></span><span class="line"><span class="cl">parm:           fourth_id_byte:The fourth byte returned by NAND Flash &#39;read ID&#39; command (obsolete) (byte)
+</span></span><span class="line"><span class="cl">parm:           access_delay:Initial page access delay (microseconds) (uint)
+</span></span><span class="line"><span class="cl">parm:           programm_delay:Page programm delay (microseconds (uint)
+</span></span><span class="line"><span class="cl">parm:           erase_delay:Sector erase delay (milliseconds) (uint)
+</span></span><span class="line"><span class="cl">parm:           output_cycle:Word output (from flash) time (nanoseconds) (uint)
+</span></span><span class="line"><span class="cl">parm:           input_cycle:Word input (to flash) time (nanoseconds) (uint)
+</span></span><span class="line"><span class="cl">parm:           bus_width:Chip&#39;s bus width (8- or 16-bit) (uint)
+</span></span><span class="line"><span class="cl">parm:           do_delays:Simulate NAND delays using busy-waits if not zero (uint)
+</span></span><span class="line"><span class="cl">parm:           log:Perform logging if not zero (uint)
+</span></span><span class="line"><span class="cl">parm:           dbg:Output debug information if not zero (uint)
+</span></span><span class="line"><span class="cl">parm:           parts:Partition sizes (in erase blocks) separated by commas (array of ulong)
+</span></span><span class="line"><span class="cl">parm:           badblocks:Erase blocks that are initially marked bad, separated by commas (charp)
+</span></span><span class="line"><span class="cl">parm:           weakblocks:Weak erase blocks [: remaining erase cycles (defaults to 3)] separated by commas e.g. 113:2 means eb 113 can be erased only twice before failing (charp)
+</span></span><span class="line"><span class="cl">parm:           weakpages:Weak pages [: maximum writes (defaults to 3)] separated by commas e.g. 1401:2 means page 1401 can be written only twice before failing (charp)
+</span></span><span class="line"><span class="cl">parm:           bitflips:Maximum number of random bit flips per page (zero by default) (uint)
+</span></span><span class="line"><span class="cl">parm:           gravepages:Pages that lose data [: maximum reads (defaults to 3)] separated by commas e.g. 1401:2 means page 1401 can be read only twice before failing (charp)
+</span></span><span class="line"><span class="cl">parm:           overridesize:Specifies the NAND Flash size overriding the ID bytes. The size is specified in erase blocks and as the exponent of a power of two e.g. 5 means a size of 32 erase blocks (uint)
+</span></span><span class="line"><span class="cl">parm:           cache_file:File to use to cache nand pages instead of memory (charp)
+</span></span><span class="line"><span class="cl">parm:           bbt:0 OOB, 1 BBT with marker in OOB, 2 BBT with marker in data area (uint)
+</span></span><span class="line"><span class="cl">parm:           bch:Enable BCH ecc and set how many bits should be correctable in 512-byte blocks (uint)
+</span></span></code></pre></div><p>可以去阅读内核驱动源码来了解NANDSim的实现，这里简单说明一下。首先由nandsim.c 调用nand_base.c中的nand_scan_ident，在nand_detect中会进行Read ID操作，nand_readid_op对NAND发送0x90,0x00。随后在nand_get_manufacturer，匹配厂商ID，最后在nand_scan_tail中初始化NAND芯片，设置各项属性。</p>
+<p>NANDFlash的芯片手册会表明ID的具体参数</p>
+<p>所以我们需要将ID设定正确，驱动会根据ID自动设置容量，页大小等数据。在NANDSim的参数只需要前四项。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">u_char</span> <span class="n">id_bytes</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONFIG_NANDSIM_FIRST_ID_BYTE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONFIG_NANDSIM_SECOND_ID_BYTE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONFIG_NANDSIM_THIRD_ID_BYTE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONFIG_NANDSIM_FOURTH_ID_BYTE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mi">4</span> <span class="p">...</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0xFF</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p>如果需要调整模拟NAND的参数，可以根据芯片手册上的数据表来选择。</p>
+<p><img loading="lazy"  src="./manufacturer_id_a.png"
+        alt="manufacturer_id_a"/>
+<img loading="lazy"  src="./manufacturer_id_b.png"
+        alt="manufacturer_id_b"/></p>
+<p>一般情况下，嵌入式设备的bootloader等其他分区都会和系统分区放在同一个芯片内。因此需要对NANDSim分区，该芯片的eraseblocks以128KB为单位，也就是0x20000。</p>
+<p>写一个脚本来寻找UBI的分布</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">binascii</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">struct</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Usage: find_ubi_header.py NAND.bin&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">raw_file_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">ubi_header</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;UBI#&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">out_of_ubi</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">raw_file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">raw_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rawbin</span> <span class="o">=</span> <span class="n">raw_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rawbin</span><span class="p">),</span> <span class="mh">0x20000</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">magic</span> <span class="o">=</span> <span class="n">rawbin</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">magic</span> <span class="o">==</span> <span class="n">ubi_header</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">out_of_ubi</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">out_of_ubi</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">                    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">UBI offset start:&#34;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="ow">not</span> <span class="n">out_of_ubi</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;UBI offset stop:&#34;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s2">&#34;</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">out_of_ubi</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">        <span class="n">raw_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ python find_ubi_header.py NAND.bin
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">UBI offset start: 0x2e60000
+</span></span><span class="line"><span class="cl">UBI offset stop: 0x6900000
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">UBI offset start: 0x7700000
+</span></span><span class="line"><span class="cl">UBI offset stop: 0x81c0000
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">UBI offset start: 0x8200000
+</span></span><span class="line"><span class="cl">UBI offset stop: 0x20000000
+</span></span></code></pre></div><p>512MB = 4096 * 128 KB，该芯片有4K个块。</p>
 <table>
   <thead>
       <tr>
-          <th>Symbol</th>
-          <th>Pin Name</th>
-          <th>Functions</th>
+          <th>PN</th>
+          <th>SA</th>
+          <th>EA</th>
+          <th>EC</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>A[MAX:0]</td>
-          <td>Address</td>
-          <td>读写操作发送的地址数据</td>
+          <td>xxx</td>
+          <td>0x00000000</td>
+          <td>0x02E60000</td>
+          <td>371</td>
       </tr>
       <tr>
-          <td>DQ[7:0]</td>
-          <td>Data Inputs/Outputs</td>
-          <td>用于输入输出命令和数据。</td>
+          <td>ubi1</td>
+          <td>0x02E60000</td>
+          <td>0x06900000</td>
+          <td>469</td>
       </tr>
       <tr>
-          <td>DQ[14:8]</td>
-          <td>Data Inputs/Outputs</td>
-          <td>用于输入输出命令和数据。</td>
+          <td>foo</td>
+          <td>0x06900000</td>
+          <td>0x069C0000</td>
+          <td>6</td>
       </tr>
       <tr>
-          <td>DQ15/A-1</td>
-          <td>Data Inputs/Outputs</td>
-          <td>数据或地址输入</td>
+          <td>recovery</td>
+          <td>0x069C0000</td>
+          <td>0x07700000</td>
+          <td>106</td>
       </tr>
       <tr>
-          <td>BYTE#</td>
-          <td>Byte/word organization select</td>
-          <td>选择8位或者16位</td>
+          <td>ubi2</td>
+          <td>0x07700000</td>
+          <td>0x081C0000</td>
+          <td>86</td>
       </tr>
       <tr>
-          <td>CE#</td>
-          <td>Chip Enable</td>
-          <td>芯片使能</td>
+          <td>sec</td>
+          <td>0x081C0000</td>
+          <td>0x08200000</td>
+          <td>2</td>
       </tr>
       <tr>
-          <td>RE#</td>
-          <td>Read Enable</td>
-          <td>读使能，数据在RE#脉冲的下降沿生效。</td>
-      </tr>
-      <tr>
-          <td>OE#</td>
-          <td>Output Enable</td>
-          <td>输出使能，当OE#是LOW时，读取周期会输出数据。当OE#是HIGH时，数据输出将处于高阻状态</td>
-      </tr>
-      <tr>
-          <td>WE#</td>
-          <td>Write Enable</td>
-          <td>写使能</td>
-      </tr>
-      <tr>
-          <td>WP#</td>
-          <td>Write Protect</td>
-          <td>提供意外情况的读、擦除保护，当WP#是低电平时，其他操作将无法进行。</td>
-      </tr>
-      <tr>
-          <td>RST#</td>
-          <td>Reset</td>
-          <td></td>
-      </tr>
-      <tr>
-          <td>RY/BY#</td>
-          <td>Read / Busy Output</td>
-          <td>如果处于编程、擦除或随机写入操作，R/B#信号将变低，当操作完成时会变回高电平。如果芯片未被选中或输出被禁用时，该信号是漏极开路并处于高阻状态，需要采用上拉电阻。</td>
-      </tr>
-      <tr>
-          <td>Vcc</td>
-          <td>Power</td>
-          <td>3.3V或1.8V常电</td>
-      </tr>
-      <tr>
-          <td>Vss</td>
-          <td>Ground</td>
-          <td>接地</td>
-      </tr>
-      <tr>
-          <td>NC</td>
-          <td>No Connection</td>
-          <td>无连接</td>
+          <td>ubi3</td>
+          <td>0x08200000</td>
+          <td>0x20000000</td>
+          <td>3056</td>
       </tr>
   </tbody>
 </table>
-<p>TSOP-56</p>
-<p><img loading="lazy"  src="./TSOP56.png"
-        alt="TSOP56"/></p>
-<h2 id="nand-flash">NAND Flash</h2>
-<p>NAND Flash属于非易失性存储器，对于嵌入式设备，一般使用SLC，单位是1-bit，是一种浮栅结构，可以捕获电子并且外部绝缘，断电之后可以保留数据。Flash都不支持覆盖，即写入操作只能在空或已擦除的单元内进行。</p>
-<p>擦除方法是在源极加正电压利用第一级浮空栅与漏极之间的隧道效应，将注入到浮空栅的负电荷吸引到源极。由于利用源极加正电压擦除，因此各单元的源极联在一起，这样，擦除不能按字节擦除，而是全片或者分块擦除。</p>
-<h2 id="nand-package">NAND Package</h2>
-<p>ONFI标准定义了一些常用的NAND封装，NAND Flash一般是TSOP和BGA的封装，都使用SMT的贴装方式。下图是不同封装的引脚定义。</p>
-<p>TSOP-48</p>
-<p><img loading="lazy"  src="./TSOP48.png"
-        alt="TSOP48"/></p>
-<p>BGA-63</p>
-<p><img loading="lazy"  src="./BGA63.png"
-        alt="BGA63"/></p>
-<h2 id="nand-flash-pin-assignment">NAND Flash Pin Assignment</h2>
-<p>NAND Flash并行输入输出，一般是8位I/O，也就是x8。图中具有上划线的引脚(在这里使用&quot;#&ldquo;号表示)，是低电平有效，该引脚默认应该是上拉的状态。</p>
-<table>
-  <thead>
-      <tr>
-          <th>Symbol</th>
-          <th>Pin Name</th>
-          <th>Functions</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>I/O x</td>
-          <td>Data Inputs/Outputs</td>
-          <td>用于输入输出命令、地址和数据。如果芯片未被选中或输出被禁用时，I/O口将处于高阻状态。</td>
-      </tr>
-      <tr>
-          <td>CLE</td>
-          <td>Command Latch Enable</td>
-          <td>指令锁存使能，当CLE为高时，在WE#脉冲的上升沿，指令被锁存到NAND指令寄存器中</td>
-      </tr>
-      <tr>
-          <td>ALE</td>
-          <td>Address Latch Enable</td>
-          <td>地址锁存使能，当ALE为高时，在WE#脉冲的上升沿，地址被锁存到NAND地址寄存器中。</td>
-      </tr>
-      <tr>
-          <td>CE#</td>
-          <td>Chip Enable</td>
-          <td>芯片使能，如果没有检测到CE信号，那么，NAND器件就保持待机模式，不对任何控制信号作出响应。</td>
-      </tr>
-      <tr>
-          <td>RE#</td>
-          <td>Read Enable</td>
-          <td>读使能，数据在RE#脉冲的下降沿生效。</td>
-      </tr>
-      <tr>
-          <td>WE#</td>
-          <td>Write Enable</td>
-          <td>写使能，WE#负责将数据、地址或指令写入NAND之中。这些操作将在WE#脉冲上升沿生效。</td>
-      </tr>
-      <tr>
-          <td>WP#</td>
-          <td>Write Protect</td>
-          <td>提供意外情况的读、擦除保护，当WP#是低电平时，其他操作将无法进行。</td>
-      </tr>
-      <tr>
-          <td>R/B#</td>
-          <td>Read / Busy Output</td>
-          <td>如果NAND处于编程、擦除或随机写入操作，R/B#信号将变低，当操作完成时会变回高电平。如果芯片未被选中或输出被禁用时，该信号是漏极开路并处于高阻状态，需要采用上拉电阻。</td>
-      </tr>
-      <tr>
-          <td>Vcc</td>
-          <td>Power</td>
-          <td>3.3V或1.8V常电</td>
-      </tr>
-      <tr>
-          <td>Vss</td>
-          <td>Ground</td>
-          <td>接地</td>
-      </tr>
-      <tr>
-          <td>NC</td>
-          <td>No Connection</td>
-          <td>无连接</td>
-      </tr>
-  </tbody>
-</table>
-<p><img loading="lazy"  src="./block_diagram.png"
-        alt="block_diagram"/></p>
-<h2 id="array-organization">Array Organization</h2>
-<p>ESMT厂商的某款8位NAND的阵列组织如下，一页有2048存储+64Cache字节，一个块含有64个页，该NAND Flash有1024个块，加上Cache就是1056M-bit。也就是128MB容量+4MB的缓存。</p>
-<p><img loading="lazy"  src="./array_organization.png"
-        alt="array_oragnization"/></p>
-<h2 id="固件读取的工具">固件读取的工具</h2>
-<p>这里说的是非扩展存储。固件提取按照读取方式，分为下列几种：脱机读取(Chip-Off)，在线读取，内部备份。</p>
-<p>内部备份，指拿到了设备权限，从块设备备份数据，或者从I2C、SPI驱动接口读取数据。</p>
-<p>在线读取，指在设备上外接工具、使用设备主芯片特有的调试接口，或者是存储芯片的通用接口读取数据。一般准备USB线束，或者使用JLink，USBDM之类的调试工具（也有很多冷门芯片需要特殊调试工具），属于IAP方式提取固件。</p>
-<p>脱机读取，把目标存储芯片拆下，使用烧录座和编程器读取。该方式读取成本较高，而且编程器和与芯片相配的主控不一定兼容，因此还要手动修复固件。</p>
-<p>在了解了芯片的标准和通信协议后，对于一些冷门的存储芯片，其实可以不依赖编程器。使用STM32、AVR或者树莓派都能完成固件提取工作。</p>
-<h2 id="嵌入式设备的应用">嵌入式设备的应用</h2>
-<p>NOR Flash和普通的内存比较像的一点是他们都可以支持随机访问，这使它也具有支持片内执行(XIP, eXecute In Place)的特性，可以像普通ROM一样执行程序。这点让它成为BIOS等开机就要执行的代码的绝佳载体。</p>
-<p>与NOR Flash不同的是，NAND不支持XIP，因此不能存放最开始的Bootloader。</p>
-<p>最早的手机等设备之中既有NOR Flash也有NAND Flash。NOR Flash很小，因为支持XIP，所以负责初始化系统并提供NAND Flash的驱动，类似Bootloader。而NAND Flash则存储数据和OS镜像。三星最早提出NOR less的概念，在它的CPU on die ROM中固化了NAND Flash的驱动，会把NAND flash的开始一小段拷贝到内存低端作为bootloader,这样昂贵的NOR Flash就被节省下来了，降低了手机主板成本和复杂度。渐渐NOR Flash在手机中慢慢消失了。</p>
-<p>NAND Flash相对NOR Flash更可能发生比特翻转，就必须采用错误探测/错误更正(EDC/ECC)算法，同时NAND Flash随着使用会渐渐产生坏块；通常需要有一个特殊的软件层，实现坏块管理、擦写均衡、ECC、垃圾回收等的功能，这一个软件层称为 FTL（Flash Translation Layer）。根据 FTL 所在的位置的不同，可以把 Flash Memory 分为 Raw Flash 和 Managed Flash 两类：</p>
-<p>最早大家都是使用Raw Flash，FTL全由驱动程序实现。后来发展到SD和eMMC等，则由硬主控实现。</p>
-<p>因此要读取原始NAND，还要考虑坏块管理，擦写平衡，ECC等功能。</p>
-<p>其中ECC是最难的地方，因为从编程器读取NAND很大可能会出现错误，需要纠错。大部分NAND Flash使用了硬件ECC，算法由硬件决定，对于SLC颗粒，一般使用hanming，BCH之类的算法，这些实现在网上都没有标准的源码，因此需要特殊途径搞到ECC算法。</p>
-<p>根据存储芯片应用特性，可以推断出它的用途是存放Bootloader，是系统，还是临时数据。根据芯片支持的规范，可以读取其中的内容。
-后续会分享一系列进阶的固件提取知识。</p>
+<p>加载MTD模块和NANDSim模块</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo modprobe mtd
+</span></span><span class="line"><span class="cl">sudo modprobe mtdblock
+</span></span><span class="line"><span class="cl">sudo modprobe nandsim <span class="nv">first_id_byte</span><span class="o">=</span>0x2c <span class="nv">second_id_byte</span><span class="o">=</span>0xac <span class="nv">third_id_byte</span><span class="o">=</span>0x90 <span class="nv">fourth_id_byte</span><span class="o">=</span>0x15 <span class="nv">parts</span><span class="o">=</span>371,469,6,106,86,2,3056
+</span></span></code></pre></div><p>查看MTD设备的信息，可以看到分区已经创建成功。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ mtdinfo -a
+</span></span><span class="line"><span class="cl">Count of MTD devices:           <span class="m">8</span>
+</span></span><span class="line"><span class="cl">Present MTD devices:            mtd0, mtd1, mtd2, mtd3, mtd4, mtd5, mtd6, mtd7
+</span></span><span class="line"><span class="cl">Sysfs interface supported:      yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mtd0
+</span></span><span class="line"><span class="cl">Name:                           NAND 512MiB 1,8V 8-bit
+</span></span><span class="line"><span class="cl">Type:                           nand
+</span></span><span class="line"><span class="cl">Eraseblock size:                <span class="m">131072</span> bytes, 128.0 KiB
+</span></span><span class="line"><span class="cl">Amount of eraseblocks:          <span class="m">4096</span> <span class="o">(</span><span class="m">536870912</span> bytes, 512.0 MiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Minimum input/output unit size: <span class="m">2048</span> bytes
+</span></span><span class="line"><span class="cl">Sub-page size:                  <span class="m">512</span> bytes
+</span></span><span class="line"><span class="cl">OOB size:                       <span class="m">64</span> bytes
+</span></span><span class="line"><span class="cl">Character device major/minor:   90:0
+</span></span><span class="line"><span class="cl">Bad blocks are allowed:         <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Device is writable:             <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mtd1
+</span></span><span class="line"><span class="cl">Name:                           NAND simulator partition <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Type:                           nand
+</span></span><span class="line"><span class="cl">Eraseblock size:                <span class="m">131072</span> bytes, 128.0 KiB
+</span></span><span class="line"><span class="cl">Amount of eraseblocks:          <span class="m">371</span> <span class="o">(</span><span class="m">48627712</span> bytes, 46.4 MiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Minimum input/output unit size: <span class="m">2048</span> bytes
+</span></span><span class="line"><span class="cl">Sub-page size:                  <span class="m">512</span> bytes
+</span></span><span class="line"><span class="cl">OOB size:                       <span class="m">64</span> bytes
+</span></span><span class="line"><span class="cl">Character device major/minor:   90:2
+</span></span><span class="line"><span class="cl">Bad blocks are allowed:         <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Device is writable:             <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mtd2
+</span></span><span class="line"><span class="cl">Name:                           NAND simulator partition <span class="m">1</span>
+</span></span><span class="line"><span class="cl">Type:                           nand
+</span></span><span class="line"><span class="cl">Eraseblock size:                <span class="m">131072</span> bytes, 128.0 KiB
+</span></span><span class="line"><span class="cl">Amount of eraseblocks:          <span class="m">469</span> <span class="o">(</span><span class="m">61472768</span> bytes, 58.6 MiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Minimum input/output unit size: <span class="m">2048</span> bytes
+</span></span><span class="line"><span class="cl">Sub-page size:                  <span class="m">512</span> bytes
+</span></span><span class="line"><span class="cl">OOB size:                       <span class="m">64</span> bytes
+</span></span><span class="line"><span class="cl">Character device major/minor:   90:4
+</span></span><span class="line"><span class="cl">Bad blocks are allowed:         <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Device is writable:             <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mtd3
+</span></span><span class="line"><span class="cl">Name:                           NAND simulator partition <span class="m">2</span>
+</span></span><span class="line"><span class="cl">Type:                           nand
+</span></span><span class="line"><span class="cl">Eraseblock size:                <span class="m">131072</span> bytes, 128.0 KiB
+</span></span><span class="line"><span class="cl">Amount of eraseblocks:          <span class="m">6</span> <span class="o">(</span><span class="m">786432</span> bytes, 768.0 KiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Minimum input/output unit size: <span class="m">2048</span> bytes
+</span></span><span class="line"><span class="cl">Sub-page size:                  <span class="m">512</span> bytes
+</span></span><span class="line"><span class="cl">OOB size:                       <span class="m">64</span> bytes
+</span></span><span class="line"><span class="cl">Character device major/minor:   90:6
+</span></span><span class="line"><span class="cl">Bad blocks are allowed:         <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Device is writable:             <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mtd4
+</span></span><span class="line"><span class="cl">Name:                           NAND simulator partition <span class="m">3</span>
+</span></span><span class="line"><span class="cl">Type:                           nand
+</span></span><span class="line"><span class="cl">Eraseblock size:                <span class="m">131072</span> bytes, 128.0 KiB
+</span></span><span class="line"><span class="cl">Amount of eraseblocks:          <span class="m">106</span> <span class="o">(</span><span class="m">13893632</span> bytes, 13.2 MiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Minimum input/output unit size: <span class="m">2048</span> bytes
+</span></span><span class="line"><span class="cl">Sub-page size:                  <span class="m">512</span> bytes
+</span></span><span class="line"><span class="cl">OOB size:                       <span class="m">64</span> bytes
+</span></span><span class="line"><span class="cl">Character device major/minor:   90:8
+</span></span><span class="line"><span class="cl">Bad blocks are allowed:         <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Device is writable:             <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mtd5
+</span></span><span class="line"><span class="cl">Name:                           NAND simulator partition <span class="m">4</span>
+</span></span><span class="line"><span class="cl">Type:                           nand
+</span></span><span class="line"><span class="cl">Eraseblock size:                <span class="m">131072</span> bytes, 128.0 KiB
+</span></span><span class="line"><span class="cl">Amount of eraseblocks:          <span class="m">86</span> <span class="o">(</span><span class="m">11272192</span> bytes, 10.8 MiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Minimum input/output unit size: <span class="m">2048</span> bytes
+</span></span><span class="line"><span class="cl">Sub-page size:                  <span class="m">512</span> bytes
+</span></span><span class="line"><span class="cl">OOB size:                       <span class="m">64</span> bytes
+</span></span><span class="line"><span class="cl">Character device major/minor:   90:10
+</span></span><span class="line"><span class="cl">Bad blocks are allowed:         <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Device is writable:             <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mtd6
+</span></span><span class="line"><span class="cl">Name:                           NAND simulator partition <span class="m">5</span>
+</span></span><span class="line"><span class="cl">Type:                           nand
+</span></span><span class="line"><span class="cl">Eraseblock size:                <span class="m">131072</span> bytes, 128.0 KiB
+</span></span><span class="line"><span class="cl">Amount of eraseblocks:          <span class="m">2</span> <span class="o">(</span><span class="m">262144</span> bytes, 256.0 KiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Minimum input/output unit size: <span class="m">2048</span> bytes
+</span></span><span class="line"><span class="cl">Sub-page size:                  <span class="m">512</span> bytes
+</span></span><span class="line"><span class="cl">OOB size:                       <span class="m">64</span> bytes
+</span></span><span class="line"><span class="cl">Character device major/minor:   90:12
+</span></span><span class="line"><span class="cl">Bad blocks are allowed:         <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Device is writable:             <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mtd7
+</span></span><span class="line"><span class="cl">Name:                           NAND simulator partition <span class="m">6</span>
+</span></span><span class="line"><span class="cl">Type:                           nand
+</span></span><span class="line"><span class="cl">Eraseblock size:                <span class="m">131072</span> bytes, 128.0 KiB
+</span></span><span class="line"><span class="cl">Amount of eraseblocks:          <span class="m">3056</span> <span class="o">(</span><span class="m">400556032</span> bytes, 382.0 MiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Minimum input/output unit size: <span class="m">2048</span> bytes
+</span></span><span class="line"><span class="cl">Sub-page size:                  <span class="m">512</span> bytes
+</span></span><span class="line"><span class="cl">OOB size:                       <span class="m">64</span> bytes
+</span></span><span class="line"><span class="cl">Character device major/minor:   90:14
+</span></span><span class="line"><span class="cl">Bad blocks are allowed:         <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Device is writable:             <span class="nb">true</span>
+</span></span></code></pre></div><p>通过dmesg可以看到加载的具体信息，包括芯片信息和分区信息。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">$ dmesg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[13202.334289] nand: device found, Manufacturer ID: 0x2c, Chip ID: 0xac
+</span></span><span class="line"><span class="cl">[13202.334290] nand: Micron NAND 512MiB 1,8V 8-bit
+</span></span><span class="line"><span class="cl">[13202.334291] nand: 512 MiB, SLC, erase size: 128 KiB, page size: 2048, OOB size: 64
+</span></span><span class="line"><span class="cl">[13202.334299] flash size: 512 MiB
+</span></span><span class="line"><span class="cl">[13202.334299] page size: 2048 bytes
+</span></span><span class="line"><span class="cl">[13202.334300] OOB area size: 64 bytes
+</span></span><span class="line"><span class="cl">[13202.334300] sector size: 128 KiB
+</span></span><span class="line"><span class="cl">[13202.334301] pages number: 262144
+</span></span><span class="line"><span class="cl">[13202.334301] pages per sector: 64
+</span></span><span class="line"><span class="cl">[13202.334302] bus width: 8
+</span></span><span class="line"><span class="cl">[13202.334302] bits in sector size: 17
+</span></span><span class="line"><span class="cl">[13202.334302] bits in page size: 11
+</span></span><span class="line"><span class="cl">[13202.334303] bits in OOB size: 6
+</span></span><span class="line"><span class="cl">[13202.334304] flash size with OOB: 540672 KiB
+</span></span><span class="line"><span class="cl">[13202.334304] page address bytes: 5
+</span></span><span class="line"><span class="cl">[13202.334304] sector address bytes: 3
+</span></span><span class="line"><span class="cl">[13202.334305] options: 0x8
+</span></span><span class="line"><span class="cl">[13202.334779] Scanning device for bad blocks
+</span></span><span class="line"><span class="cl">[13202.358806] Creating 7 MTD partitions on &#34;NAND 512MiB 1,8V 8-bit&#34;:
+</span></span><span class="line"><span class="cl">[13202.358810] 0x000000000000-0x000002e60000 : &#34;NAND simulator partition 0&#34;
+</span></span><span class="line"><span class="cl">[13202.360129] 0x000002e60000-0x000006900000 : &#34;NAND simulator partition 1&#34;
+</span></span><span class="line"><span class="cl">[13202.360835] 0x000006900000-0x0000069c0000 : &#34;NAND simulator partition 2&#34;
+</span></span><span class="line"><span class="cl">[13202.361180] 0x0000069c0000-0x000007700000 : &#34;NAND simulator partition 3&#34;
+</span></span><span class="line"><span class="cl">[13202.363506] 0x000007700000-0x0000081c0000 : &#34;NAND simulator partition 4&#34;
+</span></span><span class="line"><span class="cl">[13202.365146] 0x0000081c0000-0x000008200000 : &#34;NAND simulator partition 5&#34;
+</span></span><span class="line"><span class="cl">[13202.366440] 0x000008200000-0x000020000000 : &#34;NAND simulator partition 6&#34;
+</span></span></code></pre></div><p>也可以通过下面的命令查看MTD分区表</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo cat /proc/mtd
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dev:    size   erasesize  name
+</span></span><span class="line"><span class="cl">mtd0: <span class="m">20000000</span> <span class="m">00020000</span> <span class="s2">&#34;NAND 512MiB 1,8V 8-bit&#34;</span>
+</span></span><span class="line"><span class="cl">mtd1: 02e60000 <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 0&#34;</span>
+</span></span><span class="line"><span class="cl">mtd2: 03aa0000 <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 1&#34;</span>
+</span></span><span class="line"><span class="cl">mtd3: 000c0000 <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 2&#34;</span>
+</span></span><span class="line"><span class="cl">mtd4: 00d40000 <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 3&#34;</span>
+</span></span><span class="line"><span class="cl">mtd5: 00ac0000 <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 4&#34;</span>
+</span></span><span class="line"><span class="cl">mtd6: <span class="m">00040000</span> <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 5&#34;</span>
+</span></span><span class="line"><span class="cl">mtd7: 17e00000 <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 6&#34;</span>
+</span></span></code></pre></div><p>MTD0是整个MTD设备，将提取出的固件写入MTD设备，因为是在内存中模拟，所以速度很快。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo dd <span class="k">if</span><span class="o">=</span>NAND.bin <span class="nv">of</span><span class="o">=</span>/dev/mtd0 <span class="nv">bs</span><span class="o">=</span>512M <span class="nv">count</span><span class="o">=</span><span class="m">1</span>
+</span></span></code></pre></div><p>查看ubi模块信息，会发现有mtd参数，实际上使用此参数会出错，因为默认的VID Header长度为512。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo modprobe ubi <span class="nv">mtd</span><span class="o">=</span><span class="m">0</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dmesg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429799<span class="o">]</span> ubi0: attaching mtd5
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429924<span class="o">]</span> ubi0 error: validate_ec_hdr <span class="o">[</span>ubi<span class="o">]</span>: bad VID header offset 2048, expected <span class="m">512</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429937<span class="o">]</span> ubi0 error: validate_ec_hdr <span class="o">[</span>ubi<span class="o">]</span>: bad EC header
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429944<span class="o">]</span> Erase counter header dump:
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429946<span class="o">]</span>  magic          0x55424923
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429948<span class="o">]</span>  version        <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429950<span class="o">]</span>  ec             <span class="m">5</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429952<span class="o">]</span>  vid_hdr_offset <span class="m">2048</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429953<span class="o">]</span>  data_offset    <span class="m">4096</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429955<span class="o">]</span>  image_seq      <span class="m">34870392</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429957<span class="o">]</span>  hdr_crc        0x11db9c17
+</span></span></code></pre></div><p>因此需要先挂载UBI模块，然后使用MTD-Utils的UBI Attach指定相关参数。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo modprobe ubi
+</span></span><span class="line"><span class="cl">sudo ubiattach /dev/ubi_ctrl -m <span class="m">2</span> -O <span class="m">2048</span> 
+</span></span></code></pre></div><p>接下来可以看到挂载成功的信息</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>43880.484837<span class="o">]</span> ubi0: default fastmap pool size: <span class="m">20</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.484841<span class="o">]</span> ubi0: default fastmap WL pool size: <span class="m">10</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.484843<span class="o">]</span> ubi0: attaching mtd2
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.486802<span class="o">]</span> ubi0: attached by fastmap
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.486806<span class="o">]</span> ubi0: fastmap pool size: <span class="m">20</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.486808<span class="o">]</span> ubi0: fastmap WL pool size: <span class="m">10</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491518<span class="o">]</span> ubi0: attached mtd2 <span class="o">(</span>name <span class="s2">&#34;NAND simulator partition 1&#34;</span>, size <span class="m">58</span> MiB<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491521<span class="o">]</span> ubi0: PEB size: <span class="m">131072</span> bytes <span class="o">(</span><span class="m">128</span> KiB<span class="o">)</span>, LEB size: <span class="m">126976</span> bytes
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491523<span class="o">]</span> ubi0: min./max. I/O unit sizes: 2048/2048, sub-page size <span class="m">512</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491525<span class="o">]</span> ubi0: VID header offset: <span class="m">2048</span> <span class="o">(</span>aligned 2048<span class="o">)</span>, data offset: <span class="m">4096</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491527<span class="o">]</span> ubi0: good PEBs: 469, bad PEBs: 0, corrupted PEBs: <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491529<span class="o">]</span> ubi0: user volume: 1, internal volumes: 1, max. volumes count: <span class="m">128</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491532<span class="o">]</span> ubi0: max/mean erase counter: 14/5, WL threshold: 4096, image sequence number: <span class="m">1328192</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491534<span class="o">]</span> ubi0: available PEBs: 0, total reserved PEBs: 469, PEBs reserved <span class="k">for</span> bad PEB handling: <span class="m">80</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491617<span class="o">]</span> ubi0: background thread <span class="s2">&#34;ubi_bgt0d&#34;</span> started, PID <span class="m">25777</span>
+</span></span></code></pre></div><p>随后指定文件系统UBIFS进行挂载，可以成功读取到文件系统里的内容。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ mkdir /tmp/modem
+</span></span><span class="line"><span class="cl">$ sudo mount -t ubifs ubi0_0 /tmp/modem
+</span></span><span class="line"><span class="cl">$ ls /tmp/image
+</span></span><span class="line"><span class="cl">bdwlan30.bin  mba.b03  mba.mdt    modem.b03  modem.b08  modem.b12  modem.b16  modem.b22  otp30.bin
+</span></span><span class="line"><span class="cl">mba.b00       mba.b04  modem.b00  modem.b05  modem.b09  modem.b13  modem.b19  modem.b23  qwlan30.bin
+</span></span><span class="line"><span class="cl">mba.b01       mba.b05  modem.b01  modem.b06  modem.b10  modem.b14  modem.b20  modem.b24  utf30.bin
+</span></span><span class="line"><span class="cl">mba.b02       mba.mbn  modem.b02  modem.b07  modem.b11  modem.b15  modem.b21  modem.mdt
+</span></span></code></pre></div><p>有时候在UBI之上会使用SquashFS，因此常规的挂载方法会失效</p>
+<pre tabindex="0"><code>[  214.800087] UBIFS error (ubi0:0 pid 3848): ubifs_read_node [ubifs]: bad node type (1 but expected 6)
+[  214.800093] UBIFS error (ubi0:0 pid 3848): ubifs_read_node [ubifs]: bad node at LEB 0:0, LEB mapping status 1
+[  214.800094] Not a node, first 24 bytes:
+[  214.800095] 00000000: 68 73 71 73 46 0c 00 00 5a 9c 25 5d 00 00 02 00 ac 00 00 00 01 00 11 00                          hsqsF
+</code></pre><p>这里的hsqs是SquashFS的Magic，因此只需要将UBI用squashfs挂载即可</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo dd <span class="k">if</span><span class="o">=</span>/dev/ubi0_0 <span class="nv">of</span><span class="o">=</span>./ubi0_0
+</span></span><span class="line"><span class="cl">unsquashfs ./ubi0_0
+</span></span></code></pre></div><p>卸载操作如下</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo umount MOUNTED_DIR
+</span></span><span class="line"><span class="cl">sudo ubidetach /dev/ubi_ctrl -m <span class="m">0</span>
+</span></span><span class="line"><span class="cl">sudo modprobe -r ubi
+</span></span><span class="line"><span class="cl">sudo modprobe -r nandsim
+</span></span></code></pre></div><h2 id="使用ubi-reader进行读取">使用UBI Reader进行读取</h2>
+<p>下载或使用PIP安装，<a href="https://github.com/jrspruitt/ubi_reader"target="_blank" rel="noopener noreferrer">https://github.com/jrspruitt/ubi_reader</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pip install ubi_reader
+</span></span></code></pre></div><p>先看是否准确识别UBI信息</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubireader_display_info <span class="o">[</span>options<span class="o">]</span> path/to/file
+</span></span></code></pre></div><p>完全提取文件，但是遇到其他文件系统就会失败。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubireader_extract_files <span class="o">[</span>options<span class="o">]</span> path/to/file
+</span></span></code></pre></div><p>所以建议先还原PEB到LEB，然后再对其各个卷进行分析。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubireader_extract_images <span class="o">[</span>options<span class="o">]</span> path/to/file
+</span></span></code></pre></div><h2 id="ubi重打包">UBI重打包</h2>
+<p>挂载UBIFS之后，有可能需要修改文件重打包，使用dd命令不可行。</p>
+<p>首先记住ubiattach命令后的回显，会打印出LEB信息</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo ubiattach /dev/ubi_ctrl -m <span class="m">7</span> -O <span class="m">2048</span>
+</span></span><span class="line"><span class="cl">UBI device number 0, total <span class="m">240</span> LEBs <span class="o">(</span><span class="m">30474240</span> bytes, 29.1 MiB<span class="o">)</span>, available <span class="m">0</span> LEBs <span class="o">(</span><span class="m">0</span> bytes<span class="o">)</span>, LEB size <span class="m">126976</span> bytes <span class="o">(</span>124.0 KiB<span class="o">)</span>
+</span></span></code></pre></div><p>总共240个LEB，每个LEB占用12696字节，在mkfs里把ubifs的参数填入，打包成UBIFS。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># mtd5</span>
+</span></span><span class="line"><span class="cl">sudo mkfs.ubifs -m <span class="m">2048</span> -e <span class="m">126976</span> -c <span class="m">240</span> -F -r ./UBI_1 rootfs.img
+</span></span><span class="line"><span class="cl"><span class="c1"># mtd9</span>
+</span></span><span class="line"><span class="cl">sudo mkfs.ubifs -m <span class="m">2048</span> -e <span class="m">126976</span> -c <span class="m">240</span> -F -r ./UBI_2 rootfs.img
+</span></span><span class="line"><span class="cl">sudo mkfs.ubifs -m <span class="m">2048</span> -e <span class="m">126976</span> -c <span class="m">240</span> -R <span class="m">1</span> -x lzo -r ./UBI_1 rootfs.img
+</span></span><span class="line"><span class="cl">sudo mkfs.ubifs -m <span class="m">2048</span> -e <span class="m">126976</span> -c <span class="m">240</span> -x lzo -r ./rootfs rootfs.img
+</span></span></code></pre></div><p>新建ubi_config.ini文件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vi ubi_config.ini
+</span></span></code></pre></div><p>vol_size一定要和image的尺寸对应，最后一行为空，否则报错
+ubinize: error!: cannot load the input ini file &ldquo;ubi_config.ini&rdquo;</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[rootfs]</span>
+</span></span><span class="line"><span class="cl"><span class="na">mode</span><span class="o">=</span><span class="s">ubi</span>
+</span></span><span class="line"><span class="cl"><span class="na">image</span><span class="o">=</span><span class="s">rootfs.img</span>
+</span></span><span class="line"><span class="cl"><span class="na">vol_id</span><span class="o">=</span><span class="s">0</span>
+</span></span><span class="line"><span class="cl"><span class="na">vol_size</span><span class="o">=</span><span class="s">9904128</span>
+</span></span><span class="line"><span class="cl"><span class="na">vol_type</span><span class="o">=</span><span class="s">dynamic</span>
+</span></span><span class="line"><span class="cl"><span class="na">vol_name</span><span class="o">=</span><span class="s">rootfs</span>
+</span></span><span class="line"><span class="cl"><span class="na">vol_alignment</span><span class="o">=</span><span class="s">1</span>
+</span></span><span class="line"><span class="cl"><span class="na">vol_flags</span><span class="o">=</span><span class="s">autoresize</span>
+</span></span></code></pre></div><p>最后用ubinize生成UBI文件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo ubinize -o rootfs.ubi -p <span class="m">131072</span> -m <span class="m">2048</span> -s <span class="m">512</span> -e <span class="m">2</span> -Q <span class="m">0</span> -O <span class="m">2048</span> -x1 ubi_config.ini
+</span></span></code></pre></div><p>-e 是擦除块的数量，默认是0，可以用binwalk快速查看
+-Q 是映像的顺序号，可用ubi_display_info查看
+-x 是UBI的版本，默认是1
+-s 是子页大小，不是所有的NAND都有子页，一般来说SLC颗粒的2048字节的NAND页是由4个512字节的子页组成，MLC没有子页
+-m 是页大小
+-p 是物理块大小，一个物理块一般有64页，参考NAND Flash手册</p>
+<p>下面是给mtd7烧写rootfs.ubi</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo ubinize -v -o rootfs.ubi -p <span class="m">131072</span> -m <span class="m">2048</span> -s <span class="m">512</span> -O <span class="m">2048</span> ubi_config.ini
+</span></span><span class="line"><span class="cl">sudo ubiformat /dev/mtd7 -O <span class="m">2048</span> -s <span class="m">512</span> -f rootfs.ubi
+</span></span></code></pre></div><p>如果是SquashFS的文件系统，那么不需要构建ubifs，在修改完系统内容后，直接用mksquashfs打包SquashFS，一定要用相应的权限打包，如果目标系统是root，那么就在root下打包。后续操作就是用ubinize打包成UBI。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo mksquashfs ./squashfs-root/* rootfs.squashfs
+</span></span></code></pre></div><p><img loading="lazy"  src="./UBIFS.png"
+        alt="UBIFS"/></p>
 <h2 id="reference">Reference</h2>
-<p><a href="http://aturing.umcs.maine.edu/~meadow/courses/cos335/Toshiba%20NAND_vs_NOR_Flash_Memory_Technology_Overviewt.pdf"target="_blank" rel="noopener noreferrer">NAND vs. NOR Flash Memory Technology Overview</a></p>
-<p><a href="https://flashdba.com/2014/06/20/understanding-flash-blocks-pages-and-program-erases/"target="_blank" rel="noopener noreferrer">Understanding Flash: Blocks, Pages and Program / Erases</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/26745577"target="_blank" rel="noopener noreferrer">UEFI Blog 杂谈闪存二：NOR和NAND Flash</a></p>
-<p><a href="https://www.design-reuse.com/articles/24503/nand-flash-memory-embedded-systems.html"target="_blank" rel="noopener noreferrer">NAND Flash memory in embedded systems</a></p>
-<p><a href="https://www.jedec.org/"target="_blank" rel="noopener noreferrer">JEDEC</a></p>
-<p><a href="http://www.onfi.org/"target="_blank" rel="noopener noreferrer">ONFI</a></p>
+<p><a href="http://www.linux-mtd.infradead.org/"target="_blank" rel="noopener noreferrer">Memory Technology Devices</a></p>
+<p><a href="http://www.linux-mtd.infradead.org/doc/ubidesign/ubidesign.pdf"target="_blank" rel="noopener noreferrer">UBI - Unsorted Block Images</a></p>
+<p><a href="https://baurine.netlify.com/"target="_blank" rel="noopener noreferrer">挂载和反向制作 ubi 镜像</a></p>
 </article><section class="article labels"><a class="category" href=/categories/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97/>固件提取系列</a><a class="tag" href=/tags/nand/>NAND</a><a class="tag" href=/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%AE%89%E5%85%A8/>嵌入式安全</a><a class="tag" href=/tags/iot/>IoT</a></section>
 </div>
 <div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/jvmti%E5%8A%A0%E5%AF%86%E4%BF%9D%E6%8A%A4%E7%BB%95%E8%BF%87/"><span class="iconfont icon-article"></span>JVMTI加密保护绕过</a></p><p><a class="link" href="/posts/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97-%E5%9B%BA%E4%BB%B6%E8%BD%BD%E4%BD%93/"><span class="iconfont icon-article"></span>固件提取系列 固件载体</a></p></section></div></section><section id="footer"><div class="footer-wrap">
