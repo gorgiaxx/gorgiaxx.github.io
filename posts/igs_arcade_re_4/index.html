@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.147.8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.147.8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="嵌入式架构分析
 IGS的反盗版技术上不难，但是非常诡异，可能是代码写的太烂了。"><title>IGS Arcade 逆向系列（四）- ASIC27协议和TSGROM文件静态分析&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.63f706677e61b4ee62b8daf083358d3bbf8ac8ab03c7d171af3180fab3a3ebb83efb79fb98674f13dde6db11de2bf694.css" integrity="sha384-Y/cGZ35htO5iuNrwgzWNO7&#43;KyKsDx9FxrzGA&#43;rOj67g&#43;&#43;3n7mGdPE93m2xHeK/aU"><meta name="twitter:card" content="summary" />
@@ -302,7 +302,7 @@ fec00000-ffffffff : reserved
 <p>a27_has_message + inet_password_data + rd_is_light_io_reset + error_number + asic27_error + coin_inserted + system_mode[0] + buffer_size</p>
 <h3 id="buffer-混淆分析">Buffer 混淆分析</h3>
 <p>Percussion Master 2008对比旧版本，增加了简易混淆，目的是反盗版，避免拷贝ROM直接运行。当从缓冲区拷贝到 ASIC 27 buffer时，数据就会被混淆处理。</p>
-<p>混淆的前提条件是 System Mode 符合下列值才会触发，刚好这些 mode 的数据都没有Write状态机被预处理。</p>
+<p>混淆的前提条件是 System Mode 符合下列值才会触发，刚好这些 mode 的数据都没有被Write状态机预处理。</p>
 <ul>
 <li>0x7: SelMode，IGS Logo</li>
 <li>0x8: Teammark</li>
@@ -441,11 +441,15 @@ Found 174 image data zones
         alt="tsgrom_extracted"/></p>
 <h3 id="action-parser">Action Parser</h3>
 <p>IGS 的 TSGROM 定义了游戏的各种图形行为，并称之为 action，主程序通过解析 action 来实现功能。如果是要重写一个ASIC27软件，那么需要逆向分析 action parser，但是我想尝试最完美的破解方式，dump ASIC ROM 放到模拟器运行。不想分析这种屎山代码。</p>
-<p>ACT BLOCK   数据块数量
-ACT INDEX   ACT 索引
-ACT DATA    Action 数据
-ACT POOL    Action 数据
-ACT STEP    动作帧</p>
+<ul>
+<li>ACT BLOCK   数据块数量</li>
+<li>ACT INDEX   ACT 索引</li>
+<li>ACT DATA    Action 数据</li>
+<li>ACT POOL    Action 数据</li>
+<li>ACT STEP    动作帧</li>
+</ul>
+<p><img loading="lazy"  src="actions.png"
+        alt="actions"/></p>
 <h3 id="tsg-rom-暗桩">TSG ROM 暗桩</h3>
 <p>IGS 故意损坏了资源文件的某些数据块，需要通过 ASIC 芯片动态修复，这也是 IGS 的反盗版机制，防止破解者修改动画文件实现换皮游戏。</p>
 <p>IGS Logo</p>
