@@ -31,7 +31,7 @@ IGS的反盗版技术上不难，但是非常诡异，可能是代码写的太�
 <p><img loading="lazy"  src="main_loop.png"
         alt="main_loop"/></p>
 <p>游戏使用了SDL 1.2.7开发，SDL（Simple DirectMedia Layer）是一个跨平台的多媒体开发库，主要用于提供对音频、输入设备（键盘/鼠标/游戏手柄）和图形硬件的底层访问‌。但是这个性能比较低，只适合2D游戏。Percussion Master 2008 是2D游戏。Speed Driver 2 是 3D游戏，两者的差别可能很大。</p>
-<p>开发者在游戏主程序每一处与 ASIC 交互的位置，都插了代码桩，用来实现各种复杂的控制功能，也附带了一些反盗版功能。不得不吐槽，这个代码质量真糟糕，每次都要做大量的计算，性能很差。</p>
+<p>开发者在游戏主程序每一处与 ASIC 交互的位置，都插了代码桩，暂时把他称作 <code>RealTimeEvent</code>，应该是统一事件处理程序，每次逻辑的变化、动画的变化，都需要刷新事件。用来实现各种复杂的控制功能，也附带了一些反盗版功能。不得不吐槽，这个代码质量真糟糕，每次都要做大量的计算，性能很差，和用纯 js + html 开发单页面应用一样。</p>
 <p>状态检查桩的逻辑</p>
 <ol>
 <li>更新时钟</li>
@@ -408,7 +408,7 @@ if __name__ == &#34;__main__&#34;:
     print(&#34;反混淆前 32 字节:&#34;, deobfs[:32])
     print(&#34;反混淆是否正确:&#34;, deobfs == data)
 </code></pre><h2 id="tsgrom-解析">TSGROM 解析</h2>
-<p>TSGROM存放了游戏的多媒体资源，有脚本、音频、2D动画。</p>
+<p>TSGROM是游戏多媒体资源文件，有脚本、贴图。类似 unity 的 assets。</p>
 <p>PM2008 的 TSGROM 版本支持不低于 00.0000.0004，和PM1一致。代码写的简单粗暴，全是while(1)。</p>
 <p><img loading="lazy"  src="tsgrom_parse.png"
         alt="tsgrom_parse"/></p>
@@ -440,7 +440,7 @@ Found 174 image data zones
 <p><img loading="lazy"  src="tsgrom_extracted.png"
         alt="tsgrom_extracted"/></p>
 <h3 id="action-parser">Action Parser</h3>
-<p>IGS 的 TSGROM 定义了游戏的各种图形行为，并称之为 action，主程序通过解析 action 来实现功能。如果是要重写一个ASIC27软件，那么需要逆向分析 action parser，但是我想尝试最完美的破解方式，dump ASIC ROM 放到模拟器运行。不想分析这种屎山代码。</p>
+<p>IGS 的 TSGROM 定义了游戏的各种图形行为，并称之为 action，主程序通过解析 action 来实现功能。如果要在PC运行游戏主程序，游戏的各种事件都和A27协议有关，需要逆向分析对应Action，但是我想尝试最完美的破解方式，dump ASIC ROM 放到模拟器运行，不想分析这种屎山代码。</p>
 <ul>
 <li>ACT BLOCK   数据块数量</li>
 <li>ACT INDEX   ACT 索引</li>
@@ -448,6 +448,10 @@ Found 174 image data zones
 <li>ACT POOL    Action 数据</li>
 <li>ACT STEP    动作帧</li>
 </ul>
+<p>主程序是符号剥离的，分析起来很费时间，简单记录一下：</p>
+<p>在加载 TSGROM 时，程序会加载 act_data 到内存，根据 act_pool 的的数量，将 pool data 也加载到内存; 每个 TSGROM 会被分配独立的 Group ID。Action 系列的函数，都是根据 Group ID 来区分。最多 0x80 个 action group，每个 Group 长度 0x2AA4。每个 Group 还有对应的 index，action index 大小 0xaa9, 列表长度也是 0x80。</p>
+<p>在加载 tsgrom 之前，首先创建 action 对象，总共 1024 个 action_data，每个 action_data 长度 0x8D 字节。
+接着调用 ActionUse 初始化 act_data，并且分配图形显示资源，用 ActionFace, ActionShow 等配置控制图形显示，最后调用<code>RealTimeEvent</code>统一刷新画面。</p>
 <p><img loading="lazy"  src="actions.png"
         alt="actions"/></p>
 <h3 id="tsg-rom-暗桩">TSG ROM 暗桩</h3>
@@ -464,7 +468,7 @@ Found 174 image data zones
 <h2 id="写在结尾">写在结尾</h2>
 <p>IGS将游戏主程序和硬件强关联，如果要将游戏盗版至其他平台，需要付出非常多的时间。</p>
 <p>游戏框架、歌曲谱面，逻辑是状态机，比较复杂，不在我的破解目标内。</p>
-<p>要把逆向工程写到博客，感觉花费了更多的精力，自己逆向只需要记录一些数据，但是形成文章，就要写的让别人看懂。</p>
+<p>把逆向工程写到博客，感觉花费了更多的精力，自己逆向只需要记录一些数据，但是形成文章，就要写的让别人看懂。</p>
 <p>下一篇主题：IGS Arcade 逆向系列（五）- ASIC27协议Hook和主程序patch工作</p>
 <p>纪念血月，赞美女神</p>
 </article><section class="article labels"><a class="category" href=/categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/>逆向工程</a><a class="tag" href=/tags/igs/>IGS</a><a class="tag" href=/tags/arcade/>Arcade</a><a class="tag" href=/tags/crack/>Crack</a><a class="tag" href=/tags/%E9%88%8A%E8%B1%A1%E7%94%B5%E5%AD%90/>鈊象电子</a><a class="tag" href=/tags/e2000/>E2000</a></section>
