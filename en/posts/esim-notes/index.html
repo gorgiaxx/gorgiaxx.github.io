@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Introduction
+SIM (Subscriber Identification Module) is an IC that can securely store mobile communication configuration."><title>eSIM Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="eSIM Notes" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">eSIM Notes</h1><p class="article date">Sunday, December 10, 2017<span class="langs"><span class="lang">
+                    <a href="/zh/posts/esim-notes/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="introduction">Introduction</h2>
+<p>SIM (Subscriber Identification Module) is an IC that can securely store mobile communication configuration.</p>
+<p>However, “SIM card” is a term from the 2G era, because SIM consisted of both hardware and software. In the 3G era, SIM became a pure application. Like CSIM and USIM, it can run inside a UICC. UICC (Universal Integrated Circuit Card) is what we physically insert into phones—the so-called “SIM card” (SIM card). It is a type of IC smart card; the figure below includes multiple kinds of smart cards.</p>
+<p><img loading="lazy"  src="./smart_card.png"
+        alt="smart_card"/></p>
+<p>The term “SIM card” has been used ever since, but it’s not accurate; it should be called UICC. For user experience reasons, vendors still call it a SIM card, so in the rest of this note, “SIM card” refers to a UICC smart card.</p>
+<h2 id="storage">Storage</h2>
+<p>A SIM card provides data storage, holding configuration information used to identify and authenticate the subscriber.</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Subscriber_identity_module#ICCID"target="_blank" rel="noopener noreferrer">ICCID</a> (Integrated Circuit Card Identifier)</li>
+<li><a href="https://en.wikipedia.org/wiki/International_mobile_subscriber_identity"target="_blank" rel="noopener noreferrer">IMSI</a> (International Mobile Subscriber Identity)</li>
+<li>[Authentication Key]: a 128-bit authentication key used in GSM networks. Because GSM algorithms have weaknesses, the key can be leaked, which allows SIM cloning.</li>
+</ul>
+<p>The idea behind recovering a lost phone number today is: use the ICCID associated with an IMEI to lock down the phone number. This ICCID is the identifier of the newly inserted SIM card.</p>
+<p>The IC on a SIM card includes CPU, ROM, RAM, EEPROM, and I/O. The form factor has kept shrinking, until the e-SIM appeared in 2016.</p>
+<p><img loading="lazy"  src="./sim_card_iteration.png"
+        alt="sim_card_iteration"/></p>
+<p>Embedded-SIM / embedded universal integrated circuit card
+Embedded SIM (Embedded-SIM, also called eSIM, e-SIM), also called eUICC, is a chip-form-factor SIM. Most use SON-8 packaging.</p>
+<p><img loading="lazy"  src="./SON-8-Photo.jpg"
+        alt="SON-8"/></p>
+<p>eSIM is the next-generation SIM technology and follows GSMA (GSM Association) specifications. The core idea is to separate the manufacturing of SIM hardware (eUICC) from the production of carrier data (Profile).
+Carriers download the Profile via over-the-air provisioning, which is very secure and not susceptible to man-in-the-middle attacks.</p>
+<p>Advantages:</p>
+<ol>
+<li>No longer constrained by physical SIM cards, making number portability easier.</li>
+<li>Can contain other security information and be used for private network authentication.</li>
+<li>Removes the card tray and physical IC card, reducing cost and saving space.</li>
+<li>Enables activation from the operator platform, compressing the card-issuance process.</li>
+</ol>
+<p>Limitations:</p>
+<ol>
+<li>Does not support dual-SIM dual-standby.</li>
+<li>In China, devices with integrated eSIM are generally driven by carriers or designated service providers, so switching carriers is not possible.</li>
+</ol>
+<p>So at present, only IoT devices use eSIM.</p>
+<p>Pin definitions of eSIM vs SIM card:</p>
+<p><img loading="lazy"  src="./esim_pin_assigment.png"
+        alt="esim_pin_assigment"/></p>
+<p>Based on the pin definitions, you can wire an eSIM to a SIM tray. The VPP pin can be left unconnected.</p>
+<p><img loading="lazy"  src="./jump_wire.png"
+        alt="jump_wire"/></p>
+<p>From a security perspective, SIM cards use one-way authentication: when accessing the network, only the SIM is authenticated. Hackers have claimed they could remotely control any SIM number in a short time, and even clone it. USIM cards use mutual authentication: via AUTN (authentication token), both the user and the network are authenticated. When accessing the network, not only is the USIM authenticated, but the USIM also authenticates the network. This greatly increases cracking difficulty and can effectively identify or block fake base stations, improving communication security.</p>
+<h2 id="references">References</h2>
+<p><a href="https://wenku.baidu.com/view/dfc28735a9114431b90d6c85ec3a87c240288aaf.html?from=search"target="_blank" rel="noopener noreferrer">eSIM security analysis and implementation方案研究</a></p>
+<!-- TODO: translate content from zh version; assets are copied. -->
+</article><section class="article labels"><a class="category" href=/en/categories/hardware-security/>Hardware Security</a><a class="tag" href=/en/tags/esim/>eSIM</a><a class="tag" href=/en/tags/e-sim/>e-SIM</a><a class="tag" href=/en/tags/sim-card/>SIM card</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/sangfor-ssl-vpn-port-acl-bypass/"><span class="iconfont icon-article"></span>Sangfor SSL VPN Port ACL Bypass in Practice</a></p><p><a class="link" href="/en/posts/subdomain-enumeration-notes/"><span class="iconfont icon-article"></span>Subdomain Enumeration Notes</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

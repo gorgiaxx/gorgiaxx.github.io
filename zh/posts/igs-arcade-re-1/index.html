@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+2010年是街机的黄金时代，随着移动终端和家用游戏机普及，街机行业也逐渐走向没落，尽管国内出台了一些政策鼓励游戏游艺设备行业发展，但此行业在未来一直都不被资本看好。2020 疫情更是给电玩行业带来了很大的打击。"><title>IGS Arcade 逆向系列（一）- E2000平台分析&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="IGS Arcade 逆向系列（一）- E2000平台分析" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">IGS Arcade 逆向系列（一）- E2000平台分析</h1><p class="article date">Saturday, May 17, 2025<span class="langs"><span class="lang">
+                    <a href="/en/posts/igs-arcade-re-1/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h1 id="前言">前言</h1>
+<p>2010年是街机的黄金时代，随着移动终端和家用游戏机普及，街机行业也逐渐走向没落，尽管国内出台了一些政策鼓励游戏游艺设备行业发展，但此行业在未来一直都不被资本看好。2020 疫情更是给电玩行业带来了很大的打击。</p>
+<p>在以前，100元可能只能买50个币，现在100元可以买200个币。</p>
+<p>我喜欢赛车游戏，湾岸Midnight、头文字D、Speed Driver是近几年电玩城最火的游戏，因为它有账号功能，具备社交属性。前段时间在破解极速5的玩家APP，才知道IGS (鈊象电子)就是我小时候玩的三国战记和西游的厂商，IGS反破解在整个行业都是顶尖的，竞速游戏的极速系列更是号称无人可破解。</p>
+<p>上个月，我家旁边的大玩家电玩城倒闭了，我感觉迟早有一天极速系列游戏会消失，便想挑战破解极速系列游戏。</p>
+<p>IGS 极速系列发布顺序如下：</p>
+<table>
+  <thead>
+      <tr>
+          <th>Game</th>
+          <th>Device Model</th>
+          <th>Year</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Speed Driver:Evolution Evolution</td>
+          <td></td>
+          <td>2004</td>
+      </tr>
+      <tr>
+          <td>Speed Driver 2</td>
+          <td>E2000</td>
+          <td>2007</td>
+      </tr>
+      <tr>
+          <td>极速 3</td>
+          <td>E3000, E3100</td>
+          <td>2010</td>
+      </tr>
+      <tr>
+          <td>极速 4</td>
+          <td>E3000, E3100, S3000</td>
+          <td>2013</td>
+      </tr>
+      <tr>
+          <td>极速 5</td>
+          <td>S3000</td>
+          <td>2019</td>
+      </tr>
+  </tbody>
+</table>
+<p>我计划从E2000平台开始破解，难度肯定比PGM（PolyGame Master）更低，因为是基于PC开发的，不需要额外模拟声卡和显卡。硬件几乎没有物理保护，CPU指令集是x86，OS是Linux，没有反调试，也没有VMP，这不就是新手村吗。</p>
+<p>Speed Driver系列在亚洲影响力媲美湾岸Midnight，头文字D，雷动G（都被破解了）。IGS的反破解是最成功的，在整个产品生命周期内都未被破解。</p>
+<h1 id="硬件分析">硬件分析</h1>
+<p>在 <a href="https://github.com/shizmob/arcade-docs/"target="_blank" rel="noopener noreferrer">Arcade-docs</a> 可以查询到每个设备的硬件信息和支持的游戏
+凭借我擅长的淘电子垃圾能力，已经搞到一台E2000主机。国外有不少爱好者购买，所以价格涨上去了。</p>
+<h2 id="外部接口分析">外部接口分析</h2>
+<p>正面有两个RS-485接口，并且CF卡可以从外部拆卸</p>
+<p><img loading="lazy"  src="e2000_shield_1.jpeg"
+        alt=""/></p>
+<p>背面接口，具有千禧年PC的接口特点</p>
+<ul>
+<li>12V DC</li>
+<li>2 x DB9 COM</li>
+<li>4 x USB 2.0</li>
+<li>RJ45 LAN</li>
+<li>3.5mm Audio Out</li>
+<li>25pin + 30pin 的I/O口</li>
+</ul>
+<p><img loading="lazy"  src="e2000_shield_2.jpg"
+        alt=""/></p>
+<h2 id="主板分析">主板分析</h2>
+<p>考虑到这个破解难度不高，其他贴了贴纸遮盖丝印的元件就不分析了，太麻烦</p>
+<p>我买的这个主机安装了 Percussion Master 2008 游戏，但极速2也能运行</p>
+<ul>
+<li>主板型号：I-JOIN E2000-V256 IH-02 （研华）</li>
+<li>A - CPU：Celeron M 370 (1.5 GHz)</li>
+<li>B - 北桥：未知</li>
+<li>C - GPU：NVIDIA GeForce 6200 (256 MB, GDDR2)</li>
+<li>D - 2 x DDR 333 256MB</li>
+<li>E - Chipset: Intel 852GME (ICH4-M)</li>
+<li>F - PCI9030，是GPIO芯片，可能用于游戏控制器的信号传输。</li>
+<li>G - I/O 控制器 有LPC接口</li>
+<li>H - A11 BIOS芯片 SST 49LF004B（PLCC32）</li>
+<li>I - IH-C02 ALTERA EPM3032ALC44-10N CPLD (PLCC44), 控制器，里面有ROM，用途不详</li>
+<li>J - IGS EV29LV640-90PCR 8MB EEPROM，DIP 48-Pin 封装，IGS定制的芯片。这个芯片专门贴了游戏名称的标签，说明BIOS ROM 也和游戏有关。可能会有跟V21芯片相关的内容。</li>
+<li>K - V21，IGS036E，也许是一颗FPGA或者ASIC，用于加密处理控制信号的输入输出</li>
+<li>L - 64K x 16 HIGH-SPEED CMOS STATIC RAM x3</li>
+<li>M - CF卡：ADATA 2GB (266X)</li>
+<li>N - IDE硬盘接口</li>
+</ul>
+<p>我有很多种办法拿硬件的root shell，但我对游戏加载的过程更感兴趣，因此先做软件逆向分析吧。</p>
+<p><img loading="lazy"  src="e2000_board.jpg"
+        alt=""/></p>
+<h2 id="io板分析">I/O板分析</h2>
+<p>这几块板子又称控制板，应该是用于连接游戏控制器，比如方向盘、刹车油门、投币器之类的。</p>
+<p>通过连接主板的25pin + 30pin 的I/O口 进行通信</p>
+<p>价格可能比主机本体还贵</p>
+<p>应该可以使用逻辑分析仪来捕获这些传感器信号，然后实现控制功能。但据说控制信号由V21芯片（ASIC）处理，可能会加密。我也不打算去仿制一个控制板。这种街机游戏没有地平线5好玩。现在电玩城也便宜，真想玩的话，就直接花钱去电玩城，或者买一套方向盘在家里玩。</p>
+<p><img loading="lazy"  src="sd2_io.jpg"
+        alt=""/></p>
+<p><img loading="lazy"  src="sd2_io2.jpg"
+        alt=""/></p>
+<h1 id="文件系统分析">文件系统分析</h1>
+<p>直接dump CF卡，文件大小2GB，file命令的回显如下：</p>
+<pre tabindex="0"><code>DOS/MBR boot sector, LInux i386 boot LOader; partition 1 : ID=0x1, active, start-CHS (0x0,1,1), end-CHS (0x2,63,63), startsector 63, 12033 sectors; partition 2 : ID=0x83, start-CHS (0x3,0,1), end-CHS (0x22,63,63), startsector 12096, 129024 sectors; partition 3 : ID=0x83, start-CHS (0x62,0,1), end-CHS (0x399,63,63), startsector 395136, 3322368 sectors; partition 4 : ID=0x83, start-CHS (0x23,0,1), end-CHS (0x61,63,63), startsector 141120, 254016 sectors
+</code></pre><p>启动过程，LILO作为MBR，直接安装在第一个扇区，用来引导Linux</p>
+<pre tabindex="0"><code>+----------------------------------------+
+| Master Boot Record    Operating system |
+|----------------------------------------|
+| LILO ---------------&gt; Linux            |
+|                  ---&gt; other OS         |
++----------------------------------------+
+</code></pre><p>通过fdisk查看分区信息。是Linux操作系统，四个分区，并首尾连续，最后一个分区之后的内容，都是0x00，不存在隐藏分区</p>
+<pre tabindex="0"><code>Disk ./percussion_master_2008.img: 1.77 GiB, 1903878144 bytes, 3718512 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x6e4a3fef
+
+Device                        Boot  Start     End Sectors  Size Id Type
+./percussion_master_2008.img1 *        63   12095   12033  5.9M  1 FAT12
+./percussion_master_2008.img2       12096  141119  129024   63M 83 Linux
+./percussion_master_2008.img3      395136 3717503 3322368  1.6G 83 Linux
+./percussion_master_2008.img4      141120  395135  254016  124M 83 Linux
+</code></pre><p>E2000平台的分区有一个特点，第三分区和第四分区，顺序是反的。</p>
+<p>第二分区和第四分区，7z无法完全提取，binwalk能识别出一些压缩区域，因此大概率是经过了魔改的文件系统。</p>
+<p>每个分区的用途如下（最后我找到了分区2，4的原始文件系统类型）：</p>
+<pre tabindex="0"><code>Partition 1: Ext2, Bootloader, kernel
+Partition 2: IGS CRAMFS, RootFS
+Partition 3: Ext3, Log Data
+Partition 4: IGS SquashFS, Game Data
+</code></pre><h2 id="kernel-逆向">Kernel 逆向</h2>
+<p>目前未找到rootfs和游戏程序，他们大概率位于第二分区和第四分区。
+我认为逆向kernel可以少走不少弯路。不依赖内核，其实可以直接硬逆出文件系统的格式，但这样很无聊，而且最终写出来的extractor，肯定比不了开源的文件系统解压工具。
+首先看第一个分区，有一个 loader 和 kernel。显示了内核版本，但是这里不一定是正确的版本。</p>
+<pre tabindex="0"><code>SD2:        LILO (LInux LOder)
+SD2-OS-61P: Linux kernel x86 boot executable, bzImage, version 2.4.31-IGS_V0.5a (james@Code_Server.linnet.net.tw) #1 Thu Aug 30 19:06:24 CST 2007, RO-rootFS, root_dev 0X305, Normal VGA, setup size 512*6, syssize 0x3b88, jump 0x230 0xe800040000000000 instruction, protocol 2.3
+</code></pre><p>LILO经过了IGS 定制开发，会显示，IGS Loader v2.0 Boot Menu 2007/04，可判断版本是lilo-22.8</p>
+<p>这里没什么好分析的，直接开始提取vmlinux，内核文件是bzImage格式，需要解压</p>
+<pre tabindex="0"><code>7z x ./SD2-OS-61P -okernel.decomped
+</code></pre><p>接下来就是普通的内核逆向，第一步计算基址，基址有很多种确定方法，可以参考我其他文章。</p>
+<p>这里多看两眼就猜出来了，0xC0100000</p>
+<p>基址配置正确，IDA就可以自动识别出一些交叉引用，剩下的需要手动还原。IDA 9.0修改了一些API，又得重新写一下脚本。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_bytes</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_segment</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_funcs</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_ida</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">find_and_make_function</span><span class="p">(</span><span class="n">start_ea</span><span class="p">,</span> <span class="n">end_ea</span><span class="p">,</span> <span class="n">pattern_str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">image_base</span> <span class="o">=</span> <span class="n">idaapi</span><span class="o">.</span><span class="n">get_imagebase</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pattern</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">compiled_binpat_vec_t</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">err</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">parse_binpat_str</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">image_base</span><span class="p">,</span> <span class="n">pattern_str</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">current_ea</span> <span class="o">=</span> <span class="n">start_ea</span>
+</span></span><span class="line"><span class="cl">    <span class="n">found_count</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">current_ea</span> <span class="o">&lt;</span> <span class="n">end_ea</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">current_ea</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">bin_search</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_ea</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">end_ea</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">pattern</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_FORWARD</span> <span class="o">|</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_NOSHOW</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">current_ea</span> <span class="o">==</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">current_ea</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">get_flags</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">FF_CODE</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">idc</span><span class="o">.</span><span class="n">get_func_flags</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="n">seg</span> <span class="o">=</span> <span class="n">ida_segment</span><span class="o">.</span><span class="n">getseg</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">seg</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">add_func</span><span class="p">(</span><span class="n">current_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Create function failed at 0x</span><span class="si">{:X}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_ea</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">found_count</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Search finished, </span><span class="si">{}</span><span class="s2"> functions created&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">found_count</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">find_and_make_function</span><span class="p">(</span><span class="mh">0xC0100000</span><span class="p">,</span> <span class="mh">0xC0508000</span><span class="p">,</span> <span class="s2">&#34;55 89 E5&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 可以根据实际情况自己定义 function entry opcode</span>
+</span></span></code></pre></div><p>当然到这里还没有完全识别出全部交叉引用，在data段，还有一些字符串和offset还原的不是很好，但影响不大，实在是没有思路的话，就把这些内容还原，说不定会有新发现。</p>
+<p>接下来就是找分析切入点，实在没啥技术含量，我有很多种方案，比如从文件系统特征入手之类的，但全写出来就像说“茴字有五种写法”一样搞笑。</p>
+<p>可以确认内核版本是 2.4.31，并且IGS版本是v1.0，而不是bzImage显示的v0.5。</p>
+<p><img loading="lazy"  src="igs_strings.png"
+        alt="igs_strings"/></p>
+<p>根据下列字符串，可以确定IGS魔改文件系统对应的原始文件系统版本</p>
+<ul>
+<li>rofs：cramfs</li>
+<li>shfs: squashfs 2.2</li>
+</ul>
+<p><img loading="lazy"  src="rofs_strings.png"
+        alt="rofs_strings"/></p>
+<p>Linux 2.4.31 没有squashfs，直接找squashfs的patch，IGS魔改SHFS是基于squashfs2.2。
+<a href="https://master.dl.sourceforge.net/project/squashfs/OldFiles/squashfs2.2r2.tar.gz"target="_blank" rel="noopener noreferrer">https://master.dl.sourceforge.net/project/squashfs/OldFiles/squashfs2.2r2.tar.gz</a></p>
+<p>Linux 2.4没有支持kallsysm，因此需要手动还原符号。一些printf，memcpy，str之类的函数可以快速一眼看出来，但是我要分析系统启动过程，所以需要还原一些内核专用的符号。</p>
+<p>这种老设备，在新的linux下没有办法交叉编译，我安装了一个CentOS 5.10的32位虚拟机，成功编译，提取出 System.map 和 vmlinux，这样就可以方便对比IGS魔改的部分。</p>
+<p><img loading="lazy"  src="symbols.png"
+        alt="symbols"/></p>
+<p>对于这种找不到ramdisk或者rootfs的固件，第一步肯定是找到kernel里的sys_mount和boot parameters</p>
+<pre tabindex="0"><code>root=/dev/hdc2 ro console=ttyS1,115200
+sys_mount(&#34;/dev/hdc3&#34;, &#34;/PM2008v2&#34;, &#34;shfs&#34;, flag, data)
+sys_mount(&#34;/dev/hdc4&#34;, &#34;/PM2008v2/pm2_data&#34;, &#34;ext3&#34;, flag, data)
+</code></pre><p>这里可以确定，rootfs应该是第二分区，游戏数据在第三分区。</p>
+<p>挂在ramdisk的逻辑，位于此处</p>
+<pre tabindex="0"><code>prepare_namespace
+  -&gt;rd_load_disk
+     -&gt;rd_load_image
+       -&gt;identify_ramdisk_image
+</code></pre><p>在此次可以确定IGS 支持 squashfs 和 igs rofs 格式的ramdisk。并且可以确定它们的magic。</p>
+<p><img loading="lazy"  src="identify_ramdisk_image.png"
+        alt="identify_ramdisk_image"/></p>
+<p>分析过程就不记录了，他们把 FS 的header魔改了，分析起来有一些恶心🤢。</p>
+<h2 id="提取文件系统">提取文件系统</h2>
+<p>我分析了 E2000 平台的三种自定义文件系统 header，内容如下。</p>
+<h3 id="igs-shfs-v1-header">IGS SHFS V1 Header</h3>
+<pre tabindex="0"><code>struct squashfs_super_block_22_v1 {
+    unsigned int        s_magic;    // 0xD4AA2682
+    unsigned int        block_size_1:16;
+    unsigned int        block_log:16;
+    unsigned int        major_number;
+    unsigned int        minor_number;
+    unsigned int        inodes;
+    unsigned int        bytes_used;
+    unsigned int        uid_start;
+    unsigned int        guid_start;
+    unsigned int        inode_table_start;
+    unsigned int        directory_table_start;
+    unsigned int        flags:8;
+    unsigned int        no_uids:8;
+    unsigned int        no_guids:8;
+    int                 mkfs_time /* time of filesystem creation */;
+    squashfs_inode      root_inode;
+    unsigned int        block_size;
+    unsigned int        fragments;
+    unsigned int        fragment_table_start;
+} __attribute__ ((packed));
+</code></pre><h3 id="igs-shfs-v2-header">IGS SHFS V2 Header</h3>
+<p>以 Percussion Master 2008 为例</p>
+<pre tabindex="0"><code>struct squashfs_super_block_22_v2 {
+    unsigned int        s_magic;   // 0xD4AA2682
+    char                igs_info[64];   // banner
+    unsigned int        block_size_1:16;
+    unsigned int        block_log:16;
+    unsigned int        igs_fs_version_major;  // 59 17 23 96
+    unsigned int        igs_fs_version_minor;  // E1 5D 70 00
+    unsigned int        major_number;      // 31 64 52 E5
+    unsigned int        minor_number;      // 92 2C 03 68
+    unsigned int        inodes;
+    unsigned int        bytes_used;
+    unsigned int        uid_start;
+    unsigned int        guid_start;
+    unsigned int        inode_table_start;
+    unsigned int        directory_table_start;
+    unsigned int        flags:8;
+    unsigned int        no_uids:8;
+    unsigned int        no_guids:8;
+    int                 mkfs_time /* time of filesystem creation */;
+    squashfs_inode      root_inode;
+    unsigned int        block_size;
+    unsigned int        fragments;
+    unsigned int        fragment_table_start;
+} __attribute__ ((packed));
+</code></pre><h3 id="igs-rofs-v1-header">IGS ROFS V1 Header</h3>
+<pre tabindex="0"><code>struct cramfs_inode {
+    unsigned int inode_magic;       
+    unsigned int namelen:6, offset:26;
+	unsigned int size:24, gid:8;
+	unsigned int mode:16, uid:16;
+};
+
+struct cramfs_info {
+	unsigned int crc;
+	unsigned int edition;
+	unsigned int blocks;
+	unsigned int files;
+};
+
+struct igs_rofs_super_block {
+	unsigned int magic1;   // 0x81006e6a
+	unsigned int future;	
+    char igs_info[64];
+	unsigned int size;	
+	unsigned int magic2;   // 0xD4AA2682
+	unsigned int flags;	
+	unsigned int padding;	
+	cramfs_info fsid;
+	char name[64];	
+	cramfs_inode root[2];
+};
+
+igs_rofs_super_block File;
+</code></pre><p>将上述文件header，移植到cramfs-tools和squashfs-tools，就可以完美提取文件系统，并且还可以发现文件是否损坏。我已经将代码上传至github。<a href="https://github.com/gorgiaxx/igs-toolkits"target="_blank" rel="noopener noreferrer">https://github.com/gorgiaxx/igs-toolkits</a></p>
+<p>这个版本提取难度不高，但下个版本E3000就用上加密了。</p>
+<p><img loading="lazy"  src="extracted_files.png"
+        alt="extracted_files"/></p>
+<p>玩家 @novacosmic00 之前请我帮忙提取 GoGoBall 的文件，但他说他已经解密了其他游戏的文件。唯独 GoGoBall 解不了。用我修改的工具尝试提取，发现文件CRC不对，但还是能提取出大部分。</p>
+<p>在我提取完固件之后，和玩家 @novacosmic00 沟通，才知道两年前有人研究过这个，并写了提取脚本。</p>
+<p><a href="https://github.com/batteryshark/igstools/tree/main/scripts"target="_blank" rel="noopener noreferrer">https://github.com/batteryshark/igstools/tree/main/scripts</a></p>
+<p>作者可能是根据文件系统内容，找出地址规律反推结构体的，这也是一种办法，但缺点是提取出来的文件可能比较混乱，而且无法检测CRC错误。</p>
+<h2 id="shadow-">shadow-</h2>
+<p>shadow文件，默认都清空了root密码</p>
+<pre tabindex="0"><code>root:x:13130:0:99999:7:::   
+test::13074:0:99999:7::: 
+</code></pre><p>这是原始的文件</p>
+<pre tabindex="0"><code>root:$1$qAw/5vcb$x9rPCAwLMdRBQXwlq1zG70:13130:0:99999:7:::
+test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
+</code></pre><h2 id="反破解">反破解</h2>
+<p>/PM2008v2/PM2008v2，符号去除了，并且根据字符串特征，也像是正常的loader</p>
+<p><img loading="lazy"  src="pitch_symbols.png"
+        alt="pitch_symbols"/></p>
+<p>但实际上，如果在自己电脑运行，他会把你分区前512k写0。我当时居然运行了，还好我没给root，而且硬盘是NVME的。谁能想到这个18年前的游戏，还有这一手🙈。以前从来没接触过这个领域，据说街机的反破解有很多自杀式逻辑。</p>
+<p><img loading="lazy"  src="kill_disk.png"
+        alt="kill_disk"/></p>
+<p>下一篇文章将分析游戏内部的保护机制</p>
+<h1 id="参考">参考</h1>
+<p><a href="https://zh.moegirl.org.cn/Speed_Driver%E7%B3%BB%E5%88%97"target="_blank" rel="noopener noreferrer">萌娘百科 - Speed_Driver系列</a></p>
+<p><a href="https://github.com/shizmob/arcade-docs/"target="_blank" rel="noopener noreferrer">https://github.com/shizmob/arcade-docs/</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/>逆向工程</a><a class="tag" href=/zh/tags/igs/>IGS</a><a class="tag" href=/zh/tags/arcade/>Arcade</a><a class="tag" href=/zh/tags/crack/>Crack</a><a class="tag" href=/zh/tags/%E9%88%8A%E8%B1%A1%E7%94%B5%E5%AD%90/>鈊象电子</a><a class="tag" href=/zh/tags/e2000/>E2000</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/igs-arcade-re-2/"><span class="iconfont icon-article"></span>IGS Arcade 逆向系列（二）- 游戏文件恢复</a></p><p><a class="link" href="/zh/posts/vw-id4-vehicle-control-analysis/"><span class="iconfont icon-article"></span>VW ID.4 ICAS1 车控分析</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

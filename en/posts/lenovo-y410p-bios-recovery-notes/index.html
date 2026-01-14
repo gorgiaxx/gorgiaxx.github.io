@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+Yesterday I was messing with a third-party BIOS flash on my laptop. Some options were undocumented, so I tried them manually—and after switching the panel color depth from 18-bit to 24-bit, the machine went down hard."><title>Lenovo Y410p BIOS Recovery Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Lenovo Y410p BIOS Recovery Notes" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Lenovo Y410p BIOS Recovery Notes</h1><p class="article date">Monday, June 20, 2016<span class="langs"><span class="lang">
+                    <a href="/zh/posts/lenovo-y410p-bios-recovery-notes/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>Yesterday I was messing with a third-party BIOS flash on my laptop. Some options were undocumented, so I tried them manually—and after switching the panel color depth from 18-bit to 24-bit, the machine went down hard.</p>
+<p><img loading="lazy"  src="./IMG_0398.jpg"
+        alt="IMG_0398"/></p>
+<p>Black screen. After I typed the BIOS password (judging by sound), it would immediately freeze. I quickly tore it down and unplugged the motherboard battery.</p>
+<p><img loading="lazy"  src="./IMG_0376.jpg"
+        alt="IMG_0376"/></p>
+<p>Still no luck. Looks like the only way out was to reprogram the BIOS chips with a programmer today.</p>
+<h2 id="getting-hands-on">Getting Hands-On</h2>
+<p>Tools: soldering station, other small helper tools, a programmer, and a working computer.
+<a href="https://drive.google.com/open?id=0B3hbKdJ8eeqfRUZpeG1ZTFRyWHc"target="_blank" rel="noopener noreferrer">Tools and stock images (bundle download)</a></p>
+<p><img loading="lazy"  src="./IMG_0380.jpg"
+        alt="IMG_0380"/></p>
+<p>This is a direct-insert SOP-16 programming socket—no more soldering and desoldering over and over.</p>
+<p><img loading="lazy"  src="./IMG_0385.jpg"
+        alt="IMG_0385"/></p>
+<p>Apply heat-resistant tape to avoid damaging surrounding components.</p>
+<p><img loading="lazy"  src="./IMG_0387.jpg"
+        alt="IMG_0387"/></p>
+<p>This motherboard has dual BIOS. First, use a hot air gun at 370°C with airflow level 3 to remove the 4MB SOP-8 flash on the right. It took about 8 seconds.</p>
+<p><img loading="lazy"  src="./IMG_0389.jpg"
+        alt="IMG_0389"/></p>
+<p>Then place it on the socket and write the stock firmware.</p>
+<p><img loading="lazy"  src="./IMG_0390.jpg"
+        alt="IMG_0390"/></p>
+<p>Next, remove the other 2MB flash chip and write its corresponding firmware.</p>
+<p><img loading="lazy"  src="./IMG_0392.jpg"
+        alt="IMG_0392"/></p>
+<p><img loading="lazy"  src="./IMG_0393.jpg"
+        alt="IMG_0393"/></p>
+<p>Flash BIOS v2.07 without write protection, which makes it easier to flash a customized firmware later.</p>
+<p><img loading="lazy"  src="./IMG_0395.jpg"
+        alt="IMG_0395"/></p>
+<p>Then boot into DOS and re-flash the previously backed-up unlocked BIOS: GPU overclocking enabled, and the Wi‑Fi card whitelist removed.</p>
+<p><img loading="lazy"  src="./IMG_0396.jpg"
+        alt="IMG_0396"/></p>
+<p>Flash the EC firmware.</p>
+<p><img loading="lazy"  src="./IMG_0397.jpg"
+        alt="IMG_0397"/></p>
+<p>All done!</p>
+<p>No more self-inflicted BIOS disasters. This isn’t even the first time I’ve bricked a BIOS… next time I do something stupid, I’ll… (〃｀д´ ) ?</p>
+</article><section class="article labels"><a class="category" href=/en/categories/tinkering/>Tinkering</a><a class="tag" href=/en/tags/bios/>BIOS</a><a class="tag" href=/en/tags/unbricking/>Unbricking</a><a class="tag" href=/en/tags/programmer/>Programmer</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/my-old-phone-as-backup-device/"><span class="iconfont icon-article"></span>Nexus 5 Can’t Retire Yet — Be My Backup Phone!</a></p><p><a class="link" href="/en/posts/add-free-ssl-certificate-to-website/"><span class="iconfont icon-article"></span>Add a Free SSL Certificate to Your Website</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

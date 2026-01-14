@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="
+Why add an SSL certificate / use HTTPS?
+The HTTP protocol commonly used on the internet transmits data in plaintext. Traffic is “transparent” on the network and can be abused by a man-in-the-middle."><title>Add a Free SSL Certificate to Your Website&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Add a Free SSL Certificate to Your Website" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Add a Free SSL Certificate to Your Website</h1><p class="article date">Monday, May 9, 2016<span class="langs"><span class="lang">
+                    <a href="/zh/posts/add-free-ssl-certificate-to-website/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><p><img loading="lazy"  src="./Internet.jpg"
+        alt="http2"/></p>
+<h2 id="why-add-an-ssl-certificate--use-https">Why add an SSL certificate / use HTTPS?</h2>
+<p>The HTTP protocol commonly used on the internet transmits data in plaintext. Traffic is “transparent” on the network and can be abused by a man-in-the-middle.</p>
+<p>In recent years, ISP hijacking has become more frequent and the barrier to launching attacks has gotten lower. For better security, use HTTPS to access your website. HTTPS provides strong encrypted transport and helps prevent transmitted data from being leaked or tampered with.</p>
+<h2 id="preparation--environment">Preparation &amp; environment</h2>
+<p>Server environment: DigitalOcean VPS, SG region, Debian Jessie, AMH hosting panel.</p>
+<p>You’ll need:</p>
+<ul>
+<li>A free SSL certificate: <a href="https://letsencrypt.org/"target="_blank" rel="noopener noreferrer">Let’s Encrypt</a></li>
+<li><a href="http://nginx.org/"target="_blank" rel="noopener noreferrer">NGINX</a></li>
+<li><a href="https://www.openssl.org/"target="_blank" rel="noopener noreferrer">OpenSSL</a></li>
+</ul>
+<h2 id="installation">Installation</h2>
+<h3 id="install--upgrade-to-openssl-102">Install &amp; upgrade to OpenSSL 1.0.2</h3>
+<p>To enable HTTP/2 in NGINX, you must use this version of OpenSSL.</p>
+<blockquote>
+<p>Note that accepting HTTP/2 connections over TLS requires the “Application-Layer Protocol Negotiation” (ALPN) TLS extension support, which is available only since OpenSSL version 1.0.2. Using the “Next Protocol Negotiation” (NPN) TLS extension for this purpose (available since OpenSSL version 1.0.1) is not guaranteed.</p>
+</blockquote>
+<p>Download the OpenSSL source from the official site or GitHub:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://github.com/openssl/openssl/archive/OpenSSL_1_0_2h.tar.gz
+</span></span><span class="line"><span class="cl">tar -zxvf ./OpenSSL_1_0_2h.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ./openssl-OpenSSL_1_0_2h/
+</span></span></code></pre></div><p>Choose an installation directory. If you’re upgrading, set the <code>--prefix</code> parameter to the directory where OpenSSL is installed:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./config --prefix<span class="o">=</span>/usr/local/openssl --openssldir<span class="o">=</span>/usr/local/ssl
+</span></span><span class="line"><span class="cl">make
+</span></span><span class="line"><span class="cl">make install
+</span></span><span class="line"><span class="cl">mv /usr/bin/openssl /usr/bin/openssl.OFF
+</span></span><span class="line"><span class="cl">mv /usr/include/openssl /usr/include/openssl.OFF
+</span></span><span class="line"><span class="cl">ln -s /usr/local/openssl/bin/openssl /usr/bin/openssl
+</span></span><span class="line"><span class="cl">ln -s /usr/local/openssl/include/openssl /usr/include/openssl
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;/usr/local/openssl/lib&#34;</span>&gt;&gt;/etc/ld.so.conf
+</span></span></code></pre></div><p>Verify the OpenSSL version is now <code>1.0.2h</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openssl version -a
+</span></span></code></pre></div><h3 id="install-the-lets-encrypt-client">Install the Let’s Encrypt client</h3>
+<p>Fetch source code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/letsencrypt/letsencrypt
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> letsencrypt
+</span></span></code></pre></div><p>Install:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./letsencrypt-auto --help
+</span></span></code></pre></div><p>Issue a certificate. Use <code>-w</code> for your website root path and <code>-d</code> for domain names. The certificate is based on the first domain. See the official documentation for details:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./letsencrypt-auto certonly --webroot -w /www/blog/ -d gorgiaxx.com -d blog.gorgiaxx.com
+</span></span></code></pre></div><p>The certificate is valid for 3 months; you can renew it via a script (cron job):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="m">0</span> <span class="m">0</span> <span class="m">1</span> * * /usr/local/nginx/sbin/nginx -s stop <span class="o">&amp;&amp;</span> /opt/letsencrypt-auto certonly --renew-by-default --webroot -w /www/blog/ -d gorgiaxx.com -d blog.gorgiaxx.com <span class="o">&amp;&amp;</span> /usr/local/nginx/sbin/nginx
+</span></span></code></pre></div><p>Certificates are generated under this directory by default. NGINX will use the last two files:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@gorgiaxx-ubuntu:~/tmp# ls /etc/letsencrypt/live/gorgiaxx.com
+</span></span><span class="line"><span class="cl">cert.pem  chain.pem  fullchain.pem  privkey.pem
+</span></span></code></pre></div><h3 id="enable-certificate-transparency-ct">Enable Certificate Transparency (CT)</h3>
+<p>Certificate Transparency was led by Google and standardized by the IETF as RFC 6962. The goal of CT is to provide an open auditing and monitoring system that enables any domain owner or CA to verify whether a certificate was mis-issued or maliciously used, thereby improving the security of HTTPS websites.</p>
+<p>At the time of writing, CT is only supported by Chrome. Chrome also “knows” that CT adoption is not yet widespread, so the impact for HTTPS sites that don’t provide SCT information is not significant.</p>
+<p>For details, see <a href="https://imququ.com/post/certificate-transparency.html"target="_blank" rel="noopener noreferrer">Certificate Transparency 那些事</a>.</p>
+<p>With the <code>ct-submit</code> module, you can conveniently submit certificates to CT log servers and obtain SCT responses:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt-get install golang
+</span></span><span class="line"><span class="cl">wget -O ct-submit.zip -c https://github.com/grahamedgecombe/ct-submit/archive/v1.0.0.zip
+</span></span><span class="line"><span class="cl">unzip ct-submit.zip
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ct-submit-1.0.0
+</span></span><span class="line"><span class="cl">go build
+</span></span></code></pre></div><p>After building, execute and submit. Known CT log servers can be found <a href="https://www.certificate-transparency.org/known-logs"target="_blank" rel="noopener noreferrer">here</a> (blocked in some regions):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./ct-submit-1.0.0 ct.googleapis.com/aviator
+</span></span><span class="line"><span class="cl">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem
+</span></span><span class="line"><span class="cl">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/aviator.sct
+</span></span><span class="line"><span class="cl">./ct-submit-1.0.0 ct.googleapis.com/pilot
+</span></span><span class="line"><span class="cl">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem
+</span></span><span class="line"><span class="cl">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/pilot.sct
+</span></span><span class="line"><span class="cl">./ct-submit-1.0.0 ct.googleapis.com/rocketeer
+</span></span><span class="line"><span class="cl">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem
+</span></span><span class="line"><span class="cl">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/rocketeer.sct
+</span></span></code></pre></div><h3 id="install--upgrade-nginx">Install &amp; upgrade NGINX</h3>
+<p>Download and extract NGINX and the <code>nginx-ct</code> module:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget -O nginx-ct.zip https://github.com/grahamedgecombe/nginx-ct/archive/master.zip
+</span></span><span class="line"><span class="cl">unzip nginx-ct.zip
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">http://nginx.org/download/nginx-1.10.0.tar.gz
+</span></span><span class="line"><span class="cl">tar -zxvf nginx-1.10.0.tar.gz
+</span></span></code></pre></div><p><code>/usr/local/nginx</code> is my existing NGINX directory. I put installation files under <code>/tmp/</code> temporarily.</p>
+<p>Add brotli compression support for a better compression ratio (compatible with gzip):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/google/ngx_brotli.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ngx_brotli
+</span></span><span class="line"><span class="cl">git submodule update --init
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./configure --prefix<span class="o">=</span>/usr/local/nginx --user<span class="o">=</span>www --group<span class="o">=</span>www --with-http_ssl_module --with-http_gzip_static_module --with-http_v2_module --with-http_stub_status_module --add-module<span class="o">=</span>../nginx-ct-1.3.2 --add-module<span class="o">=</span>../ngx_brotli
+</span></span><span class="line"><span class="cl">make
+</span></span></code></pre></div><p>If <code>make</code> fails, add this to <code>configure</code>:</p>
+<p><code>--with-openssl=/tmp/openssl-1.0.2h/</code></p>
+<p>Replace the old binary:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp -f objs/nginx /usr/local/nginx/sbin/nginx
+</span></span></code></pre></div><p>Upgrade:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make upgrade
+</span></span></code></pre></div><h3 id="configure-nginx">Configure NGINX</h3>
+<p>Change the listen port to <code>443</code> and add <code>ssl</code> and <code>http2</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">listen <span class="m">443</span> ssl http2 default<span class="p">;</span> <span class="c1">#listen end</span>
+</span></span></code></pre></div><p>Enable <code>ssl</code> and <code>ssl_ct</code>, and add the SCT directory plus the certificate paths:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssl on<span class="p">;</span>
+</span></span><span class="line"><span class="cl">ssl_ct on<span class="p">;</span>
+</span></span><span class="line"><span class="cl">ssl_ct_static_scts /etc/letsencrypt/live/gorgiaxx.com/scts/<span class="p">;</span>
+</span></span><span class="line"><span class="cl">ssl_certificate /etc/letsencrypt/live/gorgiaxx.com/fullchain.pem<span class="p">;</span>
+</span></span><span class="line"><span class="cl">ssl_certificate_key /etc/letsencrypt/live/gorgiaxx.com/privkey.pem<span class="p">;</span>
+</span></span></code></pre></div><p>Reload NGINX:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/usr/local/nginx/sbin/nginx -s reload
+</span></span></code></pre></div><p>As shown below, HTTP/2 and the CT policy have been enabled:</p>
+<p><img loading="lazy"  src="./http2.png"
+        alt="http2"/></p>
+<p>CT is enabled:</p>
+<p><img loading="lazy"  src="./ssl-ct.png"
+        alt="ssl-ct"/></p>
+<p>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash; Update (Nov 12, 2016): &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</p>
+<p>Newer versions of Let’s Encrypt use <code>certbot</code> to deploy certificates:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./certbot-auto certonly --standalone --email gorgiaxx@gmail.com -d gorgiaxx.com -d www.gorgiaxx.com -d blog.gorgiaxx.com -d api.gorgiaxx.com
+</span></span></code></pre></div><p>Automatic renewal:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="m">0</span> <span class="m">0</span> <span class="m">1</span> * * /usr/local/nginx/sbin/nginx -s stop <span class="o">&amp;&amp;</span> /opt/certbot-auto renew <span class="o">&amp;&amp;</span> /usr/local/nginx/sbin/nginx
+</span></span></code></pre></div><p>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash; Update (Feb 9, 2017): &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;</p>
+<p>I kept getting expiration reminders (╯‵□′)╯︵┻━┻ — turns out <code>certbot</code> auto-updates itself on startup and depends on <code>virtualenv</code>. Since <code>virtualenv</code> wasn’t installed on the VPS, automatic renewal failed.</p>
+</article><section class="article labels"><a class="category" href=/en/categories/tinkering/>Tinkering</a><a class="tag" href=/en/tags/certbot/>certbot</a><a class="tag" href=/en/tags/ssl/>SSL</a><a class="tag" href=/en/tags/certificate/>certificate</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/lenovo-y410p-bios-recovery-notes/"><span class="iconfont icon-article"></span>Lenovo Y410p BIOS Recovery Notes</a></p><p><a class="link" href="/en/posts/first-hardware-mod-router-openwrt/"><span class="iconfont icon-article"></span>First Hardware Mod: OpenWrt on a Router</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

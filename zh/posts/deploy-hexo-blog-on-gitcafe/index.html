@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="hexo是一款基于Node.js的静态博客框架。速度快，撰写方便，扩展性高。
+注意事项
+不要用中文输入法的符号
+要开启文件扩展名的显示"><title>在GitCafe上部署Hexo博客&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="在GitCafe上部署Hexo博客" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">在GitCafe上部署Hexo博客</h1><p class="article date">Sunday, November 1, 2015<span class="langs"><span class="lang">
+                    <a href="/en/posts/deploy-hexo-blog-on-gitcafe/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><p>hexo是一款基于Node.js的静态博客框架。速度快，撰写方便，扩展性高。</p>
+<h2 id="注意事项">注意事项</h2>
+<p>不要用中文输入法的符号
+要开启文件扩展名的显示</p>
+<h2 id="参考资料">参考资料</h2>
+<ul>
+<li><a href="https://help.github.com/articles/markdown-basics/"target="_blank" rel="noopener noreferrer">Markdown Basics</a></li>
+<li><a href="http://markdownpad.com/"target="_blank" rel="noopener noreferrer">MarkdownPad</a></li>
+<li><a href="https://gitcafe.com/"target="_blank" rel="noopener noreferrer">GitCafe</a></li>
+<li><a href="https://nodejs.org/"target="_blank" rel="noopener noreferrer">NodeJS</a></li>
+<li><a href="http://git-scm.com/download/win/"target="_blank" rel="noopener noreferrer">Git for Windows</a></li>
+<li><a href="https://hexo.io/docs/"target="_blank" rel="noopener noreferrer">Hexo</a></li>
+<li><a href="https://docs.npmjs.com/"target="_blank" rel="noopener noreferrer">npm</a></li>
+<li><a href="https://github.com/hexojs/hexo/wiki"target="_blank" rel="noopener noreferrer">Hexo resources</a></li>
+</ul>
+<h2 id="环境准备">环境准备</h2>
+<h3 id="安装git">安装git</h3>
+<p>首先打开git安装包
+<img loading="lazy"  src="./git1.png"
+        alt="git1"/>
+按照自己需求选择组件
+<img loading="lazy"  src="./git2.png"
+        alt="git2"/>
+选择命令行的风格
+<img loading="lazy"  src="./git3.png"
+        alt="git3"/>
+选择文本的结束符,参考 <a href="http://www.tuicool.com/articles/IJjQVb"target="_blank" rel="noopener noreferrer">CRLF和LF</a>
+<img loading="lazy"  src="./git4.png"
+        alt="git4"/>
+使用MinTTY作为终端
+<img loading="lazy"  src="./git5.png"
+        alt="git5"/>
+开启系统缓存，解决运行缓慢的问题</p>
+<h3 id="配置nodejs环境变量">配置NodeJS环境变量</h3>
+<p>请使用4.x.x版本,5.x.x会出错
+在CMD执行npm -v,如果如下显示，则说明环境变量配置成功，反之则需要重新配置环境变量
+<img loading="lazy"  src="./nodejs3.png"
+        alt="nodejs3"/>
+下载安装nodejs,找到nodejs安装目录
+<img loading="lazy"  src="./nodejs1.png"
+        alt="nodejs1"/>
+我这里是<code>C:Program Filesnodejs</code>
+右键我的电脑，属性，高级，环境变量
+找到系统变量的Path，点击编辑，先看看有没有nodejs的路径
+如果没有，加上<code>;C:Program Filesnodejs</code>
+<img loading="lazy"  src="./nodejs2.png"
+        alt="nodejs2"/></p>
+<h2 id="注册gitcafe账号">注册Gitcafe账号</h2>
+<p>在username输入一个你喜欢的英文名
+<img loading="lazy"  src="./gitcafe1.png"
+        alt="gitcafe1"/>
+注册完后可以看到用户控制面板，点击配置SSH Public Key
+<img loading="lazy"  src="./gitcafe2.png"
+        alt="gitcafe2"/>
+我们按照第一步，配置SSH公钥
+先在桌面点击右键，选择Git Bash Here，执行下面这条命令，后面是你注册的邮箱：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh-keygen -t rsa -C <span class="s2">&#34;root@gorgiaxx.com&#34;</span> -f ~/.ssh/gitcafe
+</span></span></code></pre></div><p>会提示输入密码，输入路两遍密码后，SSH密钥就生成成功了
+<img loading="lazy"  src="./gitcafe3.png"
+        alt="gitcafe3"/>
+接下来到用户目录下的.ssh文件夹<code>C:UsersPC013evil.ssh</code>PC013evil是我的Windows的用户名。
+新建一个无扩展名的文本文件名字为config，里面输入：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Host gitcafe.com www.gitcafe.com
+</span></span><span class="line"><span class="cl">  IdentityFile ~/.ssh/gitcafe
+</span></span></code></pre></div><p><img loading="lazy"  src="./gitcafe4.png"
+        alt="gitcafe4"/>
+切换到Gitcafe的页面<code>https://gitcafe.com/account/public_keys/new</code>
+<img loading="lazy"  src="./gitcafe5.png"
+        alt="gitcafe5"/>
+标题随便起一个，Key就填写gitcafe.pub里的内容，密码填写之前配置SSH公钥的密码
+接着到终端里测试下是否成功，会提示输入密码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -vT git@gitcafe.com
+</span></span></code></pre></div><p>然后到用户控制面板，点Create a new project<code>https://gitcafe.com/projects/new</code>
+Project name与用户名相同，点击创建
+<img loading="lazy"  src="./gitcafe6.png"
+        alt="gitcafe6"/>
+接下来选择右边的SSH，复制链接<code>git@gitcafe.com:Drizzle/Drizzle.git</code>
+<img loading="lazy"  src="./gitcafe7.png"
+        alt="gitcafe7"/></p>
+<h2 id="安装配置hexo">安装配置hexo</h2>
+<p>在管理员模式下的CMD执行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -g hexo-cli
+</span></span></code></pre></div><p>-g是参数，表示全局安装hexo，这样你在任何路径都能执行hexo命令。cli代表command-line interface，命令行界面的意思。</p>
+<p>Tips:如果安装过程缓慢，可以使用淘宝镜像</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -g cnpm --registry<span class="o">=</span>https://registry.npm.taobao.org
+</span></span></code></pre></div><p>然后每次使用都在npm前面加上c</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cnpm install -g hexo-cli
+</span></span></code></pre></div><p>新建一个文件夹，在里面右键Git Bash Here，弹出MINGW的终端
+<img loading="lazy"  src="./hexo1.png"
+        alt="hexo1"/>
+在此文件夹初始化hexo</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hexo init
+</span></span></code></pre></div><p><img loading="lazy"  src="./hexo2.png"
+        alt="hexo2"/>
+初始化hexo后，提示执行</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install
+</span></span></code></pre></div><p>可以看到已经生成了一些文件
+<img loading="lazy"  src="./hexo3.png"
+        alt="hexo3"/></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── _config.yml         hexo配置文件
+</span></span><span class="line"><span class="cl">├── package.json        依赖包列表
+</span></span><span class="line"><span class="cl">├── node_modules        nodejs模块目录
+</span></span><span class="line"><span class="cl">├── scaffolds           工具模板目录
+</span></span><span class="line"><span class="cl">├── scripts             功能增强脚本
+</span></span><span class="line"><span class="cl">├── <span class="nb">source</span>              博客内容文件
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   ├── _drafts         草稿目录
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   └── _posts          文章目录
+</span></span><span class="line"><span class="cl">└── themes              主题目录
+</span></span></code></pre></div><p>现在用编辑器打开_config.yml，找到最下面的deploy，不要忘记每个冒号后面都有空格。
+这些内容的填写在官网都有说明，部署类型git，repo是远程仓库，填写之前复制的内容。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">deploy:
+</span></span><span class="line"><span class="cl">  type: git
+</span></span><span class="line"><span class="cl">  repo: git@gitcafe.com:Drizzle/Drizzle.git
+</span></span></code></pre></div><p>要用git方式部署hexo的话，需要安装一个插件，这里提供两种安装方法。
+第一种，直接安装，后面加&ndash;save安装的同时,将信息写入package.json</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install hexo-deployer-git --save
+</span></span></code></pre></div><p>第二种，在Package.json里加上这个插件依赖<code>hexo-deployer-git</code>
+<img loading="lazy"  src="./hexo4.png"
+        alt="hexo4"/>
+然后执行</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install
+</span></span></code></pre></div><p>这里使用第一种，安装完成
+<img loading="lazy"  src="./hexo5.png"
+        alt="hexo5"/>
+接下来预览一下博客
+输入</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hexo server -i 127.0.0.1 -p <span class="m">80</span>
+</span></span></code></pre></div><p>浏览器打开<a href="http://127.0.0.1"target="_blank" rel="noopener noreferrer">http://127.0.0.1</a>，成功访问
+<img loading="lazy"  src="./hexo6-1024x629.png"
+        alt="hexo6"/>
+每次要预览加参数很麻烦，可以到nodejs模块目录修改配置</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./node_modules/hexo-server/index.js
+</span></span></code></pre></div><p>修改为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hexo.config.server <span class="o">=</span> assign<span class="o">({</span>
+</span></span><span class="line"><span class="cl">  port: 80,
+</span></span><span class="line"><span class="cl">  log: false,
+</span></span><span class="line"><span class="cl">  ip: <span class="s1">&#39;127.0.0.1&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>, hexo.config.server<span class="o">)</span><span class="p">;</span>
+</span></span></code></pre></div><p>接下来预览就不用加参数了。hexo的命令可以简化,server可以用s表示</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hexo s
+</span></span></code></pre></div><p><img loading="lazy"  src="./hexo7.png"
+        alt="hexo7"/>
+测试成功之后我们生成静态文件，生成后在<code>./public</code>里，准备部署</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hexo generate
+</span></span></code></pre></div><p>也可以用</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hexo g
+</span></span></code></pre></div><p>生成之后，开始部署</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hexo deploy
+</span></span></code></pre></div><p>也可以用</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hexo d
+</span></span></code></pre></div><p>提示这个，是远端服务器ssh配置问题，我们不管，填yes，然后输入密码
+<img loading="lazy"  src="./hexo8.png"
+        alt="hexo8"/>
+部署成功
+<img loading="lazy"  src="./hexo9.png"
+        alt="hexo9"/>
+现在打开 <code>http://drizzle.gitcafe.io/</code>
+<img loading="lazy"  src="./hexo10.png"
+        alt="hexo10"/></p>
+<h2 id="写博客">写博客</h2>
+<p>执行<code>hexo n &quot;title&quot;</code>,新建一篇以title为标题的空文章。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ hexo n <span class="s2">&#34;title&#34;</span>
+</span></span><span class="line"><span class="cl">INFO  Created: C:wwwMyBlogsource_poststitle.md
+</span></span></code></pre></div><p>可以看到生成了一个title.md，博客内容是用markdown语法写的。可以使用sublime的插件，也可以在线编辑，还有专门的编辑器</p>
+<h2 id="git工具的简单使用">Git工具的简单使用</h2>
+<p>有的时候因为git工具版本问题，执行deploy后，不能成功部署，这时候我们就要手动部署
+在./.deploy_git文件夹里面就是git的工程目录，关于git，可以到廖雪峰的博客学习<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000"target="_blank" rel="noopener noreferrer">git教程</a>
+在此文件夹右键Git Bash Here
+我们先添加远程仓库</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git remote add origin git@gitcafe.com:Drizzle/Drizzle.git
+</span></span></code></pre></div><p>先将远端所有文件取回到本地，解决一些冲突问题</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git fetch --all
+</span></span></code></pre></div><p>回显，已经把分支给更新了</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git fetch --all
+</span></span><span class="line"><span class="cl">Fetching origin
+</span></span><span class="line"><span class="cl">Enter passphrase <span class="k">for</span> key <span class="s1">&#39;/c/Users/PC013evil/.ssh/gitcafe&#39;</span>:
+</span></span><span class="line"><span class="cl">From gitcafe.com:Drizzle/Drizzle
+</span></span><span class="line"><span class="cl"> * <span class="o">[</span>new branch<span class="o">]</span>      gitcafe-pages -&gt; origin/gitcafe-pages
+</span></span></code></pre></div><p>切换到gitcafe-pages分支</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git branch gitcafe-pages
+</span></span></code></pre></div><p>不做任何合并处理，将HEAD指向刚从远程仓库同步下来的版本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git reset --hard origin/gitcafe-pages
+</span></span></code></pre></div><p>回显</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git reset --hard origin/gitcafe-pages
+</span></span><span class="line"><span class="cl">HEAD is now at d202356 Site updated: 2015-11-01 14:22:41
+</span></span></code></pre></div><p>比如我要修改index.html的标题的内容
+<img loading="lazy"  src="./gituse1.png"
+        alt="gituse1"/>
+保存，执行<code>git add ./</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git add ./
+</span></span><span class="line"><span class="cl">warning: LF will be replaced by CRLF in index.html.
+</span></span><span class="line"><span class="cl">The file will have its original line endings in your working directory.
+</span></span></code></pre></div><p>提交到本地仓库，-m表示注释</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git commit -m <span class="s2">&#34;test&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>master warning: LF will be replaced by CRLF in index.html.
+</span></span><span class="line"><span class="cl">The file will have its original line endings in your working directory.
+</span></span><span class="line"><span class="cl">bf2c13f<span class="o">]</span> <span class="nb">test</span>
+</span></span><span class="line"><span class="cl">warning: LF will be replaced by CRLF in index.html.
+</span></span><span class="line"><span class="cl">The file will have its original line endings in your working directory.
+</span></span><span class="line"><span class="cl"> <span class="m">1</span> file changed, <span class="m">1</span> insertion<span class="o">(</span>+<span class="o">)</span>, <span class="m">1</span> deletion<span class="o">(</span>-<span class="o">)</span>
+</span></span></code></pre></div><p>最后提交到远端仓库</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git push -u origin gitcafe-pages
+</span></span><span class="line"><span class="cl">Enter passphrase <span class="k">for</span> key <span class="s1">&#39;/c/Users/PC013evil/.ssh/gitcafe&#39;</span>:
+</span></span><span class="line"><span class="cl">Counting objects: 3, <span class="k">done</span>.
+</span></span><span class="line"><span class="cl">Delta compression using up to <span class="m">4</span> threads.
+</span></span><span class="line"><span class="cl">Compressing objects: 100% <span class="o">(</span>3/3<span class="o">)</span>, <span class="k">done</span>.
+</span></span><span class="line"><span class="cl">Writing objects: 100% <span class="o">(</span>3/3<span class="o">)</span>, <span class="m">280</span> bytes <span class="p">|</span> <span class="m">0</span> bytes/s, <span class="k">done</span>.
+</span></span><span class="line"><span class="cl">Total <span class="m">3</span> <span class="o">(</span>delta 2<span class="o">)</span>, reused <span class="m">0</span> <span class="o">(</span>delta 0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">To git@gitcafe.com:Drizzle/Drizzle.git
+</span></span><span class="line"><span class="cl">   d202356..bf2c13f  gitcafe-pages -&gt; gitcafe-pages
+</span></span><span class="line"><span class="cl">Branch gitcafe-pages <span class="nb">set</span> up to track remote branch gitcafe-pages from origin.
+</span></span></code></pre></div><p>刷新页面
+<img loading="lazy"  src="./gituse2.png"
+        alt="gituse2"/>
+标题已经改变</p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E6%8A%98%E8%85%BE/>折腾</a><a class="tag" href=/zh/tags/git/>git</a><a class="tag" href=/zh/tags/hexo/>hexo</a><a class="tag" href=/zh/tags/%E5%8D%9A%E5%AE%A2/>博客</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/esxi-5-5-tinkering-notes-1/"><span class="iconfont icon-article"></span>ESXi 5.5 折腾笔记一</a></p><p><a class="link" href="/zh/posts/docker-beginner-notes/"><span class="iconfont icon-article"></span>小鲸鱼Docker新手学习笔记</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

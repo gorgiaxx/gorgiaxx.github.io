@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Research Process
+While researching a certain vehicle recently, I ran into a Windows application used to connect to a dealer intranet."><title>Bypassing JVMTI-Based Encryption Protection&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Bypassing JVMTI-Based Encryption Protection" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Bypassing JVMTI-Based Encryption Protection</h1><p class="article date">Monday, June 28, 2021<span class="langs"><span class="lang">
+                    <a href="/zh/posts/bypass-jvmti-encryption-protection/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="research-process">Research Process</h2>
+<p>While researching a certain vehicle recently, I ran into a Windows application used to connect to a dealer intranet.</p>
+<p>After installation, the directory contained both <code>.jar</code> files and an <code>.exe</code> file.</p>
+<p><img loading="lazy"  src="./files.png"
+        alt="files"/></p>
+<p>After running <code>start.exe</code>, I could see two Java processes being launched:</p>
+<p><img loading="lazy"  src="./winpe.png"
+        alt="winpe"/></p>
+<pre tabindex="0"><code>C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsapro\lib\jna -Dfile.encoding=utf-8 -classpath C:\LC\Elsapro -cp C:\LC\Elsapro\ElsaPro.jar com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui 
+</code></pre><p>I guessed the second process might be an embedded browser, and the first process was the critical one.</p>
+<p>Opening the JAR with jd-gui, I found some classes showed <strong>Internal Error</strong>, and key classes were missing. Other Java decompilers behaved similarly.</p>
+<p><img loading="lazy"  src="./jdgui.png"
+        alt="jdgui"/></p>
+<p>A quick reverse of <code>start.exe</code> suggested it was only used as a <code>ClassLoader</code>, possibly for online updates.</p>
+<p>From the startup parameters I noticed <code>-agentlib</code> pointing to <code>jvmprotect</code>. Opening <code>jvmprotect</code> in IDA Pro, I found it uses <strong>JVMTI</strong> as an agent, so I suspected it acts as a decryption module.</p>
+<p>JVMTI supports tools including (but not limited to) forensics, debugging, monitoring, thread analysis, and coverage analysis.</p>
+<p>Skimming the JVMTI documentation, I found three main methods that can serve as good reversing entry points:</p>
+<ul>
+<li><code>Agent_OnLoad</code>   called at startup</li>
+<li><code>Agent_OnAttach</code> called when attached</li>
+<li><code>Agent_OnUnload</code> called when unloaded</li>
+</ul>
+<p>I opened this agent in IDA Pro. <code>Agent_OnLoad</code> is the entry. Since the code is based on JNI and JVMTI, reading it directly is not very convenient. I consolidated a <code>jvmti_all.h</code> header file to make reversing easier (but this didn’t help much here because the callback was too simple and didn’t use other JVMTI features).</p>
+<p><img loading="lazy"  src="./onload.png"
+        alt="onload"/></p>
+<p>At startup it calls <code>SetEventCallbacks</code>. At that point, each class file from the JAR is fed into a callback one by one. The callback decrypts each class and prints logs.</p>
+<p><img loading="lazy"  src="./eventcallback.png"
+        alt="eventcallback"/></p>
+<p>I was too lazy to recover the algorithm, so I planned to decrypt using Frida or Unicorn Engine.</p>
+<p>After reading <a href="http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/"target="_blank" rel="noopener noreferrer">Yilun Fan - 谈谈Java Intrumentation和相关应用</a>, I learned that the Instrumentation API is based on JVMTI, so we can use a Java Agent to export class files.</p>
+<p><img loading="lazy"  src="./agent_related_tools.jpg"
+        alt="agent_related_tools"/></p>
+<p>Referring to <a href="https://www.cnblogs.com/yougewe/p/9651555.html"target="_blank" rel="noopener noreferrer">等你归去来 - 如何获取java运行时动态生成的class文件？</a>, I packaged an agent named <code>ClazzDumpAgent.jar</code>. The <code>-d</code> parameter specifies the dump path; <code>-f</code> matches the prefix to extract; <code>-r</code> indicates the package name.</p>
+<p>There is an ordering between <code>-agentlib</code> and <code>-javaagent</code>: you must decrypt first and then dump.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cmd" data-lang="cmd"><span class="line"><span class="cl">C<span class="p">:</span><span class="nl">\LC\Elsapro\lib\jre\bin\java.exe</span><span class="c1"> -Xms256m -Xmx512m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=512m -agentlib:C:\LC\Elsapro\lib\jna\JvmtiCry -Djava.library.path=C:\LC\Elsapro\lib\jna -javaagent:C:\LC\Elsapro\ClazzDumpAgent.jar=-d=C:\LC\Elsapro\clazzDump\;-f=com/qqw/lcst;-r=lcst -Dfile.encoding=utf-8 -classpath C:\LC\Elsapro -cp C:\LC\Elsapro\ElsaPro.jar com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui</span>
+</span></span></code></pre></div><p>When executing this command, you can see that after each class is decrypted, it is immediately dumped.</p>
+<p><img loading="lazy"  src="./decryption_cmd.png"
+        alt="decryption_cmd.png"/></p>
+<p>Then I packed the dump directory into a zip file and opened it with a Java decompiler. Compared with the first screenshot, the previously <code>null</code> classes now appear; however, some classes that showed <strong>Internal Error</strong> still did not appear. This is because classes that are never executed will not be decrypted. If you proactively trigger the relevant functionality, you can see those classes being decrypted in real time from the command line.</p>
+<p><img loading="lazy"  src="./jdgui2.png"
+        alt="jdgui2"/></p>
+<p>I recommend using <strong>CFR</strong> for decompilation; it produces fewer errors.</p>
+<pre tabindex="0"><code>cfrd -jar ./decypted.zip ./out
+</code></pre><h2 id="bonus">Bonus</h2>
+<p><img loading="lazy"  src="./intranet.png"
+        alt="intranet.png"/></p>
+<h2 id="references">References</h2>
+<p><a href="https://docs.oracle.com/javase/7/docs/technotes/guides/jpda/architecture.html"target="_blank" rel="noopener noreferrer">JDPA</a></p>
+<p><a href="https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html"target="_blank" rel="noopener noreferrer">JVMTI Documentation</a></p>
+<p><a href="http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/"target="_blank" rel="noopener noreferrer">谈谈Java Intrumentation和相关应用</a></p>
+<p><a href="https://www.cnblogs.com/yougewe/p/9651555.html"target="_blank" rel="noopener noreferrer">等你归去来 如何获取java运行时动态生成的class文件</a></p>
+<p><a href="http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/"target="_blank" rel="noopener noreferrer">Yilun Fan - 谈谈Java Intrumentation和相关应用</a></p>
+<p><a href="https://mega.nz/folder/C9oEFBDJ#KVpF5qunEq_e44R7VglDgg"target="_blank" rel="noopener noreferrer">JVMTI.h and ClazzDumpAgent</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/reverse-engineering/>Reverse Engineering</a><a class="tag" href=/en/tags/jvmti/>JVMTI</a><a class="tag" href=/en/tags/decryption/>decryption</a><a class="tag" href=/en/tags/java/>Java</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/general-firmware-reversing-tips/"><span class="iconfont icon-article"></span>General Tips for Firmware Reverse Engineering</a></p><p><a class="link" href="/en/posts/firmware-extraction-series-firmware-media/"><span class="iconfont icon-article"></span>Firmware Extraction Series: Firmware</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

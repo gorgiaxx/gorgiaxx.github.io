@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+思路如下："><title>子域名收集笔记&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="子域名收集笔记" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">子域名收集笔记</h1><p class="article date">Tuesday, December 5, 2017<span class="langs"><span class="lang">
+                    <a href="/en/posts/subdomain-enumeration-notes/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>思路如下：</p>
+<p>公开情报：证书，DNS解析记录，站内URL。
+非公开情报：子域名枚举，DNS域传递，客户端接口，Github等托管平台，能够收集用户上网数据的公司。</p>
+<h2 id="搜索引擎">搜索引擎</h2>
+<p>也可以用其他搜索引擎，这个效果不是很好，Google hacking如下</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">site:target.com
+</span></span></code></pre></div><p>使用&quot;-&ldquo;减号来去除已知子域名</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">site:target.com-www-blog
+</span></span></code></pre></div><h2 id="证书">证书</h2>
+<h3 id="certificate-transparency-logs">Certificate Transparency logs</h3>
+<p>谷歌Chrome要求2017年所有SSL证书都要支持证书透明，所以可以根据CT log查询支持HTTPS网站的子域名。</p>
+<p><a href="https://crt.sh/"target="_blank" rel="noopener noreferrer">crt.sh</a>
+<a href="https://censys.io/"target="_blank" rel="noopener noreferrer">censys.io</a>
+<a href="https://google.com/transparencyreport/https/ct/"target="_blank" rel="noopener noreferrer">google</a>
+<a href="developers.facebook.com/tools/ct/">facebook</a></p>
+<h3 id="subject-alternative-name">Subject Alternative Name</h3>
+<p>根据多域名证书的Subject Alternative Name中的内容，可以获取同一公司的其他域名。
+<img loading="lazy"  src="./SAN.png"
+        alt="SAN"/></p>
+<h2 id="dns域传递">DNS域传递</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dig AXFR@nameserver domain
+</span></span><span class="line"><span class="cl">dnsenum domain
+</span></span></code></pre></div><h2 id="前端">前端</h2>
+<p>爬URL
+crossdomain.xml</p>
+<h2 id="国内公开信息">国内公开信息</h2>
+<p>工信部，链接地址如下，进去之后无法获取验证码，右键验证码新窗口打开。
+<a href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action"target="_blank" rel="noopener noreferrer">http://www.miitbeian.gov.cn/publish/query/indexFirst.action</a></p>
+<p>工商网监,主要涉网信息
+<a href="http://szcert.ebs.org.cn"target="_blank" rel="noopener noreferrer">http://szcert.ebs.org.cn</a></p>
+<h2 id="nsec">NSEC</h2>
+<p>NSEC ldnsutil</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ldns-walk @nameserver domain
+</span></span></code></pre></div><p>NSEC3 nsec3walker</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">collect inscuredns.com &gt; insecuredns.com.collect
+</span></span><span class="line"><span class="cl">unhash insecuredns.com.collect &gt; insecuredns.com.collect.unhash
+</span></span></code></pre></div><h2 id="certdb">CertDB</h2>
+<p><a href="https://certdb.com/search?q=dvb.corpinter.net"target="_blank" rel="noopener noreferrer">https://certdb.com/search?q=dvb.corpinter.net</a></p>
+<h2 id="域名服务商私有dns记录">域名服务商私有DNS记录</h2>
+<p>添加域名，然后查看导入DNS记录</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">https://www.cloudflare.com/
+</span></span><span class="line"><span class="cl">https://www.dnspod.cn/
+</span></span><span class="line"><span class="cl">http://www.dnspod.cn/proxy_diagnose/recordscan/doc88.com?callback<span class="o">=</span>a
+</span></span></code></pre></div><h2 id="网络公开情报">网络公开情报</h2>
+<p><a href="https://www.virustotal.com/"target="_blank" rel="noopener noreferrer">VirusTotal</a>是一个在线检测恶意样本或链接的网站，有自己的DNS数据集。</p>
+<p>HackerTarget上可以根据IP反查相关域名，但是不全
+<a href="https://hackertarget.com/reverse-ip-lookup/"target="_blank" rel="noopener noreferrer">https://hackertarget.com/reverse-ip-lookup/</a></p>
+<p>可以使用HackerTarget收费的服务查看更完全的数据
+<a href="https://hackertarget.com/domain-profiler/"target="_blank" rel="noopener noreferrer">https://hackertarget.com/domain-profiler/</a></p>
+<p><a href="https://dnsdumpster.com/"target="_blank" rel="noopener noreferrer">DNSdumpster</a>是一个免费的域名分析网站，是HackerTarget旗下项目，可以查询相关的子域名或者旁站域名。</p>
+<p><a href="http://viewdns.info/"target="_blank" rel="noopener noreferrer">ViewDNS</a>是一个DNS工具大全,可以查各种DNS信息。</p>
+<p><a href="https://findsubdomains.com/"target="_blank" rel="noopener noreferrer">FindSubDomains</a>可以获取其他子域名和IP信息</p>
+<h2 id="扫描工具">扫描工具</h2>
+<h3 id="nmap">NMap</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nmap --script dns-brute --script-args dns-brute.domain<span class="o">=</span>target.com,dns-brute.threads<span class="o">=</span>6,dns-
+</span></span><span class="line"><span class="cl">brute.hostlist<span class="o">=</span>dict.lst
+</span></span></code></pre></div><h3 id="其他工具">其他工具</h3>
+<p><a href="https://github.com/TheRook/subbrute"target="_blank" rel="noopener noreferrer">SubBrute</a> - 是一个开源项目，DNS爬虫，能够使用字典爆破子域名，也是一个python库。</p>
+<p><a href="https://github.com/aboul3la/Sublist3r"target="_blank" rel="noopener noreferrer">Sublist3r</a> - 是一个开源项目，整合了SubBrute，并且能够在网上收集公开的域名数据。</p>
+<p><a href="https://github.com/lijiejie/subDomainsBrute"target="_blank" rel="noopener noreferrer">subDomainsBrute</a> - 是一个纯粹的子域名爆破脚本。基于字典，扫描速度快，支持多线程。</p>
+<p><a href="https://github.com/appsecco/bugcrowd-levelup-subdomain-enumeration"target="_blank" rel="noopener noreferrer">bugcrowd-levelup-subdomain-enumeration</a> - Bharath在Bugcrowd Levelup的议题用到的工具，包含子域名枚举脚本、CTlog查询脚本。</p>
+<p><a href="https://github.com/darkoperator/dnsrecon"target="_blank" rel="noopener noreferrer">DNSrecon</a> - DNS枚举脚本</p>
+<p><a href="https://github.com/davidpepper/fierce-domain-scanner"target="_blank" rel="noopener noreferrer">Fierce.pl Domain Scanner</a> - perl写的子域名爆破脚本</p>
+<p><a href="https://github.com/michenriksen/aquatone"target="_blank" rel="noopener noreferrer">AQUATONE</a> - 一款强大的域名工具，可以查子域名相同指纹站点。</p>
+<p><a href="https://github.com/laramies/theHarvester"target="_blank" rel="noopener noreferrer">theHarvester</a> - 一款社会工程学工具，有查询子域名的功能。</p>
+<p><a href="https://github.com/blechschmidt/massdns.git"target="_blank" rel="noopener noreferrer">MassDNS</a> - 一款域名解析工具，可以用于爆破子域名。</p>
+<p><a href="https://github.com/infosec-au/altdns"target="_blank" rel="noopener noreferrer">Alt-DNS</a> - 根据已知域名排列或关键词生成字典来爆破子域名。</p>
+<p><a href="https://github.com/jhaddix/domain"target="_blank" rel="noopener noreferrer">无名的，基于recon-ng和Alt-DNS的域名爆破脚本</a></p>
+<p><a href="https://github.com/eldraco/domain_analyzer"target="_blank" rel="noopener noreferrer">Domain Analyzer</a> - 一个分析域名的工具，可以用来查子域名</p>
+<p><a href="https://github.com/jfrancois/SDBF"target="_blank" rel="noopener noreferrer">Smart DNS Brute Forcer</a> - 卢森堡大学的学术型工具，结合Markov chain Models生成域名。</p>
+<p><a href="https://github.com/evilsocket/xray"target="_blank" rel="noopener noreferrer">XRay</a> - 一款情报收集工具，有子域名收集功能</p>
+<p><a href="https://github.com/coco413/DiscoverSubdomain"target="_blank" rel="noopener noreferrer">DiscoverSubdomain</a> - 自动化收集子域名工具，集成了多类子域名获取功能</p>
+<p><a href="https://github.com/franccesco/getaltname"target="_blank" rel="noopener noreferrer">GetAltName</a> - 根据SAN获取其他域名</p>
+<p><a href="https://github.com/bit4woo/teemo.git"target="_blank" rel="noopener noreferrer">Teemo</a> - 一款域名和邮箱的信息收集工具，挺全的，就是没SSL的收集路径</p>
+<p><a href="https://github.com/sawzeeyy/Sanitiz3r.git"target="_blank" rel="noopener noreferrer">Sanitiz3r</a> - 中规中矩的域名爆破脚本，可以检测HTTP服务</p>
+<h2 id="参考">参考</h2>
+<p><a href="https://speakerdeck.com/yamakira/esoteric-sub-domain-enumeration-techniques"target="_blank" rel="noopener noreferrer">Esoteric sub-domain enumeration techniques</a></p>
+<p><a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types"target="_blank" rel="noopener noreferrer">List of DNS record types</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/>网络安全</a><a class="tag" href=/zh/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/>信息收集</a><a class="tag" href=/zh/tags/%E5%AD%90%E5%9F%9F%E5%90%8D/>子域名</a><a class="tag" href=/zh/tags/dns/>DNS</a><a class="tag" href=/zh/tags/%E6%9E%9A%E4%B8%BE/>枚举</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/esim-notes/"><span class="iconfont icon-article"></span>eSIM学习笔记</a></p><p><a class="link" href="/zh/posts/hardware-repair-notes/"><span class="iconfont icon-article"></span>硬件维修笔记</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

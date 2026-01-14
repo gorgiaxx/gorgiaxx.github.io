@@ -1,0 +1,167 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Connected Vehicle on Gorgias&#39; Blog</title>
+    <link>http://localhost:1313/en/tags/connected-vehicle/</link>
+    <description>Recent content in Connected Vehicle on Gorgias&#39; Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>2015 - 2026 Gorgias&#39; Blog. </copyright>
+    <lastBuildDate>Thu, 08 Aug 2019 00:30:20 +0800</lastBuildDate>
+    
+        <atom:link href="http://localhost:1313/en/tags/connected-vehicle/atom.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>IGS Arcade 逆向系列（四）- ASIC27协议和TSGROM文件静态分析</title>
+      <link>http://localhost:1313/en/posts/igs-arcade-re-4/</link>
+      <pubDate>Mon, 08 Sep 2025 02:23:48 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/igs-arcade-re-4/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>IGS Arcade 逆向系列（三）- Getshell</title>
+      <link>http://localhost:1313/en/posts/igs-arcade-re-3/</link>
+      <pubDate>Mon, 23 Jun 2025 23:03:18 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/igs-arcade-re-3/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>IGS Arcade 逆向系列（二）- 游戏文件恢复</title>
+      <link>http://localhost:1313/en/posts/igs-arcade-re-2/</link>
+      <pubDate>Sun, 25 May 2025 20:37:31 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/igs-arcade-re-2/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>IGS Arcade 逆向系列（一）- E2000平台分析</title>
+      <link>http://localhost:1313/en/posts/igs-arcade-re-1/</link>
+      <pubDate>Sat, 17 May 2025 22:34:31 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/igs-arcade-re-1/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>VW ID.4 ICAS1 车控分析</title>
+      <link>http://localhost:1313/en/posts/vw-id4-vehicle-control-analysis/</link>
+      <pubDate>Thu, 26 Dec 2024 22:04:11 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/vw-id4-vehicle-control-analysis/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>QNX7 密码 hash 算法分析以及 Hashcat 模块编写</title>
+      <link>http://localhost:1313/en/posts/qnx7-password-hash-analysis-and-hashcat-module/</link>
+      <pubDate>Thu, 14 Sep 2023 22:04:11 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/qnx7-password-hash-analysis-and-hashcat-module/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>固件逆向的通用技巧</title>
+      <link>http://localhost:1313/en/posts/general-firmware-reversing-tips/</link>
+      <pubDate>Mon, 15 Aug 2022 21:39:11 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/general-firmware-reversing-tips/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Bypassing JVMTI-Based Encryption Protection</title>
+      <link>http://localhost:1313/en/posts/bypass-jvmti-encryption-protection/</link>
+      <pubDate>Mon, 28 Jun 2021 21:39:11 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/bypass-jvmti-encryption-protection/</guid>
+      <description>&lt;h2 id=&#34;research-process&#34;&gt;Research Process&lt;/h2&gt;
+&lt;p&gt;While researching a certain vehicle recently, I ran into a Windows application used to connect to a dealer intranet.&lt;/p&gt;
+&lt;p&gt;After installation, the directory contained both &lt;code&gt;.jar&lt;/code&gt; files and an &lt;code&gt;.exe&lt;/code&gt; file.&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./files.png&#34;
+        alt=&#34;files&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;After running &lt;code&gt;start.exe&lt;/code&gt;, I could see two Java processes being launched:&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./winpe.png&#34;
+        alt=&#34;winpe&#34;/&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;C:\LC\Elsapro\lib\jre\bin\java.exe -agentlib:C:\LC\Elsapro\lib\jna\jvmprotect -Djava.library.path=C:\LC\Elsapro\lib\jna -Dfile.encoding=utf-8 -classpath C:\LC\Elsapro -cp C:\LC\Elsapro\ElsaPro.jar com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I guessed the second process might be an embedded browser, and the first process was the critical one.&lt;/p&gt;
+&lt;p&gt;Opening the JAR with jd-gui, I found some classes showed &lt;strong&gt;Internal Error&lt;/strong&gt;, and key classes were missing. Other Java decompilers behaved similarly.&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./jdgui.png&#34;
+        alt=&#34;jdgui&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;A quick reverse of &lt;code&gt;start.exe&lt;/code&gt; suggested it was only used as a &lt;code&gt;ClassLoader&lt;/code&gt;, possibly for online updates.&lt;/p&gt;
+&lt;p&gt;From the startup parameters I noticed &lt;code&gt;-agentlib&lt;/code&gt; pointing to &lt;code&gt;jvmprotect&lt;/code&gt;. Opening &lt;code&gt;jvmprotect&lt;/code&gt; in IDA Pro, I found it uses &lt;strong&gt;JVMTI&lt;/strong&gt; as an agent, so I suspected it acts as a decryption module.&lt;/p&gt;
+&lt;p&gt;JVMTI supports tools including (but not limited to) forensics, debugging, monitoring, thread analysis, and coverage analysis.&lt;/p&gt;
+&lt;p&gt;Skimming the JVMTI documentation, I found three main methods that can serve as good reversing entry points:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Agent_OnLoad&lt;/code&gt;   called at startup&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Agent_OnAttach&lt;/code&gt; called when attached&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Agent_OnUnload&lt;/code&gt; called when unloaded&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I opened this agent in IDA Pro. &lt;code&gt;Agent_OnLoad&lt;/code&gt; is the entry. Since the code is based on JNI and JVMTI, reading it directly is not very convenient. I consolidated a &lt;code&gt;jvmti_all.h&lt;/code&gt; header file to make reversing easier (but this didn’t help much here because the callback was too simple and didn’t use other JVMTI features).&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./onload.png&#34;
+        alt=&#34;onload&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;At startup it calls &lt;code&gt;SetEventCallbacks&lt;/code&gt;. At that point, each class file from the JAR is fed into a callback one by one. The callback decrypts each class and prints logs.&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./eventcallback.png&#34;
+        alt=&#34;eventcallback&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;I was too lazy to recover the algorithm, so I planned to decrypt using Frida or Unicorn Engine.&lt;/p&gt;
+&lt;p&gt;After reading &lt;a href=&#34;http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Yilun Fan - 谈谈Java Intrumentation和相关应用&lt;/a&gt;, I learned that the Instrumentation API is based on JVMTI, so we can use a Java Agent to export class files.&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./agent_related_tools.jpg&#34;
+        alt=&#34;agent_related_tools&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Referring to &lt;a href=&#34;https://www.cnblogs.com/yougewe/p/9651555.html&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;等你归去来 - 如何获取java运行时动态生成的class文件？&lt;/a&gt;, I packaged an agent named &lt;code&gt;ClazzDumpAgent.jar&lt;/code&gt;. The &lt;code&gt;-d&lt;/code&gt; parameter specifies the dump path; &lt;code&gt;-f&lt;/code&gt; matches the prefix to extract; &lt;code&gt;-r&lt;/code&gt; indicates the package name.&lt;/p&gt;
+&lt;p&gt;There is an ordering between &lt;code&gt;-agentlib&lt;/code&gt; and &lt;code&gt;-javaagent&lt;/code&gt;: you must decrypt first and then dump.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cmd&#34; data-lang=&#34;cmd&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;C&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;nl&#34;&gt;\LC\Elsapro\lib\jre\bin\java.exe&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt; -Xms256m -Xmx512m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=512m -agentlib:C:\LC\Elsapro\lib\jna\JvmtiCry -Djava.library.path=C:\LC\Elsapro\lib\jna -javaagent:C:\LC\Elsapro\ClazzDumpAgent.jar=-d=C:\LC\Elsapro\clazzDump\;-f=com/qqw/lcst;-r=lcst -Dfile.encoding=utf-8 -classpath C:\LC\Elsapro -cp C:\LC\Elsapro\ElsaPro.jar com.qqw.lcst.softp.superc.v5.app.epweb.gui.OptGui&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When executing this command, you can see that after each class is decrypted, it is immediately dumped.&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./decryption_cmd.png&#34;
+        alt=&#34;decryption_cmd.png&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Then I packed the dump directory into a zip file and opened it with a Java decompiler. Compared with the first screenshot, the previously &lt;code&gt;null&lt;/code&gt; classes now appear; however, some classes that showed &lt;strong&gt;Internal Error&lt;/strong&gt; still did not appear. This is because classes that are never executed will not be decrypted. If you proactively trigger the relevant functionality, you can see those classes being decrypted in real time from the command line.&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./jdgui2.png&#34;
+        alt=&#34;jdgui2&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;I recommend using &lt;strong&gt;CFR&lt;/strong&gt; for decompilation; it produces fewer errors.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;cfrd -jar ./decypted.zip ./out
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;bonus&#34;&gt;Bonus&lt;/h2&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./intranet.png&#34;
+        alt=&#34;intranet.png&#34;/&gt;&lt;/p&gt;
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.oracle.com/javase/7/docs/technotes/guides/jpda/architecture.html&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;JDPA&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;JVMTI Documentation&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;谈谈Java Intrumentation和相关应用&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.cnblogs.com/yougewe/p/9651555.html&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;等你归去来 如何获取java运行时动态生成的class文件&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.fanyilun.me/2017/07/18/%E8%B0%88%E8%B0%88Java%20Intrumentation%E5%92%8C%E7%9B%B8%E5%85%B3%E5%BA%94%E7%94%A8/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Yilun Fan - 谈谈Java Intrumentation和相关应用&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://mega.nz/folder/C9oEFBDJ#KVpF5qunEq_e44R7VglDgg&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;JVMTI.h and ClazzDumpAgent&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>固件提取系列 UBI文件系统提取以及重打包</title>
+      <link>http://localhost:1313/en/posts/firmware-extraction-series-ubi-extract-and-repack/</link>
+      <pubDate>Sat, 28 Dec 2019 21:39:11 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/firmware-extraction-series-ubi-extract-and-repack/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>固件提取系列 固件载体</title>
+      <link>http://localhost:1313/en/posts/firmware-extraction-series-firmware-media/</link>
+      <pubDate>Sat, 28 Dec 2019 21:39:11 +0800</pubDate>
+      
+      <guid>http://localhost:1313/en/posts/firmware-extraction-series-firmware-media/</guid>
+      <description>&lt;!-- TODO: translate content from zh version; assets are copied. --&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

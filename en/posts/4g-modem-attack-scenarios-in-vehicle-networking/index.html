@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Communication Module Overview
+In the connected-car domain, the TCU (Telematics Control Unit) is an indispensable unit in an internet-connected vehicle (also called a T-Box, Telematics Box). The TCU’s networking capability is implemented by a cellular communication module (also called an M2M module). The baseband chipsets used by these modules almost always support multiple carriers, which gives OEMs more flexibility when choosing network operators."><title>A Brief Look at 4G Modem Attack Scenarios in Vehicle Networking&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="A Brief Look at 4G Modem Attack Scenarios in Vehicle Networking" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">A Brief Look at 4G Modem Attack Scenarios in Vehicle Networking</h1><p class="article date">Thursday, August 8, 2019<span class="reading-time"> • 13 minutes to read</span><span class="langs"><span class="lang">
+                    <a href="/zh/posts/4g-modem-attack-scenarios-in-vehicle-networking/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="communication-module-overview">Communication Module Overview</h2>
+<p>In the connected-car domain, the TCU (Telematics Control Unit) is an indispensable unit in an internet-connected vehicle (also called a T-Box, Telematics Box). The TCU’s networking capability is implemented by a cellular communication module (also called an M2M module). The baseband chipsets used by these modules almost always support multiple carriers, which gives OEMs more flexibility when choosing network operators.</p>
+<p>Over the past four years of researching connected-car security, we have completed security research on dozens of mainstream domestic telematics products, analyzed the security of TCUs from multiple OEMs and Tier 1 suppliers, and gained a deeper understanding of the current security posture of TCUs used in the domestic market. As the external internet-facing communication interface of a vehicle, the cellular module is one of the most critical components to secure, because the broadest-coverage remote attacks almost always involve the cellular module in one way or another.</p>
+<p>There are many Tier 1 suppliers and the TCU products vary. However, the automotive-grade cellular modules used domestically tend to be a small set of models. Below is a simple classification of vendors. Whether praising or criticizing, we will not name specific domestic vendors.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Vendor</th>
+          <th>Notes</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Vendor H</td>
+          <td>Multiple automotive-grade modules, very high domestic market share, strong technical capability, relatively expensive</td>
+      </tr>
+      <tr>
+          <td>Vendor Q</td>
+          <td>A well-known module vendor; automotive-grade modules mainly used on mid/low-end models; as usable as Vendor H’s modules</td>
+      </tr>
+      <tr>
+          <td>Vendor Z</td>
+          <td>Mostly used in IoT devices; also has automotive-grade modules, but with very low market share</td>
+      </tr>
+      <tr>
+          <td>Vendor F</td>
+          <td>Tier 1; modules may be OEM’ed by Vendor H; mainly used on mid/low-end models</td>
+      </tr>
+      <tr>
+          <td>Vendor L</td>
+          <td>A solid, average vendor</td>
+      </tr>
+      <tr>
+          <td>Vendor S</td>
+          <td>Very large market share in cellular modules, but not dominant in the connected-car domain</td>
+      </tr>
+      <tr>
+          <td>Sierra</td>
+          <td>A large vendor of M2M wireless communication products and solutions</td>
+      </tr>
+      <tr>
+          <td>Telit</td>
+          <td>Headquartered in Italy; Telit is a leading global vendor of M2M wireless communication products and solutions</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="development-materials">Development Materials</h3>
+<p>Before testing, you need official materials. If there is no documentation, the research will likely be blocked. We compared documentation-related attributes for these vendors as shown below. “Richness” roughly reflects whether there are references for debugging or boot flows. “Security guidance” is considered present as long as the documentation mentions any security-related practice (e.g., setting debug keys, disabling debug ports).</p>
+<table>
+  <thead>
+      <tr>
+          <th>Vendor</th>
+          <th>Documentation confidentiality</th>
+          <th>Documentation richness</th>
+          <th>Security guidance</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Vendor H</td>
+          <td>Source code is open; docs not public</td>
+          <td>High</td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>Vendor Q</td>
+          <td>Source code closed; docs partially public</td>
+          <td>Medium</td>
+          <td>No</td>
+      </tr>
+      <tr>
+          <td>Vendor Z</td>
+          <td>Source code closed; some docs available to foreigners</td>
+          <td>Low</td>
+          <td>No</td>
+      </tr>
+      <tr>
+          <td>Vendor F</td>
+          <td>Source code closed; docs not public</td>
+          <td>Unknown</td>
+          <td>Unknown</td>
+      </tr>
+      <tr>
+          <td>Vendor L</td>
+          <td>Source code closed; docs not public</td>
+          <td>Low</td>
+          <td>Unknown</td>
+      </tr>
+      <tr>
+          <td>Vendor S</td>
+          <td>Source code closed; docs not public</td>
+          <td>Unknown</td>
+          <td>Unknown</td>
+      </tr>
+      <tr>
+          <td>Sierra</td>
+          <td>Source code is open; hardware docs not public</td>
+          <td>Medium</td>
+          <td>Yes</td>
+      </tr>
+      <tr>
+          <td>Telit</td>
+          <td>Source code closed; docs partially public</td>
+          <td>High</td>
+          <td>Unknown</td>
+      </tr>
+  </tbody>
+</table>
+<p>Sierra doesn’t provide much hardware documentation, but there is plenty of software documentation, and there are open-source projects on GitHub. The docs sometimes include security advice.</p>
+<p>Vendor H’s module code used to be closed by default. I emailed Vendor H and tried to request access “by following the process” (this is how some people handle it), but because the products are sold domestically, the overseas support redirected me to the CN support, and the CN support played dumb. After the trade war started, Vendor H also open-sourced the cellular module code. Distributors don’t provide deeper development materials unless you sign an NDA. Still, Vendor H’s documentation does include security guidance.</p>
+<p>Vendor Q provides documentation officially, but recently some materials have become unavailable to download. After signing an NDA with Vendor Q, the materials provided were mostly source code and standard development docs—still no security guidance.</p>
+<h3 id="hardware-appearance">Hardware Appearance</h3>
+<p>Vendor H used Qualcomm solutions in earlier products, and gradually switched to HiSilicon LTE Cat6 solutions later—commonly HI6932. Other vendors mostly use Qualcomm MDM96xx; the most common baseband chips are MDM9615 and MDM9628.</p>
+<p>The left image shows a HiSilicon solution; the right image shows a Qualcomm solution. Storage is typically a DDR2 + NAND Flash MCP package, and most storage chips are Micron. Most modules use LGA packages to avoid exposing pins directly.</p>
+<p><img loading="lazy"  src="./hisilicon_vs_qualcomm.jpg"
+        alt="hisilicon_vs_qualcomm"/></p>
+<p>For non-automotive-grade modules, such as Vendor Z’s charging pile solution, an LCC package may be used, where all pins are exposed externally.</p>
+<p><img loading="lazy"  src="./IoT_Module.jpg"
+        alt="IoT_Module"/></p>
+<p>However, some automotive-grade modules also use LCC packages—e.g., the left image is Vendor L’s module. The right image is a Tier 1 using a non-automotive-grade module from Vendor S.</p>
+<p><img loading="lazy"  src="./LCC.jpg"
+        alt="LCC"/></p>
+<p>With hardware design materials, we can label each pin on the package and identify external interfaces that may be abused.</p>
+<p><img loading="lazy"  src="./LGA.png"
+        alt="LGA"/></p>
+<h3 id="tcu-solution-types">TCU Solution Types</h3>
+<p>At a high level, there are two major implementation patterns for cellular modules in TCU solutions: an “external MCU + module” design and an “OpenCPU” design.</p>
+<p>In the external MCU + module design, all business logic lives on the MCU. The cellular module mainly acts as a network interface card, or provides a TCP/IP and SSL stack. This design places higher requirements on the MCU and cannot fully utilize the cellular module’s capability. Non-automotive-grade modules usually have mediocre performance, so this approach is suitable for traditional IoT devices. But some Tier 1 TCUs also use this approach, which is somewhat surprising.</p>
+<p><img loading="lazy"  src="./extMCU.png"
+        alt="extMCU"/></p>
+<p>In an OpenCPU-like design, the business logic is placed inside the cellular module, and the MCU only handles power management and peripheral interfaces. Other vendors likely have similar concepts but may not call it “OpenCPU”. The term “OpenCPU” is rarely seen abroad—it appears to be a concept popularized domestically by Vendor H, and later adopted by other local vendors. Since terminology tends to be shaped by the market leader, we will also use “OpenCPU” in the rest of this article.</p>
+<p><img loading="lazy"  src="./OpenCPU.png"
+        alt="OpenCPU"/></p>
+<h2 id="attack-surface">Attack Surface</h2>
+<p>Common attack entry points include:</p>
+<ul>
+<li>Network layer</li>
+<li>CAN-Bus</li>
+<li>Ethernet</li>
+<li>WLAN</li>
+<li>Bluetooth</li>
+<li>Cellular</li>
+<li>Hardware layer</li>
+<li>UART</li>
+<li>JTAG</li>
+<li>SDIO</li>
+<li>SPI</li>
+<li>SWD</li>
+<li>E-SIM</li>
+</ul>
+<p>For the cellular module itself, the attack scenarios generally fall into the following categories:</p>
+<ul>
+<li>Information disclosure: obtain privacy-related data or data useful for attacks from various debugging entry points.</li>
+<li>Man-in-the-middle (MitM): attack protocols and inject malicious data to trigger unintended behaviors.</li>
+<li>Firmware extraction: extract and parse NAND Flash contents through various means.</li>
+<li>Get shell: gain command execution capability for further exploitation.</li>
+<li>Firmware tampering: flash backdoored firmware via different paths and successfully boot it.</li>
+<li>Network device pivoting: wire out the USB interface and use it as a 4G NIC to penetrate internal networks.</li>
+</ul>
+<p>Based on these directions, you can define concrete attack scenarios. The last one is straightforward, so we won’t expand on it here.</p>
+<h3 id="information-disclosure-scenario-obtain-information-for-intranet-penetration-testing">Information Disclosure Scenario: obtain information for intranet penetration testing</h3>
+<p>For TCUs using the external MCU design, sniff the UART communication between the MCU and the LTE module to obtain APN configuration information. Alternatively, wire directly to the UART interface responsible for AT commands and query the network configuration.</p>
+<p><img loading="lazy"  src="./private_apn.png"
+        alt="private_apn"/></p>
+<p>You can also extract the external eMMC and analyze log files to recover APN configuration information, or obtain debugging APN information via UART logs.</p>
+<p><img loading="lazy"  src="./private_apn2.png"
+        alt="private_apn2"/></p>
+<p>Then, by wiring to the E-SIM, you can pivot into the OEM’s or Tier 1’s internal network.</p>
+<p><img loading="lazy"  src="./esim_jumpwire.png"
+        alt="esim_jumpwire"/></p>
+<p>Obtain TSP service addresses from UART logs:</p>
+<p><img loading="lazy"  src="./url_logs.png"
+        alt="url_logs"/></p>
+<p>For servers using mutual TLS authentication—especially for external MCU TCUs—you can sniff AT communications to extract the SSL client certificate and access the server side.</p>
+<p><img loading="lazy"  src="./at_ssl.png"
+        alt="at_ssl"/></p>
+<h3 id="mitm-scenario-1-hijack-the-modules-network-channel-to-deliver-unintended-commands">MitM Scenario 1: hijack the module’s network channel to deliver unintended commands</h3>
+<p>If the client does not authenticate the server, then as long as you can hijack traffic to a malicious TSP, the malicious TSP can act as a relay and inject its own payload.</p>
+<p><img loading="lazy"  src="./comm.png"
+        alt="comm"/></p>
+<p>If the communication code supports two protocol suites—one unencrypted and one AES-encrypted—you can downgrade the protocol during the handshake. This allows you to analyze the protocol format and inject commands into the vehicle.</p>
+<p><img loading="lazy"  src="./comm2.png"
+        alt="comm2"/></p>
+<p>“Unintended commands” here refers to vehicle-control commands implemented at the MCU layer but not yet implemented at the TSP layer.</p>
+<p><img loading="lazy"  src="./comm3.png"
+        alt="comm3"/></p>
+<h3 id="mitm-scenario-2-sms-hijacking-attacks">MitM Scenario 2: SMS hijacking attacks</h3>
+<p>In some situations, vehicles need SMS to wake up. Some developers also try to support vehicle remote control when data is unavailable. One shared-car module accepts SMS-based AT commands to control the vehicle body—meaning you can attack it simply by sending an SMS. That design is, bluntly, irresponsible.</p>
+<p>In another early software version of a vehicle, when data was unavailable the platform would deliver vehicle-control commands through an SMS tunnel. Early on, it neither authenticated the platform’s phone number nor used signatures. The format was special: no encryption, only VIN and Base64.</p>
+<p>You can retrieve SMS content via an external AT interface. You can also sniff via a fake base station, then use AT commands to send SMS to other phone numbers, obtain the M2M SIM number, and then send vehicle-control commands to that number from another phone.</p>
+<p><img loading="lazy"  src="./sms.jpg"
+        alt="sms"/></p>
+<p>In the next version, a message authentication code (MAC) check was added. The signature used VIN + a unique dynamic secret; the dynamic secret was synchronized from the cloud over a mutually authenticated channel, but the key was deleted on every sleep cycle. As in scenario 1, if you prevent the module from using the data network, it cannot sync the key from the cloud, and can only accept SMS—therefore this version remained compatible with both protocols.</p>
+<p><img loading="lazy"  src="./smsdata.png"
+        alt="sms_data"/></p>
+<p><code>security_flag</code> automatically becomes <code>00</code>, and the program will skip the MAC verification.</p>
+<p><img loading="lazy"  src="./sms_struct.png"
+        alt="sms_struct.png"/></p>
+<p>In the current version, the secret key is no longer automatically deleted, meaning this part of the process is safe.</p>
+<h3 id="firmware-extraction-scenario-obtain-critical-files-via-firmware-extraction">Firmware Extraction Scenario: obtain critical files via firmware extraction</h3>
+<p>Remove the NAND Flash from the SoC:</p>
+<p><img loading="lazy"  src="./takeoffnand.jpg"
+        alt="takeoffnand"/></p>
+<p>Wire to the pins and use a programmer to extract the data, then reconstruct the filesystem:</p>
+<p><img loading="lazy"  src="./nand_flash_137_0.jpeg"
+        alt="nand_flash_137_0"/></p>
+<p>After that, you can analyze the client program in an OpenCPU solution and may even recover client certificates.</p>
+<p><img loading="lazy"  src="./files.png"
+        alt="files"/></p>
+<p>Among these vendors, only Telit protects the NAND Flash with epoxy. Forcibly removing it can also damage the PCB.</p>
+<p><img loading="lazy"  src="./nand_flash_162_0.jpeg"
+        alt="nand_flash_162_0"/></p>
+<p>So we used sandpaper to polish it down and expose the pads:</p>
+<p><img loading="lazy"  src="./nand_flash_162_1.jpeg"
+        alt="nand_flash_162_1"/></p>
+<p>Then perform wiring:</p>
+<p><img loading="lazy"  src="./nand_dump.png"
+        alt="nand_dump"/></p>
+<p>If you don’t want to wire, and you can find a JTAG interface, you can use OpenOCD to extract firmware. Currently, only Vendor H provides JTAG labeling and also has dedicated security guidance for JTAG debugging—developers simply ignored it.</p>
+<p><img loading="lazy"  src="./jtag1.png"
+        alt="jtag1"/></p>
+<p>You need to time the interruption properly:</p>
+<p><img loading="lazy"  src="./jtag2.png"
+        alt="jtag2"/></p>
+<p>After extracting files, the next step is reversing and debugging. QEMU usually won’t meet requirements—these systems often have many Android characteristics and require peripheral emulation—so using a development board is often more practical.</p>
+<h3 id="getshell-1-access-debugging-services-over-the-network">GetShell-1: access debugging services over the network</h3>
+<p>Some devices enable network ADB by default and listen on <code>0.0.0.0</code>. Any device on the same network can access the service. If the TCU has WLAN capability, you can enable WLAN via AT commands, or use an existing WLAN to reach network ADB. Otherwise, hijack the cellular network.</p>
+<p><img loading="lazy"  src="./fakebts.png"
+        alt="fakebts"/></p>
+<p>The speed, however, is not ideal:</p>
+<p><img loading="lazy"  src="./adb.png"
+        alt="adb"/></p>
+<p>For some private APN tunnels without proper isolation, after compromising one device, you can move laterally to compromise other cellular modules.</p>
+<p><img loading="lazy"  src="./adb_no_filter.png"
+        alt="adb_no_filter"/></p>
+<h3 id="getshell-2-obtain-a-root-shell-via-hardware-debugging-ports">GetShell-2: obtain a root shell via hardware debugging ports</h3>
+<p>Sometimes the kernel cmdline configures <code>tty</code> to point directly to an external UART port:</p>
+<p><img loading="lazy"  src="./UART.jpg"
+        alt="UART"/></p>
+<p>Weak credentials are enough to get a shell:</p>
+<p><img loading="lazy"  src="./uart_shell.png"
+        alt="uart_shell"/></p>
+<p>If there is no direct TTY, there are other ways to obtain a shell through UART. For Vendor Q’s modules, you can send <code>AT+QLINUXCMD=&quot;your command&quot;</code> to execute commands, and even forward the output to the GNSS UART port:</p>
+<pre tabindex="0"><code>AT+QLINUXCMD=&#34;ps&#34; &gt; /dev/ttyGS0
+</code></pre><p>Sometimes this command is disabled—but that’s fine. We can wire out the module’s USB lines, use AT commands to switch USB modes, modify the USB VID/PID so the system recognizes it as an Android device, and then use ADB to access it.</p>
+<p><img loading="lazy"  src="./USB_ID.png"
+        alt="USB_ID"/></p>
+<h3 id="getshell-3-trigger-usb-debugging-from-the-mcu-side">GetShell-3: trigger USB debugging from the MCU side</h3>
+<p>Sometimes Tier 1 suppliers leave backdoors in the system. Using such a backdoor, you can switch USB modes and get a shell.</p>
+<p>The data flow is as follows: you can send a trigger command over CAN bus or in the MCU-to-LTE module communication channel. This example uses a Telit module; the backdoor is implemented by the Tier 1 supplier.</p>
+<p>CAN-bus-&gt;MCU-&gt;LTE Module</p>
+<p><img loading="lazy"  src="./handler.png"
+        alt="handler"/>
+<img loading="lazy"  src="./usb_composite.png"
+        alt="usb_composite"/></p>
+<h3 id="firmware-tampering-scenarios">Firmware Tampering Scenarios</h3>
+<p>For automotive-grade cellular modules, FOTA is mostly handled by third-party companies (Vendor F’s devices use Red Bend), or implemented by Tier 1 suppliers with their own secure protocols. Sometimes upgrades can also be triggered via the IVI. OEMs have paid increasing attention to secure transmission in recent years; in the past two years we have not seen direct cases of hijacking the cellular network to tamper with module firmware. Either the solution wasn’t OpenCPU, or secure transport was used. In most real-world cases, attackers tamper firmware by first gaining OTA platform access and then pushing malicious firmware directly.</p>
+<p>Another category is local tampering. First you must obtain firmware (via extraction or building from source). Then enter a special mode: for Telit modules, toggling specific pins can enter Qualcomm 9008 mode and Fastboot mode. The MDM96xx family does not have public Sahara support, so you cannot extract firmware like phone forensics, nor flash arbitrary images like typical “unbrick” workflows. However, once you reboot into Fastboot, flashing becomes easy. Flashing may be easy, but booting isn’t: Telit verifies signatures. Some Vendor Q and Vendor H modules also have special local flashing methods, such as using development firmware images or flashing via JTAG.</p>
+<ol>
+<li>For FOTA without a secure transport mechanism, you can tamper the upgrade package in transit.</li>
+<li>If the upgrade program does not verify signatures, firmware can be flashed successfully; most modules do support signature verification.</li>
+<li>If you modify boot-related partitions, modules with secure boot can prevent this attack (e.g., Vendor H, Vendor Q).</li>
+</ol>
+<h2 id="thoughts">Thoughts</h2>
+<h3 id="what-harm-can-these-attacks-cause">What harm can these attacks cause?</h3>
+<p>The TCU has a CAN-bus interface. For an OpenCPU solution, once you obtain root on the cellular module, in many scenarios you can reflash MCU firmware and get access to the CAN-bus domain where the TCU resides, which can further compromise the vehicle and even impact personal safety.</p>
+<h3 id="who-is-really-at-fault">Who is really at fault?</h3>
+<p>The vulnerabilities behind the scenarios above are not entirely the module vendor’s fault (aside from some “hard” design flaws). The primary issue is that Tier 1 suppliers did not consider security at the design stage. That said, module vendors also have a responsibility to raise Tier 1 suppliers’ security awareness.</p>
+<h3 id="what-should-be-done-to-prevent-these-problems">What should be done to prevent these problems?</h3>
+<p>The security gaps between these modules mainly reflect differences in the development process and the built-in operating system.</p>
+<p>First, withholding documentation does not automatically make a module secure. Vendor H discloses more than Vendor Q, but if you consider security guidance, Vendor H’s devices are still somewhat safer than Vendor Q’s. Module vendors should provide production hardening guidance at every point that could lead to exploitation, so developers know what to do.</p>
+<p>Second, in product positioning, Tier 1 suppliers should choose modules carefully. If it’s for a vehicle, they should use automotive-grade modules.</p>
+<p>Developers should improve their security awareness. The scenarios listed above are either misconfigurations or backdoors deliberately added by developers. The underlying ideas are not complicated.</p>
+<p>Not every Tier 1 supplier can build a secure system. Many domestic modules run everything as root; if you adopt an OpenCPU solution, you should consider privilege separation. Sierra modules provide the Legato system, where each telematics application runs in an isolated sandbox.</p>
+<p><img loading="lazy"  src="./legato.png"
+        alt="legato"/></p>
+<p>Telit modules not only include hardware anti-tamper protections, but also use OS-level tricks. It looks like root on the surface, but the system is actually <code>chroot</code>’ed into another directory and does not have full privileges—it cannot even access character devices.</p>
+<p>The Ministry of Industry and Information Technology proposed an action plan for the connected-car (intelligent connected vehicle) industry. Combined with the “China VI” emission policy implemented in 2020, traditional cars will occupy less and less of the market, and connected cars will take their place. This also means connected cars will face many security problems in the future. Whether it’s today’s telematics or tomorrow’s V2X, cellular modules will be a core component.</p>
+<p><img loading="lazy"  src="./connected_car_increasement.jpg"
+        alt="Connected_Car_Increasement"/></p>
+<h2 id="references">References</h2>
+<p><a href="http://www.ndrc.gov.cn/zwfwzx/tztg/201801/W020180105612392352402.pdf"target="_blank" rel="noopener noreferrer">Intelligent Vehicle Innovation and Development Strategy (Draft for Comments)</a></p>
+<p><a href="https://skygo.360.cn/2018/10/16/penetrate-intranet-via-tbox/"target="_blank" rel="noopener noreferrer">How Hackers Pivot from a T-Box into an OEM’s Intranet</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/hardware-security/>Hardware Security</a><a class="tag" href=/en/tags/carhacking/>carhacking</a><a class="tag" href=/en/tags/4g-modem/>4G modem</a><a class="tag" href=/en/tags/connected-car-security/>connected car security</a><a class="tag" href=/en/tags/cellular-module/>cellular module</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/gl-inet-mifi-a-decent-4g-portable-router/"><span class="iconfont icon-article"></span>GL.iNet MIFI: A Decent 4G Portable Router</a></p><p><a class="link" href="/en/posts/car-bus-knowledge-primer-intro/"><span class="iconfont icon-article"></span>Car Bus Knowledge Primer: Introduction</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

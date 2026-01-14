@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+这篇文章是去年9月写的，7月份时leader弄了个路由器过来，交给一个实习生搞，他搞不定，然后不搞了。后来我有空就搞了一下，但是解密那部分还没弄完，也是弄到一半就让我去做别的事情了，属于烂尾文。"><title>Verizon FIOS-G1100 获取ROOT权限&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Verizon FIOS-G1100 获取ROOT权限" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Verizon FIOS-G1100 获取ROOT权限</h1><p class="article date">Friday, September 1, 2017<span class="langs"><span class="lang">
+                    <a href="/en/posts/fios-g1100-get-root/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>这篇文章是去年9月写的，7月份时leader弄了个路由器过来，交给一个实习生搞，他搞不定，然后不搞了。后来我有空就搞了一下，但是解密那部分还没弄完，也是弄到一半就让我去做别的事情了，属于烂尾文。</p>
+<p>FIOS-G1100固件总共三种类型，目录下文件大同小异
+Frontier
+Verizon
+0.x.x
+1.x.x.x.x
+01.x.x.x
+G1100运行了CPE服务作为后门，开放端口4567。Verizon通过TR-069协议对终端进行控制。我们本地搭建ACS，通过修改配置文件，把ACS URL指向本地搭建的ACS，可以在WAN口开启具有ROOT权限的SSH服务。</p>
+<h2 id="搭建本地acs">搭建本地ACS</h2>
+<h3 id="genieacs">Genieacs</h3>
+<p>GenieACS是一款开源的具有设备配置功能的TR-069远程管理软件。
+要求系统支持Node.js,MongoDB,Redis。DockerHub有打包好的镜像，可以快速搭建。
+全局安装genieacs</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo npm install -g genieacs
+</span></span></code></pre></div><p>进入npm模块目录，运行相应服务</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /usr/lib/node_modules/genieacs
+</span></span></code></pre></div><p>运行ACS服务，端口默认7547</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">genieacs-cwmp
+</span></span></code></pre></div><p>GUI的REST API服务，端口默认7557</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">genieacs-nbi
+</span></span></code></pre></div><h3 id="genieacs-gui">GenieACS GUI</h3>
+<p>从github下载并下载安装依赖</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/zaidka/genieacs-gui.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> genieacs-gui
+</span></span><span class="line"><span class="cl">cp config/graphs-sample.json.erb config/graphs.json.erb
+</span></span><span class="line"><span class="cl">cp config/index_parameters-sample.yml config/index_parameters.yml
+</span></span><span class="line"><span class="cl">cp config/summary_parameters-sample.yml config/summary_parameters.yml
+</span></span><span class="line"><span class="cl">cp config/parameters_edit-sample.yml config/parameters_edit.yml
+</span></span><span class="line"><span class="cl">cp config/parameter_renderers-sample.yml config/parameter_renderers.yml
+</span></span><span class="line"><span class="cl">cp config/roles-sample.yml config/roles.yml
+</span></span><span class="line"><span class="cl">cp config/users-sample.yml config/users.yml
+</span></span><span class="line"><span class="cl">bundle
+</span></span><span class="line"><span class="cl">rails s
+</span></span></code></pre></div><p>这里可能会提示json版本错误，在Gemfile替换1.8.3如下</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">gem</span> <span class="err">&#39;json&#39;,</span> <span class="err">&#39;~&gt;</span> <span class="mf">1.8</span><span class="err">.</span><span class="mi">4</span><span class="err">&#39;</span>
+</span></span></code></pre></div><h2 id="修改配置文件">修改配置文件</h2>
+<p>加解密脚本，这是解FIOS配置文件通用的脚本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">https://gist.github.com/laanwj/5343bbb48759c8813b5807b43fd01fb6
+</span></span><span class="line"><span class="cl">https://gist.github.com/jameshilliard/7112235b62dd929d69d7980c979ae7c0
+</span></span><span class="line"><span class="cl">https://gist.github.com/jameshilliard/99191b2a2877220041dc8789fa07339a
+</span></span></code></pre></div><p>配置文件被加密过，通过分析/sbin/frontier4文件(在0.x版本中文件名为bhr4)，发现配置文件经过一个函数getEncryptedBase64Backup()加密，使用OpenSSL的EVP_aes_256_cbc加密然后Base64编码。只要提取出key和iv就能解密。
+<img loading="lazy"  src="./idapro_base64.png"
+        alt="idapro_base64"/></p>
+<h3 id="todo">TODO</h3>
+<p>密钥虽然固定，即时生成，不是硬编码，需要在QEMU环境动态得到密钥，写在这里，没时间搞。</p>
+<p>找到management_server.url这一段</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;net.tr69_client.management_server.url&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="s2">&#34;https://cpe-ems0271.verizon.com/cwmpWeb/CPEMgt&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>把地址改成本地ACS地址</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">http://192.168.1.241:7547
+</span></span></code></pre></div><p>上传修改后的配置文件，然后会自动重启
+<img loading="lazy"  src="./upload_configfile.png"
+        alt="upload_configfile"/></p>
+<h2 id="开启ssh">开启SSH</h2>
+<h3 id="开启临时ssh">开启临时SSH</h3>
+<p>在/etc/cwmp/cwmp.xml可知，设备支持开启SSH
+<img loading="lazy"  src="./tr069_ssh_config.png"
+        alt="tr069_ssh_config"/>
+打开Genieacs GUI，可以看到设备在线
+<img loading="lazy"  src="./device_status.png"
+        alt="device_status"/>
+要控制设备，首先要登录，账号密码admin/admin
+<img loading="lazy"  src="./login.png"
+        alt="login"/>
+获取其配置参数列表
+<img loading="lazy"  src="./genieacs_config.png"
+        alt="genieacs_config"/>
+修改X_D4A928_SSH_State为SSH_REMOTE，意思在WAN口开启远程访问</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">InternetGatewayDevice</span><span class="p">.</span><span class="nx">X_D4A928_SSH_State</span>
+</span></span></code></pre></div><p>然后刷新X_D4A928_SSH_Session_Password的值，这个是一次性的密码</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">InternetGatewayDevice</span><span class="p">.</span><span class="nx">X_D4A928_SSH_Session_Password</span>
+</span></span></code></pre></div><p>刷新之后通过ssh在22222端口登录，只能登录一次，如果失败就要关闭SSH，SSH_REMOTE设为SSH_OFF然后重复上面的两部操作</p>
+<h3 id="开启永久ssh并修改防火墙配置">开启永久SSH并修改防火墙配置</h3>
+<p>G1100默认的SSH服务端口是22和8022，防火墙默认拦截，不能直接访问，web界面上配置SSH防火墙的选项也被去除了，通过使用burp修改数据包可以取消防火墙拦截
+<img loading="lazy"  src="./burp.png"
+        alt="burp"/>
+G1100的SSH服务是经过修改的，开机时通过/etc/ssh/sshd_config.t模板文件在/tmp/ssh下生成配置文件
+默认只允许admin登录，并chroot到/chroot目录
+这里修改允许任何用户登录，并取消chroot，重启就能连上</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Protocol <span class="m">2</span>
+</span></span><span class="line"><span class="cl">PidFile /var/run/sshd.pid
+</span></span><span class="line"><span class="cl">Subsystem       sftp    /libexec/sftp-server
+</span></span><span class="line"><span class="cl">Port <span class="o">(</span>SSHD_PORT_1<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Port <span class="o">(</span>SSHD_PORT_2<span class="o">)</span>
+</span></span><span class="line"><span class="cl">SyslogFacility local4
+</span></span><span class="line"><span class="cl">PermitRootLogin yes
+</span></span><span class="line"><span class="cl">PermitEmptyPasswords yes
+</span></span><span class="line"><span class="cl">AllowUsers *
+</span></span></code></pre></div><p><img loading="lazy"  src="./getshell.png"
+        alt="burp"/></p>
+<h2 id="参考">参考</h2>
+<p><a href="https://github.com/The5heepDev/FIOS-G1100"target="_blank" rel="noopener noreferrer">FIOS-G1100 Github</a></p>
+<p><a href="https://github.com/zaidka/genieacs/wiki/API-Reference"target="_blank" rel="noopener noreferrer">Genieacs API</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E7%A1%AC%E4%BB%B6%E5%AE%89%E5%85%A8/>硬件安全</a><a class="tag" href=/zh/tags/verizon/>Verizon</a><a class="tag" href=/zh/tags/fios/>FIOS</a><a class="tag" href=/zh/tags/genieacs/>Genieacs</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/find-origin-server-behind-cdn/"><span class="iconfont icon-article"></span>绕过CDN找到源站的思路</a></p><p><a class="link" href="/zh/posts/hackrf-gps-spoofing/"><span class="iconfont icon-article"></span>HackRF GPS 欺骗笔记</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

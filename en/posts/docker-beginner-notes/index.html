@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="
+I was totally drawn in by this whale logo—loved it the first time I saw it.
+Docker is an open-source engine that makes it easy to create lightweight, portable, self-sufficient containers for any application. A container that a developer compiles and tests on a laptop can be deployed in batches to production environments, including VMs (virtual machines), bare metal, OpenStack clusters, and other infrastructure platforms.
+Compared with ordinary VM images, the biggest difference is that a Docker container image does not include an operating system kernel."><title>Docker Beginner Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Docker Beginner Notes" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Docker Beginner Notes</h1><p class="article date">Saturday, August 29, 2015<span class="langs"><span class="lang">
+                    <a href="/zh/posts/docker-beginner-notes/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><p><img loading="lazy"  src="./logo.png"
+        alt="logo"/></p>
+<p>I was totally drawn in by this whale logo—loved it the first time I saw it.
+Docker is an open-source engine that makes it easy to create lightweight, portable, self-sufficient containers for any application. A container that a developer compiles and tests on a laptop can be deployed in batches to production environments, including VMs (virtual machines), bare metal, OpenStack clusters, and other infrastructure platforms.
+Compared with ordinary VM images, the biggest difference is that a Docker container image does not include an operating system kernel.</p>
+<p><img loading="lazy"  src="./diff.png"
+        alt="diff"/></p>
+<h4 id="docker-is-commonly-used-in-these-scenarios">Docker is commonly used in these scenarios:</h4>
+<ul>
+<li>Automated packaging and deployment of web applications;</li>
+<li>Automated testing and continuous integration / delivery;</li>
+<li>Deploying and tuning databases or other backend applications in service environments;</li>
+<li>Building your own PaaS environment by compiling from scratch or extending existing OpenShift or Cloud Foundry platforms.</li>
+</ul>
+<p>Linux version: <a href="http://www.ubuntu.com/download/server"target="_blank" rel="noopener noreferrer">ubuntu-15.04-server-amd64</a><br>
+Environment: VMware Workstation 11</p>
+<p>Install Docker:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt-get install docker.io
+</span></span></code></pre></div><p>Check Docker version:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker version
+</span></span><span class="line"><span class="cl">Client version: 1.6.2
+</span></span><span class="line"><span class="cl">Client API version: 1.18
+</span></span><span class="line"><span class="cl">Go version <span class="o">(</span>client<span class="o">)</span>: go1.3.3
+</span></span><span class="line"><span class="cl">Git commit <span class="o">(</span>client<span class="o">)</span>: 7c8fca2
+</span></span><span class="line"><span class="cl">OS/Arch <span class="o">(</span>client<span class="o">)</span>: linux/amd64
+</span></span><span class="line"><span class="cl">Server version: 1.6.2
+</span></span><span class="line"><span class="cl">Server API version: 1.18
+</span></span><span class="line"><span class="cl">Go version <span class="o">(</span>server<span class="o">)</span>: go1.3.3
+</span></span><span class="line"><span class="cl">Git commit <span class="o">(</span>server<span class="o">)</span>: 7c8fca2
+</span></span><span class="line"><span class="cl">OS/Arch <span class="o">(</span>server<span class="o">)</span>: linux/amd64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker info
+</span></span><span class="line"><span class="cl">Containers: <span class="m">13</span>
+</span></span><span class="line"><span class="cl">Images: <span class="m">3</span>
+</span></span><span class="line"><span class="cl">Storage Driver: aufs
+</span></span><span class="line"><span class="cl"> Root Dir: /var/lib/docker/aufs
+</span></span><span class="line"><span class="cl"> Backing Filesystem: extfs
+</span></span><span class="line"><span class="cl"> Dirs: <span class="m">29</span>
+</span></span><span class="line"><span class="cl"> Dirperm1 Supported: <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Execution Driver: native-0.2
+</span></span><span class="line"><span class="cl">Kernel Version: 3.19.0-15-generic
+</span></span><span class="line"><span class="cl">Operating System: Ubuntu 15.04
+</span></span><span class="line"><span class="cl">CPUs: <span class="m">2</span>
+</span></span><span class="line"><span class="cl">Total Memory: 1.938 GiB
+</span></span><span class="line"><span class="cl">Name: ubuntu
+</span></span><span class="line"><span class="cl">ID: 5P2D:CFMQ:5WWP:U7RE:3SLE:Z2D3:L7D3:UMCI:LHZD:WNQK:Q6DD:ZRPA
+</span></span><span class="line"><span class="cl">WARNING: No swap limit support
+</span></span></code></pre></div><p>Search for available Docker images. Here we search for an image named <code>tutorial</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker search learn/tutorial
+</span></span><span class="line"><span class="cl">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED
+</span></span><span class="line"><span class="cl">learn/tutorial                 <span class="m">11</span>
+</span></span></code></pre></div><p>Download the image:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker search learn/tutorial
+</span></span><span class="line"><span class="cl">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED
+</span></span><span class="line"><span class="cl">learn/tutorial                 <span class="m">11</span>
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker pull learn/tutorial
+</span></span><span class="line"><span class="cl">Pulling repository learn/tutorial
+</span></span><span class="line"><span class="cl">8dbd9e392a96: Download <span class="nb">complete</span> Status: Downloaded newer image <span class="k">for</span> learn/tutorial:latest
+</span></span></code></pre></div><p>Let’s do a hello, gorgias!</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker run learn/tutorial <span class="nb">echo</span> <span class="s2">&#34;hello gorgias&#34;</span>
+</span></span><span class="line"><span class="cl">hello gorgias
+</span></span></code></pre></div><p>Install a new program inside the container:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run learn/tutorial apt-get install -y ping
+</span></span></code></pre></div><p>When running <code>apt-get</code>, you must add the <code>-y</code> flag. Without <code>-y</code>, <code>apt-get</code> enters interactive mode and requires user confirmation, but you can’t respond to that kind of interaction in a Docker environment.</p>
+<p>Save changes to a container
+After you modify a container (by running a command inside it), you can save that modified state so next time you can run the container from the latest saved state. In Docker, this is called “committing”. It saves the difference between the old and new states, producing a new version.
+First use <code>docker ps -l</code> to get the container ID after installing <code>ping</code>. Then save the image as <code>learn/ping</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker ps -l
+</span></span><span class="line"><span class="cl">CONTAINER ID        IMAGE                   COMMAND              CREATED              STATUS              PORTS               NAMES
+</span></span><span class="line"><span class="cl">824490fb9db6        learn/tutorial:latest   <span class="s2">&#34;ping 192.168.1.1&#34;</span>   About a minute ago
+</span></span><span class="line"><span class="cl">// only take enough to distinguish<span class="p">;</span> here it<span class="err">&#39;</span>s <span class="m">824</span>                                          suspicious_yalow
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker commit <span class="m">824</span> learn/ping
+</span></span><span class="line"><span class="cl">ae5aa76cc0f84a7a3ebb77e8c7557df0d89564dd5cb9830cb4d35424290a71ca // returned version ID
+</span></span></code></pre></div><p>Run the new image
+Make sure you run the <code>ping</code> command using the new image name <code>learn/ping</code>. (Translator’s note: the original <code>learn/tutorial</code> image does not include <code>ping</code>.)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># docker run learn/ping ping www.baidu.com</span>
+</span></span><span class="line"><span class="cl">PING www.a.shifen.com <span class="o">(</span>115.239.210.27<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 115.239.210.27: <span class="nv">icmp_req</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span>23.7 ms
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 115.239.210.27: <span class="nv">icmp_req</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span>23.2 ms
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 115.239.210.27: <span class="nv">icmp_req</span><span class="o">=</span><span class="m">3</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span>23.4 ms
+</span></span></code></pre></div><p>Stop a running container:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker stop id  // gracefully stop the container
+</span></span><span class="line"><span class="cl">docker <span class="nb">kill</span> id  // force stop the container
+</span></span></code></pre></div><p>Inspect a running container
+First use <code>docker ps</code> to view containers, then run:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker inspect dc8 // here dc8 is the first <span class="m">3</span> chars of the container ID
+</span></span></code></pre></div><p><img loading="lazy"  src="./inspect.png"
+        alt="inspect"/></p>
+<p>Publish your own image
+First register an account on <a href="https://hub.docker.com/"target="_blank" rel="noopener noreferrer">Docker Hub</a>.
+Create your own repository.</p>
+<p><img loading="lazy"  src="./repostitory.png"
+        alt="repostitory"/></p>
+<p>You can also log in before pushing:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker login
+</span></span></code></pre></div><p>Here we try to publish <code>learn/ping</code> to Docker’s index. You can only publish images under your own namespace. This tutorial uses the <code>learn</code> account in the simulator.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker images // list all installed images
+</span></span><span class="line"><span class="cl">REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE
+</span></span><span class="line"><span class="cl">learn/ping          latest              db66cd8a04ae        <span class="m">55</span> minutes ago       139.5 MB
+</span></span><span class="line"><span class="cl">learn/tutorial      latest              8dbd9e392a96        2.380344 years ago   <span class="m">128</span> MB
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker tag db6 gorgiaxx/learn-ping // retag the image
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker push gorgiaxx/learn-ping // publish an image to the official registry
+</span></span><span class="line"><span class="cl">The push refers to a repository <span class="o">[</span>gorgiaxx/learn-ping<span class="o">]</span> <span class="o">(</span>len: 1<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Sending image list
+</span></span><span class="line"><span class="cl">Pushing repository gorgiaxx/learn-ping <span class="o">(</span><span class="m">1</span> tags<span class="o">)</span>
+</span></span><span class="line"><span class="cl">8dbd9e392a96: Image already pushed, skipping
+</span></span><span class="line"><span class="cl">db66cd8a04ae: Image successfully pushed
+</span></span><span class="line"><span class="cl">Pushing tag <span class="k">for</span> rev <span class="o">[</span>db66cd8a04ae<span class="o">]</span> on <span class="o">{</span>https://cdn-registry-1.docker.io/v1/repositories/gorgiaxx/learn-ping/tags/latest<span class="o">}</span>
+</span></span></code></pre></div><p>Successfully published to Docker Hub:</p>
+<p><img loading="lazy"  src="./pushed.png"
+        alt="pushed"/></p>
+<!-- TODO: translate content from zh version; assets are copied. -->
+</article><section class="article labels"><a class="category" href=/en/categories/virtualization/>Virtualization</a><a class="tag" href=/en/tags/docker/>Docker</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/deploy-hexo-blog-on-gitcafe/"><span class="iconfont icon-article"></span>Deploying a Hexo Blog on GitCafe</a></p><p><a class="link" href="/en/posts/kali-nethunter-first-impressions/"><span class="iconfont icon-article"></span>Kali NetHunter: First Impressions</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

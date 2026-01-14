@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="
+Preface
+Why am I writing this post? Back when I was reproducing the CVE-2017-0199 vulnerability, I needed NAT traversal. I searched for tunneling services and found that many of them were based on ngrok. During the process I found it quite painful to configure. The version I used was 1.7, which reportedly has a memory leak bug. The latest 2.2 is closed-source, and the official documentation no longer works. I read a few posts written by others and decided to record my own setup process as well. I’ve also heard that FRP is stronger than ngrok—maybe I’ll try it next time."><title>ngrok Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="ngrok Notes" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">ngrok Notes</h1><p class="article date">Wednesday, May 3, 2017<span class="langs"><span class="lang">
+                    <a href="/zh/posts/ngrok-notes/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><p><img loading="lazy"  src="./demo.png"
+        alt="cover"/></p>
+<h2 id="preface">Preface</h2>
+<p>Why am I writing this post? Back when I was reproducing the CVE-2017-0199 vulnerability, I needed NAT traversal. I searched for tunneling services and found that many of them were based on ngrok. During the process I found it quite painful to configure. The version I used was 1.7, which reportedly has a memory leak bug. The latest 2.2 is closed-source, and the official documentation no longer works. I read a few posts written by others and decided to record my own setup process as well. I’ve also heard that FRP is stronger than ngrok—maybe I’ll try it next time.</p>
+<h2 id="installation">Installation</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/inconshreveable/ngrok
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ngrok
+</span></span><span class="line"><span class="cl">make
+</span></span><span class="line"><span class="cl"><span class="c1"># 服务端</span>
+</span></span><span class="line"><span class="cl">mv ./ngrokd /usr/bin/ngrokd
+</span></span><span class="line"><span class="cl"><span class="c1"># 客户端</span>
+</span></span><span class="line"><span class="cl">mv ./ngrok /usr/bin/ngrok
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;&#34;</span> &gt; <span class="nv">$HOME</span>/.ngrok
+</span></span></code></pre></div><h2 id="usage">Usage</h2>
+<h3 id="server">Server</h3>
+<p><code>ngrokd</code> roughly means “ngrok daemon”—as the name suggests, it’s the server side. Check the help:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@gorgiaxx:~/tmp/ngrok/bin# ./ngrokd --help
+</span></span><span class="line"><span class="cl">Usage of ./ngrokd:
+</span></span><span class="line"><span class="cl">  -domain string
+</span></span><span class="line"><span class="cl">        Domain where the tunnels are hosted <span class="o">(</span>default <span class="s2">&#34;ngrok.com&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -httpAddr string
+</span></span><span class="line"><span class="cl">        Public address <span class="k">for</span> HTTP connections, empty string to disable <span class="o">(</span>default <span class="s2">&#34;:80&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -httpsAddr string
+</span></span><span class="line"><span class="cl">        Public address listening <span class="k">for</span> HTTPS connections, emptry string to disable <span class="o">(</span>default <span class="s2">&#34;:443&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -log string
+</span></span><span class="line"><span class="cl">        Write log messages to this file. <span class="s1">&#39;stdout&#39;</span> and <span class="s1">&#39;none&#39;</span> have special meanings <span class="o">(</span>default <span class="s2">&#34;stdout&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -log-level string
+</span></span><span class="line"><span class="cl">        The level of messages to log. One of: DEBUG, INFO, WARNING, ERROR <span class="o">(</span>default <span class="s2">&#34;DEBUG&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -tlsCrt string
+</span></span><span class="line"><span class="cl">        Path to a TLS certificate file
+</span></span><span class="line"><span class="cl">  -tlsKey string
+</span></span><span class="line"><span class="cl">        Path to a TLS key file
+</span></span><span class="line"><span class="cl">  -tunnelAddr string
+</span></span><span class="line"><span class="cl">        Public address listening <span class="k">for</span> ngrok client <span class="o">(</span>default <span class="s2">&#34;:4443&#34;</span><span class="o">)</span>
+</span></span></code></pre></div><p>On my server, ports 80 and 443 were already occupied by Nginx, so I changed them to 800 and 801. I also didn’t need to configure <code>tlsCrt</code> and <code>tlsKey</code> because I wasn’t going to use them. I set the log level to WARNING. <code>tunnelAddr</code> is the tunnel address used by the internal machine to connect to the server.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./ngrokd -domain gorgiaxx.me -httpAddr :800 -httpsAddr :801 -tunnelAddr :802 -log-level WARNING
+</span></span></code></pre></div><h3 id="client">Client</h3>
+<p>Check the help:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gorgias@3vil:~/Tools/port_map/ngrok/bin$ ./ngrok --help
+</span></span><span class="line"><span class="cl">Usage: ./ngrok <span class="o">[</span>OPTIONS<span class="o">]</span> &lt;<span class="nb">local</span> port or address&gt;
+</span></span><span class="line"><span class="cl">Options:
+</span></span><span class="line"><span class="cl">  -authtoken string
+</span></span><span class="line"><span class="cl">        Authentication token <span class="k">for</span> identifying an ngrok.com account
+</span></span><span class="line"><span class="cl">  -config string
+</span></span><span class="line"><span class="cl">        Path to ngrok configuration file. <span class="o">(</span>default: <span class="nv">$HOME</span>/.ngrok<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -hostname string
+</span></span><span class="line"><span class="cl">        Request a custom hostname from the ngrok server. <span class="o">(</span>HTTP only<span class="o">)</span> <span class="o">(</span>requires CNAME of your DNS<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -httpauth string
+</span></span><span class="line"><span class="cl">        username:password HTTP basic auth creds protecting the public tunnel endpoint
+</span></span><span class="line"><span class="cl">  -log string
+</span></span><span class="line"><span class="cl">        Write log messages to this file. <span class="s1">&#39;stdout&#39;</span> and <span class="s1">&#39;none&#39;</span> have special meanings <span class="o">(</span>default <span class="s2">&#34;none&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -log-level string
+</span></span><span class="line"><span class="cl">        The level of messages to log. One of: DEBUG, INFO, WARNING, ERROR <span class="o">(</span>default <span class="s2">&#34;DEBUG&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -proto string
+</span></span><span class="line"><span class="cl">        The protocol of the traffic over the tunnel <span class="o">{</span><span class="s1">&#39;http&#39;</span>, <span class="s1">&#39;https&#39;</span>, <span class="s1">&#39;tcp&#39;</span><span class="o">}</span> <span class="o">(</span>default: <span class="s1">&#39;http+https&#39;</span><span class="o">)</span> <span class="o">(</span>default <span class="s2">&#34;http+https&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -subdomain string
+</span></span><span class="line"><span class="cl">        Request a custom subdomain from the ngrok server. <span class="o">(</span>HTTP only<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Examples:
+</span></span><span class="line"><span class="cl">        ngrok <span class="m">80</span>
+</span></span><span class="line"><span class="cl">        ngrok -subdomain<span class="o">=</span>example <span class="m">8080</span>
+</span></span><span class="line"><span class="cl">        ngrok -proto<span class="o">=</span>tcp <span class="m">22</span>
+</span></span><span class="line"><span class="cl">        ngrok -hostname<span class="o">=</span><span class="s2">&#34;example.com&#34;</span> -httpauth<span class="o">=</span><span class="s2">&#34;user:password&#34;</span> 10.0.0.1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Advanced usage: ngrok <span class="o">[</span>OPTIONS<span class="o">]</span> &lt;command&gt; <span class="o">[</span><span class="nb">command</span> args<span class="o">]</span> <span class="o">[</span>...<span class="o">]</span>
+</span></span><span class="line"><span class="cl">Commands:
+</span></span><span class="line"><span class="cl">        ngrok start <span class="o">[</span>tunnel<span class="o">]</span> <span class="o">[</span>...<span class="o">]</span>    Start tunnels by name from config file
+</span></span><span class="line"><span class="cl">        ngork start-all               Start all tunnels defined in config file
+</span></span><span class="line"><span class="cl">        ngrok list                    List tunnel names from config file
+</span></span><span class="line"><span class="cl">        ngrok <span class="nb">help</span>                    Print <span class="nb">help</span>
+</span></span><span class="line"><span class="cl">        ngrok version                 Print ngrok version
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Examples:
+</span></span><span class="line"><span class="cl">        ngrok start www api blog pubsub
+</span></span><span class="line"><span class="cl">        ngrok -log<span class="o">=</span>stdout -config<span class="o">=</span>ngrok.yml start ssh
+</span></span><span class="line"><span class="cl">        ngrok start-all
+</span></span><span class="line"><span class="cl">        ngrok version
+</span></span></code></pre></div><p>If you want easier configuration and plan to share it with more people, it’s best to set up a wildcard DNS record. You can also host your own DNS server.
+If you’re just using it for yourself, then configure a specific subdomain.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ngrok -hostname<span class="o">=</span><span class="s2">&#34;ngrok.gorgoaxx.me&#34;</span> -subdomain<span class="o">=</span>ngrok <span class="m">802</span> -proto<span class="o">=</span>tcp <span class="m">80</span>
+</span></span></code></pre></div><p>I’m not going to configure everything via CLI flags every time—using a config file is the way to go. Refer to this code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">ngrok</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">ngrok</span><span class="o">/</span><span class="nx">client</span><span class="o">/</span><span class="nx">config</span><span class="p">.</span><span class="k">go</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">type</span><span class="w"> </span><span class="nx">Configuration</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">HttpProxy</span><span class="w">          </span><span class="kt">string</span><span class="w">                          </span><span class="s">`yaml:&#34;http_proxy,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">ServerAddr</span><span class="w">         </span><span class="kt">string</span><span class="w">                          </span><span class="s">`yaml:&#34;server_addr,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">InspectAddr</span><span class="w">        </span><span class="kt">string</span><span class="w">                          </span><span class="s">`yaml:&#34;inspect_addr,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">TrustHostRootCerts</span><span class="w"> </span><span class="kt">bool</span><span class="w">                            </span><span class="s">`yaml:&#34;trust_host_root_certs,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">AuthToken</span><span class="w">          </span><span class="kt">string</span><span class="w">                          </span><span class="s">`yaml:&#34;auth_token,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">Tunnels</span><span class="w">            </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">TunnelConfiguration</span><span class="w"> </span><span class="s">`yaml:&#34;tunnels,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">LogTo</span><span class="w">              </span><span class="kt">string</span><span class="w">                          </span><span class="s">`yaml:&#34;-&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">Path</span><span class="w">               </span><span class="kt">string</span><span class="w">                          </span><span class="s">`yaml:&#34;-&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">type</span><span class="w"> </span><span class="nx">TunnelConfiguration</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">Subdomain</span><span class="w">  </span><span class="kt">string</span><span class="w">            </span><span class="s">`yaml:&#34;subdomain,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">Hostname</span><span class="w">   </span><span class="kt">string</span><span class="w">            </span><span class="s">`yaml:&#34;hostname,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">Protocols</span><span class="w">  </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="w"> </span><span class="s">`yaml:&#34;proto,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">HttpAuth</span><span class="w">   </span><span class="kt">string</span><span class="w">            </span><span class="s">`yaml:&#34;auth,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">RemotePort</span><span class="w"> </span><span class="kt">uint16</span><span class="w">            </span><span class="s">`yaml:&#34;remote_port,omitempty&#34;`</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>When you use <code>ngrok start</code>, it reads the default config file under your home directory:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">$HOME</span>/.ngrok
+</span></span></code></pre></div><p>Using Metasploit as an example: the <code>ngrok.gorgiaxx.me</code> subdomain is used to deliver the payload.
+Usually you don’t need <code>hostname</code> (which is a fully qualified name). It’s only used in some special cases. If your ngrok server can be resolved via CNAME, you can also manually set your own domain. But since newer versions are closed-source now, this is no longer that relevant.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">server_addr: gorgiaxx.me:802
+</span></span><span class="line"><span class="cl">trust_host_root_certs: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">tunnels:
+</span></span><span class="line"><span class="cl">  dav:
+</span></span><span class="line"><span class="cl">    proto:
+</span></span><span class="line"><span class="cl">      http: <span class="m">8080</span>
+</span></span><span class="line"><span class="cl">    subdomain: ngrok
+</span></span><span class="line"><span class="cl">  rev:
+</span></span><span class="line"><span class="cl">    proto:
+</span></span><span class="line"><span class="cl">      tcp: <span class="m">4444</span>
+</span></span></code></pre></div><p>Then start the tunnels:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./ngrok -config ./ngrok.yml start dav rev
+</span></span></code></pre></div><p>Or start everything at once:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./ngrok -config ./ngrok.yml start-all
+</span></span></code></pre></div><p><img loading="lazy"  src="./ngrok.png"
+        alt="ngrok"/></p>
+<h2 id="summary">Summary</h2>
+<p>You can see that the open-source version of ngrok has many areas that could be improved. From a usability standpoint it isn’t very convenient, and the tunnels don’t have user authentication—so if someone discovers it, they can use it directly. Still, it’s a pretty decent tool.</p>
+<h2 id="reference">Reference</h2>
+<p><a href="https://ngrok.com/docs"target="_blank" rel="noopener noreferrer">ngrok Docs</a></p>
+<p><a href="https://imlonghao.com/28.html"target="_blank" rel="noopener noreferrer">“Translation” ngrok 1.X configuration doc</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/tools/>Tools</a><a class="tag" href=/en/tags/ngrok/>ngrok</a><a class="tag" href=/en/tags/nat/>NAT</a><a class="tag" href=/en/tags/nat-traversal/>NAT Traversal</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/frp-notes/"><span class="iconfont icon-article"></span>FRP Usage Notes</a></p><p><a class="link" href="/en/posts/burpsuite-extension-for-bruteforcing-a-platform/"><span class="iconfont icon-article"></span>Developing a Burp Suite Extension to Brute-Force a Platform</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

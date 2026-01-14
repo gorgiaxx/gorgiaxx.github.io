@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+The idea is as follows:"><title>Subdomain Enumeration Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Subdomain Enumeration Notes" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Subdomain Enumeration Notes</h1><p class="article date">Tuesday, December 5, 2017<span class="langs"><span class="lang">
+                    <a href="/zh/posts/subdomain-enumeration-notes/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>The idea is as follows:</p>
+<p>Public intelligence: certificates, DNS records, on-site URLs.
+Non-public intelligence: subdomain enumeration, DNS zone transfer, client-side APIs, hosted platforms like GitHub, and companies that can collect user browsing data.</p>
+<h2 id="search-engines">Search Engines</h2>
+<p>You can also use other search engines. This approach isn’t very effective, but here’s a basic Google dork:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">site:target.com
+</span></span></code></pre></div><p>Use the <code>-</code> minus sign to exclude known subdomains:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">site:target.com-www-blog
+</span></span></code></pre></div><h2 id="certificates">Certificates</h2>
+<h3 id="certificate-transparency-logs">Certificate Transparency logs</h3>
+<p>Chrome requires all SSL certificates issued in 2017 to support Certificate Transparency, so you can query CT logs to discover subdomains for HTTPS-enabled sites.</p>
+<p><a href="https://crt.sh/"target="_blank" rel="noopener noreferrer">crt.sh</a>
+<a href="https://censys.io/"target="_blank" rel="noopener noreferrer">censys.io</a>
+<a href="https://google.com/transparencyreport/https/ct/"target="_blank" rel="noopener noreferrer">google</a>
+<a href="developers.facebook.com/tools/ct/">facebook</a></p>
+<h3 id="subject-alternative-name">Subject Alternative Name</h3>
+<p>From the Subject Alternative Name field in multi-domain certificates, you can find other domains owned by the same organization.
+<img loading="lazy"  src="./SAN.png"
+        alt="SAN"/></p>
+<h2 id="dns-zone-transfer">DNS Zone Transfer</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dig AXFR@nameserver domain
+</span></span><span class="line"><span class="cl">dnsenum domain
+</span></span></code></pre></div><h2 id="frontend">Frontend</h2>
+<p>Crawl URLs
+crossdomain.xml</p>
+<h2 id="public-info-china">Public Info (China)</h2>
+<p>MIIT (ICP备案). Link below. If you can’t fetch the captcha, open the captcha image in a new window via right click.
+<a href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action"target="_blank" rel="noopener noreferrer">http://www.miitbeian.gov.cn/publish/query/indexFirst.action</a></p>
+<p>Industrial and commercial web supervision (涉网信息)
+<a href="http://szcert.ebs.org.cn"target="_blank" rel="noopener noreferrer">http://szcert.ebs.org.cn</a></p>
+<h2 id="nsec">NSEC</h2>
+<p>NSEC: ldnsutil</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ldns-walk @nameserver domain
+</span></span></code></pre></div><p>NSEC3: nsec3walker</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">collect inscuredns.com &gt; insecuredns.com.collect
+</span></span><span class="line"><span class="cl">unhash insecuredns.com.collect &gt; insecuredns.com.collect.unhash
+</span></span></code></pre></div><h2 id="certdb">CertDB</h2>
+<p><a href="https://certdb.com/search?q=dvb.corpinter.net"target="_blank" rel="noopener noreferrer">https://certdb.com/search?q=dvb.corpinter.net</a></p>
+<h2 id="private-dns-records-in-domain-registrars">Private DNS Records in Domain Registrars</h2>
+<p>Add the domain, then check the imported DNS records.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">https://www.cloudflare.com/
+</span></span><span class="line"><span class="cl">https://www.dnspod.cn/
+</span></span><span class="line"><span class="cl">http://www.dnspod.cn/proxy_diagnose/recordscan/doc88.com?callback<span class="o">=</span>a
+</span></span></code></pre></div><h2 id="public-threat-intelligence--osint">Public Threat Intelligence / OSINT</h2>
+<p><a href="https://www.virustotal.com/"target="_blank" rel="noopener noreferrer">VirusTotal</a> is an online service for scanning malicious samples or URLs, and it has its own DNS dataset.</p>
+<p>HackerTarget can do reverse IP lookups to find related domains, but the results are not complete:
+<a href="https://hackertarget.com/reverse-ip-lookup/"target="_blank" rel="noopener noreferrer">https://hackertarget.com/reverse-ip-lookup/</a></p>
+<p>You can use HackerTarget’s paid services to see more complete data:
+<a href="https://hackertarget.com/domain-profiler/"target="_blank" rel="noopener noreferrer">https://hackertarget.com/domain-profiler/</a></p>
+<p><a href="https://dnsdumpster.com/"target="_blank" rel="noopener noreferrer">DNSdumpster</a> is a free domain analysis site (a HackerTarget project) that can query related subdomains or neighbor domains.</p>
+<p><a href="http://viewdns.info/"target="_blank" rel="noopener noreferrer">ViewDNS</a> is a collection of DNS tools for looking up various DNS information.</p>
+<p><a href="https://findsubdomains.com/"target="_blank" rel="noopener noreferrer">FindSubDomains</a> can retrieve additional subdomains and IP information.</p>
+<h2 id="scanning-tools">Scanning Tools</h2>
+<h3 id="nmap">NMap</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nmap --script dns-brute --script-args dns-brute.domain<span class="o">=</span>target.com,dns-brute.threads<span class="o">=</span>6,dns-
+</span></span><span class="line"><span class="cl">brute.hostlist<span class="o">=</span>dict.lst
+</span></span></code></pre></div><h3 id="other-tools">Other Tools</h3>
+<p><a href="https://github.com/TheRook/subbrute"target="_blank" rel="noopener noreferrer">SubBrute</a> - An open-source DNS crawler that can brute-force subdomains with a dictionary; also available as a Python library.</p>
+<p><a href="https://github.com/aboul3la/Sublist3r"target="_blank" rel="noopener noreferrer">Sublist3r</a> - An open-source project that integrates SubBrute and can collect public domain data online.</p>
+<p><a href="https://github.com/lijiejie/subDomainsBrute"target="_blank" rel="noopener noreferrer">subDomainsBrute</a> - A pure subdomain brute-force script. Dictionary-based, fast scanning speed, multi-threaded.</p>
+<p><a href="https://github.com/appsecco/bugcrowd-levelup-subdomain-enumeration"target="_blank" rel="noopener noreferrer">bugcrowd-levelup-subdomain-enumeration</a> - Tools used by Bharath in a Bugcrowd Levelup talk, including subdomain enumeration scripts and CT log query scripts.</p>
+<p><a href="https://github.com/darkoperator/dnsrecon"target="_blank" rel="noopener noreferrer">DNSrecon</a> - DNS enumeration script.</p>
+<p><a href="https://github.com/davidpepper/fierce-domain-scanner"target="_blank" rel="noopener noreferrer">Fierce.pl Domain Scanner</a> - A Perl subdomain brute-force script.</p>
+<p><a href="https://github.com/michenriksen/aquatone"target="_blank" rel="noopener noreferrer">AQUATONE</a> - A powerful domain tool that can find sites with the same fingerprint across subdomains.</p>
+<p><a href="https://github.com/laramies/theHarvester"target="_blank" rel="noopener noreferrer">theHarvester</a> - A social engineering tool with subdomain discovery features.</p>
+<p><a href="https://github.com/blechschmidt/massdns.git"target="_blank" rel="noopener noreferrer">MassDNS</a> - A DNS resolution tool that can be used for subdomain brute forcing.</p>
+<p><a href="https://github.com/infosec-au/altdns"target="_blank" rel="noopener noreferrer">Alt-DNS</a> - Generates permutations/wordlist candidates from known domains or keywords to brute-force subdomains.</p>
+<p><a href="https://github.com/jhaddix/domain"target="_blank" rel="noopener noreferrer">Unnamed domain brute-force script based on recon-ng and Alt-DNS</a></p>
+<p><a href="https://github.com/eldraco/domain_analyzer"target="_blank" rel="noopener noreferrer">Domain Analyzer</a> - A domain analysis tool that can be used to find subdomains.</p>
+<p><a href="https://github.com/jfrancois/SDBF"target="_blank" rel="noopener noreferrer">Smart DNS Brute Forcer</a> - An academic tool from the University of Luxembourg that generates domains using Markov chain models.</p>
+<p><a href="https://github.com/evilsocket/xray"target="_blank" rel="noopener noreferrer">XRay</a> - An intelligence-gathering tool with subdomain collection features.</p>
+<p><a href="https://github.com/coco413/DiscoverSubdomain"target="_blank" rel="noopener noreferrer">DiscoverSubdomain</a> - An automated subdomain collection tool integrating multiple methods.</p>
+<p><a href="https://github.com/franccesco/getaltname"target="_blank" rel="noopener noreferrer">GetAltName</a> - Extracts other domains from SAN.</p>
+<p><a href="https://github.com/bit4woo/teemo.git"target="_blank" rel="noopener noreferrer">Teemo</a> - A comprehensive domain and email recon tool, though it lacks an SSL collection path.</p>
+<p><a href="https://github.com/sawzeeyy/Sanitiz3r.git"target="_blank" rel="noopener noreferrer">Sanitiz3r</a> - A straightforward domain brute-force script that can detect HTTP services.</p>
+<h2 id="references">References</h2>
+<p><a href="https://speakerdeck.com/yamakira/esoteric-sub-domain-enumeration-techniques"target="_blank" rel="noopener noreferrer">Esoteric sub-domain enumeration techniques</a></p>
+<p><a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types"target="_blank" rel="noopener noreferrer">List of DNS record types</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/cybersecurity/>Cybersecurity</a><a class="tag" href=/en/tags/reconnaissance/>Reconnaissance</a><a class="tag" href=/en/tags/subdomain/>Subdomain</a><a class="tag" href=/en/tags/dns/>DNS</a><a class="tag" href=/en/tags/enumeration/>Enumeration</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/esim-notes/"><span class="iconfont icon-article"></span>eSIM Notes</a></p><p><a class="link" href="/en/posts/hardware-repair-notes/"><span class="iconfont icon-article"></span>Hardware Repair Notes</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

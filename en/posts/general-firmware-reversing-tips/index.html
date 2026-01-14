@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+These are old notes I wrote years ago for quick reference. They’re fragmented thoughts, messy, and don’t include step-by-step procedures. I keep updating them over time."><title>General Tips for Firmware Reverse Engineering&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="General Tips for Firmware Reverse Engineering" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">General Tips for Firmware Reverse Engineering</h1><p class="article date">Monday, August 15, 2022<span class="langs"><span class="lang">
+                    <a href="/zh/posts/general-firmware-reversing-tips/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>These are old notes I wrote years ago for quick reference. They’re fragmented thoughts, messy, and don’t include step-by-step procedures. I keep updating them over time.</p>
+<p>Here, “firmware” refers to the raw dump extracted from storage chips, or vendor upgrade packages.</p>
+<p>Characteristics of reversing raw firmware:</p>
+<ul>
+<li>Firmware files are hard to obtain</li>
+<li>There are very few public write-ups; you mostly rely on experience and exploration</li>
+<li>You can’t run it directly, so debugging is difficult</li>
+<li>Most symbols can’t be recovered; you often need to manually define code regions for disassembly</li>
+<li>There is almost no code obfuscation</li>
+</ul>
+<h2 id="firmware-categories">Firmware Categories</h2>
+<p>By system architecture, firmware can be roughly categorized into <strong>SoC firmware</strong> and <strong>MCU firmware</strong>. SoC firmware usually consists of a processing unit plus peripherals. The processor’s built-in BootROM boots from external Flash; the data in that external Flash is what we call the firmware. SoC devices typically use SPI NOR flash, NAND flash, or eMMC. SPI flash often stores the bootloader; NAND flash stores the system kernel, firmware, etc. For the latter, you usually need to extract a filesystem; for the former, you focus on the boot process. Firmware in SPI flash is often composed of multiple parts, so you can’t just throw a raw dump into IDA Pro.</p>
+<p>MCU firmware is usually not split into many regions—typically one or two. For MCUs using only internal storage, it’s generally Loader + Application. For MCUs with external storage, you’ll see internal Loader + Application, and the external Flash usually won’t be split into many parts either.</p>
+<h2 id="extracting-firmware">Extracting Firmware</h2>
+<p>For NAND flash or other uncommon storage, you may spend a lot of effort on extraction. Firmware from some niche MCUs can also be difficult to extract.</p>
+<h2 id="summary-finding-the-load-base-address">Summary: Finding the Load Base Address</h2>
+<p>When reversing firmware, the first thing is usually to find the <strong>load base address</strong>. Once the base is correct, IDA will automatically fix many cross-references, including strings, jump tables (jpt), etc.</p>
+<p>(These are messy notes from long ago—ignore if they don’t make sense.)</p>
+<p>There are many ways to obtain the load base address:</p>
+<ol>
+<li>Chip datasheet: use the memory map and boot-mode information to locate the base address</li>
+<li>Find public code for the chip (e.g., a bootloader) and infer the base address</li>
+<li>Reverse the previous-stage loader and find where it loads the next stage (e.g., U-Boot often carries base info)</li>
+<li>External interrupt vector table (IVT): often absolute addresses, then make an educated guess</li>
+<li>If there’s no interrupt vector, look for visible string references to absolute addresses</li>
+<li>Extract all strings, then find all reference sites; the base that yields the most cross-references is likely correct</li>
+<li>If you have debug access, dump memory and locate where the firmware header lands</li>
+<li>First consider “round” bases like <code>0x????0000</code>. Compare addresses referenced by code with the string-address distribution; if the low bits match, the difference gives the offset between the current base and the real base</li>
+<li>IDA trick: if the last 4 hex digits of an address offset match the last 4 hex digits of a DCD value, then the high bits of that DCD are the base’s high bits (keep the low bits unchanged)</li>
+</ol>
+<h2 id="analyzing-layout">Analyzing Layout</h2>
+<p>Start with <code>hexdump</code> to see data distribution, then use <code>binwalk</code> to identify CPU ISA and opcode distribution. If it’s still unclear, use a hex editor to estimate byte-frequency distribution. If it looks like compressed data (e.g., Lempel-Ziv-Welch), you may see lots of <code>9D</code>. Use the bytes after <code>9D</code> to check if the stream matches the LZW structure. See: <a href="https://en.wikipedia.org/wiki/List_of_file_signatures"target="_blank" rel="noopener noreferrer">https://en.wikipedia.org/wiki/List_of_file_signatures</a></p>
+<p>Search for continuous strings like <code>0123456789abcdefg</code> to reason about endianness. Some printers use dual flash; one might hold “1267” while another holds “3489”. You may need to interleave and reconstruct using the smallest byte block.</p>
+<p>If source code exists, search for magic values from the source inside the firmware to recover the layout.</p>
+<p>Control-variable method: compare firmware across versions, or compare same-version firmware with different contents.</p>
+<p>If you only have one firmware sample, analyze block similarity to locate magic numbers and infer the system type.</p>
+<h3 id="avoiding-duplicate-regions">Avoiding Duplicate Regions</h3>
+<p>Here I use a firmware security product I built: <strong>UFA - Universal Firmware Analysis</strong>.</p>
+<p><img loading="lazy"  src="./ufa.png"
+        alt=""/></p>
+<p>PS: I wrote this feature at the end of 2020.</p>
+<p>Some firmware images contain redundant systems. With UFA (or other tools that visualize entropy), you can quickly locate duplicated regions and avoid unnecessary work.</p>
+<p><img loading="lazy"  src="./entropy2.png"
+        alt=""/></p>
+<h3 id="continuous-files--partially-compressed-files">Continuous Files &amp; Partially Compressed Files</h3>
+<p>Partially compressed systems are the most painful. In day-to-day reversing, after extracting a binary from firmware, you may directly analyze it: you can see some strings and symbols, but IDA fails to recognize it properly. Looking at the entropy graph, you may find that some regions are code, some are compressed data, plus some SHA-512 constants.</p>
+<p>Normal compressed data has relatively smooth entropy close to 1. For a system firmware, it’s also unusual to see large portions of readable strings at multiple far-apart addresses. By reasoning from the previous-stage loader, you can infer this is a <strong>continuous file</strong> with <strong>partial compression</strong>.</p>
+<p><img loading="lazy"  src="./entropy3.png"
+        alt=""/></p>
+<h3 id="when-partial-encryption-meets-partial-compression">When Partial Encryption Meets Partial Compression</h3>
+<p>When partial encryption and partial compression are combined, it can be extremely confusing.</p>
+<p>IoT devices are often resource constrained. To balance security and UX, vendors may use partial encryption. For example, for a SquashFS image: unpacking it directly fails. If you lack experience, you might think the file is corrupted. With a bit more experience, you may find the decryption routine and decrypt it—yet unpacking still fails. SquashFS is compressed by nature, which makes “partial encryption” harder to spot.</p>
+<p>In fact, partial encryption differs from full encryption.</p>
+<p>Compressed data entropy fluctuates within a range; the region with fluctuations can be where “unencrypted leftovers” exist inside an otherwise partially encrypted area.</p>
+<p><img loading="lazy"  src="./entropy4.png"
+        alt=""/></p>
+<p>Fully encrypted data tends to have higher randomness—often a smooth line in the entropy graph.</p>
+<p><img loading="lazy"  src="./entropy5.png"
+        alt=""/></p>
+<h2 id="identifying-functions">Identifying Functions</h2>
+<p>Sometimes, with an incorrect base address, IDA can’t accurately detect code regions or function starts—let alone help you reason about the base. In such cases, you can try to recover some functions first.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">remake_func</span><span class="p">(</span><span class="n">opcodes</span><span class="p">,</span> <span class="n">lastbytes</span><span class="p">,</span> <span class="n">end_ea</span> <span class="o">=</span> <span class="n">ida_ida</span><span class="o">.</span><span class="n">inf_get_max_ea</span><span class="p">()):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ea</span> <span class="o">=</span> <span class="mh">0x0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">lastbytes_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lastbytes</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">ea</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ea</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">bin_search</span><span class="p">(</span><span class="n">ea</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end_ea</span><span class="p">,</span> <span class="n">opcodes</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_FORWARD</span> <span class="o">|</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_NOBREAK</span> <span class="o">|</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_NOSHOW</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">ea</span> <span class="o">==</span> <span class="n">BADADDR</span> <span class="p">:</span> <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;get_bytes: &#34;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">ea</span><span class="o">-</span><span class="n">lastbytes_len</span><span class="p">),</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">((</span><span class="n">ea</span><span class="o">-</span><span class="n">lastbytes_len</span><span class="p">),</span> <span class="n">lastbytes_len</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">((</span><span class="n">ea</span><span class="o">-</span><span class="n">lastbytes_len</span><span class="p">),</span> <span class="n">lastbytes_len</span><span class="p">)</span> <span class="o">==</span> <span class="n">lastbytes</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">add_func</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="n">BADADDR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;0x</span><span class="si">{:x}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="n">GetDisasm</span><span class="p">(</span><span class="n">ea</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">remake_func</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x55\x89\xe5</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xc3</span><span class="s1">&#39;</span><span class="p">,</span> <span class="mh">0xFF000000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">remake_func</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x55\x31\xC0</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xc3</span><span class="s1">&#39;</span><span class="p">,</span> <span class="mh">0xFF000000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">remake_func</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x55\x89\xe5</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xc2\x04\x00</span><span class="s1">&#39;</span><span class="p">,</span> <span class="mh">0xFF000000</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="recovering-common-functions">Recovering Common Functions</h2>
+<p>For proprietary MCU firmware, external libraries are typically not used, so most basic functionality is implemented in the codebase itself. You should first identify frequently used functions:</p>
+<p>memcpy
+memset
+memcmp
+mmap
+printf
+strcpy
+kfree</p>
+<p>For firmware based on open-source projects, you can use source-based signatures to identify common functions.</p>
+<p>From these functions, you can further infer higher-level logic.</p>
+<p>Script to find the most-referenced functions:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">idaapi</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">funcs</span> <span class="o">=</span> <span class="n">Functions</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span> <span class="o">=</span> <span class="n">Name</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">func_xref_amount</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">XrefsTo</span><span class="p">(</span><span class="n">f</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">func_xref_amount</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span> <span class="s2">&#34;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">func_xref_amount</span><span class="p">)</span>
+</span></span></code></pre></div><p>For open-source MCU firmware, you can first compile your own build, ensuring the toolchain and version match. Generate symbols at link time, use FLIRT to create signatures/fingerprints, then match them against the firmware to recover most functions.</p>
+<h3 id="finding-functions-with-string-references">Finding Functions with String References</h3>
+<p>For firmware whose base is not aligned to <code>0x1000</code>, it’s hard to guess the base by eye. But there’s a trick: first inspect string global variables in IDA, and note the address sequence shown on the left.</p>
+<p><img loading="lazy"  src="./strings.png"
+        alt=""/></p>
+<p>On x86, static variable arguments are often pushed onto the stack. Searching for <code>push</code> patterns is often more convenient than <code>mov</code>. In IDA, do a global search for <code>push 0x</code>, then filter for values ending with patterns like <code>0x********62</code>, <code>0x********97</code>. As shown below, the observed regularity matches the address sequence above—making the correct base instantly obvious.</p>
+<p><img loading="lazy"  src="./push.png"
+        alt=""/></p>
+<p>Base calculation:
+0xFEFA5762 - 0x22F62 = 0xFEF82800</p>
+<h2 id="fixing-function-cross-references">Fixing Function Cross-References</h2>
+<p>If you can’t find the caller of a function, it may be referenced via a jump table. You can globally search for immediates equal to the function address.
+Sometimes addresses are relative offsets; subtract the base.</p>
+<p>Sometimes a 32-bit address is constructed from high 16 bits and low 16 bits, e.g.:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-asm" data-lang="asm"><span class="line"><span class="cl"><span class="nf">MOV</span> <span class="no">Rx</span><span class="p">,</span> <span class="c1">#HighAddr
+</span></span></span><span class="line"><span class="cl"><span class="nf">MOVT</span> <span class="no">Rx</span><span class="p">,</span> <span class="c1">#LowAddr
+</span></span></span></code></pre></div><h2 id="niche-architectures">Niche Architectures</h2>
+<p>IDA Pro is already very good at disassembling machine code into assembly and generating call graphs. But for architectures like V850, you often need to manually identify each function entry point. Many cross-references also won’t be recognized correctly and must be created by hand.</p>
+<p>Another pain point is chip-specific register offsets and peripheral address layouts: RAM, peripheral buses, interface registers, interrupt registers, etc. Usually you can find these in the datasheet; if the datasheet isn’t public, look into BSPs or scatter files. Then add platform-specific configuration in IDA Pro’s CFG (address map, register descriptions, etc.).</p>
+<h2 id="reversing-by-comparing-with-source">Reversing by Comparing with Source</h2>
+<p>If you can’t understand what a piece of code does, find a project with similar functionality, compile it into firmware for the same platform, load it into IDA Pro, and compare against the source. This often helps you understand the intent.</p>
+<h2 id="emulation">Emulation</h2>
+<p>If you face complex code but only need the result, you can emulate it with Unicorn Engine. It supports common architectures like ARM, MIPS, PPC, etc.</p>
+<h2 id="reversing-specific-features">Reversing Specific Features</h2>
+<p>Crypto libraries often contain lots of constant tables. By searching for these constants, you can identify which crypto algorithms are used and backtrack to key code. Encryption, hashing, and CRC/checksum routines often have distinctive constant arrays, and are commonly used during boot, upgrade, and communication phases.</p>
+<p>Using the FindCrypt plugin, you can quickly locate such routines.</p>
+<p>For example, for SD/SATA protocol CMD values, do a global search for immediates.</p>
+<p>For CAN bus, search for CAN register addresses.</p>
+<h2 id="ida-pro-problems-tips">IDA Pro “Problems” Tips</h2>
+<p>In IDA Pro, click View &gt; Open subviews &gt; Problems, and look for issues of types:</p>
+<ul>
+<li>NONAME</li>
+<li>BOUNDS</li>
+</ul>
+<p>These issues often carry an immediate value indicating an address outside the predefined segment ranges. Such immediates might be register addresses, or addresses that are correct under the real base.</p>
+<p>Another possibility is addresses belonging to an external binary (common with bootloaders). For example, if firmware A’s base is unknown but you recovered its function entries, and firmware B shows some “wrong” addresses—if the high bits match firmware A’s address range, you can often determine firmware A’s base.</p>
+<h3 id="case">Case</h3>
+<p>For an x86 firmware with an unknown base: first search Problems, filter for BOUNDS, and you’ll see a bunch of “Call” entries. These are function calls, but they use <code>near ptr</code> (relative addressing), so <code>7A10Ah</code> is the current base plus an offset.</p>
+<p><img loading="lazy"  src="./problem_bounds_relative.png"
+        alt=""/></p>
+<p>However, the file size is not even larger than <code>0x40000</code>, so <code>0x7A10A</code> is an invalid address. Click one of them, and you may see <code>0xFEF84DE0</code> being passed as an argument to the <code>0x7A10A</code> function. This <code>0xFEF84DE0</code> can’t be a register address; it’s very likely a global variable.</p>
+<p><img loading="lazy"  src="./problem_bounds_relative_case.png"
+        alt=""/></p>
+<p>Using the trick in <a href="#finding-functions-with-string-references">Finding Functions with String References</a>, you can determine the base as <code>0xFEF82800</code>. After fixing the base, IDA will automatically identify more valid functions. Also, the previously seen <code>0x7A10A</code> becomes <code>0xFEFFC90A</code>, which is still an invalid address—because it points into an external binary. In another binary, the <code>printf</code> function address is <code>0xFEFFC90A</code>, so you need to add that external binary into the IDA database.</p>
+<p>Be very careful with the next steps—it’s easy to mess up. The UI is not very forgiving, and if you don’t do it for a few days you’ll forget the details; entering wrong values can ruin the current database. Press Shift+F7 to open the Segments window, and create a new segment.</p>
+<p>Segment name can be anything; the start address is the external binary’s base address.</p>
+<p><img loading="lazy"  src="./add_segment.png"
+        alt=""/></p>
+<p>After adding it, check whether it conflicts with existing segments.</p>
+<p><img loading="lazy"  src="./segment.png"
+        alt=""/></p>
+<p>Load the external binary: File -&gt; Load file -&gt; Additional binary file&hellip;</p>
+<p>Set the <code>offset</code> field to the base address of the IBB segment.</p>
+<p><img loading="lazy"  src="./load_bin.png"
+        alt=""/></p>
+</article><section class="article labels"><a class="category" href=/en/categories/firmware-extraction-series/>Firmware Extraction Series</a><a class="category" href=/en/categories/reverse-engineering/>Reverse Engineering</a><a class="tag" href=/en/tags/firmware-reverse-engineering/>Firmware Reverse Engineering</a><a class="tag" href=/en/tags/mcu/>MCU</a><a class="tag" href=/en/tags/bootloader/>Bootloader</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/qnx7-password-hash-analysis-and-hashcat-module/"><span class="iconfont icon-article"></span>QNX 7 Password Hash Analysis and Writing a Hashcat Module</a></p><p><a class="link" href="/en/posts/bypass-jvmti-encryption-protection/"><span class="iconfont icon-article"></span>Bypassing JVMTI-Based Encryption Protection</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

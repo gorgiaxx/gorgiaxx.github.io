@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+Leader lent me two HackRF Ones to play with, and I planned to use them for GPS spoofing experiments.
+It was my first time working with software-defined radio; I got interested immediately and decided to learn it seriously."><title>HackRF GPS Spoofing Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="HackRF GPS Spoofing Notes" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">HackRF GPS Spoofing Notes</h1><p class="article date">Sunday, July 30, 2017<span class="langs"><span class="lang">
+                    <a href="/zh/posts/hackrf-gps-spoofing/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>Leader lent me two HackRF Ones to play with, and I planned to use them for GPS spoofing experiments.
+It was my first time working with software-defined radio; I got interested immediately and decided to learn it seriously.</p>
+<p><img loading="lazy"  src="./hackrf-one.jpg"
+        alt="hackrf"/></p>
+<h2 id="test-environment">Test environment</h2>
+<p>There are two versions of the HackRF One on the market: the original US version and the “Xing Tian Wu Xian” version.
+The author, Mike Ossmann, successfully crowdfunded the first-generation HackRF Jawbreaker on Kickstarter, and later started developing the second-generation HackRF One. In the beginning, the open-source project’s code and documentation were all on GitHub. On March 13, 2014, a Chinese vendor called “Xing Tian Wu Xian” released the HackRF One “ahead of time.”
+In my tests, with the same firmware version, the Xing Tian version (because it includes a power amplifier) has stronger and much more stable signal strength than the US version.
+The antenna used was a suction-cup loaded whip antenna.</p>
+<ul>
+<li>Computer: HP 840 G3</li>
+<li>System: Kali 2016.2</li>
+<li>SDR: HackRF One (Xing Tian version / US version)</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<h3 id="hackrf">HackRF</h3>
+<p>To play with SDR, you can download the <a href="http://s3-dist.gnuradio.org/ubuntu-16.04.2-desktop-amd64-gnuradio-3.7.11.iso"target="_blank" rel="noopener noreferrer">GNU Radio Live</a> image.
+You can also use other Linux distributions. Arch Linux’s official repositories include SDR-related tools. Kali ships with HackRF drivers and tools, so after plugging it into the computer you can type <code>hackrf_info</code> in the terminal to see device information.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hackrf_info version: 2017.02.1
+</span></span><span class="line"><span class="cl">libhackrf version: 2017.02.1 <span class="o">(</span>0.5<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Found HackRF
+</span></span><span class="line"><span class="cl">Index: <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Serial number: 0000000000000000583064c028624e4b
+</span></span><span class="line"><span class="cl">Board ID Number: <span class="m">2</span> <span class="o">(</span>HackRF One<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Firmware Version: 2017.02.1 <span class="o">(</span>API:1.02<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Part ID Number: 0xa000cb3c 0x005d4f47
+</span></span></code></pre></div><p>Before this, I upgraded the HackRF firmware, so the information shown here is for a newer version.
+Here are the upgrade steps as well—first flash the SPI firmware:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/mossmann/hackrf
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ./firmware-bin/
+</span></span><span class="line"><span class="cl">hackrf_spiflash -Rw hackrf_one_usb.bin
+</span></span></code></pre></div><p>Press the Reset button once, then update the CPLD:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hackrf_cpldjtag -x hackrf_cpld_default.xsvf
+</span></span></code></pre></div><h3 id="gps-sdr-sim">GPS-SDR-SIM</h3>
+<p>GPS-SDR-SIM is used to generate GPS baseband data streams for SDR platforms such as bladeRF, HackRF, and USRP.
+Download and build GPS-SDR-SIM:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/osqzss/gps-sdr-sim
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> gps-sdr-sim
+</span></span><span class="line"><span class="cl">gcc gpssim.c -lm -O3 -o gps-sdr-sim
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Usage: gps-sdr-sim <span class="o">[</span>options<span class="o">]</span>
+</span></span><span class="line"><span class="cl">Options:
+</span></span><span class="line"><span class="cl">  -e &lt;gps_nav&gt;     RINEX navigation file <span class="k">for</span> GPS ephemerides <span class="o">(</span>required<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -u &lt;user_motion&gt; User motion file <span class="o">(</span>dynamic mode<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -g &lt;nmea_gga&gt;    NMEA GGA stream <span class="o">(</span>dynamic mode<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -l &lt;location&gt;    Lat,Lon,Hgt <span class="o">(</span>static mode<span class="o">)</span> e.g. 35.681298,139.766247,10.0
+</span></span><span class="line"><span class="cl">  -t &lt;date,time&gt;   Scenario start <span class="nb">time</span> YYYY/MM/DD,hh:mm:ss
+</span></span><span class="line"><span class="cl">  -T &lt;date,time&gt;   Overwrite TOC and TOE to scenario start <span class="nb">time</span>
+</span></span><span class="line"><span class="cl">  -d &lt;duration&gt;    Duration <span class="o">[</span>sec<span class="o">]</span> <span class="o">(</span>dynamic mode max: 300, static mode max: 86400<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -o &lt;output&gt;      I/Q sampling data file <span class="o">(</span>default: gpssim.bin<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -s &lt;frequency&gt;   Sampling frequency <span class="o">[</span>Hz<span class="o">]</span> <span class="o">(</span>default: 2600000<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -b &lt;iq_bits&gt;     I/Q data format <span class="o">[</span>1/8/16<span class="o">]</span> <span class="o">(</span>default: 16<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -i               Disable ionospheric delay <span class="k">for</span> spacecraft scenario
+</span></span><span class="line"><span class="cl">  -v               Show details about simulated channels
+</span></span></code></pre></div><h3 id="gps">GPS</h3>
+<p>GPS (Global Positioning System) requires a receiver to obtain signals from at least four satellites to determine an accurate position. Three satellites are used to compute coordinates based on <a href="https://en.wikipedia.org/wiki/World_Geodetic_System"target="_blank" rel="noopener noreferrer">WGS-84</a>, and the fourth provides timing data to reduce errors caused by signal propagation time. The more satellites received, the more accurate the positioning. For more background, see <a href="https://en.wikipedia.org/wiki/Global_Positioning_System"target="_blank" rel="noopener noreferrer">Wiki: Global Positioning System</a>.</p>
+<p>Download GPS navigation broadcast ephemeris data from NASA’s CDDIS data center server, then decompress it (the filename ends with <code>n</code>).</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ftp://cddis.gsfc.nasa.gov/pub/gps/data/daily/2017/brdc/brdc2060.17n.Z
+</span></span></code></pre></div><p>It’s almost impossible to download under some domestic network conditions; it’s recommended to use a proxy.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">proxychains4 -q wget ftp://cddis.gsfc.nasa.gov/pub/gps/data/daily/2017/brdc/brdc2060.17n.Z
+</span></span><span class="line"><span class="cl">7z e brdc2060.17n.Z
+</span></span></code></pre></div><p>The file is updated daily; in practice, the exact day doesn’t matter much.
+This is the ephemeris filename format:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">YYYY/brdc/brdcDDD0.YYn.Z
+</span></span></code></pre></div><p>For the naming rules, refer to <a href="https://cddis.nasa.gov/Data_and_Derived_Products/GNSS/broadcast_ephemeris_data.html"target="_blank" rel="noopener noreferrer">Broadcast ephemeris data</a>.</p>
+<p>After decompression, you can see the ephemeris data is in RINEX (Receiver Independent Exchange Format) 2.0 format.
+GPS-SDR-SIM generates sampling data from the ephemeris file. The <code>-T</code> option can specify the time.</p>
+<p>I chose the coordinates of the Diaoyu Islands on Amap, rounded to 6 decimal places, and added an arbitrary altitude, then placed them after the <code>location</code> parameter.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./gps-sdr-sim -e brdc2060.17n -l 25.771450,123.528900,100 -b <span class="m">8</span> -d <span class="m">200</span>
+</span></span></code></pre></div><p><img loading="lazy"  src="./gps-sdr-sim.png"
+        alt="gps-sdr-sim"/></p>
+<p>The duration affects the output file size. The default is 300 seconds; I changed it to 200 seconds, which takes about 1GB of space. HackRF uses 8-bit IQ samples, so set <code>iq_bits</code> to 8.
+Below is the detailed usage for <code>hackrf_transfer</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">specify one of: -t, -c, -r, -w
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">        -h <span class="c1"># this help</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-d serial_number<span class="o">]</span> <span class="c1"># Serial number of desired HackRF.</span>
+</span></span><span class="line"><span class="cl">        -r &lt;filename&gt; <span class="c1"># Receive data into file (use &#39;-&#39; for stdout).</span>
+</span></span><span class="line"><span class="cl">        -t &lt;filename&gt; <span class="c1"># Transmit data from file (use &#39;-&#39; for stdin).</span>
+</span></span><span class="line"><span class="cl">        -w <span class="c1"># Receive data into file with WAV header and automatic name.</span>
+</span></span><span class="line"><span class="cl">           <span class="c1"># This is for SDR# compatibility and may not work with other software.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-f freq_hz<span class="o">]</span> <span class="c1"># Frequency in Hz [0MHz to 7250MHz].</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-i if_freq_hz<span class="o">]</span> <span class="c1"># Intermediate Frequency (IF) in Hz [2150MHz to 2750MHz].</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-o lo_freq_hz<span class="o">]</span> <span class="c1"># Front-end Local Oscillator (LO) frequency in Hz [84MHz to 5400MHz].</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-m image_reject<span class="o">]</span> <span class="c1"># Image rejection filter selection, 0=bypass, 1=low pass, 2=high pass.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-a amp_enable<span class="o">]</span> <span class="c1"># RX/TX RF amplifier 1=Enable, 0=Disable.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-p antenna_enable<span class="o">]</span> <span class="c1"># Antenna port power, 1=Enable, 0=Disable.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-l gain_db<span class="o">]</span> <span class="c1"># RX LNA (IF) gain, 0-40dB, 8dB steps</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-g gain_db<span class="o">]</span> <span class="c1"># RX VGA (baseband) gain, 0-62dB, 2dB steps</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-x gain_db<span class="o">]</span> <span class="c1"># TX VGA (IF) gain, 0-47dB, 1dB steps</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-s sample_rate_hz<span class="o">]</span> <span class="c1"># Sample rate in Hz (4/8/10/12.5/16/20MHz, default 10MHz).</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-n num_samples<span class="o">]</span> <span class="c1"># Number of samples to transfer (default is unlimited).</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-S buf_size<span class="o">]</span> <span class="c1"># Enable receive streaming with buffer size buf_size.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-c amplitude<span class="o">]</span> <span class="c1"># CW signal source mode, amplitude 0-127 (DC value to DAC).</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-R<span class="o">]</span> <span class="c1"># Repeat TX mode (default is off)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-b baseband_filter_bw_hz<span class="o">]</span> <span class="c1"># Set baseband filter bandwidth in Hz.</span>
+</span></span><span class="line"><span class="cl">        Possible values: 1.75/2.5/3.5/5/5.5/6/7/8/9/10/12/14/15/20/24/28MHz, default &lt;<span class="o">=</span> 0.75 * sample_rate_hz.
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-C ppm<span class="o">]</span> <span class="c1"># Set Internal crystal clock error in ppm.</span>
+</span></span><span class="line"><span class="cl">        <span class="o">[</span>-H hw_sync_enable<span class="o">]</span> <span class="c1"># Synchronise USB transfer using GPIO pins.</span>
+</span></span></code></pre></div><p>The generated <code>gpssim.bin</code> has a sampling frequency of 2.6MHz, and the sampling frequency set in <code>hackrf_transfer</code> must match it. <code>-x</code> controls TX VGA gain; start with 0 dB, and increase if you can’t find it, up to a maximum of 47 dB. Below are civilian GPS bands; here we use the L1 band.</p>
+<ul>
+<li>L1 1575.42MHz</li>
+<li>L2 1227.60MHz</li>
+<li>L3 1381.05MHz</li>
+<li>L4 1841.40MHz</li>
+<li>L5 1176.45MHz</li>
+</ul>
+<p>Use <code>hackrf_transfer</code> to transmit the RF signal, enable the amplifier, set gain to maximum, and repeat transmission in a loop.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hackrf_transfer -t gpssim.bin -f <span class="m">1575420000</span> -s <span class="m">2600000</span> -a <span class="m">1</span> -x <span class="m">47</span> -R
+</span></span></code></pre></div><p><img loading="lazy"  src="./hackrf_transfer.png"
+        alt="hackrf_transfer"/></p>
+<p>A USB GPS receiver can also receive spoofed data that conforms to the <a href="https://en.wikipedia.org/wiki/NMEA_0183"target="_blank" rel="noopener noreferrer">NMEA</a> (National Marine Electronics Association) specification.
+For the data format, refer to <a href="http://www.gpsinformation.org/dale/nmea.htm"target="_blank" rel="noopener noreferrer">NMEA data</a>.</p>
+<p><img loading="lazy"  src="./GPS_USB.jpg"
+        alt="gps_usb"/></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo microcom -s <span class="m">4800</span> -p /dev/ttyUSB0
+</span></span></code></pre></div><p><img loading="lazy"  src="./gps_usb_serial.png"
+        alt="gps_usb_serial"/></p>
+<p>Here I used the US version of HackRF; in under a minute, the target device’s location was spoofed to the island.</p>
+<p><img loading="lazy"  src="./dongfeng_test.jpg"
+        alt="dongfeng_test"/></p>
+<p>This is the result of successful spoofing using the Xing Tian version.</p>
+<p><img loading="lazy"  src="./xingtian.jpg"
+        alt="xintian"/></p>
+<h2 id="references">References</h2>
+<p><a href="http://www.cnblogs.com/k1two2/p/5164172.html"target="_blank" rel="noopener noreferrer">HackRF实现GPS欺骗教程</a></p>
+<p><a href="http://www.cnblogs.com/k1two2/p/6387701.html"target="_blank" rel="noopener noreferrer">利用Hackrf One进行GPS定位欺骗制作超级跑马机</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/hardware-security/>Hardware Security</a><a class="tag" href=/en/tags/hackrf/>HackRF</a><a class="tag" href=/en/tags/gps/>GPS</a><a class="tag" href=/en/tags/spoofing/>Spoofing</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/fios-g1100-get-root/"><span class="iconfont icon-article"></span>Getting Root Access on Verizon FIOS-G1100</a></p><p><a class="link" href="/en/posts/d-link-dir-850l-router-vulnerability-report/"><span class="iconfont icon-article"></span>D-Link DIR-850L Router Vulnerability Verification Report</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

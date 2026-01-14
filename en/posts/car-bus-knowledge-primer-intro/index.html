@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+The automotive industry is highly rigorous, and many products must be designed according to standards. First, we need to clarify the relationship between ISO and SAE."><title>Car Bus Knowledge Primer: Introduction&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Car Bus Knowledge Primer: Introduction" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Car Bus Knowledge Primer: Introduction</h1><p class="article date">Thursday, August 8, 2019<span class="langs"><span class="lang">
+                    <a href="/zh/posts/car-bus-knowledge-primer-intro/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>The automotive industry is highly rigorous, and many products must be designed according to standards. First, we need to clarify the relationship between ISO and SAE.</p>
+<ul>
+<li><a href="https://www.iso.org/home.html"target="_blank" rel="noopener noreferrer">International Organization for Standardization (ISO)</a></li>
+<li><a href="https://www.sae.org"target="_blank" rel="noopener noreferrer">Society of Automotive Engineers (SAE)</a></li>
+</ul>
+<p>The SAE J-series standards are written for ground vehicles and cover almost every electronic component. They are oriented toward the U.S. market, while ISO standards are international—both GB (China) and EU standards often reference ISO. ISO may publish new standards by referencing standards provided by SAE, and a single ISO standard may include multiple SAE-drafted standards.</p>
+<p>Inside a vehicle, there are many Electronic Control Units (ECUs) responsible for different tasks, such as door control modules, lighting control modules, and so on. In the beginning, they used point-to-point communication: each piece of information was exchanged over a dedicated wire. As the number of ECUs increases, the wiring harness grows multiplicatively—raising cost, consuming more space, adding weight, and making internal connections more complex and risk-prone.</p>
+<p><img loading="lazy"  src="p2p.jpg"
+        alt="p2p"/></p>
+<p>Therefore, engineers designed a bus-based communication approach. Each ECU is connected to a shared bus, avoiding the pitfalls of point-to-point communication.</p>
+<p><img loading="lazy"  src="bus.jpg"
+        alt="bus"/></p>
+<p>SAE classifies in-vehicle bus networks into four categories by transmission speed:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Category</th>
+          <th>Bit rate</th>
+          <th>Use cases</th>
+          <th>Protocol type</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Class A</td>
+          <td>Below 10Kb/s</td>
+          <td>Doors, A/C, seats</td>
+          <td>LIN</td>
+      </tr>
+      <tr>
+          <td>Class B</td>
+          <td>10 to 125Kb/s</td>
+          <td>Emissions data, cluster data</td>
+          <td>CAN</td>
+      </tr>
+      <tr>
+          <td>Class C</td>
+          <td>125Kb/s to 1Mb/s</td>
+          <td>Traction control, braking systems</td>
+          <td>CAN</td>
+      </tr>
+      <tr>
+          <td>Class D</td>
+          <td>1Mb/s to 10Mb/s</td>
+          <td>Multimedia systems</td>
+          <td>Most, FlexRay, Byteflight</td>
+      </tr>
+  </tbody>
+</table>
+<p>Today, most in-vehicle networks at home and abroad use CAN; some also use LIN, MOST, FlexRay, Ethernet, and so on. CAN remains the most widely deployed. These notes focus on CAN and expand to related topics. Since different OEMs’ CAN implementations may differ in details—and may not strictly conform to the spec (one reason is that standards cannot satisfy every business requirement)—for consistency, these notes primarily follow ISO specifications.</p>
+<h2 id="can">CAN</h2>
+<p>CAN (Controller Area Network, compliant with ISO 11898) is a controller-area network protocol used in manufacturing and the automotive industry. It offers high speed and long distance. Embedded systems and ECUs can communicate using the CAN protocol.</p>
+<p>In 1992, the CAN data link layer and CAN high-speed physical layer were standardized internationally in ISO 11898, which consists of seven parts. I briefly looked at parts 4, 5, and 6; they supplement some shortcomings of parts 1, 2, and 3 and are meaningful, but they are rarely used in the domestic automotive field at present, so I won’t dive into them here. The titles of each part are:</p>
+<ul>
+<li>ISO 11898-1 Data link layer and physical signaling</li>
+<li>ISO 11898-2 High-speed medium access unit</li>
+<li>ISO 11898-3 Low-speed, fault-tolerant medium access unit</li>
+<li>ISO 11898-4 Time-triggered communication</li>
+<li>ISO 11898-5 Low-power high-speed medium access unit</li>
+<li>ISO 11898-6 Selective wake-up high-speed medium access unit</li>
+</ul>
+<p>The figure below classifies CAN from different perspectives: the relationship among CAN standards, the network model layers, and implementations. Currently, ISO 11898 mainly covers the Physical Layer (PL), Data Link Layer (DLL), and Application Layer (AL).</p>
+<p><img loading="lazy"  src="reference_model.png"
+        alt="reference_model"/></p>
+<p>According to ISO/IEC 8802-2 (IEEE 802.2), the data link layer can be split into two sublayers:</p>
+<ul>
+<li>Logical Link Control (LLC)
+<ul>
+<li>Receive filtering</li>
+<li>Overload notification</li>
+<li>Recovery management</li>
+</ul>
+</li>
+<li>Medium Access Control (MAC)
+<ul>
+<li>Data encapsulation/decapsulation</li>
+<li>Frame encoding (stuffing/destuffing)</li>
+<li>Medium access management</li>
+<li>Error detection</li>
+<li>Fault confinement</li>
+<li>Serialization/deserialization</li>
+</ul>
+</li>
+</ul>
+<p>The physical layer can be split into three sublayers:</p>
+<ul>
+<li>Physical Coding Sub-layer (PCS)</li>
+<li>Physical Medium Attachment (PMA)</li>
+<li>Medium Dependent Interface (MDI)</li>
+</ul>
+<p>From the CAN perspective, an ECU can be viewed as consisting of:</p>
+<ul>
+<li>Microcontroller Unit (MCU), AL</li>
+<li>CAN Controller, DLL + PCS of PL</li>
+<li>CAN Transceiver, PMA and MDI of PL</li>
+</ul>
+<h2 id="can-physical-layer">CAN Physical Layer</h2>
+<p>CAN uses a two-wire differential signal. Data is transmitted over two lines: CANH (+) and CANL (-). The medium can be coaxial cable, optical fiber, or twisted pair. Differential signaling helps reduce external interference so the differential circuit can extract the useful signal.</p>
+<p>Typically, twisted pair is used to form a serial bus, and termination resistors (matched in resistance/impedance) are placed at the bus endpoints to prevent reflections that can affect transmission quality. Newer CAN buses use distributed resistors, also called ECU load resistors—i.e., a “central termination resistor” in the engine control unit plus high-ohmic resistors in other control units.</p>
+<p>Nodes on a CAN bus use a multi-master communication model. Each node is connected to the bus, there is no limitation on node count, and messages are broadcast so every node can receive them.</p>
+<p><img loading="lazy"  src="can_net.png"
+        alt="can_net"/></p>
+<p>According to the MAU definition, CAN signaling can be categorized into High-speed CAN (ISO 11898-2) and Low-speed CAN (ISO 11898-3).</p>
+<blockquote>
+<p>ISO 11519 is the low-speed CAN standard. Originally, both the high-speed CAN data link layer and physical layer were specified in ISO 11898; later, it was split into ISO 11898-1 (data link layer only) and ISO 11898-2 (physical layer only). ISO 11519-2-1994 was replaced in 2006 by ISO 11898-3-2006, meaning products compliant with ISO 11898-3 are also compatible with ISO 11519-2.</p>
+</blockquote>
+<p><img loading="lazy"  src="ISO_CAN.png"
+        alt="ISO_CAN"/></p>
+<ul>
+<li>High-speed CAN typically runs at 500Kbps or 250Kbps and is used for real-time communications such as engine and ABS.</li>
+<li>Low-speed CAN typically runs at 125Kbps and is used for door locks, lighting, airbags, A/C, etc.</li>
+</ul>
+<p>In-vehicle networks can use many topologies, but ISO 11898 only recommends linear and star topologies.</p>
+<p>High-speed CAN uses a linear topology with 120Ω impedance. To ensure transmission quality, nodes should be placed as close to each other as possible.</p>
+<p><img loading="lazy"  src="interconnection.png"
+        alt="interconnection"/></p>
+<p>Low-speed CAN can use either linear or star topology.</p>
+<p><img loading="lazy"  src="star_topology.png"
+        alt="star_topology"/></p>
+<p>A vehicle’s internal network topology can be composed of multiple networks. Ethernet (Internet Protocol) is commonly used as the backbone network.</p>
+<p><img loading="lazy"  src="backbone.png"
+        alt="backbone.png"/></p>
+<p>Different networks interconnect through a gateway (Gateway, GW). A gateway provides compatibility functions such as protocol translation and data exchange.</p>
+<p>The gateway’s main function is to allow control units connected to different data buses to exchange data. It can be installed in the instrument cluster or inside an ECU.</p>
+<p>Low-speed CAN is also called fault-tolerant CAN. Because differential signaling inherently mitigates common-mode interference, and because low-speed CAN uses larger signal swings than high-speed CAN, fault-tolerant CAN can operate over a single wire and maintain communication even if CAN_H or CAN_L is shorted or open-circuited.</p>
+<p>High-speed CAN waveform:</p>
+<p><img loading="lazy"  src="ISO11898-2_Waveform.png"
+        alt="ISO11898-2_Waveform.png"/></p>
+<p>Low-speed CAN waveform:</p>
+<p><img loading="lazy"  src="ISO11898-3_Waveform.png"
+        alt="ISO11898-3_Waveform"/></p>
+<p>When one device drives a low level while another drives a high level, the bus level is still low. From a logic perspective, a CAN bus has two logic states: dominant and recessive. You can treat it as a binary stream: dominant is 0, recessive is 1.</p>
+<h3 id="identifying-can-buses">Identifying CAN Buses</h3>
+<p>First, find twisted-pair wires. You can often distinguish CAN buses in the wiring harness by color, but the number and color scheme can vary by manufacturer.</p>
+<ul>
+<li>CAN_H
+<ul>
+<li>Powertrain CAN: orange/black</li>
+<li>Convenience CAN: orange/green</li>
+<li>Infotainment CAN: orange/purple</li>
+<li>Instrument CAN: orange/blue</li>
+<li>Diagnostic CAN: orange/red</li>
+</ul>
+</li>
+<li>CAN_L: orange/brown</li>
+</ul>
+<p>In an ideal case where (V_{cc}) is 5V nominal, CAN bus voltages are as follows. You can use these voltage characteristics to locate and distinguish CAN wires in a harness. Note that some buses have sleep modes (common on convenience and infotainment buses; powertrain buses typically do not). Newer CAN buses may also have low-power modes.</p>
+<ul>
+<li>High-speed CAN:
+<ul>
+<li>Dominant: CAN_H 3.5V, CAN_L 1.5V, differential 2V</li>
+<li>Recessive: CAN_H and CAN_L both 2.5V</li>
+</ul>
+</li>
+<li>Low-speed CAN:
+<ul>
+<li>Dominant: CAN_H 3.6V, CAN_L 1.4V, differential 2.2V</li>
+<li>Recessive: CAN_H 4.7V, CAN_L 0.3V, differential 4.4V</li>
+</ul>
+</li>
+</ul>
+<h2 id="application-layer-extension-protocols-based-on-can">Application-Layer Extension Protocols Based on CAN</h2>
+<p>CAN can be divided into higher-layer protocols and lower-layer protocols. CAN application-layer protocols are also called CAN-based higher-layer protocols (HLPs), typically considered to be at layer 7.</p>
+<p>Below are some CAN-based higher-layer extension protocols:</p>
+<ul>
+<li>1992: <a href="https://www.can-cia.org/standardization/specifications/"target="_blank" rel="noopener noreferrer">CiA 201 series (CAN Application Layer)</a></li>
+<li>1994: <a href="http://www.iec.ch/"target="_blank" rel="noopener noreferrer">IEC 62026-3 (DeviceNet)</a></li>
+<li>1994: <a href="http://www.sae.org/"target="_blank" rel="noopener noreferrer">SAE J1939 series</a></li>
+<li>1994: <a href="https://www.can-cia.org/standardization/specifications/"target="_blank" rel="noopener noreferrer">EN 50325-4 (CANopen)</a></li>
+<li>1999: <a href="http://www.iso.org/"target="_blank" rel="noopener noreferrer">ISO 11992 series</a></li>
+<li>1999: <a href="http://www.milcan.org/"target="_blank" rel="noopener noreferrer">MilCAN</a></li>
+<li>2000: <a href="http://www.iec.ch/"target="_blank" rel="noopener noreferrer">IEC 61162-3 (NMEA 2000)</a></li>
+<li>2002: <a href="http://www.iso.org/"target="_blank" rel="noopener noreferrer">ISO 11783 series (Isobus)</a></li>
+<li>2004: <a href="http://www.iso.org/"target="_blank" rel="noopener noreferrer">ISO 15765 series (OBDII/ISO-TP)</a></li>
+<li>2007: <a href="http://www.arinc.com/"target="_blank" rel="noopener noreferrer">Arinc 825/826</a></li>
+<li>2015: <a href="http://uavcan.org/"target="_blank" rel="noopener noreferrer">UAVCAN</a></li>
+</ul>
+<h2 id="frames">Frames</h2>
+<p>The physical layer converts analog signals into digital signals and passes them to the data link layer. A frame can be viewed as the protocol data unit (Protocol Data Unit, PDU) controlled by the data link layer. Each layer has its own PDU naming: the physical layer uses bits, the network layer uses packets, and the application layer uses messages.</p>
+<p>CAN nodes’ sending and receiving are governed by four different frame types:</p>
+<ul>
+<li>Data Frame (DF): carries data from the transmitting node to receiving nodes</li>
+<li>Remote Frame (RF): requests other nodes to transmit a data frame with the same identifier</li>
+<li>Error Frame (EF): sent when a node detects an error</li>
+<li>Overload Frame (OF): inserts a delay between the preceding and following data frame (or remote frame)</li>
+</ul>
+<p>Data frames and remote frames are separated from the previous frame (regardless of type) by an interframe space. Error frames and overload frames do not use interframe space to separate from the previous frame.</p>
+<p><img loading="lazy"  src="interframe_space.png"
+        alt="interframe_space"/></p>
+<p>Interframe space includes the intermission field and bus idle. The intermission field consists of three recessive bits. When no frame is transmitted on the bus, it is idle; at that time the bus is at a static level, i.e., recessive (1), for an arbitrary length of time.</p>
+<h2 id="data-frames">Data Frames</h2>
+<p>The CAN family includes classic CAN and the newer CAN FD (CAN with Flexible Data rate).</p>
+<p>Classic CAN is CAN 2.0, introduced by Bosch in 1991, with part A and part B. CAN FD was introduced by Bosch and other experts in 2011 and is also called “flexible CAN”. Parts A and B specify two frame formats: base frame and extended frame. Therefore, data frames can be categorized into four types:</p>
+<ul>
+<li>Classic base frame (Classical Base Frame Format, CBFF)</li>
+<li>Classic extended frame (Classical Extended Frame Format, CEFF)</li>
+<li>FD base frame (FD Base Frame Format, FDFF)</li>
+<li>FD extended frame (FD Extended Frame Format, FEFF)</li>
+</ul>
+<p>The overall structure of a CAN data frame is as follows:</p>
+<p><img loading="lazy"  src="can_frame.gif"
+        alt="can_frame"/></p>
+<p>It mainly consists of eight parts:</p>
+<ul>
+<li>SOF</li>
+<li>Arbitration field</li>
+<li>Control field</li>
+<li>Data field</li>
+<li>CRC field</li>
+<li>ACK field</li>
+<li>EOF</li>
+<li>Intermission</li>
+</ul>
+<h3 id="base-frame">Base Frame</h3>
+<p>Classic CAN has an 8-byte payload and a 1Mb/s bit rate. CAN FD (CAN with Flexible Data-Rate) supports payloads larger than 8 bytes—up to 64 bytes—so the bit rate can reach 8Mb/s.</p>
+<p><img loading="lazy"  src="canfd02.png"
+        alt="canfd02"/></p>
+<p>CAN and CAN FD have similar frame structures, but the details differ.</p>
+<p><img loading="lazy"  src="frame_structure.png"
+        alt="frame_structure"/></p>
+<h3 id="extended-frame">Extended Frame</h3>
+<p><img loading="lazy"  src="id-examples.png"
+        alt="id-examples"/></p>
+<p>Extended frames can be concatenated to form a longer ID. In the extended frame, Substitute Remote Request (SRR) replaces Remote Transmission Request (RTR), and the Identifier Extension (IDE) bit is also set to 1.</p>
+<h2 id="arbitration">Arbitration</h2>
+<p>Both CAN and Ethernet are broadcast networks. To reduce collisions and retransmissions, Ethernet uses Carrier Sense Multiple Access with Collision Detection (CSMA/CD): before sending, Ethernet “listens” to the cable to determine whether other transmissions are in progress.</p>
+<p>CAN uses a similar mechanism. This conflict-resolution approach is called arbitration. When the bus is idle, any node can transmit the frames described above.</p>
+<p>During arbitration, the transmitter uses bit-wise arbitration. The Start of Frame (SOF) bit is 0. After confirming the bus is idle, the SOF can be transmitted. Next comes the 11-bit arbitration field: the transmitter compares each transmitted bit with the monitored bus level; if there is a conflict with other frames, it can be detected immediately. Dominant bits have priority, and the lower the arbitration ID value, the higher the priority.</p>
+<ul>
+<li>If the bus level matches the transmitted level, continue with the next bit.</li>
+<li>If another node drives a dominant bit (0) on the bus, and this node transmits a recessive bit (1), it loses arbitration and stops transmitting any bits.</li>
+<li>If another node drives a recessive bit (1) on the bus, and this node transmits a dominant bit (0), the transmitting node will detect an error.</li>
+</ul>
+<p>In the figure below, Node3 has the lowest arbitration ID value, so it wins and transmits first.</p>
+<p><img loading="lazy"  src="can_arbitration.gif"
+        alt="can_arbitration"/></p>
+<p>Bit-wise arbitration can resolve conflicts between different IDs or different frame types. If a data frame conflicts with a remote frame, the data frame has priority because the RTR bit in a data frame is dominant (0). If conflicting frames have the same ID and the same type, arbitration fails and an error frame is generated. A lack of response or a corrupted frame due to errors can also cause arbitration failure; in such cases the frame is automatically retransmitted.</p>
+<p>When multiple nodes broadcast messages at the same time, to resolve conflicts, a higher-priority node acts as the master and lower-priority nodes act as slaves. The ID of a request and its corresponding response is the same. When conflicts occur, the higher-priority master transmits unaffected, and lower-priority nodes back off proactively as slaves. They wait until the master finishes and the bus becomes idle, then retransmit.</p>
+<p>Standards authors call this ability to keep transmitting frames even in the presence of contention “non-destructive arbitration”. This differs from Ethernet, where collision detection causes all nodes to back off.</p>
+<p>In DeviceNet (IEC 62026-3), bit-wise arbitration and non-destructive arbitration together are referred to as Carrier Sense Multiple Access/Non-destructive Bit-wise Arbitration (CSMA/NBA).</p>
+<p>Because standard CAN as defined in ISO 11898-1 is event-triggered and insufficient in real-time aspects, ISO 11898-4 describes a time-triggered CAN transmission mechanism (TTCAN) that avoids message conflicts by using time slots. It has not yet been widely implemented.</p>
+<p><img loading="lazy"  src="TTCAN.png"
+        alt="TTCAN"/></p>
+<p>CAN has multiple error-detection measures: monitoring and comparing the transmitter’s output level with the monitored bus level, checking frame format, CRC (15-bit for classic CAN; 17-bit for CAN-FD payload length 8–16 bytes; 21-bit for payload length 20–64 bytes), checking stuff bits, and checking ACK.</p>
+<h2 id="on-board-diagnostics">On-Board Diagnostics</h2>
+<p>On-Board Diagnostics (OBD) was originally used for emissions monitoring. The idea originated from a General Motors patent for the Assembly Line Diagnostic Link (ALDL). Through standardized diagnostic trouble codes (DTCs, ISO 15031-6/SAE J2012), faults inside the vehicle can be quickly identified and corrected.</p>
+<p>ISO 15031 specifies communication between external equipment and vehicle emission-related diagnostic systems, and it has seven parts:</p>
+<ul>
+<li>ISO 15031-1 General information and use-case definitions</li>
+<li>ISO 15031-2/SAE J1930 Terminology, definitions, abbreviations and acronyms guidelines</li>
+<li>ISO 15031-3/SAE J1962 Diagnostic connector and related electrical circuits specification and use</li>
+<li>ISO 15031-4/SAE J1978 External test equipment</li>
+<li>ISO 15031-5/SAE J1979 Emission-related diagnostic services</li>
+<li>ISO 15031-6/SAE J2012 Standardized DTC definitions</li>
+<li>ISO 15031-7/SAE J2186 Data link security</li>
+</ul>
+<h3 id="obd-ii">OBD-II</h3>
+<p>In the OBD-I era, diagnostic connector types, connector locations, DTCs, and read/write methods varied by manufacturer. OBD-II defines detailed specifications for connection protocols and more. The OBD-II connector complies with SAE J1962. It has a male (A) and female (B) version. It is D-shaped with 16 pins (2x8).</p>
+<p><img loading="lazy"  src="J1962_wire.jpg"
+        alt="J1962_wire"/></p>
+<p><img loading="lazy"  src="femail_pinout.png"
+        alt="femail_pinout"/></p>
+<p>Using the female connector as an example, the pin definitions are shown below.</p>
+<p>With CAN, pin 4 is chassis ground, pin 5 is signal ground, pin 6 is CAN_H, pin 14 is CAN_L, and pin 16 is +12V DC. ISO 15031-3 also defines pins for other protocols (ISO 14230, SAE J1850).</p>
+<p><img loading="lazy"  src="pinout_assignment.png"
+        alt="pinout_assignment"/></p>
+<p>Today, the mainstream standard for vehicle diagnostics is OBD-II (ISO 15765), a CAN-based extension protocol. In 1996, the U.S. required all vehicles to implement OBD-II. In 2003, the EU required all vehicles to implement EOBD (nearly identical to OBD-II). In 2006, China’s National III standard required vehicles to include OBD for emissions testing. As a result, almost all vehicles now have an OBD interface—usually under the driver’s side dashboard—and it is commonly connected to a computer via DB9.</p>
+<p>UK DB9 layout:</p>
+<p><img loading="lazy"  src="db9_en.jpg"
+        alt="db9_en.jpg"/></p>
+<p>US DB9 layout:</p>
+<p><img loading="lazy"  src="db9_us.jpg"
+        alt="db9_us.jpg"/></p>
+<p>The OBD-II specification consists of four parts:</p>
+<ul>
+<li>ISO 15765-1 General information</li>
+<li>ISO 15765-2 Network layer services specification (ISO-TP)</li>
+<li>ISO 15765-3 Application layer specification; implementation of UDS over CAN</li>
+<li>ISO 15765-4 Physical layer to network layer specification; session layer</li>
+</ul>
+<p>Mapping OBD-II to the OSI seven-layer model, it can be divided into three categories:</p>
+<ul>
+<li>Diagnostic services: see ISO 15765-3</li>
+<li>Network layer services: see ISO 15765-2</li>
+<li>CAN services: see ISO 11898</li>
+</ul>
+<h2 id="uds">UDS</h2>
+<p>In the comparison table, the right side is the legally required unified diagnostic specification, while the left side is the OEM-customizable Enhanced Diagnostic. It implements a modular diagnostic framework at the application layer for all ECUs, called Unified Diagnostic Services (UDS).</p>
+<p><img loading="lazy"  src="OSI_layers_table.png"
+        alt="OSI_layers_table"/></p>
+<p>The figure below shows how UDS is implemented over CAN and labels the specs used at each layer. The UDS specification is ISO 14229.</p>
+<p><img loading="lazy"  src="OSI_layers_table2.png"
+        alt="OSI_layers_table2"/></p>
+<p>UDS defines different request and response IDs for each service:</p>
+<p><img loading="lazy"  src="UDS_ID.png"
+        alt="UDS_ID"/></p>
+<h2 id="references">References</h2>
+<p><a href="https://www.can-cia.org/can-knowledge"target="_blank" rel="noopener noreferrer">CiA: https://www.can-cia.org/can-knowledge</a></p>
+<p><a href="https://en.wikipedia.org/wiki/CAN_bus"target="_blank" rel="noopener noreferrer">Wiki: CAN bus</a></p>
+<p><a href="https://automotivetechis.wordpress.com/2012/06/01/can-basics-faq/"target="_blank" rel="noopener noreferrer">CAN Basics</a></p>
+<p><a href="http://mp.weixin.qq.com/s/3H06nKQoMYvNoj7RO-j1PA"target="_blank" rel="noopener noreferrer">ZLG: Understanding fault-tolerant CAN in one article!</a></p>
+<p><a href="https://en.wikipedia.org/wiki/On-board_diagnostics"target="_blank" rel="noopener noreferrer">Wiki: On-board diagnostics</a></p>
+<p><a href="http://opengarages.org/handbook/ebook/"target="_blank" rel="noopener noreferrer">THE CAR HACKER’S HANDBOOK</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Unified_Diagnostic_Services"target="_blank" rel="noopener noreferrer">Wiki: Unified Diagnostic Services</a></p>
+<p><a href="https://automotive.softing.com/fileadmin/sof-files/pdf/de/ae/poster/UDS_Faltposter_softing2016.pdf"target="_blank" rel="noopener noreferrer">UDS - ISO 14229 Info - Softing Automotive</a></p>
+<p><a href="https://www.iso.org/search/x/query/ISO%252011898"target="_blank" rel="noopener noreferrer">ISO 11898</a></p>
+<p><a href="https://www.iso.org/search/x/query/ISO%252014229"target="_blank" rel="noopener noreferrer">ISO 14229</a></p>
+<p><a href="https://www.iso.org/search/x/query/ISO%252015031"target="_blank" rel="noopener noreferrer">ISO 15031</a></p>
+<p><a href="https://www.iso.org/search/x/query/ISO%252015765"target="_blank" rel="noopener noreferrer">ISO 15765</a></p>
+<p><a href="http://standards.sae.org/j1962_201207/"target="_blank" rel="noopener noreferrer">SAE J1962</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/automotive-security/>Automotive Security</a><a class="tag" href=/en/tags/connected-car-security/>connected car security</a><a class="tag" href=/en/tags/carhacking/>carhacking</a><a class="tag" href=/en/tags/can-bus/>CAN bus</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/4g-modem-attack-scenarios-in-vehicle-networking/"><span class="iconfont icon-article"></span>A Brief Look at 4G Modem Attack Scenarios in Vehicle Networking</a></p><p><a class="link" href="/en/posts/firmware-extraction-series-read-flash-with-flashrom/"><span class="iconfont icon-article"></span>Firmware Extraction Series: Reading Flash with flashrom</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

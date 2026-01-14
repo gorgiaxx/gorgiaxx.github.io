@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+本文记录了还原车机内NAND Flash文件系统的过程。"><title>固件提取系列 - RawNAND文件恢复&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="固件提取系列 - RawNAND文件恢复" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">固件提取系列 - RawNAND文件恢复</h1><p class="article date">Sunday, March 10, 2019<span class="langs"><span class="lang">
+                    <a href="/en/posts/firmware-extraction-series-rawnand-file-recovery/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>本文记录了还原车机内NAND Flash文件系统的过程。</p>
+<h2 id="恢复过程">恢复过程</h2>
+<p>车机中高通CPU使用MXIC B162711 NAND Flash存储芯片，一般很少直接用NAND Flash的，除非像高通这样对自己的主控特别自信。
+在进行硬件分析时，发现此芯片并未采取防拆措施，故将其放在焊接台，进行拆解。</p>
+<p><img loading="lazy"  src="./tearoff.png"
+        alt="tearoff"/></p>
+<p>其芯片信息如下，是一块512MB的SLC NAND</p>
+<p><img loading="lazy"  src="./features.png"
+        alt="features"/></p>
+<p>芯片采用BGA63封装，其引脚定义如下</p>
+<p><img loading="lazy"  src="./bga63.png"
+        alt="bga63"/></p>
+<p>以下为提取过程，使用的是Proman编程器</p>
+<p><img loading="lazy"  src="./socket.png"
+        alt="socket"/></p>
+<p><img loading="lazy"  src="./reading.png"
+        alt="reading"/></p>
+<p>随后我对此芯片的固件进行了多次的读取，并相互比对，保留出现次数多的字节，尽量减小翻转位的影响，保证固件的正确性。</p>
+<p><img loading="lazy"  src="./bytes_diff.png"
+        alt="bytes_diff"/></p>
+<p>车机使用高通CSR3703 SoC方案。</p>
+<p><img loading="lazy"  src="./CSR3703.png"
+        alt="CSR3703"/></p>
+<p>互联网上并未公开该芯片的数据手册，尝试了_________，无法获取数据手册，他们对数据手册非常保密。</p>
+<p>手动拆解芯片，也无法从BGA排列判断芯片类型。</p>
+<p><img loading="lazy"  src="./CSR3703pin.png"
+        alt="CSR3703pin"/></p>
+<p>通过盲测，确定了SoC内存映射表在NAND主控中，因此固件转储文件的逻辑块顺序无法确定。</p>
+<p><img loading="lazy"  src="./soc_block_diagram.png"
+        alt="soc_block_diagram"/></p>
+<p>因此只能对提取的固件盲测，通过分析NAND Dump的二进制数据，暂时把系统底层部分文件提取出来，包括U-Boot。</p>
+<p><img loading="lazy"  src="./binwalk.png"
+        alt="binwalk"/></p>
+<p>可以对U-Boot逆向分析，但是重要信息在系统分区内。</p>
+<p>CSR Visor 128KB</p>
+<p><img loading="lazy"  src="./dts1.png"
+        alt="dts1"/></p>
+<p>Device Tree，显示控制台为ttySiRF1，波特率115200</p>
+<p><img loading="lazy"  src="./dts2.png"
+        alt="dts2"/></p>
+<p>NAND主控配置信息。</p>
+<p><img loading="lazy"  src="./dts3.png"
+        alt="dts3"/></p>
+<p>由于上一台车机的NAND转储文件擦除块过于随机，因此从另一台车机拆解了NAND Flash读取</p>
+<p><img loading="lazy"  src="./reball1.png"
+        alt="reball1"/>
+<img loading="lazy"  src="./reball2.png"
+        alt="reball2"/></p>
+<p>为了继续使用车机，对芯片重植球，使用光学焊台进行对位修复。</p>
+<p><img loading="lazy"  src="./reball3.png"
+        alt="reball3"/></p>
+<p>查阅了一些资料，WL模式可能是混合模式，参考了现有公开的FTL代码，并没有找到能匹配的映射逻辑，猜测FTL Table可能存放在NAND Controller的ROM内。</p>
+<p><img loading="lazy"  src="./compact_flash_system.png"
+        alt="compact_flash_system"/></p>
+<p>通过分析U-Boot，确定使用了专有的NANDDisk驱动，使用IOCtl来读写NAND，映射算法不在此处。</p>
+<p><img loading="lazy"  src="./nand_driver.png"
+        alt="nand_driver"/></p>
+<p>因此只能得到碎片化的文件，而非文件系统。为了测试映射表是否真的存放在SoC内，我将两台相同的车机的NAND Flash进行替换实验，控制变量，并进行多次植球拆焊，使用其他车机的NAND Flash没有一次能启动。最后，我将自带的NAND Flash植球分别装回原先的车机，能成功启动，证明了SoC内存在映射。</p>
+<p><img loading="lazy"  src="./reball_again.png"
+        alt="reball_again"/></p>
+<p>经过多次对比，将完整性高于50%的RAMdisk提取出来，可以成功读取到前半部分的数据。</p>
+<p><img loading="lazy"  src="./binalk_again.png"
+        alt="binalk_again"/></p>
+<p><img loading="lazy"  src="./hex_workshop.png"
+        alt="hex_workshop"/></p>
+<p>但是可以确定使用了Linux EXT文件系统，根据MBR信息有三个分区</p>
+<p><img loading="lazy"  src="./010editor.png"
+        alt="010editor"/></p>
+<p>Parititon1: 30MB</p>
+<p>Partition2: 400MB</p>
+<p>Partition3: 61.75MB</p>
+<p>其他文件只是一些资源文件和碎片化的ELF文件，因为ELF碎片化，无法正常逆向分析。</p>
+<p><img loading="lazy"  src="./files_1.png"
+        alt="files_1"/></p>
+<p>于是我手动尝试寻找擦除块顺序逻辑，将每个擦除块分离出来，分析每个块的特征，由于最前面一部分的OOB区域和后面不一样，影响了我当时的判断，只找出了页的顺序，所以只能还原出体积较小的zImage和Ramdisk，整体逻辑无法猜解。</p>
+<p><img loading="lazy"  src="./files_2.png"
+        alt="files_2"/></p>
+<p>在NAND转储文件中也没找到Map Table，因此无法在短时间内获取文件，需要分析清楚块的规律，才能得到映射逻辑。</p>
+<p>我把最后另一台车机的NAND Flash拆下并进行了读取。</p>
+<p>发现两个车机系统版本不一致，无法继续分析。</p>
+<p>XXXXX_IHU_LOW_A7_LINUX_18.0F40</p>
+<p>XXXXX_IHU_LOW_A7_LINUX_18.0F43</p>
+<p>Kernel和ramdisk的编译时间页不一致，因此没有办法通过盲测来猜解映射算法</p>
+<p><img loading="lazy"  src="./modification_time.png"
+        alt="modification_time"/>
+<img loading="lazy"  src="./modification_time2.png"
+        alt="modification_time2"/></p>
+<p>因为使用了混合映射，通过USB HID GetShell的方式获取了相同版本的固件进行分析，得到了映射算法。</p>
+<p><img loading="lazy"  src="./struct.png"
+        alt="struct"/></p>
+<p>这是修复NAND dump的脚本，我也忘了当时写了些啥东西</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">binascii</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">struct</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Usage: fuckftl.py ftl.bin raw.bin&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">bin2hex</span><span class="p">(</span><span class="nb">bin</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">binascii</span><span class="o">.</span><span class="n">b2a_hex</span><span class="p">(</span><span class="nb">bin</span><span class="p">),</span> <span class="s2">&#34;utf-8&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">hex2int</span><span class="p">(</span><span class="nb">hex</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s1">&#39;0x&#39;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_hex_tens_place</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">num</span> <span class="o">/</span> <span class="mh">0x10</span><span class="p">)</span> <span class="o">%</span> <span class="mh">0x10</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0x10</span> <span class="o">+</span> <span class="nb">int</span><span class="p">((</span><span class="n">num</span> <span class="o">/</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mh">0x10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_le_int16</span><span class="p">(</span><span class="n">be</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&#34;&lt;H&#34;</span><span class="p">,</span> <span class="n">be</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">proman_file_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">raw_file_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nanddisk_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">readable_block_addr</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&#34;sp_.bin&#34;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">sp</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">proman_file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">proman_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">promanbin</span> <span class="o">=</span> <span class="n">proman_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">proman_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">raw_file_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">raw_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">promanbin</span><span class="p">),</span> <span class="mh">0x840</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">pbuffer</span> <span class="o">=</span> <span class="n">promanbin</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="mh">0x840</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">page_a</span> <span class="o">=</span> <span class="n">pbuffer</span><span class="p">[:</span><span class="mh">0x400</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">page_b</span> <span class="o">=</span> <span class="n">pbuffer</span><span class="p">[</span><span class="mh">0x415</span><span class="p">:</span><span class="mh">0x800</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">page_c</span> <span class="o">=</span> <span class="n">pbuffer</span><span class="p">[</span><span class="mh">0x816</span><span class="p">:</span><span class="mh">0x82B</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                    <span class="n">sparea_b</span> <span class="o">=</span> <span class="n">pbuffer</span><span class="p">[</span><span class="mh">0x800</span><span class="p">:</span><span class="mh">0x816</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="n">sparea_b</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xFF\x42\x00\x00</span><span class="s1">&#39;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xFF\x41\xFF\xFF</span><span class="s1">&#39;</span> <span class="ow">and</span> <span class="n">sparea_b</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00\x00</span><span class="s1">&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">x_addr</span> <span class="o">=</span> <span class="n">get_le_int16</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">if</span> <span class="n">x_addr</span> <span class="ow">in</span> <span class="n">readable_block_addr</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">cur_wl_version</span> <span class="o">=</span>  <span class="n">get_le_int16</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                            <span class="k">if</span> <span class="n">readable_block_addr</span><span class="p">[</span><span class="n">x_addr</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">cur_wl_version</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                                <span class="n">readable_block_addr</span><span class="p">[</span><span class="n">x_addr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mh">0x840</span> <span class="o">*</span> <span class="mh">0x800</span><span class="p">),</span> <span class="n">get_le_int16</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])]</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">readable_block_addr</span><span class="p">[</span><span class="n">x_addr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mh">0x840</span> <span class="o">*</span> <span class="mh">0x800</span><span class="p">),</span> <span class="n">get_le_int16</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                    <span class="n">pbuffer</span> <span class="o">=</span> <span class="n">page_a</span> <span class="o">+</span> <span class="n">page_b</span> <span class="o">+</span> <span class="n">page_c</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">raw_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pbuffer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">sp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">            <span class="n">raw_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">readable_block_addr_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">readable_block_addr</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">raw_file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">raw_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rawbin</span> <span class="o">=</span> <span class="n">raw_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">raw_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cur_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nanddisk_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">nand_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">readable_block_addr_sorted</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">k</span><span class="o">&lt;</span><span class="mh">0xfff</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;fix block </span><span class="si">{:x}</span><span class="s2">, off </span><span class="si">{:x}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># print(hex(k))</span>
+</span></span><span class="line"><span class="cl">                <span class="n">skip</span> <span class="o">=</span> <span class="n">k</span><span class="o">-</span><span class="n">cur_index</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="n">skip</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">nand_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">rawbin</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mh">0x20000</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="n">cur_index</span> <span class="o">=</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">skip</span>
+</span></span><span class="line"><span class="cl">        <span class="n">nand_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span></code></pre></div><p>最终还原出固件，由于NAND位翻转特性，还需要使用Hanming ECC修复错误。另外因为该系统重启过多次，部分内容不一致，所以下图显示存在大量差异。</p>
+<p><img loading="lazy"  src="./fixed_diff.png"
+        alt="fixed_diff"/></p>
+<p>文件大小与类型都没有错误</p>
+<p><img loading="lazy"  src="./fdisk.png"
+        alt="fdisk"/></p>
+<p>还原出固件的大小与实际运行中的系统显示的496.6MiB匹配</p>
+<p><img loading="lazy"  src="./nand_info.png"
+        alt="nand_info"/></p>
+<p>打开其中的第二个分区，可以看到正常显示目录</p>
+<p><img loading="lazy"  src="./fixed.png"
+        alt="fixed"/></p>
+<p>但是由于位翻转，我估计肯定有一些文件是损坏的，因为时间限制，没有继续研究下去。</p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97/>固件提取系列</a><a class="tag" href=/zh/tags/nand/>NAND</a><a class="tag" href=/zh/tags/ftl/>FTL</a><a class="tag" href=/zh/tags/oob/>OOB</a><a class="tag" href=/zh/tags/flash/>Flash</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/firmware-extraction-series-sata-hdd-unlock/"><span class="iconfont icon-article"></span>固件提取系列 - SATA硬盘解锁</a></p><p><a class="link" href="/zh/posts/visteon-firmware-repacking/"><span class="iconfont icon-article"></span>Visteon固件重打包</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

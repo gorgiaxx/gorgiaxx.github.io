@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Embedded Architecture Analysis
+IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely weird—probably because the code quality is terrible."><title>IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and Static Analysis of TSGROM Files&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and Static Analysis of TSGROM Files" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and Static Analysis of TSGROM Files</h1><p class="article date">Monday, September 8, 2025<span class="langs"><span class="lang">
+                    <a href="/zh/posts/igs-arcade-re-4/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h1 id="embedded-architecture-analysis">Embedded Architecture Analysis</h1>
+<p>IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely weird—probably because the code quality is terrible.</p>
+<p>IGS E2000 is essentially a combination of <strong>PC + game baseboard</strong> (designed by Advantech). It has to consider both <strong>Anti-Copy</strong> and software-engineering reuse. The ASIC is basically a completely black-box compute module: putting the game’s key logic inside it both improves performance and makes cracking harder.</p>
+<p><img loading="lazy"  src="diagram.png"
+        alt="diagram"/></p>
+<h2 id="main-program-flow-analysis">Main Program Flow Analysis</h2>
+<p>The game’s main program allocates a stack frame of <code>0x200034</code>, where the buffer alone takes <code>0x200000</code>. And after allocating this stack, it never restores it. This causes IDA Pro to fail to decompile—no idea if this is intentional.</p>
+<p><img loading="lazy"  src="main.png"
+        alt="main"/></p>
+<p>The workaround is to patch the buffer size, shrink the function stack frame, undefine the function, and then re-identify it; then it can be decompiled successfully.</p>
+<p><img loading="lazy"  src="edit_func.png"
+        alt="edit_func"/></p>
+<ol>
+<li>During <code>mount_root</code> in the kernel and when the game starts, it verifies BIOS version info. The developer claimed it was “getting a CRC result”, but I searched everywhere CRC appears and couldn’t find any CRC computation logic related to anti-piracy at all.</li>
+<li>If BIOS validation fails, it then checks PCI driver information. If that fails, it seems to do nothing—but many identical validation stubs are inserted elsewhere, and failure there will block execution.</li>
+<li>System initialization: display, audio, graphics, text, language, ASIC, timer, PLXPCI, game, music, controllers, camera, bookkeeping, control, coin, mixer, etc.</li>
+<li>Refresh the ASIC 4 times, why???</li>
+<li>Load the base action file (TSGROM format); each load refreshes the ASIC once.</li>
+<li>Game version validation, show the first screen, load fonts, load sounds.</li>
+<li>Load the card reader.</li>
+<li>Game loop: 4 states (Game, Test, Setting, Demo), controllable via the ASIC.</li>
+</ol>
+<p><img loading="lazy"  src="main_loop.png"
+        alt="main_loop"/></p>
+<p>The game was developed with SDL 1.2.7. SDL (Simple DirectMedia Layer) is a cross-platform multimedia development library, mainly providing low-level access to audio, input devices (keyboard/mouse/gamepad), and graphics hardware. However, its performance is relatively low and is only suitable for 2D games. Percussion Master 2008 is a 2D game. Speed Driver 2 is a 3D game, so the difference between the two may be significant.</p>
+<p>At every place in the main program where it interacts with the ASIC, the developer inserted a stub; I’ll temporarily call it <code>RealTimeEvent</code>. It should be a unified event handler: every logic change and animation change requires refreshing events. It’s used to implement various complex control functions and also bundles some anti-piracy behavior. Honestly, the code quality is awful—each call does a lot of computation, performance is poor, and it feels like building a SPA in pure JS + HTML.</p>
+<p>Logic of the state-check stub:</p>
+<ol>
+<li>Update clock</li>
+<li>Timer check</li>
+<li>Action handling</li>
+<li>Music handling</li>
+<li>Audio handling</li>
+<li>Key status and control input</li>
+<li>Bookkeeping</li>
+<li>Coin handling</li>
+<li>PLX PCI status handling</li>
+<li>SDL event handling</li>
+<li>Draw dynamic pentagon animation</li>
+<li>PCI control write</li>
+<li>ASIC 27 command write</li>
+<li>PCI data read</li>
+<li>Graphics refresh</li>
+</ol>
+<h3 id="region-initialization">Region Initialization</h3>
+<p>Percussion Master 2008 supports 7 regions and 3 languages: Simplified Chinese, Traditional Chinese, and English.</p>
+<p><img loading="lazy"  src="location_table.png"
+        alt="location_table"/></p>
+<h2 id="roio-bios-info-verification">ROIO BIOS Info Verification</h2>
+<p>The kernel runs a driver <code>/dev/roio</code>. The game compares it against a built-in version info table to perform validation. Both the kernel and the game embed tables. The likely workflow is that the developer parsed BIOS information using some tooling and then hard-coded physical offsets into both the game and the kernel.</p>
+<p><img loading="lazy"  src="bios_table.png"
+        alt="bios_table"/></p>
+<p>The BIOS info table structure differs slightly between kernel and main program. The kernel uses 4-byte alignment, but the underlying idea is the same.</p>
+<p>Game BIOS table:</p>
+<pre tabindex="0"><code>struct bios_item {
+    unsigned int index;  // index
+    unsigned char table_cmp_max_count;
+    unsigned int value_addr; // base addr 0xC0000000
+    unsigned char char_cmp_max_count;
+    unsigned int name_addr;
+}
+</code></pre><p>Kernel BIOS table:</p>
+<pre tabindex="0"><code>struct bios_item {
+    unsigned int index;  // index
+    unsigned int table_cmp_max_count;
+    unsigned int value_addr; // base addr 0xC0000000
+    unsigned int char_cmp_max_count;
+    unsigned int name_addr;
+}
+</code></pre><p>The comparison logic is also very simple:</p>
+<p>Step 1: iterate the program’s built-in BIOS table to get the version string address, the target string physical address, iteration counts, etc.<br>
+Step 2: perform an IOCTL call to <code>/dev/roio</code> to compare the specified offset within System ROM against the program’s built-in string. If <strong>any single character</strong> matches, it passes. That’s unbelievably dumb.</p>
+<p>This kernel only allows running on 4 motherboard variants, but the game allows running on more devices, so it needs to validate whether the main program, kernel, and motherboard match. This is an anti-piracy mechanism—just patch it out.</p>
+<p>After statistics, the addresses and version strings are as follows; all addresses start from <code>0x0f0000</code>.</p>
+<pre tabindex="0"><code># Kernel + Game
+0x0F086E   i852-W83627HF
+0x0FEC7C   i852-W83627HF
+0x0FEC8A   6A69YILTC-00
+0x0FECDE   Ph6A69YILT
+
+# Game
+0x0FE0C1   L4S5MG3
+0x0FEC84   6A6IXE19C-00
+0x0FECDF   I6A6IXE19
+0x0FE0C1   L4S5MG/651+
+0x0F006D   nVidia-nForce
+0x0FECDE   Ph6A61BPA9
+0x0FEC8A   6A61B_00C-00
+0x0FECDE   Ph6A61B_00
+</code></pre><p>Next is the ROIO driver. Most of its code has hidden anti-copy stubs and uses XOR. The performance impact is minimal, and it prevents copying game A’s program into game B’s system.</p>
+<ul>
+<li>Input mask: <code>0x1FB8408E</code></li>
+<li>Return mask: <code>0xC2E83AB8</code></li>
+</ul>
+<p><img loading="lazy"  src="roio_0xfc.png"
+        alt="ioctl_0xfc"/></p>
+<p>ROIO has three magic numbers:</p>
+<ul>
+<li><code>0xfc</code>: read 32-bit value at target address, little-endian</li>
+<li><code>0xfd</code>: read 32-bit value at target address, big-endian</li>
+<li><code>0xfe</code>: read 8-bit value at target address</li>
+</ul>
+<p>Finally, XOR with <code>0xC2E83AB8</code>.</p>
+<p><img loading="lazy"  src="roio_ioctl_dispatcher.png"
+        alt="roio_ioctl_dispatcher"/></p>
+<p>Here <code>data</code> is used as an offset. The base is <code>0xc0000000</code>, and it adds the BIOS info value because x86 uses paging, so CPU memory access goes through virtual addresses. Linux i386 virtual address offset definitions are:</p>
+<pre tabindex="0"><code>#define __PAGE_OFFSET (0xC0000000)
+#define __pa(x)			((unsigned long) (x) - PAGE_OFFSET)
+#define __va(x)			((void *)((unsigned long) (x) + PAGE_OFFSET))
+</code></pre><p>From IOMEM mapping, you can also see the BIOS info address is located in System ROM:</p>
+<pre tabindex="0"><code># cat /proc/iomem
+00000000-0009fbff : System RAM
+0009fc00-0009ffff : reserved
+000a0000-000bffff : Video RAM area
+000c0000-000c7fff : Video ROM
+000f0000-000fffff : System ROM
+00100000-1feeffff : System RAM
+  00100000-0050aab5 : Kernel code
+  0050aab6-006f8f27 : Kernel data
+1fef0000-1fefffff : reserved
+1ff00000-1ff003ff : Intel Corp. 82801DB Ultra ATA Storage Controller
+d0000000-dfffffff : PCI Bus #01
+  d0000000-dfffffff : PCI device 10de:0221 (nVidia Corporation)
+e0000000-e7ffffff : Intel Corp. 82852/855GM Host Bridge
+e8000000-eaffffff : PCI Bus #01
+  e8000000-e8ffffff : PCI device 10de:0221 (nVidia Corporation)
+    e8000000-e8ffffff : nvidia
+  e9000000-e9ffffff : PCI device 10de:0221 (nVidia Corporation)
+eb000000-eb01ffff : PLX Technology, Inc. PCI &lt;-&gt; IOBus Bridge Hot Swap
+eb020000-eb02007f : PLX Technology, Inc. PCI &lt;-&gt; IOBus Bridge Hot Swap
+eb021000-eb0213ff : PLX Technology, Inc. PCI &lt;-&gt; IOBus Bridge Hot Swap
+eb022000-eb022fff : Intel Corp. 82801BD PRO/100 VE (CNR) Ethernet Controller
+  eb022000-eb022fff : e100
+eb100000-eb1003ff : Intel Corp. 82801DB USB2
+  eb100000-eb1003ff : ehci_hcd
+eb101000-eb1011ff : Intel Corp. 82801DB AC&#39;97 Audio Controller
+  eb101000-eb1011ff : Intel 82801DB-ICH4
+eb102000-eb1020ff : Intel Corp. 82801DB AC&#39;97 Audio Controller
+  eb102000-eb1020ff : Intel 82801DB-ICH4
+fec00000-ffffffff : reserved
+</code></pre><p>The BIOS chip package is PLCC 32, and it was successfully dumped with RT809H.</p>
+<p><img loading="lazy"  src="PLCC32_BIOS.jpg"
+        alt="PLCC32_BIOS"/></p>
+<p>After the system boots, some BIOS ROM data is parsed into memory—not a 1:1 copy—with an offset address of <code>0xF0000</code>.</p>
+<p><img loading="lazy"  src="bios_version.png"
+        alt="bios_version"/></p>
+<h2 id="pccard-random-value-check">PCCard Random Value Check</h2>
+<p>I truly don’t understand what the purpose of this code is. There’s a “SPY” keyword in the driver code; maybe it’s a hidden stub intended for anti-sniffing? It’s triggered when launching the program, initializing the game, and printing logs. If the BIOS check above fails, this check is also triggered. It requests <code>/dev/pccard0</code> via ioctl—either to obtain the result or to not obtain it.</p>
+<p><img loading="lazy"  src="pccard_random_value_check1.png"
+        alt="pccard_random_value_check1"/></p>
+<p>Request 0 list, used for comparing results. The list has 4 members corresponding to related offsets. It randomly selects one of the four, attaches a random number in the range <code>[17, 768]</code>, computes locally, sends it to the driver to “execute”, and receives it back. In fact, PCI doesn’t truly participate.</p>
+<pre tabindex="0"><code>0x64 基址：0xC8000000 设置 SPY_FLAG spy_fixec_func
+0x6e 基址：0xD0000000 设置 SPY_FLAG spy_quit_func
+0x96 基址：0xA8000000 设置 SPY_FLAG
+0xa0 基址：0xB0000000 设置 SPY_FLAG
+</code></pre><p>Request 1 list, length 17:</p>
+<pre tabindex="0"><code>0xfe,0xc8,0xfd,0xa0,0x96,0x6e,0x64,0xdd,0xde,0xdf,0xe0,0xe1,0xe2,0xe3,0xe4,0xe5,0xe6
+</code></pre><p>It checks whether a value in <code>[1, 255]</code> hits an entry in the list. It tries 5–30 times. If it hits, it decrements the attempt count by 1 and tries again. If it doesn’t hit, it requests via ioctl the offset corresponding to the random value (parameter <code>[17, 768]</code>), and the “magic number” is the matched value. My guess is it might be used to initialize the driver, but I can’t think of any other purpose. Why make it so complicated?</p>
+<p><img loading="lazy"  src="pccard_random_value_check.png"
+        alt="pccard_random_value_check"/></p>
+<p>In some place in the game main program, I found leftover code. The XOR constant is <code>0xD4AA268A</code>. In Percussion Master 2008 I didn’t find any trigger logic; it should be a hidden stub for another game. This makes it more certain that this functionality is for anti-piracy (even though the design is awful).</p>
+<p><img loading="lazy"  src="pccard_random_value_check2.png"
+        alt="pccard_random_value_check2"/></p>
+<h2 id="asic-27-protocol">ASIC 27 Protocol</h2>
+<h3 id="a27-initialization">A27 Initialization</h3>
+<p>Communication between the game main program and the I/O board goes through the PLX PCI 9030 chip and exchanges data via shared memory.</p>
+<p>After game startup and before ASIC 27 initialization, it loads the PCI 9030 driver and allocates a buffer specifically used to store the ASIC buffer, containing various state data. The developer calls it CommandPort.</p>
+<p><img loading="lazy"  src="pci9030_init.png"
+        alt="pci9030_init"/></p>
+<p>Next is initializing ASIC 27. It first updates a checksum: it accumulates values such as key sensitivity, key input, light status, system mode, and buffer size located in the buffer, then stores the checksum in two locations in the buffer. Every subsequent ASIC 27 request recalculates the checksum.</p>
+<p>It first writes <code>0x2024</code> bytes to ASIC 27 with command <code>0xfe</code>, i.e., directly copying the buffer data into shared memory. After ASIC processing, the shared memory is refreshed, and it will change <code>sm</code> from <code>0x1c</code> to other values to indicate processing completion.</p>
+<p>ASIC will synchronize the game configuration to the OS for updating game settings. It updates the following files:</p>
+<pre tabindex="0"><code>./pm2_data/storename.dat
+./pm2_data/soundset.bin
+./pm2_data/gameset.bin
+</code></pre><p>Then it sets <code>sm</code> to <code>0</code>, updates the checksum once more, and sends it to A27.</p>
+<h3 id="system-mode">System Mode</h3>
+<p>From analysis, the modes are:</p>
+<ul>
+<li><code>0x0</code>: default mode</li>
+<li><code>0x1</code>: ASIC test data read</li>
+<li><code>0x2</code>: key test</li>
+<li><code>0x3</code>: buzzer test</li>
+<li><code>0x4</code>: light board test</li>
+<li><code>0x5</code>: coin test</li>
+<li><code>0x6</code>: trackball test</li>
+<li><code>0x7</code>: SelMode, IGS Logo</li>
+<li><code>0x8</code>: Teammark</li>
+<li><code>0xc</code>: Coin Page</li>
+<li><code>0xf</code>: option</li>
+<li><code>0x14</code>: Photo</li>
+<li><code>0x10</code>: Song Play</li>
+<li><code>0x1a</code>: CCD</li>
+<li><code>0x1d</code>: adjust volume</li>
+</ul>
+<h3 id="a27-system-mode-write-state-machine">A27 System Mode Write State Machine</h3>
+<p>Pre-processing before sending data to ASIC. When <code>sm</code> is one of the following values, there is no processing logic and it returns 1:</p>
+<pre tabindex="0"><code>0x0,0x2,0x3,0x6,0x9,0xa,0xb,0x11,0x12,0x15,0x16,0x17,0x18,0x19,0x1b,0x1c,0x1e
+</code></pre><ul>
+<li><code>0x1</code>: test data write</li>
+<li><code>0x4</code>: light test</li>
+<li><code>0x5</code>: coin test</li>
+<li><code>0x7</code>: SelMode</li>
+<li><code>0x8</code>: Teammark</li>
+<li><code>0xc</code>: code removed</li>
+<li><code>0xe</code>: code removed</li>
+<li><code>0xf</code>: code removed</li>
+<li><code>0x10</code>: Song</li>
+<li><code>0x13</code>: code removed</li>
+<li><code>0x14</code>: code removed</li>
+<li><code>0x1a</code>: camera test</li>
+<li><code>0x1d</code>: adjust volume</li>
+</ul>
+<p>Other values trigger an assert.</p>
+<h3 id="a27-system-mode-analysis-state-machine">A27 System Mode Analysis State Machine</h3>
+<p>Data returned by ASIC is handled by the game main program. When <code>sm</code> is one of the following values, there is no processing logic and it returns 1:</p>
+<pre tabindex="0"><code>0x0,0x6,0x9,0xa,0xa,0xb,0x11,0x12,0x15,0x16,0x17,0x18,0x19,0x1b,0x1c,0x1d,0x1e
+</code></pre><p>System Mode handling:</p>
+<ul>
+<li><code>0x1</code>: ASIC test data read</li>
+<li><code>0x2</code>: enter key test</li>
+<li><code>0x3</code>: enter buzzer test</li>
+<li><code>0x4</code>: enter light board test</li>
+<li><code>0x5</code>: coin test</li>
+<li><code>0x7</code>: load IGS LOGO</li>
+<li><code>0x8</code>: load Teammark data</li>
+<li><code>0xC</code>: code removed</li>
+<li><code>0xE</code>: code removed</li>
+<li><code>0xF</code>: code removed</li>
+<li><code>0x10</code>: Song</li>
+<li><code>0x13</code>: code removed</li>
+<li><code>0x14</code>: code removed</li>
+<li><code>0x1a</code>: CCD info</li>
+</ul>
+<p>Other values trigger an assert.</p>
+<h3 id="key-state-machine">Key State Machine</h3>
+<pre tabindex="0"><code>                press
+        ┌──────────────────────┐
+        │                      │
+   ┌────▼─────┐  release    ┌──┴─────┐
+   │   Idle   │────────────►│Released│
+   │   (0)    │             │   (3)  │
+   └────▲─────┘             └──▲─────┘
+        │                      │
+        │ press                │ release
+        │                      │
+   ┌────┴─────┐ long press  ┌──┴─────┐
+   │ Pressed  │────────────►│Holding │
+   │   (1)    │             │  (2)   │ keep holding, counter++
+   └──────────┘             └────────┘
+</code></pre><h3 id="buffer-struct-analysis">Buffer Struct Analysis</h3>
+<p>The maximum length of the buffer is 8192.</p>
+<p>The response header format:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">g_rBufferRead</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span>    <span class="n">_dwBufferSize</span><span class="p">;</span> <span class="c1">// 数据大小
+</span></span></span><span class="line"><span class="cl">  <span class="kt">int</span>    <span class="n">system_mode</span><span class="p">;</span>   <span class="c1">// 系统模式
+</span></span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">coin_inserted</span><span class="p">;</span> <span class="c1">// 投币了
+</span></span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">a27_error_flag</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">short</span>  <span class="n">error_number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span>    <span class="n">key_io_list</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">int8</span>   <span class="n">key_channels</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">pc0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">pc1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">int16</span>  <span class="n">area_code</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">int16</span>  <span class="n">padding_1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">in_rom_version_name</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">ext_rom_version_name</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">int16</span>  <span class="n">inet_password_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">int16</span>  <span class="n">a27_has_message</span><span class="p">;</span> <span class="c1">// 决定 a27_message 是否携带数据
+</span></span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">is_light_io_reset</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">pci_card_version</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">bCheckSum1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">bCheckSum2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">a27_message</span><span class="p">[</span><span class="mi">40</span><span class="p">];</span> 
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">asic27_buffer</span><span class="p">[</span><span class="n">unknown</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>The request header format:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">g_rBufferWrite</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span>    <span class="n">_dwBufferSize</span><span class="p">;</span> <span class="c1">// 数据大小
+</span></span></span><span class="line"><span class="cl">  <span class="kt">int</span>    <span class="n">system_mode</span><span class="p">;</span>   <span class="c1">// 系统模式
+</span></span></span><span class="line"><span class="cl">  <span class="kt">int</span>    <span class="n">key_input</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">int16</span>  <span class="n">trackball_data</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">bCheckSum1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">bCheckSum2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">lightdisable</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">key_sensitivity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span>    <span class="n">lightstate</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span>    <span class="n">lightpattern</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">data</span><span class="p">[</span><span class="n">unknown</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="a27-response-checksum">A27 Response Checksum</h3>
+<p>ASIC 27 responses also carry a checksum, which the main program verifies. It is computed by summing the following fields:</p>
+<p><code>a27_has_message + inet_password_data + rd_is_light_io_reset + error_number + asic27_error + coin_inserted + system_mode[0] + buffer_size</code></p>
+<h3 id="buffer-obfuscation-analysis">Buffer Obfuscation Analysis</h3>
+<p>Compared to the older version, Percussion Master 2008 added a simple obfuscation layer. The goal is anti-piracy: to avoid running a copied ROM directly. When copying from the buffer into the ASIC 27 buffer, the data is obfuscated.</p>
+<p>The obfuscation is triggered only when System Mode matches the following values. Coincidentally, the data for these modes is not pre-processed by the Write state machine.</p>
+<ul>
+<li><code>0x7</code>: SelMode, IGS Logo</li>
+<li><code>0x8</code>: Teammark</li>
+<li><code>0xc</code>: Coin Page</li>
+<li><code>0xd</code>:</li>
+<li><code>0xe</code>:</li>
+<li><code>0xf</code>: Option</li>
+<li><code>0x13</code>:</li>
+<li><code>0x14</code>: Photo</li>
+<li><code>0x15</code>:</li>
+</ul>
+<p>During obfuscation, the program copies <code>asic27_buffer</code> data into <code>dest</code>. Using <code>dest</code> as the source, it processes in blocks. Each block is <code>0x500 = 1280</code> bytes. It takes a block, computes a perturbation value based on the first 4 bytes (block header) plus <code>mask_table</code>, and then performs a cyclic reordering of the block data according to that value, finally writing back to the buffer.</p>
+<pre tabindex="0"><code>v3 = mask_table[v1[0]];
+v3 ^= mask_table[v1[1]];
+v3 ^= mask_table[v1[2]];
+v3 ^= mask_table[v1[3]];
+</code></pre><p>Use <code>v3</code> to compute an offset. If remaining data is less than <code>0x500</code>, use <code>v3 % (remaining_length-4) + 4</code>. Otherwise use a fixed <code>v3 % 0x4FC + 4</code>, ensuring the offset range is <code>[4, 0x4FF]</code>.</p>
+<p>It first copies <code>[v3, end]</code> into the destination, then copies <code>[4, v3)</code>. The result is a “rotated” block. The first 4 bytes (header) are not copied in order; instead, they are skipped and then reassembled.</p>
+<p>I asked an AI to write a Python implementation.</p>
+<pre tabindex="0"><code>import random
+
+# size: 0x400
+mask_table = [0x00, 0x00, 0x00, 0x00, 0x39, 0x4E, 0xC1, 0xE6, 0x02, 0x19, 0xB1, 0xB9, 0x63, 0xCB, 0xC7, 0x9E, 0xE4, 0xCD, 0x76, 0xE7, 0x23, 0x8D, 0xB3, 0x6B, 0x3F, 0xDA, 0x89, 0xF5, 0x4D, 0xCB, 0x56, 0xB5, 0xD3, 0xA9, 0xBC, 0x2E, 0xA0, 0xE0, 0x80, 0xD6, 0x92, 0x62, 0xDE, 0xC9, 0xFD, 0x24, 0x04, 0x06, 0x4B, 0x70, 0xB2, 0x21, 0x26, 0xD1, 0xB1, 0xAF, 0xA0, 0x29, 0x29, 0x9D, 0x0C, 0x5E, 0x59, 0x09, 0xA2, 0xC9, 0xF3, 0x67, 0x4F, 0xE6, 0xCD, 0x6E, 0xF3, 0x97, 0xF1, 0xF9, 0xD1, 0xE1, 0xCD, 0x26, 0x62, 0x0D, 0xF4, 0x7A, 0x72, 0x98, 0x3C, 0x9B, 0xE2, 0x43, 0xCE, 0x54, 0xF4, 0x44, 0xE9, 0xF5, 0x22, 0xC4, 0x3F, 0xD0, 0x38, 0x5F, 0x96, 0xAD, 0x05, 0xB7, 0x18, 0x47, 0xFE, 0x00, 0x14, 0xED, 0x5B, 0x75, 0x3B, 0xF2, 0x08, 0xA2, 0x44, 0x1E, 0xE5, 0x59, 0x68, 0x4A, 0x36, 0x9E, 0xF6, 0x87, 0x74, 0xAA, 0x70, 0x68, 0x6A, 0x1B, 0xED, 0x84, 0xE9, 0xB2, 0x35, 0xC5, 0x54, 0x83, 0xE8, 0x5B, 0x05, 0xD9, 0x77, 0x9A, 0xD6, 0x20, 0xD9, 0x48, 0xA9, 0x59, 0x18, 0x40, 0xB1, 0x5A, 0x81, 0xC1, 0x96, 0x7B, 0xC7, 0x1F, 0xD5, 0x5A, 0xB1, 0x01, 0x9E, 0xA8, 0x67, 0x52, 0xF4, 0x7A, 0x39, 0x51, 0x80, 0x18, 0xC9, 0x61, 0xEE, 0x01, 0xEC, 0x19, 0x2F, 0x25, 0xBC, 0x74, 0x85, 0x6A, 0x99, 0x92, 0x6A, 0x28, 0x13, 0xF6, 0x9A, 0xED, 0x02, 0x26, 0xF4, 0x69, 0x9F, 0x1E, 0xED, 0xC3, 0x18, 0x0E, 0xBD, 0x32, 0x1F, 0x47, 0x4F, 0x55, 0x8B, 0x91, 0x75, 0xEC, 0x66, 0xC8, 0x83, 0xED, 0x2E, 0x1B, 0x0F, 0xB0, 0x65, 0xEC, 0x87, 0xD3, 0xE0, 0xE2, 0x2B, 0x16, 0xCB, 0x0A, 0x0F, 0x70, 0x64, 0x52, 0xBA, 0x38, 0x6B, 0x5C, 0xEA, 0xFD, 0xA9, 0xB1, 0x8D, 0x8F, 0x26, 0x4B, 0xD9, 0xD3, 0x40, 0x4A, 0x66, 0x33, 0xBB, 0x01, 0xCE, 0x3C, 0x3C, 0x56, 0x14, 0xAE, 0xFD, 0x05, 0x7A, 0x8F, 0x4D, 0x4D, 0x79, 0x29, 0xCC, 0x81, 0xCD, 0x07, 0x43, 0x68, 0x57, 0x0C, 0xDA, 0xDE, 0x79, 0x1D, 0xE0, 0x01, 0x8D, 0x91, 0x17, 0x55, 0x4F, 0xF8, 0x25, 0x60, 0xCE, 0x11, 0x34, 0x3F, 0x3F, 0x03, 0xA3, 0xEF, 0xFA, 0xF5, 0x13, 0xE5, 0xEA, 0x75, 0x6A, 0xD7, 0xE1, 0x65, 0x94, 0x90, 0x42, 0xC9, 0x1D, 0x7F, 0x66, 0xDB, 0x68, 0xB8, 0x18, 0x18, 0x8B, 0x22, 0x49, 0x70, 0x71, 0x88, 0x2D, 0xD9, 0x96, 0x29, 0x4B, 0xAC, 0x7F, 0x58, 0x50, 0x57, 0x0F, 0xDC, 0x4D, 0xB9, 0x53, 0x81, 0x65, 0xD9, 0xB7, 0x85, 0x10, 0xF0, 0xCE, 0x4B, 0x2B, 0xAA, 0x7F, 0x7C, 0x75, 0xBA, 0xB2, 0x01, 0x64, 0x13, 0x07, 0x0A, 0x5E, 0x3F, 0xEF, 0xFA, 0x00, 0x8B, 0x31, 0x89, 0x6A, 0xE9, 0x17, 0x81, 0xC1, 0x4D, 0xEE, 0x31, 0x8C, 0xF0, 0x3A, 0xFD, 0x77, 0x90, 0xDF, 0x7C, 0x83, 0xDF, 0xF9, 0x99, 0xE4, 0xC0, 0xE5, 0x82, 0x22, 0xBD, 0x46, 0xBC, 0xF8, 0x23, 0xE1, 0xDD, 0x48, 0xF3, 0xE1, 0xB0, 0x66, 0x13, 0x93, 0x85, 0xB8, 0xEC, 0x9B, 0xCE, 0x0C, 0xEA, 0xDD, 0x14, 0x42, 0xDF, 0x45, 0x50, 0xAE, 0xC0, 0x60, 0xB2, 0xB7, 0x16, 0xB1, 0xAD, 0x2A, 0x2E, 0x1D, 0xC8, 0xE8, 0xE9, 0xAF, 0x0F, 0x44, 0x5D, 0xC5, 0x80, 0xA6, 0xB2, 0x01, 0xCF, 0xDB, 0x96, 0x49, 0x52, 0xC2, 0xBA, 0x97, 0x36, 0xB0, 0x33, 0x59, 0x88, 0x1D, 0x5A, 0x22, 0xAD, 0xA5, 0x9C, 0xD7, 0x5B, 0x59, 0xCA, 0x83, 0x7D, 0x7B, 0xFA, 0x84, 0x22, 0x65, 0x64, 0x7C, 0xDF, 0xF3, 0xA6, 0x41, 0x49, 0x14, 0x81, 0xED, 0x3B, 0x0C, 0x0A, 0xDF, 0xF6, 0x35, 0x79, 0x98, 0xDC, 0x6A, 0x5D, 0x0E, 0x94, 0x8B, 0x87, 0x5D, 0x0A, 0xEC, 0xFA, 0xC1, 0x6C, 0xE5, 0x01, 0xFD, 0x1E, 0x54, 0x29, 0xB7, 0xC6, 0x26, 0x33, 0x49, 0x60, 0x92, 0x44, 0xD2, 0x0C, 0x1E, 0x84, 0x03, 0x2B, 0x67, 0x82, 0xC3, 0x75, 0x7E, 0x2E, 0x2B, 0xC6, 0x96, 0x6E, 0x8A, 0x5D, 0x27, 0x7A, 0x62, 0x8C, 0xFE, 0x00, 0xCA, 0xFB, 0xFA, 0xD0, 0x9A, 0xB4, 0x60, 0xD1, 0x52, 0xC8, 0xB8, 0x7A, 0x83, 0xA9, 0xAE, 0x2A, 0x14, 0xFE, 0x33, 0xB1, 0x0F, 0xA2, 0x89, 0x25, 0xC1, 0xD5, 0x3A, 0xDE, 0xED, 0x09, 0xE1, 0x49, 0x4A, 0xD7, 0x9F, 0x49, 0xF1, 0x28, 0x88, 0xD1, 0x50, 0x2C, 0x24, 0x4C, 0x09, 0x36, 0x3F, 0x15, 0xD3, 0x1D, 0xA8, 0x1F, 0xE8, 0xAD, 0xC5, 0x5F, 0x95, 0x04, 0xFE, 0x2C, 0x6E, 0xB6, 0x0E, 0xF6, 0x47, 0x4A, 0xF6, 0xAC, 0x5C, 0xBA, 0xD9, 0x35, 0xEA, 0x27, 0x41, 0xF8, 0x84, 0xF2, 0xF8, 0x74, 0x2F, 0xE4, 0xEF, 0x69, 0xC6, 0xC7, 0x4B, 0xEC, 0xD7, 0xEB, 0x83, 0x47, 0xE3, 0x82, 0x74, 0x06, 0xD2, 0x64, 0x1D, 0xEB, 0xCD, 0x7C, 0x74, 0xFC, 0xF2, 0xC9, 0x3F, 0x90, 0x14, 0xDE, 0x1B, 0x25, 0xF8, 0x52, 0xE8, 0x9D, 0xB9, 0x11, 0x0A, 0xEC, 0xA5, 0x59, 0xEA, 0x5C, 0x7E, 0x7D, 0x33, 0x79, 0xEA, 0x26, 0xF6, 0x06, 0x23, 0x4D, 0x67, 0x26, 0x88, 0x12, 0xFE, 0x13, 0x9A, 0xE9, 0x66, 0x5A, 0x4F, 0x67, 0xB1, 0xBD, 0xA2, 0x89, 0x02, 0x40, 0x01, 0x7E, 0xF2, 0x4D, 0x0E, 0x98, 0x2C, 0x40, 0x8F, 0x8F, 0x90, 0x1B, 0x9F, 0x4D, 0x84, 0xB3, 0x9A, 0x03, 0x6E, 0x71, 0x24, 0x03, 0xFC, 0xD3, 0x23, 0x14, 0x3C, 0xA8, 0x90, 0x11, 0x54, 0x07, 0xDA, 0x3A, 0xDB, 0x19, 0x94, 0xC2, 0x6E, 0x7A, 0x92, 0x9F, 0x0C, 0x0C, 0x0F, 0x7D, 0xFA, 0xA4, 0x3A, 0x9B, 0xA0, 0xBB, 0xC4, 0x5C, 0xDA, 0xCE, 0x74, 0x78, 0x88, 0x8E, 0x83, 0xD8, 0xEE, 0x21, 0x31, 0x9E, 0x75, 0xC0, 0x2E, 0x2B, 0xE9, 0x17, 0x31, 0x46, 0x39, 0xD8, 0x85, 0xBC, 0xA9, 0xF8, 0x57, 0xCA, 0xA3, 0xE0, 0x59, 0xC5, 0xF2, 0x0D, 0x52, 0x73, 0x95, 0x40, 0x7C, 0xAF, 0xB2, 0xAF, 0x14, 0x99, 0xD1, 0x62, 0xCE, 0xB3, 0xAD, 0x17, 0x5E, 0x95, 0x26, 0x8F, 0xF0, 0x2A, 0x92, 0xBF, 0xF1, 0xA1, 0x77, 0xE0, 0xF4, 0x6D, 0x62, 0xCF, 0xCE, 0x15, 0x74, 0xFD, 0x7A, 0xA5, 0xD0, 0x90, 0x75, 0x4B, 0xFE, 0xE0, 0x63, 0x5A, 0xBA, 0x8B, 0x09, 0x8B, 0xE6, 0x12, 0x71, 0xB7, 0xD4, 0xD9, 0x29, 0x1E, 0xFD, 0xEB, 0x93, 0x14, 0x0D, 0xD4, 0xA7, 0x5F, 0x04, 0x85, 0x7D, 0xDA, 0x26, 0xE4, 0x63, 0x94, 0xEC, 0x49, 0x0D, 0x21, 0xF1, 0x42, 0x20, 0x18, 0x66, 0x9F, 0xF6, 0x64, 0x5F, 0x57, 0xCE, 0x33, 0x43, 0xB2, 0x38, 0xFA, 0xF0, 0x5C, 0x1D, 0x4F, 0x65, 0xE8, 0x85, 0x1E, 0xC6, 0x9B, 0xDF, 0x85, 0x9B, 0x9D, 0xAD, 0x17, 0x81, 0x7C, 0xD5, 0x5C, 0xA8, 0xF8, 0x81, 0x40, 0x13, 0x38, 0xF0, 0x00, 0x5B, 0x73, 0xD3, 0xF0, 0x2D, 0x38, 0x00, 0xD7, 0x87, 0x47, 0x82, 0x81, 0xAF, 0xA5, 0xC8, 0x2D, 0x0C, 0xCC, 0x52, 0x2C, 0x5A, 0x09, 0x07, 0x38, 0xAB, 0x4D, 0x01, 0x4B, 0x11, 0x8C, 0xAF, 0x63, 0x25, 0x00, 0x82, 0x25, 0xA2, 0x77, 0x71, 0x07, 0x7B, 0x71, 0x95, 0x14, 0xD1, 0x23, 0x3D, 0x6C, 0x4E, 0xD7, 0x0C, 0x61, 0x7D, 0xFA, 0xC6, 0xCB, 0x6F, 0x6C, 0x97, 0x65, 0x57, 0x23, 0xEB, 0x7E, 0xCF, 0x89, 0x37, 0x69, 0x52, 0x19, 0x7F, 0xED, 0x1F, 0x96, 0xAD, 0xC6, 0x3C, 0x04, 0x31, 0x42, 0x31, 0xCD, 0xBB, 0xB5, 0xD9, 0x5D, 0xF2, 0xE5, 0xF4, 0x77, 0x21, 0xAF, 0xE8, 0x3E, 0xA5, 0x20, 0x2B, 0xFC, 0xE1, 0xDC, 0x5A, 0x2F, 0xEA, 0x5B, 0x85, 0x96, 0xBA, 0x97, 0xE1, 0x48, 0xA1, 0xC0]
+
+BLOCK_SIZE = 0x500
+
+def obfuscate_block(block: bytes) -&gt; bytes:
+    &#34;&#34;&#34;混淆单个 0x500 大小的数据块&#34;&#34;&#34;
+    if len(block) &lt; 4:
+        return block
+
+    block_header = block[:4]
+
+    obfs_value = mask_table[block_header[0]]
+    for i in range(1, 4):
+        obfs_value ^= mask_table[block_header[i]]
+
+    # 计算偏移量（范围 4 ~ 0x4FF）
+    obfs_value = obfs_value % 0x4FC + 4
+
+    # 数据重排：
+    #   [obfs_value:end] + [4:obfs_value]
+    part1 = block[obfs_value:]       # 从 obfs_value 开始到结尾
+    part2 = block[4:obfs_value]      # 从 4 到 obfs_value
+    new_block = part1 + part2
+    return new_block
+
+
+def deobfuscate_block(block: bytes, header: bytes) -&gt; bytes:
+    &#34;&#34;&#34;反混淆单个 0x500 数据块，需要原始 header&#34;&#34;&#34;
+    if len(block) &lt; 4:
+        return block
+
+    # 重新计算扰动值（必须用原始 header）
+    obfs_value = mask_table[header[0]]
+    for i in range(1, 4):
+        obfs_value ^= mask_table[header[i]]
+    obfs_value = obfs_value % 0x4FC + 4
+
+    # block 的排列规则是：
+    #   new_block = block[obfs_value:] + block[4:obfs_value]
+    # 我们要反过来拼回原始
+    part1_len = len(block) - (obfs_value - 4)  # 对应 obfs_value ~ end
+    part1 = block[:part1_len]
+    part2 = block[part1_len:]
+
+    # 恢复成 [0:4] + [4:obfs_value] + [obfs_value:end]
+    original = header + part2 + part1
+    return original
+
+
+def obfuscate(data: bytes) -&gt; bytes:
+    out = bytearray()
+    for i in range(0, len(data), BLOCK_SIZE):
+        block = data[i:i+BLOCK_SIZE]
+        out.extend(obfuscate_block(block))
+    return bytes(out)
+
+
+def deobfuscate(data: bytes, headers: list[bytes]) -&gt; bytes:
+    out = bytearray()
+    for idx, i in enumerate(range(0, len(data), BLOCK_SIZE)):
+        block = data[i:i+BLOCK_SIZE]
+        header = headers[idx]
+        out.extend(deobfuscate_block(block, header))
+    return bytes(out)
+
+
+if __name__ == &#34;__main__&#34;:
+    data = bytearray()
+    headers = []
+    for blk in range(3):
+        header = bytes([blk, blk+1, blk+2, blk+3])
+        headers.append(header)
+        body = bytes([blk]* (BLOCK_SIZE - 4))
+        data.extend(header + body)
+
+    print(&#34;原始数据前 32 字节:&#34;, data[:32])
+
+    obfs = obfuscate(data)
+    print(&#34;混淆后前 32 字节:&#34;, obfs[:32])
+
+    deobfs = deobfuscate(obfs, headers)
+    print(&#34;反混淆前 32 字节:&#34;, deobfs[:32])
+    print(&#34;反混淆是否正确:&#34;, deobfs == data)
+</code></pre><h2 id="tsgrom-parsing">TSGROM Parsing</h2>
+<p>TSGROM is the game’s multimedia resource file, containing scripts and textures—similar to Unity’s assets.</p>
+<p>The TSGROM version supported by PM2008 is at least <code>00.0000.0004</code>, consistent with PM1. The code is simple and brutal—full of <code>while(1)</code>.</p>
+<p><img loading="lazy"  src="tsgrom_parse.png"
+        alt="tsgrom_parse"/></p>
+<p>Some ROMs don’t carry version information, and I’m not sure what they’re for—for example, <code>biglogo.rom</code>. It has a lot of LZSS image data, but it doesn’t match the color format in the code, so it’s likely historical baggage.</p>
+<p><img loading="lazy"  src="biglogo.png"
+        alt="biglogo"/></p>
+<p>TSGROM can be loaded from a file or from RAM. After the first load, it’s stored in RAM, so subsequent operations don’t need to touch the file again.</p>
+<p>PM2008 supports TGA, BMP, and PCX graphics. The TSGROM format is long and boring; it’s not worth expanding into a full analysis. I wrote a script to parse TSGROM: <a href="https://github.com/gorgiaxx/igs-toolkits/tree/master/tsgrom_loader"target="_blank" rel="noopener noreferrer">igs-toolkits tsgrom_loader</a></p>
+<pre tabindex="0"><code>(base) ➜  tsgrom_loader git:(master) ✗ python ./tsgrom_loader.py -f ./test/resultl.rom -o ./test/resultl --format png
+TSGROM Header:
+  Header: TSGROM01
+  Version: 00.0000.0004
+  Length: 0
+  Data Zones: 2276
+  Data Type Counts:
+       SOUND: 1
+    ACTBLOCK: 531
+    ACTINDEX: 1
+    ACT_DATA: 60
+    ACT_POOL: 531
+    ACT_STEP: 975
+    BASEDATA: 1
+    BMP_OPSS: 18
+    MTV_INAC: 1
+    PALETTE1: 1
+    TGA_OPSS: 156
+Found 174 image data zones
+</code></pre><p>Taking IGS Logo as an example, after extraction you get each frame image of the animation.</p>
+<p><img loading="lazy"  src="tsgrom_extracted.png"
+        alt="tsgrom_extracted"/></p>
+<h3 id="action-parser">Action Parser</h3>
+<p>IGS’s TSGROM defines various graphical behaviors of the game and calls them actions. The main program implements functionality by parsing actions. If you want to run the game main program on a PC, various game events are related to the A27 protocol, so you need to reverse the corresponding actions. But I want to try the most “perfect” cracking approach: dump the ASIC ROM and run it in an emulator. I don’t want to analyze this pile of spaghetti code.</p>
+<ul>
+<li>ACT BLOCK: number of data blocks</li>
+<li>ACT INDEX: ACT index</li>
+<li>ACT DATA: action data</li>
+<li>ACT POOL: action data</li>
+<li>ACT STEP: animation frames</li>
+</ul>
+<p>The main program is stripped, so analysis is time-consuming. Here are brief notes:</p>
+<p>When loading a TSGROM, the program loads <code>act_data</code> into memory; based on the number of <code>act_pool</code>, it also loads pool data into memory. Each TSGROM gets an independent Group ID. The action-related functions distinguish by Group ID. There can be up to <code>0x80</code> action groups, each group length is <code>0x2AA4</code>. Each group also has a corresponding index; action index size is <code>0xaa9</code>, and the list length is also <code>0x80</code>.</p>
+<p>Before loading tsgrom, it first creates action objects: a total of 1024 <code>action_data</code> instances, each <code>action_data</code> is <code>0x8D</code> bytes.</p>
+<p>Then it calls <code>ActionUse</code> to initialize <code>act_data</code> and allocate graphics display resources. It uses <code>ActionFace</code>, <code>ActionShow</code>, etc. to configure graphics display control, and finally calls <code>RealTimeEvent</code> to refresh the screen in a unified way.</p>
+<p><img loading="lazy"  src="actions.png"
+        alt="actions"/></p>
+<h3 id="tsg-rom-hidden-stub">TSG ROM Hidden Stub</h3>
+<p>IGS intentionally corrupts certain blocks in the resource files. They must be dynamically repaired via the ASIC chip. This is also IGS’s anti-piracy mechanism, preventing crackers from modifying animation files to reskin games.</p>
+<p>IGS Logo:</p>
+<p><img loading="lazy"  src="tsgrom_extracted_broken.png"
+        alt="tsgrom_extracted_broken"/></p>
+<p>Teammark:</p>
+<p><img loading="lazy"  src="tsgrom_extracted_broken1.png"
+        alt="tsgrom_extracted_broken1"/></p>
+<p>Taking IGS Logo as an example: when a marker field in the buffer matches 1, it indicates the packet type is resource repair. When iterating to a specific block (7 in this case), it appends <code>0x400</code> bytes from ASIC 27 to the corresponding corrupted region, completing the resource repair.</p>
+<p><img loading="lazy"  src="load_igslogolc_to_memory.png"
+        alt="load_igslogolc_to_memory"/></p>
+<h2 id="closing-notes">Closing Notes</h2>
+<p>IGS tightly couples the game’s main program with hardware. If you want to pirate the game onto another platform, you have to spend a lot of time.</p>
+<p>The game framework and song charts are implemented as state machines and are relatively complex; they’re not within my cracking target.</p>
+<p>Writing reverse engineering into blog posts feels like spending even more energy. When reversing for yourself, you only need to record some data; but to make it into an article, you have to write it in a way others can understand.</p>
+<p>Next topic: IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Program Patching</p>
+<p>In memory of the Blood Moon. Praise the Goddess.</p>
+</article><section class="article labels"><a class="category" href=/en/categories/reverse-engineering/>Reverse Engineering</a><a class="tag" href=/en/tags/igs/>IGS</a><a class="tag" href=/en/tags/arcade/>Arcade</a><a class="tag" href=/en/tags/crack/>Crack</a><a class="tag" href=/en/tags/international-games-system/>International Games System</a><a class="tag" href=/en/tags/e2000/>E2000</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/igs-arcade-re-3/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (3) - Getting a Shell</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

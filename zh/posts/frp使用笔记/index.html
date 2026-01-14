@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="
+前言
+frp是中国开发者fatedier的作品，先看介绍"><title>FRP使用笔记&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="FRP使用笔记" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">FRP使用笔记</h1><p class="article date">Wednesday, May 3, 2017</p></section><article class="article markdown-body"><p><img loading="lazy"  src="./architecture.png"
+        alt="flowchart"/></p>
+<h2 id="前言">前言</h2>
+<p>frp是中国开发者<a href="http://blog.fatedier.com"target="_blank" rel="noopener noreferrer">fatedier</a>的作品，先看介绍</p>
+<blockquote>
+<p>frp 是一个高性能的反向代理应用，可以帮助您轻松地进行内网穿透，对外网提供服务，支持 tcp, udp, http, https 等协议类型，并且 web 服务支持根据域名进行路由转发。</p>
+</blockquote>
+<p>之前一直在路由器上使用ngrok，所以对frp一无所知。做渗透测试，需要NAT穿透，所以一直在找好用的工具，磨刀不误砍柴工。
+尝试之后发现，frp用法和ngrok相似，但是frp比ngrok更加优秀。
+配置过程很简单，但是也遇到一些问题，所以把过程记录下来。</p>
+<h2 id="安装">安装</h2>
+<p>下载源码编译，这个编译就不是很自由，需要指定$GOPATH。ubuntu下没有指定$GOPATH，直接就下载到/src/xxxx了，然后也编译失败。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">GOPATH</span><span class="o">=</span><span class="nv">$HOME</span>/go
+</span></span><span class="line"><span class="cl"><span class="nv">$GOPATH</span>/src/github.com/fatedier/frp
+</span></span></code></pre></div><p>下载源码</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">go get github.com/fatedier/frp
+</span></span><span class="line"><span class="cl"><span class="c1"># 或者执行</span>
+</span></span><span class="line"><span class="cl">git clone https://github.com/fatedier/frp.git <span class="nv">$GOPATH</span>/src/github.com/fatedier/frp
+</span></span></code></pre></div><p>编译</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> <span class="nv">$GOPATH</span>/src/github.com/fatedier/frp
+</span></span><span class="line"><span class="cl">make
+</span></span></code></pre></div><p>安装</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># server</span>
+</span></span><span class="line"><span class="cl">cp ./bin/frps /usr/bin/frps
+</span></span><span class="line"><span class="cl">cp ./conf/frps.ini /etc/frps.ini
+</span></span><span class="line"><span class="cl"><span class="c1"># client</span>
+</span></span><span class="line"><span class="cl">cp ./bin/frps /usr/bin/frpc
+</span></span><span class="line"><span class="cl">sudo cp ./conf/frpc.ini /etc/frpc.ini
+</span></span></code></pre></div><h2 id="配置">配置</h2>
+<p>默认使用配置文件</p>
+<h3 id="server">Server</h3>
+<p>直接看帮助。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@gorgiaxx:~# frps -h
+</span></span><span class="line"><span class="cl">frps is the server of frp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">    frps <span class="o">[</span>-c config_file<span class="o">]</span> <span class="o">[</span>-L log_file<span class="o">]</span> <span class="o">[</span>--log-level<span class="o">=</span>&lt;log_level&gt;<span class="o">]</span> <span class="o">[</span>--addr<span class="o">=</span>&lt;bind_addr&gt;<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    frps <span class="o">[</span>-c config_file<span class="o">]</span> --reload
+</span></span><span class="line"><span class="cl">    frps -h <span class="p">|</span> --help
+</span></span><span class="line"><span class="cl">    frps -v <span class="p">|</span> --version
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Options:
+</span></span><span class="line"><span class="cl">    -c config_file            <span class="nb">set</span> config file
+</span></span><span class="line"><span class="cl">    -L log_file               <span class="nb">set</span> output log file, including console
+</span></span><span class="line"><span class="cl">    --log-level<span class="o">=</span>&lt;log_level&gt;   <span class="nb">set</span> log level: debug, info, warn, error
+</span></span><span class="line"><span class="cl">    --addr<span class="o">=</span>&lt;bind_addr&gt;        listen addr <span class="k">for</span> client, example: 0.0.0.0:7000
+</span></span><span class="line"><span class="cl">    --reload                  reload ini file and configures in common section won<span class="err">&#39;</span>t be changed
+</span></span><span class="line"><span class="cl">    -h --help                 show this screen
+</span></span><span class="line"><span class="cl">    -v --version              show version
+</span></span></code></pre></div><p>支持读取配置文件，所以我们直接看配置文件。作者给出的配置文件示例已经写的很详细了。所以配置起来非常方便</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim /etc/frps.ini
+</span></span></code></pre></div><p>贴出我的配置文件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>common<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 支持IPv6，但是大陆网络情况下几乎不支持。这里填我们的IPv4地址，隧道端口7000</span>
+</span></span><span class="line"><span class="cl"><span class="nv">bind_addr</span> <span class="o">=</span> 45.32.42.185
+</span></span><span class="line"><span class="cl"><span class="nv">bind_port</span> <span class="o">=</span> <span class="m">7000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 这个就是http代理的端口，不要和nginx冲突，否则直接闪退。</span>
+</span></span><span class="line"><span class="cl"><span class="nv">vhost_http_port</span> <span class="o">=</span> <span class="m">8000</span>
+</span></span><span class="line"><span class="cl"><span class="nv">vhost_https_port</span> <span class="o">=</span> <span class="m">8443</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 控制面板的访问端口，在这里我们可以看到隧道的使用情况</span>
+</span></span><span class="line"><span class="cl"><span class="nv">dashboard_port</span> <span class="o">=</span> <span class="m">7500</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 控制面板访问控制，请修改默认密码</span>
+</span></span><span class="line"><span class="cl"><span class="nv">dashboard_user</span> <span class="o">=</span> your_name
+</span></span><span class="line"><span class="cl"><span class="nv">dashboard_pwd</span> <span class="o">=</span> your_password
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 日志记录路径，控制面板也能访问</span>
+</span></span><span class="line"><span class="cl"><span class="nv">log_file</span> <span class="o">=</span> /var/log/frps.log
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 日志级别，可选debug, info, warn, error。这里只需要warn，免得占空间。</span>
+</span></span><span class="line"><span class="cl"><span class="nv">log_level</span> <span class="o">=</span> warn
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 日志记录时间，不知道是不是支持自动清理，记录下warn日志就够了，也不需要清理。我觉得没必要记录warn以下的信息，就不管了</span>
+</span></span><span class="line"><span class="cl"><span class="nv">log_max_days</span> <span class="o">=</span> <span class="m">3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 特权模式，开启之后，支持客户端预配置，也就是不用在服务端单独配置服务，为了示范，我还是下面加一点服务端预配置参数</span>
+</span></span><span class="line"><span class="cl"><span class="nv">privilege_mode</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="nv">privilege_token</span> <span class="o">=</span> your_privilege_token
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 心跳包配置，默认30秒，超时应该就断开连接了</span>
+</span></span><span class="line"><span class="cl"><span class="nv">heartbeat_timeout</span> <span class="o">=</span> <span class="m">30</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 设定端口范围，特权模式下端口是客户端决定的，所以要在服务端做好限制，以免影响正常服务</span>
+</span></span><span class="line"><span class="cl"><span class="nv">privilege_allow_ports</span> <span class="o">=</span> 2000-3000,3001,3003,4000-50000
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 最大连接数</span>
+</span></span><span class="line"><span class="cl"><span class="nv">max_pool_count</span> <span class="o">=</span> <span class="m">100</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 认证超时</span>
+</span></span><span class="line"><span class="cl"><span class="nv">authentication_timeout</span> <span class="o">=</span> <span class="m">60</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 子域名的根域名，就这样翻译吧</span>
+</span></span><span class="line"><span class="cl"><span class="nv">subdomain_host</span> <span class="o">=</span> gorgiaxx.me
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 这个用作metasploit的reverse_tcp穿透，配好token就好</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>rev<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> tcp
+</span></span><span class="line"><span class="cl"><span class="nv">auth_token</span> <span class="o">=</span> gorgiaxx
+</span></span><span class="line"><span class="cl"><span class="nv">bind_addr</span> <span class="o">=</span> 0.0.0.0
+</span></span><span class="line"><span class="cl"><span class="c1"># ！！！注意，这里一定要看服务商是否把端口过滤了。vultr把4444端口过滤了害我折腾半天。</span>
+</span></span><span class="line"><span class="cl"><span class="nv">listen_port</span> <span class="o">=</span> <span class="m">4444</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 这个来代理web服务，用来传输payload</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>web<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果要用http代理，必须至少在前面设定vhost_http_port这个参数。</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> http
+</span></span><span class="line"><span class="cl"><span class="nv">auth_token</span> <span class="o">=</span> gorgiaxx
+</span></span><span class="line"><span class="cl"><span class="c1"># 子域名，最后的访问域名就是frp.gorgiaxx.me</span>
+</span></span><span class="line"><span class="cl"><span class="nv">subdomain</span> <span class="o">=</span> frp
+</span></span></code></pre></div><h3 id="client">Client</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">～$ frpc -h
+</span></span><span class="line"><span class="cl">frpc is the client of frp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">    frpc <span class="o">[</span>-c config_file<span class="o">]</span> <span class="o">[</span>-L log_file<span class="o">]</span> <span class="o">[</span>--log-level<span class="o">=</span>&lt;log_level&gt;<span class="o">]</span> <span class="o">[</span>--server-addr<span class="o">=</span>&lt;server_addr&gt;<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    frpc -h <span class="p">|</span> --help
+</span></span><span class="line"><span class="cl">    frpc -v <span class="p">|</span> --version
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Options:
+</span></span><span class="line"><span class="cl">    -c config_file              <span class="nb">set</span> config file
+</span></span><span class="line"><span class="cl">    -L log_file                 <span class="nb">set</span> output log file, including console
+</span></span><span class="line"><span class="cl">    --log-level<span class="o">=</span>&lt;log_level&gt;     <span class="nb">set</span> log level: debug, info, warn, error
+</span></span><span class="line"><span class="cl">    --server-addr<span class="o">=</span>&lt;server_addr&gt; addr which frps is listening <span class="k">for</span>, example: 0.0.0.0:7000
+</span></span><span class="line"><span class="cl">    -h --help                   show this screen
+</span></span><span class="line"><span class="cl">    --version                   show version
+</span></span></code></pre></div><p>配置文件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>common<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 服务器端口和地址</span>
+</span></span><span class="line"><span class="cl"><span class="nv">server_addr</span> <span class="o">=</span> 45.32.42.185
+</span></span><span class="line"><span class="cl"><span class="nv">server_port</span> <span class="o">=</span> <span class="m">7000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 通过http代理访问，一般情况下用不到</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># http_proxy = http://user:pwd@192.168.1.128:8080</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 日志路径，客户端访问这个要root权限，后面加sudo运行吧。</span>
+</span></span><span class="line"><span class="cl"><span class="nv">log_file</span> <span class="o">=</span> /var/log/frpc.log
+</span></span><span class="line"><span class="cl"><span class="nv">log_level</span> <span class="o">=</span> warn
+</span></span><span class="line"><span class="cl"><span class="nv">log_max_days</span> <span class="o">=</span> <span class="m">3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 服务指定给用户的token</span>
+</span></span><span class="line"><span class="cl"><span class="nv">auth_token</span> <span class="o">=</span> gorgiaxx
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 特权的token</span>
+</span></span><span class="line"><span class="cl"><span class="nv">privilege_token</span> <span class="o">=</span> your_token
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>rev<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># tcp | http, default is tcp</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> tcp
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">4444</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 加密通信，暂时不需要</span>
+</span></span><span class="line"><span class="cl"><span class="nv">use_encryption</span> <span class="o">=</span> <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 不是http的情况下，gzip压缩也不要</span>
+</span></span><span class="line"><span class="cl"><span class="nv">use_gzip</span> <span class="o">=</span> <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>pre_rev<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 预配置</span>
+</span></span><span class="line"><span class="cl"><span class="nv">privilege_mode</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> tcp
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 0.0.0.0
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">5555</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 远程端口</span>
+</span></span><span class="line"><span class="cl"><span class="nv">remote_port</span> <span class="o">=</span> <span class="m">5555</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>web<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> http
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 127.0.0.1
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">8080</span>
+</span></span><span class="line"><span class="cl"><span class="nv">use_gzip</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="nv">pool_count</span> <span class="o">=</span> <span class="m">20</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 可以设定访问控制</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># http_user = admin</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># http_pwd = admin</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 子域名，最后就是frp.gorgiaxx.me</span>
+</span></span><span class="line"><span class="cl"><span class="nv">subdomain</span> <span class="o">=</span> frp
+</span></span></code></pre></div><h2 id="启动">启动</h2>
+<p>frp权限控制做的比较好，不怕端口暴露在公网。所以可以放心常驻后台</p>
+<h3 id="服务端">服务端</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nohup frps -c /etc/frps.ini <span class="p">&amp;</span>
+</span></span></code></pre></div><h3 id="客户端">客户端</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nohup frps -c /etc/frps.ini <span class="p">&amp;</span>
+</span></span></code></pre></div><h3 id="dashboard">Dashboard</h3>
+<p>直接浏览器访问</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">http://gorgiaxx.me:7500/
+</span></span></code></pre></div><p>输入用户名密码就能看到面板了</p>
+<p><img loading="lazy"  src="./usage_statistics.png"
+        alt="dashboard"/></p>
+<h2 id="reference">Reference</h2>
+<p><a href="https://github.com/fatedier/frp"target="_blank" rel="noopener noreferrer">fatedier/frp</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E5%B7%A5%E5%85%B7/>工具</a><a class="tag" href=/zh/tags/frp/>frp</a><a class="tag" href=/zh/tags/nat/>NAT</a><a class="tag" href=/zh/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/>内网穿透</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/cve-2017-0199-%E5%88%A9%E7%94%A8/"><span class="iconfont icon-article"></span>OFFICE OLE2LINK 漏洞 (CVE-2017-0199) 利用</a></p><p><a class="link" href="/zh/posts/ngrok%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0/"><span class="iconfont icon-article"></span>Ngrok使用笔记</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

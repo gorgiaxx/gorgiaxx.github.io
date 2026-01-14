@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Approaches to Bypassing a CDN
+There are many approaches online for bypassing a CDN, but many of them have issues. Below is a collection and summary of commonly used ideas.
+From a site owner’s perspective, not every site will always be behind a CDN.
+From a DNS provider’s perspective, historical DNS records may not be controlled by the CDN provider.
+From a CDN provider’s perspective, there are limitations on covered regions, and CDN traffic can also be limited."><title>Approaches to Finding the Origin Server Behind a CDN&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Approaches to Finding the Origin Server Behind a CDN" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Approaches to Finding the Origin Server Behind a CDN</h1><p class="article date">Saturday, October 28, 2017<span class="langs"><span class="lang">
+                    <a href="/zh/posts/find-origin-server-behind-cdn/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h1 id="approaches-to-bypassing-a-cdn">Approaches to Bypassing a CDN</h1>
+<p>There are many approaches online for bypassing a CDN, but many of them have issues. Below is a collection and summary of commonly used ideas.
+From a site owner’s perspective, not every site will always be behind a CDN.
+From a DNS provider’s perspective, historical DNS records may not be controlled by the CDN provider.
+From a CDN provider’s perspective, there are limitations on covered regions, and CDN traffic can also be limited.</p>
+<h2 id="dns-history">DNS history</h2>
+<p><a href="https://dnshistory.org/"target="_blank" rel="noopener noreferrer">https://dnshistory.org/</a>
+<a href="http://whoisrequest.com/history/"target="_blank" rel="noopener noreferrer">http://whoisrequest.com/history/</a>
+<a href="https://completedns.com/dns-history/"target="_blank" rel="noopener noreferrer">https://completedns.com/dns-history/</a>
+<a href="http://dnstrails.com/"target="_blank" rel="noopener noreferrer">http://dnstrails.com/</a>
+<a href="https://who.is/domain-history/"target="_blank" rel="noopener noreferrer">https://who.is/domain-history/</a>
+<a href="http://research.domaintools.com/research/hosting-history/"target="_blank" rel="noopener noreferrer">http://research.domaintools.com/research/hosting-history/</a>
+<a href="http://site.ip138.com/"target="_blank" rel="noopener noreferrer">http://site.ip138.com/</a>
+<a href="http://viewdns.info/iphistory/"target="_blank" rel="noopener noreferrer">http://viewdns.info/iphistory/</a></p>
+<h3 id="enumerate-via-lots-of-dns-resolvers">Enumerate via lots of DNS resolvers</h3>
+<p>Query DNS records via less popular DNS resolvers, or ping from multiple regions:</p>
+<ul>
+<li><a href="http://ping.chinaz.com/"target="_blank" rel="noopener noreferrer">http://ping.chinaz.com/</a></li>
+<li><a href="http://ce.cloud.360.cn/"target="_blank" rel="noopener noreferrer">http://ce.cloud.360.cn/</a></li>
+<li><a href="http://www.webkaka.com/ping.aspx"target="_blank" rel="noopener noreferrer">http://www.webkaka.com/ping.aspx</a></li>
+<li><a href="https://asm.ca.com/en/ping.php"target="_blank" rel="noopener noreferrer">https://asm.ca.com/en/ping.php</a></li>
+<li><a href="https://x.threatbook.cn/en"target="_blank" rel="noopener noreferrer">https://x.threatbook.cn/en</a></li>
+</ul>
+<h2 id="start-from-the-target-server">Start from the target server</h2>
+<h3 id="passive-collection">Passive collection</h3>
+<p>Make the target server proactively connect to your server, then capture the source IP:</p>
+<ul>
+<li>SSRF</li>
+<li>Have the server send email, then obtain the request IP</li>
+<li>IP embedded in RSS</li>
+</ul>
+<h3 id="server-information">Server information</h3>
+<ul>
+<li>Probe file</li>
+<li>Server log files</li>
+<li>Error messages</li>
+</ul>
+<h2 id="same-ip-hosting-neighbor-sites">Same-IP hosting (neighbor sites)</h2>
+<ul>
+<li>Find IPs corresponding to subdomains or parent domains</li>
+<li>Look for neighbor sites that are not subdomains</li>
+<li>Use search engines to find the same site on the public internet (dev environments, backup sites, etc.)</li>
+<li>MX / TXT records</li>
+</ul>
+<h3 id="compare-banners-across-the-internet">Compare banners across the internet</h3>
+<p>Collect the target site’s banner and search for it with internet-wide search engines. You can also use <a href="https://github.com/michenriksen/aquatone"target="_blank" rel="noopener noreferrer">AQUATONE</a> and search for the same fingerprinted sites on Shodan.
+You can also use IP allocation data from regional internet registries to filter candidate IP ranges by region, then enumerate web service banners to compare against the CDN-fronted site’s banner and identify the origin IP.</p>
+<ul>
+<li>Asia: <a href="ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest">ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest</a></li>
+<li>Europe: <a href="ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest">http://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-latest</a></li>
+<li>North America: <a href="https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest"target="_blank" rel="noopener noreferrer">https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest</a></li>
+<li>Africa: <a href="ftp://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest">ftp://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest</a></li>
+<li>Latin America: <a href="ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest">ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest</a></li>
+</ul>
+<p>This method can also be used to find the mapping between internal network server IPs and domain names:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">bs4</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lxml</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="kn">import</span> <span class="n">Pool</span>
+</span></span><span class="line"><span class="cl"><span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">global</span> <span class="n">c</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">ip_host</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 计数器</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="n">c</span>
+</span></span><span class="line"><span class="cl">    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Host&#39;</span><span class="p">:</span> <span class="n">ip_host</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">               <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">r</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip_host</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="err">，</span><span class="n">verify</span><span class="o">=</span><span class="n">Fasle</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">t</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span><span class="s1">&#39;lxml&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&#34;title&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">string</span>
+</span></span><span class="line"><span class="cl">            <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">t</span> <span class="o">=</span> <span class="s2">&#34;notitle&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">ip_host</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&#34; mkdd1211 &#34;</span><span class="p">,</span><span class="n">ip_host</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s2">&#34; mkdd1211 &#34;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">),</span><span class="s2">&#34; mkdd1211 &#34;</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>  <span class="c1"># 打印出来放在exel，mkdd1211用来替换成分列符号</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">c</span><span class="o">%</span><span class="mi">1000</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>  <span class="c1"># 这个1000表示每1000次打印一下当前剩余的请求，便于你知道还有多久跑完，可以根据总请求调整</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">make_payload</span><span class="p">(</span><span class="n">ips</span><span class="p">,</span><span class="n">hosts</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">payload</span><span class="o">=</span><span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ips</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">payload</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&#34;https://&#34;</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">payload</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&#34;http://&#34;</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">payload</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">make_payload_c</span><span class="p">(</span><span class="n">ips_c</span><span class="p">,</span><span class="n">hosts</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">payload</span><span class="o">=</span><span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ips_c</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">u</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ip</span><span class="o">+</span><span class="s2">&#34;.&#34;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">u</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">payload</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&#34;https://&#34;</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">payload</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&#34;http://&#34;</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">payload</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ips=[&#34;1.1.1.1&#34;,&#34;2.2.2.2&#34;] </span>
+</span></span><span class="line"><span class="cl"><span class="c1"># d=make_payload(ips,hosts) #可以先用ip跑一下，没有收获选择跑C段</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ipc</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;1.1.1&#34;</span><span class="p">,</span><span class="s2">&#34;2.2.2&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">hosts</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;a.huoxian.cn&#34;</span><span class="p">,</span><span class="s2">&#34;b.huoxian.cn&#34;</span><span class="p">,</span><span class="s2">&#34;c.huoxian.cn&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">=</span><span class="n">make_payload_c</span><span class="p">(</span><span class="n">ipc</span><span class="p">,</span><span class="n">hosts</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">c</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">demo</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="cdn-provider">CDN provider</h2>
+<ul>
+<li>Compromise the CDN provider</li>
+<li>Infer the origin IP based on CDN DNS behavior (e.g. <a href="https://www.crimeflare.com"target="_blank" rel="noopener noreferrer">www.crimeflare.com</a>)</li>
+<li>Exhaust the CDN’s service bandwidth to expose the real IP</li>
+</ul>
+<h2 id="f5-ltm">F5 LTM</h2>
+<p>F5 LTM decoding method:
+When a server uses F5 LTM for load balancing, you may be able to obtain the real IP by decoding the <code>set-cookie</code> value. For example: <code>Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000</code>. First take the decimal number in the first segment (<code>487098378</code>), convert it to hex (<code>1d08880a</code>), then from right to left take four hex digits at a time to get <code>0a.88.08.1d</code>, and finally convert each part to decimal: <code>10.136.8.29</code>, which is the real IP.</p>
+</article><section class="article labels"><a class="category" href=/en/categories/cybersecurity/>Cybersecurity</a><a class="tag" href=/en/tags/cdn/>CDN</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/hardware-repair-notes/"><span class="iconfont icon-article"></span>Hardware Repair Notes</a></p><p><a class="link" href="/en/posts/fios-g1100-get-root/"><span class="iconfont icon-article"></span>Getting Root Access on Verizon FIOS-G1100</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

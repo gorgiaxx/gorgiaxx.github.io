@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="
+为什么要添加SSL证书/使用HTTPS协议
+目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。
+近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。"><title>给网站添加免费SSL证书&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="给网站添加免费SSL证书" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">给网站添加免费SSL证书</h1><p class="article date">Monday, May 9, 2016<span class="langs"><span class="lang">
+                    <a href="/en/posts/add-free-ssl-certificate-to-website/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><p><img loading="lazy"  src="./Internet.jpg"
+        alt="http2"/></p>
+<h2 id="为什么要添加ssl证书使用https协议">为什么要添加SSL证书/使用HTTPS协议</h2>
+<p>目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。
+近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。</p>
+<h2 id="准备--环境">准备 &amp; 环境</h2>
+<p>本服务器环境DigitalOcean VPS，SG节点，Debian jessie，AMH主机面板
+需要用到:
+*免费SSL证书 <a href="https://letsencrypt.org/"target="_blank" rel="noopener noreferrer">Let’s Encrypt</a>
+*<a href="http://nginx.org/"target="_blank" rel="noopener noreferrer">NGINX</a>
+*<a href="https://www.openssl.org/"target="_blank" rel="noopener noreferrer">OpenSSL</a></p>
+<h2 id="安装">安装</h2>
+<h3 id="安装升级openssl-102">安装&amp;升级OpenSSL 1.0.2</h3>
+<p>要让NGINX开启HTTP/2协议，必须使用此版本的OpenSSL</p>
+<blockquote>
+<p>Note that accepting HTTP/2 connections over TLS requires the “Application-Layer Protocol Negotiation” (ALPN) TLS extension support, which is available only since OpenSSL version 1.0.2. Using the “Next Protocol Negotiation” (NPN) TLS extension for this purpose (available since OpenSSL version 1.0.1) is not guaranteed.</p>
+</blockquote>
+<p>去官网或者载Gayhub下载OpenSSL源码</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://github.com/openssl/openssl/archive/OpenSSL_1_0_2h.tar.gz
+</span></span><span class="line"><span class="cl">tar -zxvf ./OpenSSL_1_0_2h.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ./openssl-OpenSSL_1_0_2h/
+</span></span></code></pre></div><p>选择你要安装的目录，如果升级的话，把prefix参数改成OpenSSL所在的目录</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./config --prefix<span class="o">=</span>/usr/local/openssl --openssldir<span class="o">=</span>/usr/local/ssl
+</span></span><span class="line"><span class="cl">make
+</span></span><span class="line"><span class="cl">make install
+</span></span><span class="line"><span class="cl">mv /usr/bin/openssl /usr/bin/openssl.OFF
+</span></span><span class="line"><span class="cl">mv /usr/include/openssl /usr/include/openssl.OFF
+</span></span><span class="line"><span class="cl">ln -s /usr/local/openssl/bin/openssl /usr/bin/openssl
+</span></span><span class="line"><span class="cl">ln -s /usr/local/openssl/include/openssl /usr/include/openssl
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;/usr/local/openssl/lib&#34;</span>&gt;&gt;/etc/ld.so.conf
+</span></span></code></pre></div><p>查看OpenSSL的版本变成了1.0.2h</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openssl version -a
+</span></span></code></pre></div><h3 id="安装lets-encrypt客户端">安装Let’s Encrypt客户端</h3>
+<p>获取源码</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/letsencrypt/letsencrypt
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> letsencrypt
+</span></span></code></pre></div><p>安装</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./letsencrypt-auto --help
+</span></span></code></pre></div><p>签发证书,w参数填网站的路径,d参数填域名，证书以第一个域名为准，具体参考官方文档</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./letsencrypt-auto certonly --webroot -w /www/blog/ -d gorgiaxx.com -d blog.gorgiaxx.com
+</span></span></code></pre></div><p>证书有效期三个月,可以写脚本续期</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="m">0</span> <span class="m">0</span> <span class="m">1</span> * * /usr/local/nginx/sbin/nginx -s stop <span class="o">&amp;&amp;</span> /opt/letsencrypt-auto certonly --renew-by-default --webroot -w /www/blog/ -d gorgiaxx.com -d blog.gorgiaxx.com <span class="o">&amp;&amp;</span> /usr/local/nginx/sbin/nginx
+</span></span></code></pre></div><p>证书默认生成在此目录，NGINX需要用到后两个文件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@gorgiaxx-ubuntu:~/tmp# ls /etc/letsencrypt/live/gorgiaxx.com
+</span></span><span class="line"><span class="cl">cert.pem  chain.pem  fullchain.pem  privkey.pem
+</span></span></code></pre></div><h3 id="启用-certificate-transparency-策略">启用 Certificate Transparency 策略</h3>
+<p>由 Google 主导，并由 IETF 标准化为 RFC 6962。Certificate Transparency 的目标是提供一个开放的审计和监控系统，可以让任何域名所有者或者 CA 确定证书是否被错误签发或者被恶意使用，从而提高 HTTPS 网站的安全性。</p>
+<p>CT 策略目前只有 Chrome 支持；其次 Chrome 也知道现在支持 CT 的网站并不多，所以对于没有提供 SCT 信息的 HTTPS 网站也没有太大的影响。</p>
+<p>具体参考<a href="https://imququ.com/post/certificate-transparency.html"target="_blank" rel="noopener noreferrer">Certificate Transparency 那些事</a>
+通过 ct-submit 这个模块，可以方便地将证书提交给 CT Logs 服务器并得到 SCT 响应</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt-get install golang
+</span></span><span class="line"><span class="cl">wget -O ct-submit.zip -c https://github.com/grahamedgecombe/ct-submit/archive/v1.0.0.zip
+</span></span><span class="line"><span class="cl">unzip ct-submit.zip
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ct-submit-1.0.0
+</span></span><span class="line"><span class="cl">go build
+</span></span></code></pre></div><p>编译完毕，执行并提交，CT Logs服务器可以在<a href="https://www.certificate-transparency.org/known-logs"target="_blank" rel="noopener noreferrer">这里找到</a>（被墙了）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./ct-submit-1.0.0 ct.googleapis.com/aviator
+</span></span><span class="line"><span class="cl">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem
+</span></span><span class="line"><span class="cl">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/aviator.sct
+</span></span><span class="line"><span class="cl">./ct-submit-1.0.0 ct.googleapis.com/pilot
+</span></span><span class="line"><span class="cl">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem
+</span></span><span class="line"><span class="cl">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/pilot.sct
+</span></span><span class="line"><span class="cl">./ct-submit-1.0.0 ct.googleapis.com/rocketeer
+</span></span><span class="line"><span class="cl">&lt;/etc/letsencrypt/live/gorgiaxx.com/fullchain.pem
+</span></span><span class="line"><span class="cl">&gt;/etc/letsencrypt/live/gorgiaxx.com/scts/rocketeer.sct
+</span></span></code></pre></div><h3 id="安装升级nginx">安装&amp;升级NGINX</h3>
+<p>下载并解压NGINX和nginx-ct模块</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget -O nginx-ct.zip https://github.com/grahamedgecombe/nginx-ct/archive/master.zip
+</span></span><span class="line"><span class="cl">unzip nginx-ct.zip
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">http://nginx.org/download/nginx-1.10.0.tar.gz
+</span></span><span class="line"><span class="cl">tar -zxvf nginx-1.10.0.tar.gz
+</span></span></code></pre></div><p>/usr/local/nginx是我原先nginx的目录
+安装文件临时放在/tmp/里面</p>
+<p>添加brotli压缩格式支持，实现了更高的压缩比率，与gzip兼容</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/google/ngx_brotli.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ngx_brotli
+</span></span><span class="line"><span class="cl">git submodule update --init
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./configure --prefix<span class="o">=</span>/usr/local/nginx --user<span class="o">=</span>www --group<span class="o">=</span>www --with-http_ssl_module --with-http_gzip_static_module --with-http_v2_module --with-http_stub_status_module --add-module<span class="o">=</span>../nginx-ct-1.3.2 --add-module<span class="o">=</span>../ngx_brotli
+</span></span><span class="line"><span class="cl">make
+</span></span></code></pre></div><p>如果make失败，请在configure加上</p>
+<p><code>--with-openssl=/tmp/openssl-1.0.2h/</code>
+替换旧文件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp -f objs/nginx /usr/local/nginx/sbin/nginx
+</span></span></code></pre></div><p>升级</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make upgrade
+</span></span></code></pre></div><h3 id="配置nginx">配置NGINX</h3>
+<p>把监听端口换成443，添加ssl和http2</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">listen <span class="m">443</span> ssl http2 default<span class="p">;</span> <span class="c1">#listen end</span>
+</span></span></code></pre></div><p>开启ssl和ssl_ct，添加SCT目录和SSL证书路径</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssl on<span class="p">;</span>
+</span></span><span class="line"><span class="cl">ssl_ct on<span class="p">;</span>
+</span></span><span class="line"><span class="cl">ssl_ct_static_scts /etc/letsencrypt/live/gorgiaxx.com/scts/<span class="p">;</span>
+</span></span><span class="line"><span class="cl">ssl_certificate /etc/letsencrypt/live/gorgiaxx.com/fullchain.pem<span class="p">;</span>
+</span></span><span class="line"><span class="cl">ssl_certificate_key /etc/letsencrypt/live/gorgiaxx.com/privkey.pem<span class="p">;</span>
+</span></span></code></pre></div><p>重载NGINX</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/usr/local/nginx/sbin/nginx -s reload
+</span></span></code></pre></div><p>由图可以看到，已经启用了HTTP/2协议和CT策略
+<img loading="lazy"  src="./http2.png"
+        alt="http2"/>
+可以看到CT策略开启了
+<img loading="lazy"  src="./ssl-ct.png"
+        alt="ssl-ct"/></p>
+<p>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;2016年11月12日 更新：&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</p>
+<p>新版的letsencrypt使用certbot部署证书</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./certbot-auto certonly --standalone --email gorgiaxx@gmail.com -d gorgiaxx.com -d www.gorgiaxx.com -d blog.gorgiaxx.com -d api.gorgiaxx.com
+</span></span></code></pre></div><p>证书自动续期</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="m">0</span> <span class="m">0</span> <span class="m">1</span> * * /usr/local/nginx/sbin/nginx -s stop <span class="o">&amp;&amp;</span> /opt/certbot-auto renew <span class="o">&amp;&amp;</span> /usr/local/nginx/sbin/nginx
+</span></span></code></pre></div><p>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;2017年2月9日 更新：&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;</p>
+<p>我说怎么老是提醒我过期(╯‵□′)╯︵┻━┻，原来certbot会在启动时自己更新，然后依赖virtualenv，VPS上没有装，所以自动续期失败</p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E6%8A%98%E8%85%BE/>折腾</a><a class="tag" href=/zh/tags/certbot/>certbot</a><a class="tag" href=/zh/tags/ssl/>SSL</a><a class="tag" href=/zh/tags/%E8%AF%81%E4%B9%A6/>证书</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/lenovo-y410p-bios-recovery-notes/"><span class="iconfont icon-article"></span>联想Y410p BIOS 拯救笔记</a></p><p><a class="link" href="/zh/posts/first-hardware-mod-router-openwrt/"><span class="iconfont icon-article"></span>记第一次硬改路由器上Openwrt</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

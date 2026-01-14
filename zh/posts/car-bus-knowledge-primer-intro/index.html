@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+汽车行业非常严谨，许多产品都要按照规范设计，首先要搞清楚ISO与SAE的关系。"><title>汽车总线知识扫盲 序&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="汽车总线知识扫盲 序" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">汽车总线知识扫盲 序</h1><p class="article date">Thursday, August 8, 2019<span class="langs"><span class="lang">
+                    <a href="/en/posts/car-bus-knowledge-primer-intro/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>汽车行业非常严谨，许多产品都要按照规范设计，首先要搞清楚ISO与SAE的关系。</p>
+<ul>
+<li><a href="https://www.iso.org/home.html"target="_blank" rel="noopener noreferrer">国际标准组织(International Organization for Standardization,ISO)</a></li>
+<li><a href="https://www.sae.org"target="_blank" rel="noopener noreferrer">美国机动车工程师学会(Society of Automotive Engineers,SAE)</a></li>
+</ul>
+<p>SAE的J系列标准是为地面交通工具编写的标准，几乎涉及每一个电子元件，面向美国，而ISO是国际标准，国标欧标都会参考ISO的标准。
+ISO会参考SAE提供的标准发布新的标准。而且ISO发布的一个标准可能包含多个SAE起草的标准。</p>
+<p>汽车内部由许多电子控制单元(Electronic Control Unit, ECU)，分别负责不同的工作，如门控单元、灯控单元等，起初它们都使用点对点的通信方式，而且每项信息都通过独立的数据线进行交换，随着ECU数量的增加，需要消耗的线束也会成倍增加，导致成本增加，占用更多的空间，增加更多重量，而且内部连接也会变得更加复杂，存在更多的隐患。</p>
+<p><img loading="lazy"  src="p2p.jpg"
+        alt="p2p"/></p>
+<p>因此工程师们设计了基于总线通信的方案，每个ECU都连接在一条总线上面，避免了点对点通信方式存在的隐患。</p>
+<p><img loading="lazy"  src="bus.jpg"
+        alt="bus"/></p>
+<p>SAE根据传输速度把总线网络分成四类</p>
+<table>
+  <thead>
+      <tr>
+          <th>类别</th>
+          <th>速率</th>
+          <th>应用</th>
+          <th>协议类型</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>A类</td>
+          <td>低于10Kb/s</td>
+          <td>车门、空调、座椅</td>
+          <td>LIN</td>
+      </tr>
+      <tr>
+          <td>B类</td>
+          <td>10到125Kb/s</td>
+          <td>尾气信息、仪表数据</td>
+          <td>CAN</td>
+      </tr>
+      <tr>
+          <td>C类</td>
+          <td>125Kb/s到1Mb/s</td>
+          <td>牵引力控制系统、制动系统</td>
+          <td>CAN</td>
+      </tr>
+      <tr>
+          <td>D类</td>
+          <td>1Mb/s到10Mb/s</td>
+          <td>多媒体系统</td>
+          <td>Most、FlexRay、Byteflight</td>
+      </tr>
+  </tbody>
+</table>
+<p>现在国内外汽车内部总线网络大多都使用CAN，也有用LIN，MOST，FlexRay，以太网等网络，目前应用最广泛的还是CAN，本笔记以CAN为中心，延伸到各个知识点。因为众多车企CAN的实现有细节略有差异，也许不符合规范，规范不能满足所有业务要求是一个原因，为了统一，本笔记以ISO规范为准。</p>
+<h2 id="can">CAN</h2>
+<p>CAN (Controller Area Network，符合ISO 11898)是控制器局域网络，是制造业和汽车产业种使用的一种网络协议，具有速率快，距离远的优点。嵌入式系统和ECU能够使用CAN协议进行通信。
+1992年，CAN数据链路层和CAN高速物理层在ISO 11898中已经被国际标准化，由七个部分组成，4、5、6部分稍微看了一下，是对1，2，3的一些缺陷的补充，比较有意义，但是目前国内汽车领域很少使用，所以暂不深入，每部分标题下：</p>
+<ul>
+<li>ISO 11898-1 数据链路层和物理层信号</li>
+<li>ISO 11898-2 高速接入单元</li>
+<li>ISO 11898-3 低速容错接入单元</li>
+<li>ISO 11898-4 时间触发通讯</li>
+<li>ISO 11898-5 低功耗的高速接入单元</li>
+<li>ISO 11898-6 选择性唤醒的高速接入单元</li>
+</ul>
+<p>下图是在不同的角度对CAN的分类，CAN的标准和网络模型层次还有实现的关系，目前ISO 11898只涉及物理层(Physical Layer, PL)，数据链路层(Data Link Layer, DLL)和应用层(Application Layer, AL)。</p>
+<p><img loading="lazy"  src="reference_model.png"
+        alt="reference_model"/></p>
+<p>根据ISO/IEC 8802-2规范(IEEE 802.2)，数据链路层可以分为两个子层</p>
+<ul>
+<li>逻辑链路控制(Logical Link Control, LLC)
+<ul>
+<li>接收滤波</li>
+<li>超载通知</li>
+<li>恢复管理</li>
+</ul>
+</li>
+<li>媒介访问控制(Medium Access Control, MAC)
+<ul>
+<li>数据封装/拆装</li>
+<li>帧编码(填充/解除填充)</li>
+<li>媒介访问管理</li>
+<li>错误检测</li>
+<li>出错标定</li>
+<li>序列化/反序列化</li>
+</ul>
+</li>
+</ul>
+<p>物理层可以分为三个子层：</p>
+<ul>
+<li>物理编码层(Physical Coding Sub-layer, PCS)</li>
+<li>物理媒介附件(Physical Medium Attachment, PMA)</li>
+<li>媒介依赖接口(Medium Dependent Interface,MDI)</li>
+</ul>
+<p>站在CAN的角度，ECU可以看作是由以下部分组成</p>
+<ul>
+<li>微控制器(Microcontroller Unit, MCU)，AL</li>
+<li>CAN控制器(CAN Controller)，DLL加上PL的PCS</li>
+<li>CAN收发器(CAN Transceiver)，PL的PMA和MDI</li>
+</ul>
+<h2 id="can物理层">CAN物理层</h2>
+<p>CAN使用双线差分信号，数据传输在两条线路上：CANH(+)和CANL(-)，通信介质可以是同轴电缆、光纤或双绞线(twisted pair)，有效降低外界干扰，以便差分电路提取出有用信号。</p>
+<p>一般使用双绞线作为介质构成串行总线，总线端点加入了终端匹配电阻(阻值和阻抗相匹配)，防止数据在线端被反射，影响数据的传输。新型的CAN总线使用分布式电阻，又叫ECU负载电阻，即发动机控制单元内的“中央末端电阻”和其他控制单元内的高欧姆电阻。</p>
+<p>CAN上节点采用多主通讯方式访问总线，每个节点都通过总线相互连接，对节点数量没有限制，所以报文是广播出去的，所有节点都能收到。</p>
+<p><img loading="lazy"  src="can_net.png"
+        alt="can_net"/>
+CAN信号的传输方式根据MAU的定义可分为高速CAN(ISO 11898-2)和低速CAN(ISO 11898-3)。</p>
+<blockquote>
+<p>ISO11519是低速CAN的标准。起初，高速CAN数据链路层和物理层都在标准ISO11898中规定，后来被拆分为ISO11898-1（仅涉及数据链路层）和ISO11898-2（仅涉及物理层）。其中标准ISO 11519-2-1994已经在2006年被ISO 11898-3-2006代替了,也就是说符合标准ISO 11898-3的产品也是支持符合ISO 11519-2标准的产品。</p>
+</blockquote>
+<p><img loading="lazy"  src="ISO_CAN.png"
+        alt="ISO_CAN"/></p>
+<ul>
+<li>高速CAN速率通常是500Kbps或250Kbps，一般用于实时性需求高的通信，如引擎和ABS。</li>
+<li>低速CAN速率通常是125Kbps，一般用于门锁、灯光、气囊、空调等。</li>
+</ul>
+<p>汽车内部网络可以拓扑多种多样，但是ISO 11898给出的拓扑建议只有线性和星状。
+高速CAN的拓扑是线性的，阻抗为120Ω，为了保证传输质量，每个节点之间的距离越近越好。
+<img loading="lazy"  src="interconnection.png"
+        alt="interconnection"/></p>
+<p>低速CAN的拓扑可以是线性也可以是星状。
+<img loading="lazy"  src="star_topology.png"
+        alt="star_topology"/></p>
+<p>一个汽车内的网络拓扑可以有多种网络共同组成，一般用以太网(Internet Protocal)作为主干网。</p>
+<p><img loading="lazy"  src="backbone.png"
+        alt="backbone.png"/></p>
+<p>不同的网络通过网关(Gateway, GW)进行互通，网关是用于提供协议转换、数据交换等网络兼容功能的设备。</p>
+<p>网关 不同网络的优先级 网关的主要功能是使连接在不同的数据总线上的控制单元能够交换数据，可以安装在仪表内，也可以在ECU内。</p>
+<p>低速CAN又称容错CAN，是因为差分信号本身就有避免共模信号干扰的特性，而且低速CAN电平变化幅度比高速CAN更急，所以容错CAN可以靠单线传输，可以在CAN_H或CAN_L出现短路、断路时保证通信正常。</p>
+<p>高速CAN的电平波形图
+<img loading="lazy"  src="ISO11898-2_Waveform.png"
+        alt="ISO11898-2_Waveform.png"/>
+低速CAN的电平波形图
+<img loading="lazy"  src="ISO11898-3_Waveform.png"
+        alt="ISO11898-3_Waveform"/></p>
+<p>当一个设备输出低电平，而另一设备输出高电平，总线上的电平还是低电平，所以站在逻辑的角度，CAN bus可以有两种逻辑状态:显性(recesive)和隐性(dominant)。根据电平可称为显性电平和隐性电平，因此可以把它当作二进制流，显态为0，隐态为1。</p>
+<h3 id="分辨can总线">分辨CAN总线</h3>
+<p>首先找到双绞线，可以通过颜色区分汽车线束上的CAN总线，不同厂商可能数量和颜色都不一样</p>
+<ul>
+<li>CAN_H
+<ul>
+<li>动力CAN(Powertrain CAN) 橙/黑</li>
+<li>舒适CAN(Convenience CAN) 橙/绿</li>
+<li>信息娱乐CAN(Infotainment CAN) 橙/紫</li>
+<li>仪表CAN(Instrument CAN) 橙/蓝</li>
+<li>诊断CAN(Diagnostic CAN) 橙/红</li>
+</ul>
+</li>
+<li>CAN_L 橙/棕</li>
+</ul>
+<p>当Vcc的标称电压为5V的理想情况下，CAN总线电压如下，可以根据线束电压特点找到并区分CAN线。但要注意部分总线存在睡眠模式(舒适、信息娱乐存在，动力总线无睡眠模式)，新型的CAN总线有低功耗模式。</p>
+<ul>
+<li>高速CAN：
+<ul>
+<li>显态：CAN_H 3.5V，CAN_L 1.5V，电位差为2V</li>
+<li>隐态：CAN_H、CAN_L均是电压2.5V</li>
+</ul>
+</li>
+<li>低速CAN
+<ul>
+<li>显态：CAN_H 3.6V，CAN_L 1.4V，电位差为2.2V</li>
+<li>隐态：CAN_H 4.7V，CAN_L 0.3V，电位差为4.4V</li>
+</ul>
+</li>
+</ul>
+<h2 id="基于can的应用层扩展协议">基于CAN的应用层扩展协议</h2>
+<p>CAN可以分为高层协议和底层协议，CAN的应用层协议也叫基于CAN的高层扩展协议(HLP)，一般在第七层。</p>
+<p>下面是基于CAN的高层扩展协议。</p>
+<ul>
+<li>1992: <a href="https://www.can-cia.org/standardization/specifications/"target="_blank" rel="noopener noreferrer">CiA 201 series (CAN Application Layer)</a></li>
+<li>1994: <a href="http://www.iec.ch/"target="_blank" rel="noopener noreferrer">IEC 62026-3 (DeviceNet)</a></li>
+<li>1994: <a href="http://www.sae.org/"target="_blank" rel="noopener noreferrer">SAE J1939 series</a></li>
+<li>1994: <a href="https://www.can-cia.org/standardization/specifications/"target="_blank" rel="noopener noreferrer">EN 50325-4 (CANopen)</a></li>
+<li>1999: <a href="http://www.iso.org/"target="_blank" rel="noopener noreferrer">ISO 11992 series</a></li>
+<li>1999: <a href="http://www.milcan.org/"target="_blank" rel="noopener noreferrer">MilCAN</a></li>
+<li>2000: <a href="http://www.iec.ch/"target="_blank" rel="noopener noreferrer">IEC 61162-3 (NMEA 2000)</a></li>
+<li>2002: <a href="http://www.iso.org/"target="_blank" rel="noopener noreferrer">ISO 11783 series (Isobus)</a></li>
+<li>2004: <a href="http://www.iso.org/"target="_blank" rel="noopener noreferrer">ISO 15765 series (OBDII/ISO-TP)</a></li>
+<li>2007: <a href="http://www.arinc.com/"target="_blank" rel="noopener noreferrer">Arinc 825/826</a></li>
+<li>2015: <a href="http://uavcan.org/"target="_blank" rel="noopener noreferrer">UAVCAN</a></li>
+</ul>
+<h2 id="帧">帧</h2>
+<p>物理层把模拟信号转换成数字信号传给数据链路层，帧可以看作是数据链路层控制的协议数据单元(Protocol Data Unit, PDU)，每层PDU的叫法都不一样。物理层称作位(bit)，网络层称作包(packet)，应用层称作报文(message)。</p>
+<p>CAN节点之间数据的发送和接收由4种不同的帧掌控。</p>
+<ul>
+<li>数据帧(Data Frame, DF) 携带从发送节点至接收节点的数据</li>
+<li>远程帧(Remote Frame, RF) 向其他节点请求发送具有同一标识符的数据帧</li>
+<li>错误帧(Error Frame, EF) 节点检测到错误后发送错误帧</li>
+<li>超载帧(Overload Frame, OF) 在先行的和后续的数据帧（或远程帧）之间附加一段延时</li>
+</ul>
+<p>数据帧和远程帧通过帧间空间(interframe space)与上一帧（不论类型）分开，错误帧和超载帧则不用通过帧间空间与上一帧分开。</p>
+<p><img loading="lazy"  src="interframe_space.png"
+        alt="interframe_space"/></p>
+<p>帧间空间包括分隔域和总线空闲(bus idle)，分隔域由三个隐性电位组成，总线上没有帧被传输的时是空闲状态，这时候总线处于静电位，也就是隐态(1)，可以任意长度。</p>
+<h2 id="数据帧">数据帧</h2>
+<p>CAN协议包括经典的CAN和新推出的CAN FD(CAN with Flexible Data rate)。
+经典CAN即CAN 2.0，由博世在1991年推出，A/B(part A and part B)。CAN FD由博世和其他专家在2011年推出，又叫灵活CAN。A部分和B部分分别规范了两种帧格式：标准帧和扩展帧。因此数据帧可以分为4种：</p>
+<ul>
+<li>经典CAN的标准数据帧(Classical Base Frame Format, CBFF)</li>
+<li>经典CAN的扩展数据帧(Classical Extended Frame Format, CEFF)</li>
+<li>灵活CAN的标准数据帧(FD Base Frame Format, FDFF)</li>
+<li>灵活CAN的扩展数据帧(FD Extended Frame Format, FEFF)</li>
+</ul>
+<p>CAN数据帧大体结构如下
+<img loading="lazy"  src="can_frame.gif"
+        alt="can_frame"/>
+主要由8个部分组成</p>
+<ul>
+<li>帧头</li>
+<li>仲裁域</li>
+<li>控制域</li>
+<li>数据域</li>
+<li>校验域</li>
+<li>应答域</li>
+<li>帧尾</li>
+<li>分隔域</li>
+</ul>
+<h3 id="标准帧">标准帧</h3>
+<p>CAN的有效载荷为8字节，传输速率1Mb/s。CAN FD(CAN with Flexible Data-Rate)有效载荷可以大于8字节，最高64字节，因此传输速率可达8Mb/s。
+<img loading="lazy"  src="canfd02.png"
+        alt="canfd02"/>
+CAN和CAN FD的帧结构相同，细节不一样。
+<img loading="lazy"  src="frame_structure.png"
+        alt="frame_structure"/></p>
+<h3 id="扩展帧">扩展帧</h3>
+<p><img loading="lazy"  src="id-examples.png"
+        alt="id-examples"/>
+扩展帧可以链接在一起形成更长的ID。扩展帧用替代远程请求(SRR)代替远程传输请求(RTR)，标识符扩展(IDE)也设位1。</p>
+<h2 id="仲裁">仲裁</h2>
+<p>CAN和以太网都是属于广播形式的网络，为了减少数据的冲突和重传，以太网使用了载波监听多路访问/冲突检测(Carrier Sense Multiple Access/Collision Detection, CSMA/CD)机制，在发送数据之前，以太网会“监听”线缆，判断是否已经有其他数据传输。</p>
+<p>CAN里面也使用了这个机制，把这种解决冲突的方式称作仲裁，当总线空闲的时候，任何节点都可以传输以上帧。</p>
+<p>仲裁期间，发送器会使用一种逐位仲裁的方式(bit-wise arbitration)，帧头(Start of Frame, SOF)的比特位是0，在确定总线空闲之后，帧头才能被发送，紧接着在11位仲裁域，对比每一个被传输的比特位和总线上被监视的电位，如果和其他帧冲突马上就能发现。显性位优先，仲裁ID的值越低，优先级越高。</p>
+<ul>
+<li>当总线电位和被传送的电位相同，则继续发送下一位。</li>
+<li>当其他节点在总线发送了一个显性位(0)，如果一个隐性位(1)被发送过去，此时就会仲裁失败，停止发送任何比特。</li>
+<li>当其他节点在总线发送了一个隐性位(1)，如果一个显性位(0)被发送过去，那么此时发送的节点会检测到错误。</li>
+</ul>
+<p>下图因为Node3的仲裁ID的值最低，所以优先传输。
+<img loading="lazy"  src="can_arbitration.gif"
+        alt="can_arbitration"/></p>
+<p>逐位仲裁可以解决不同ID或者不同类型的帧冲突，如果一个数据帧和一个远程帧冲突，数据帧优先，因为数据帧RTR位是显态(0)，如果冲突的帧相同ID相同类型，则会仲裁失败并产生错误帧。没有响应或因错误导致帧损坏会仲裁失败，这种情况会自动把帧重传。</p>
+<p>当多个节点同时广播消息时，为了解决冲突，优先级较高的节点作为主节点，其他节点作为从节点，一个请求和其对应的响应的ID是一致的，冲突产生时，较高优先级的主节点传输数据不受影响，优先级低的节点主动回退作为从节点。等待优先级高的节点传输结束，总线空闲之后重新传输。</p>
+<p>规范的制定者把这种产生冲突依然能传送帧的机制称作无损仲裁(non-destructive arbitration)。和以太网不一样，以太网检测到冲突会让所有节点回退。</p>
+<p>在DeviceNet(IEC 62026-3)协议里，把逐位仲裁和无损仲裁的机制统称为：载波监听多路访问逐位无损仲裁(Carrier Sense Multiple Access/Non-destructive Bit-wise Arbitration, CSMA/NBA)</p>
+<p>因为ISO 11898-1定义的标准CAN是基于事件触发，在实时性方面不足，在ISO 11898-4里描述了一种基于时间触发的CAN发送机制(TTCAN)，利用不同的时间槽避免消息的冲突，目前还没有被广泛实现。</p>
+<p><img loading="lazy"  src="TTCAN.png"
+        alt="TTCAN"/></p>
+<p>CAN有多种检测错误的措施，监视比较发送器对发送位的电平与被监控的总线电平进行，检查帧格式，CRC校验(经典CAN15位，CAN-FD数据长度8到16比特的17位，数据长度20到64比特的21位)，检查填充位，检查ACK。</p>
+<h2 id="on-board-diagnostics">On-Board Diagnostics</h2>
+<p>车载诊断(On-Board Diagnostics, OBD)起初用于尾气排放监测。设想起源于美国通用汽车公司开发的专利：装配线诊断链(ALDL,Assembly Line Diagnostic Link)。通过标准化故障诊断码(diagnostic trouble codes, DTCs, ISO 15031-6/SAE J2012)可以快速识别和纠正车内故障。</p>
+<p>ISO 15031是车辆和发射相关诊断用外部设备之间通信的规范，总共七个部分</p>
+<ul>
+<li>ISO 15031-1 一般信息和用例定义</li>
+<li>ISO 15031-2/SAE J1930 术语、定义、缩写词和首字母缩略语指导</li>
+<li>ISO 15031-3/SAE J1962 诊断连接器和相关电路的规范及使用</li>
+<li>ISO 15031-4/SAE J1978 外部测试设备</li>
+<li>ISO 15031-5/SAE J1979 排放相关的诊断服务</li>
+<li>ISO 15031-6/SAE J2012 标准化故障诊断码定义</li>
+<li>ISO 15031-7/SAE J2186 数据链路安全</li>
+</ul>
+<h3 id="odb-ii">ODB-II</h3>
+<p>在OBD-I的阶段，不同的厂商的诊断连接器、连接器位置、DTC和数据读写方式都不同。OBD-II标对连接协议等定制了详细的规范。OBD-II连接器符合SAE J1962标准，有公头(A)和母头(B)组成。D形头，16-pin(2x8)。</p>
+<p><img loading="lazy"  src="J1962_wire.jpg"
+        alt="J1962_wire"/></p>
+<p><img loading="lazy"  src="femail_pinout.png"
+        alt="femail_pinout"/>
+以母头示例，引脚定义如下图</p>
+<p>在接CAN的条件下，4是外壳接地，5是信号接地，6是CAN_H，14是CAN_L，16是12v直流电源正极。15031-3也定义了其他协议（ISO 14230,SAE J1850）总线的引脚。
+<img loading="lazy"  src="pinout_assignment.png"
+        alt="pinout_assignment"/></p>
+<p>现在车载诊断主流的标准是ODB-II(ISO 15765)，是基于CAN的扩展协议。1996年美国要求所有汽车都要实现OBD-II，2003年欧盟要求所有汽车都要实现EOBD(几乎和OBD-II一样)，2006年国III标准要求汽车要带有OBD，便于检测尾气排放。所以现在几乎所有汽车都配有OBD接口，一般在主驾驶舱的底部，一般通过DB9连接到电脑端。</p>
+<p>英版DB9排列
+<img loading="lazy"  src="db9_en.jpg"
+        alt="db9_en.jpg"/>
+美版DB9排列
+<img loading="lazy"  src="db9_us.jpg"
+        alt="db9_us.jpg"/></p>
+<p>ODB-II规范分为四部分：</p>
+<ul>
+<li>ISO 15765-1 介绍一般信息</li>
+<li>ISO 15765-2 网络层服务规范（ISO-TP）</li>
+<li>ISO 15765-3 应用层规范，UDS在CAN的实现规范。</li>
+<li>ISO 15765-4 物理层到网络层的规范 会话层</li>
+</ul>
+<p>把ODB-II按照OSI七层模型划分，可以分为三类</p>
+<ul>
+<li>诊断服务，详细参考ISO 15765-3</li>
+<li>网络层服务，详细参考ISO 15765-2</li>
+<li>CAN服务，详细参考ISO 11898</li>
+</ul>
+<h2 id="uds">UDS</h2>
+<p>参考表格对比，右侧是法律要求统一的车载诊断规范,左侧是厂商可定制的增强型诊断(Enhanced diagnosic)，在应用层实现了模块化诊断框架，面向所有ECU，称之为统一诊断服务(Unified Diagnostic Services,UDS)。</p>
+<p><img loading="lazy"  src="OSI_layers_table.png"
+        alt="OSI_layers_table"/></p>
+<p>下图是UDS在CAN上面的实现，标记了每一层用到的规范。其中UDS规范就是ISO 14229。
+<img loading="lazy"  src="OSI_layers_table2.png"
+        alt="OSI_layers_table2"/></p>
+<p>UDS为每个的服务的请求和响应定义了不同的ID
+<img loading="lazy"  src="UDS_ID.png"
+        alt="UDS_ID"/></p>
+<h2 id="相关资料">相关资料</h2>
+<p><a href="https://www.can-cia.org/can-knowledge"target="_blank" rel="noopener noreferrer">CiA: https://www.can-cia.org/can-knowledge</a></p>
+<p><a href="https://en.wikipedia.org/wiki/CAN_bus"target="_blank" rel="noopener noreferrer">Wiki: CAN bus</a></p>
+<p><a href="https://automotivetechis.wordpress.com/2012/06/01/can-basics-faq/"target="_blank" rel="noopener noreferrer">CAN Basics</a></p>
+<p><a href="http://mp.weixin.qq.com/s/3H06nKQoMYvNoj7RO-j1PA"target="_blank" rel="noopener noreferrer">ZLG致远电子:一文读懂容错CAN！</a></p>
+<p><a href="https://en.wikipedia.org/wiki/On-board_diagnostics"target="_blank" rel="noopener noreferrer">Wiki: On-board diagnostics</a></p>
+<p><a href="http://opengarages.org/handbook/ebook/"target="_blank" rel="noopener noreferrer">THE CAR HACKER’S HANDBOOK</a>
+<a href="https://en.wikipedia.org/wiki/Unified_Diagnostic_Services"target="_blank" rel="noopener noreferrer">Wiki: Unified Diagnostic Services</a></p>
+<p><a href="https://automotive.softing.com/fileadmin/sof-files/pdf/de/ae/poster/UDS_Faltposter_softing2016.pdf"target="_blank" rel="noopener noreferrer">UDS - ISO 14229 Info - Softing Automotive</a></p>
+<p><a href="https://www.iso.org/search/x/query/ISO%252011898"target="_blank" rel="noopener noreferrer">ISO 11898</a></p>
+<p><a href="https://www.iso.org/search/x/query/ISO%252014229"target="_blank" rel="noopener noreferrer">ISO 14229</a></p>
+<p><a href="https://www.iso.org/search/x/query/ISO%252015031"target="_blank" rel="noopener noreferrer">ISO 15031</a></p>
+<p><a href="https://www.iso.org/search/x/query/ISO%252015765"target="_blank" rel="noopener noreferrer">ISO 15765</a></p>
+<p><a href="http://standards.sae.org/j1962_201207/"target="_blank" rel="noopener noreferrer">SAE J1962</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E6%B1%BD%E8%BD%A6%E5%AE%89%E5%85%A8/>汽车安全</a><a class="tag" href=/zh/tags/%E8%BD%A6%E8%81%94%E7%BD%91/>车联网</a><a class="tag" href=/zh/tags/carhacking/>Carhacking</a><a class="tag" href=/zh/tags/can-bus/>CAN-bus</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/gl-inet-mifi-a-decent-4g-portable-router/"><span class="iconfont icon-article"></span>GL.iNet MIFI 一款差不多的4G便携路由器</a></p><p><a class="link" href="/zh/posts/4g-modem-attack-scenarios-in-vehicle-networking/"><span class="iconfont icon-article"></span>浅谈4G通信模组在车联网领域的攻击场景</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

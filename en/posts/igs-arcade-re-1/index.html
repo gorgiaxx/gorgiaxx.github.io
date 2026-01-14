@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has not been favored by capital for a long time. The 2020 pandemic dealt an even heavier blow to the arcade business."><title>IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis</h1><p class="article date">Saturday, May 17, 2025<span class="langs"><span class="lang">
+                    <a href="/zh/posts/igs-arcade-re-1/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h1 id="preface">Preface</h1>
+<p>2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has not been favored by capital for a long time. The 2020 pandemic dealt an even heavier blow to the arcade business.</p>
+<p>Back then, 100 RMB might only buy 50 credits; now 100 RMB can buy 200 credits.</p>
+<p>I like racing games. Wangan Midnight, Initial D, and Speed Driver have been the hottest games in arcades in recent years, because they have accounts and thus a social component. Some time ago, when I was cracking the player app for Speed Driver 5, I learned that IGS (International Games System) is the company behind the Romance of the Three Kingdoms arcade game I played as a kid and Journey to the West. IGS’s anti-cracking is top-tier across the entire industry, and the Speed Driver series is even known as “uncrackable.”</p>
+<p>Last month, the “Big Player” arcade near my home shut down. I feel that sooner or later the Speed Driver series may disappear, so I wanted to challenge myself to crack it.</p>
+<p>The release order of the IGS Speed Driver series is as follows:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Game</th>
+          <th>Device Model</th>
+          <th>Year</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Speed Driver:Evolution Evolution</td>
+          <td></td>
+          <td>2004</td>
+      </tr>
+      <tr>
+          <td>Speed Driver 2</td>
+          <td>E2000</td>
+          <td>2007</td>
+      </tr>
+      <tr>
+          <td>Speed Driver 3</td>
+          <td>E3000, E3100</td>
+          <td>2010</td>
+      </tr>
+      <tr>
+          <td>Speed Driver 4</td>
+          <td>E3000, E3100, S3000</td>
+          <td>2013</td>
+      </tr>
+      <tr>
+          <td>Speed Driver 5</td>
+          <td>S3000</td>
+          <td>2019</td>
+      </tr>
+  </tbody>
+</table>
+<p>I planned to start with the E2000 platform. The difficulty should definitely be lower than PGM (PolyGame Master) because it’s PC-based: there’s no need to emulate a sound card or GPU. The hardware has almost no physical protection, the CPU ISA is x86, the OS is Linux, there’s no anti-debugging, and no VMP—this is basically the beginner village.</p>
+<p>In Asia, the Speed Driver series has influence comparable to Wangan Midnight, Initial D, and Raiden G (all of which have been cracked). IGS’s anti-cracking is the most successful: throughout the entire product lifecycle, it was never cracked.</p>
+<h1 id="hardware-analysis">Hardware analysis</h1>
+<p>In <a href="https://github.com/shizmob/arcade-docs/"target="_blank" rel="noopener noreferrer">Arcade-docs</a> you can look up the hardware information of each device and the games it supports.
+Leveraging my “skill” at scavenging e-waste, I managed to get an E2000 host. There are quite a few enthusiasts abroad buying them too, so the price has gone up.</p>
+<h2 id="external-interface-analysis">External interface analysis</h2>
+<p>On the front there are two RS-485 ports, and the CF card can be removed externally.</p>
+<p><img loading="lazy"  src="e2000_shield_1.jpeg"
+        alt=""/></p>
+<p>Back-side ports, with the very “millennium PC” vibe:</p>
+<ul>
+<li>12V DC</li>
+<li>2 x DB9 COM</li>
+<li>4 x USB 2.0</li>
+<li>RJ45 LAN</li>
+<li>3.5mm Audio Out</li>
+<li>25pin + 30pin I/O connector</li>
+</ul>
+<p><img loading="lazy"  src="e2000_shield_2.jpg"
+        alt=""/></p>
+<h2 id="mainboard-analysis">Mainboard analysis</h2>
+<p>Given that cracking this doesn’t seem hard, I’m not going to analyze the other components whose silkscreen is covered by stickers—it’s too annoying.</p>
+<p>The host I bought came with the game Percussion Master 2008 installed, but Speed Driver 2 also runs.</p>
+<ul>
+<li>Mainboard model: I-JOIN E2000-V256 IH-02 (Advantech)</li>
+<li>A - CPU: Celeron M 370 (1.5 GHz)</li>
+<li>B - Northbridge: unknown</li>
+<li>C - GPU: NVIDIA GeForce 6200 (256 MB, GDDR2)</li>
+<li>D - 2 x DDR 333 256MB</li>
+<li>E - Chipset: Intel 852GME (ICH4-M)</li>
+<li>F - PCI9030, a GPIO chip, likely used for transmitting controller signals.</li>
+<li>G - I/O controller with an LPC interface</li>
+<li>H - A11 BIOS chip SST 49LF004B (PLCC32)</li>
+<li>I - IH-C02 ALTERA EPM3032ALC44-10N CPLD (PLCC44), controller; contains ROM, purpose unknown</li>
+<li>J - IGS EV29LV640-90PCR 8MB EEPROM, DIP 48-pin package, an IGS custom chip. This chip has a label with the game name on it, suggesting the BIOS ROM is also game-related. There may be content related to the V21 chip.</li>
+<li>K - V21, IGS036E, maybe an FPGA or ASIC used to encrypt/process the input/output of control signals</li>
+<li>L - 64K x 16 HIGH-SPEED CMOS STATIC RAM x3</li>
+<li>M - CF card: ADATA 2GB (266X)</li>
+<li>N - IDE HDD connector</li>
+</ul>
+<p>I have many ways to get a root shell on the hardware, but I’m more interested in the game loading process. So let’s start with software reverse engineering.</p>
+<p><img loading="lazy"  src="e2000_board.jpg"
+        alt=""/></p>
+<h2 id="io-board-analysis">I/O board analysis</h2>
+<p>These boards are also called control boards. They should be used to connect game controllers such as the steering wheel, brake/throttle, coin acceptor, etc.</p>
+<p>They communicate via the 25pin + 30pin I/O connector to the mainboard.</p>
+<p>The price may even be higher than the host itself.</p>
+<p>In theory, you could use a logic analyzer to capture these sensor signals and then implement control functionality. But I’ve heard the control signals are handled by the V21 chip (ASIC) and may be encrypted. I also don’t plan to clone a control board. These arcade racing games aren’t as fun as Forza Horizon 5. Arcades are cheap these days—if you really want to play, just pay to play at an arcade, or buy a steering wheel setup and play at home.</p>
+<p><img loading="lazy"  src="sd2_io.jpg"
+        alt=""/></p>
+<p><img loading="lazy"  src="sd2_io2.jpg"
+        alt=""/></p>
+<h1 id="filesystem-analysis">Filesystem analysis</h1>
+<p>Dump the CF card directly. The file size is 2GB. The <code>file</code> command output is:</p>
+<pre tabindex="0"><code>DOS/MBR boot sector, LInux i386 boot LOader; partition 1 : ID=0x1, active, start-CHS (0x0,1,1), end-CHS (0x2,63,63), startsector 63, 12033 sectors; partition 2 : ID=0x83, start-CHS (0x3,0,1), end-CHS (0x22,63,63), startsector 12096, 129024 sectors; partition 3 : ID=0x83, start-CHS (0x62,0,1), end-CHS (0x399,63,63), startsector 395136, 3322368 sectors; partition 4 : ID=0x83, start-CHS (0x23,0,1), end-CHS (0x61,63,63), startsector 141120, 254016 sectors
+</code></pre><p>Boot process: LILO is used as the MBR, installed directly in the first sector to boot Linux.</p>
+<pre tabindex="0"><code>+----------------------------------------+
+| Master Boot Record    Operating system |
+|----------------------------------------|
+| LILO ---------------&gt; Linux            |
+|                  ---&gt; other OS         |
++----------------------------------------+
+</code></pre><p>View the partition information via <code>fdisk</code>. This is a Linux OS with four partitions, contiguous from start to end. Everything after the last partition is <code>0x00</code>, so there is no hidden partition.</p>
+<pre tabindex="0"><code>Disk ./percussion_master_2008.img: 1.77 GiB, 1903878144 bytes, 3718512 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x6e4a3fef
+
+Device                        Boot  Start     End Sectors  Size Id Type
+./percussion_master_2008.img1 *        63   12095   12033  5.9M  1 FAT12
+./percussion_master_2008.img2       12096  141119  129024   63M 83 Linux
+./percussion_master_2008.img3      395136 3717503 3322368  1.6G 83 Linux
+./percussion_master_2008.img4      141120  395135  254016  124M 83 Linux
+</code></pre><p>One notable trait of the E2000 platform layout is that partition 3 and partition 4 are in “reverse” order.</p>
+<p>Partition 2 and partition 4 cannot be fully extracted by 7z. <code>binwalk</code> can identify some compressed regions, so it is very likely a heavily modified filesystem.</p>
+<p>The purpose of each partition is as follows (later I found the original filesystem types for partitions 2 and 4):</p>
+<pre tabindex="0"><code>Partition 1: Ext2, Bootloader, kernel
+Partition 2: IGS CRAMFS, RootFS
+Partition 3: Ext3, Log Data
+Partition 4: IGS SquashFS, Game Data
+</code></pre><h2 id="kernel-reversing">Kernel reversing</h2>
+<p>So far I have not found the rootfs or the game program; they are most likely located in partition 2 and partition 4.
+I think reversing the kernel can save a lot of detours. Without relying on the kernel, you could also directly reverse the filesystem format from the raw data, but that’s boring. And whatever extractor you end up writing won’t beat open-source filesystem unpacking tools anyway.
+First, look at partition 1: it contains a loader and a kernel. The kernel version is shown, but it may not be the correct one.</p>
+<pre tabindex="0"><code>SD2:        LILO (LInux LOder)
+SD2-OS-61P: Linux kernel x86 boot executable, bzImage, version 2.4.31-IGS_V0.5a (james@Code_Server.linnet.net.tw) #1 Thu Aug 30 19:06:24 CST 2007, RO-rootFS, root_dev 0X305, Normal VGA, setup size 512*6, syssize 0x3b88, jump 0x230 0xe800040000000000 instruction, protocol 2.3
+</code></pre><p>LILO has been customized by IGS. It shows “IGS Loader v2.0 Boot Menu 2007/04”, which indicates the base version is <code>lilo-22.8</code>.</p>
+<p>There’s nothing interesting to analyze here. Start extracting <code>vmlinux</code>. The kernel file is in <code>bzImage</code> format and needs to be decompressed.</p>
+<pre tabindex="0"><code>7z x ./SD2-OS-61P -okernel.decomped
+</code></pre><p>Next is standard kernel reversing. The first step is to determine the image base. There are many ways to do that; you can refer to my other posts.</p>
+<p>Here, after looking twice, you can basically guess it: <code>0xC0100000</code>.</p>
+<p>With the base configured correctly, IDA can automatically identify some xrefs; the rest needs manual recovery. IDA 9.0 changed some APIs, so I had to rewrite some scripts again.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_bytes</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_segment</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_funcs</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ida_ida</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">find_and_make_function</span><span class="p">(</span><span class="n">start_ea</span><span class="p">,</span> <span class="n">end_ea</span><span class="p">,</span> <span class="n">pattern_str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">image_base</span> <span class="o">=</span> <span class="n">idaapi</span><span class="o">.</span><span class="n">get_imagebase</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pattern</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">compiled_binpat_vec_t</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">err</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">parse_binpat_str</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">image_base</span><span class="p">,</span> <span class="n">pattern_str</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">current_ea</span> <span class="o">=</span> <span class="n">start_ea</span>
+</span></span><span class="line"><span class="cl">    <span class="n">found_count</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">current_ea</span> <span class="o">&lt;</span> <span class="n">end_ea</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">current_ea</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">bin_search</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_ea</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">end_ea</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">pattern</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_FORWARD</span> <span class="o">|</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">BIN_SEARCH_NOSHOW</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">current_ea</span> <span class="o">==</span> <span class="n">ida_idaapi</span><span class="o">.</span><span class="n">BADADDR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">current_ea</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">get_flags</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">ida_bytes</span><span class="o">.</span><span class="n">FF_CODE</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">idc</span><span class="o">.</span><span class="n">get_func_flags</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="n">seg</span> <span class="o">=</span> <span class="n">ida_segment</span><span class="o">.</span><span class="n">getseg</span><span class="p">(</span><span class="n">current_ea</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">seg</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">ida_funcs</span><span class="o">.</span><span class="n">add_func</span><span class="p">(</span><span class="n">current_ea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Create function failed at 0x</span><span class="si">{:X}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_ea</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">found_count</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="n">current_ea</span> <span class="o">+=</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Search finished, </span><span class="si">{}</span><span class="s2"> functions created&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">found_count</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">find_and_make_function</span><span class="p">(</span><span class="mh">0xC0100000</span><span class="p">,</span> <span class="mh">0xC0508000</span><span class="p">,</span> <span class="s2">&#34;55 89 E5&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># You can define function entry opcodes based on your case</span>
+</span></span></code></pre></div><p>Of course, even at this point, not all xrefs are fully recognized. In the data segment, some strings and offsets are not recovered well either, but it doesn’t matter much. If you’re completely stuck, recovering those bits may lead to new discoveries.</p>
+<p>Next is to find an entry point for analysis. There’s honestly not much technical content here—I have many approaches, for example starting from filesystem characteristics. But writing everything out would be like saying “the character 茴 has five ways to write it,” which is kind of ridiculous.</p>
+<p>We can confirm the kernel version is 2.4.31, and the IGS version is v1.0, not v0.5 as shown by the <code>bzImage</code> banner.</p>
+<p><img loading="lazy"  src="igs_strings.png"
+        alt="igs_strings"/></p>
+<p>From the following strings, we can determine which upstream filesystem versions correspond to IGS’s modified filesystems:</p>
+<ul>
+<li>rofs: cramfs</li>
+<li>shfs: squashfs 2.2</li>
+</ul>
+<p><img loading="lazy"  src="rofs_strings.png"
+        alt="rofs_strings"/></p>
+<p>Linux 2.4.31 does not include squashfs. So I directly looked for a squashfs patch. IGS’s modified SHFS is based on squashfs 2.2.
+<a href="https://master.dl.sourceforge.net/project/squashfs/OldFiles/squashfs2.2r2.tar.gz"target="_blank" rel="noopener noreferrer">https://master.dl.sourceforge.net/project/squashfs/OldFiles/squashfs2.2r2.tar.gz</a></p>
+<p>Linux 2.4 doesn’t support <code>kallsyms</code>, so symbols need to be recovered manually. Some functions like <code>printf</code>, <code>memcpy</code>, <code>str*</code> can be recognized quickly by eye, but I wanted to analyze the system boot process, so I needed to recover some kernel-specific symbols.</p>
+<p>For such old devices, cross-compiling on a modern Linux is not feasible. I installed a 32-bit CentOS 5.10 VM, built it successfully, and extracted <code>System.map</code> and <code>vmlinux</code>, making it easier to compare what parts were modified by IGS.</p>
+<p><img loading="lazy"  src="symbols.png"
+        alt="symbols"/></p>
+<p>For firmware where you can’t find a ramdisk or rootfs, the first step is definitely to locate <code>sys_mount</code> and the boot parameters in the kernel.</p>
+<pre tabindex="0"><code>root=/dev/hdc2 ro console=ttyS1,115200
+sys_mount(&#34;/dev/hdc3&#34;, &#34;/PM2008v2&#34;, &#34;shfs&#34;, flag, data)
+sys_mount(&#34;/dev/hdc4&#34;, &#34;/PM2008v2/pm2_data&#34;, &#34;ext3&#34;, flag, data)
+</code></pre><p>From this, we can determine the rootfs should be partition 2, and the game data is in partition 3.</p>
+<p>The logic for mounting the ramdisk is located here:</p>
+<pre tabindex="0"><code>prepare_namespace
+  -&gt;rd_load_disk
+     -&gt;rd_load_image
+       -&gt;identify_ramdisk_image
+</code></pre><p>Here we can confirm IGS supports ramdisks in squashfs and IGS ROFS formats, and we can also identify their magics.</p>
+<p><img loading="lazy"  src="identify_ramdisk_image.png"
+        alt="identify_ramdisk_image"/></p>
+<p>I won’t record the full analysis process. They modified the FS header, which makes the analysis somewhat nasty 🤢.</p>
+<h2 id="extracting-the-filesystem">Extracting the filesystem</h2>
+<p>I analyzed the headers of three custom filesystems on the E2000 platform; the contents are as follows.</p>
+<h3 id="igs-shfs-v1-header">IGS SHFS V1 Header</h3>
+<pre tabindex="0"><code>struct squashfs_super_block_22_v1 {
+    unsigned int        s_magic;    // 0xD4AA2682
+    unsigned int        block_size_1:16;
+    unsigned int        block_log:16;
+    unsigned int        major_number;
+    unsigned int        minor_number;
+    unsigned int        inodes;
+    unsigned int        bytes_used;
+    unsigned int        uid_start;
+    unsigned int        guid_start;
+    unsigned int        inode_table_start;
+    unsigned int        directory_table_start;
+    unsigned int        flags:8;
+    unsigned int        no_uids:8;
+    unsigned int        no_guids:8;
+    int                 mkfs_time /* time of filesystem creation */;
+    squashfs_inode      root_inode;
+    unsigned int        block_size;
+    unsigned int        fragments;
+    unsigned int        fragment_table_start;
+} __attribute__ ((packed));
+</code></pre><h3 id="igs-shfs-v2-header">IGS SHFS V2 Header</h3>
+<p>Using Percussion Master 2008 as an example:</p>
+<pre tabindex="0"><code>struct squashfs_super_block_22_v2 {
+    unsigned int        s_magic;   // 0xD4AA2682
+    char                igs_info[64];   // banner
+    unsigned int        block_size_1:16;
+    unsigned int        block_log:16;
+    unsigned int        igs_fs_version_major;  // 59 17 23 96
+    unsigned int        igs_fs_version_minor;  // E1 5D 70 00
+    unsigned int        major_number;      // 31 64 52 E5
+    unsigned int        minor_number;      // 92 2C 03 68
+    unsigned int        inodes;
+    unsigned int        bytes_used;
+    unsigned int        uid_start;
+    unsigned int        guid_start;
+    unsigned int        inode_table_start;
+    unsigned int        directory_table_start;
+    unsigned int        flags:8;
+    unsigned int        no_uids:8;
+    unsigned int        no_guids:8;
+    int                 mkfs_time /* time of filesystem creation */;
+    squashfs_inode      root_inode;
+    unsigned int        block_size;
+    unsigned int        fragments;
+    unsigned int        fragment_table_start;
+} __attribute__ ((packed));
+</code></pre><h3 id="igs-rofs-v1-header">IGS ROFS V1 Header</h3>
+<pre tabindex="0"><code>struct cramfs_inode {
+    unsigned int inode_magic;       
+    unsigned int namelen:6, offset:26;
+	unsigned int size:24, gid:8;
+	unsigned int mode:16, uid:16;
+};
+
+struct cramfs_info {
+	unsigned int crc;
+	unsigned int edition;
+	unsigned int blocks;
+	unsigned int files;
+};
+
+struct igs_rofs_super_block {
+	unsigned int magic1;   // 0x81006e6a
+	unsigned int future;	
+    char igs_info[64];
+	unsigned int size;	
+	unsigned int magic2;   // 0xD4AA2682
+	unsigned int flags;	
+	unsigned int padding;	
+	cramfs_info fsid;
+	char name[64];	
+	cramfs_inode root[2];
+};
+
+igs_rofs_super_block File;
+</code></pre><p>By porting the headers above into <code>cramfs-tools</code> and <code>squashfs-tools</code>, you can extract the filesystem perfectly, and you can also detect whether files are corrupted. I have uploaded the code to GitHub: <a href="https://github.com/gorgiaxx/igs-toolkits"target="_blank" rel="noopener noreferrer">https://github.com/gorgiaxx/igs-toolkits</a></p>
+<p>This version is not hard to extract, but the next version (E3000) introduces encryption.</p>
+<p><img loading="lazy"  src="extracted_files.png"
+        alt="extracted_files"/></p>
+<p>Player @novacosmic00 previously asked me to help extract files for GoGoBall. He said he had already decrypted files from other games, but GoGoBall was the only one he couldn’t decrypt. I tried extracting with my modified tools and found the file CRC was wrong, but most files could still be extracted.</p>
+<p>After I finished extracting the firmware and talked with @novacosmic00, I learned that someone had researched this two years ago and wrote extraction scripts.</p>
+<p><a href="https://github.com/batteryshark/igstools/tree/main/scripts"target="_blank" rel="noopener noreferrer">https://github.com/batteryshark/igstools/tree/main/scripts</a></p>
+<p>The author may have inferred the structs by analyzing filesystem contents and reverse-engineering address patterns. That’s also a valid approach, but the downside is that extracted files can be messy, and you can’t detect CRC errors.</p>
+<h2 id="shadow-">shadow-</h2>
+<p>The <code>shadow</code> file clears the root password by default.</p>
+<pre tabindex="0"><code>root:x:13130:0:99999:7:::   
+test::13074:0:99999:7::: 
+</code></pre><p>This is the original file:</p>
+<pre tabindex="0"><code>root:$1$qAw/5vcb$x9rPCAwLMdRBQXwlq1zG70:13130:0:99999:7:::
+test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
+</code></pre><h2 id="anti-cracking">Anti-cracking</h2>
+<p><code>/PM2008v2/PM2008v2</code> has stripped symbols, and from string patterns it also looks like a normal loader.</p>
+<p><img loading="lazy"  src="pitch_symbols.png"
+        alt="pitch_symbols"/></p>
+<p>But in reality, if you run it on your own computer, it will overwrite the first 512k of your partition with zeros. I actually ran it back then—thankfully I didn’t run as root, and my disk was NVMe. Who would have thought this 18-year-old game still had this trick 🙈. I had never touched this field before; apparently arcade anti-cracking often includes many “suicidal” logics.</p>
+<p><img loading="lazy"  src="kill_disk.png"
+        alt="kill_disk"/></p>
+<p>The next post will analyze the in-game protection mechanism.</p>
+<h1 id="references">References</h1>
+<p><a href="https://zh.moegirl.org.cn/Speed_Driver%E7%B3%BB%E5%88%97"target="_blank" rel="noopener noreferrer">Moegirl Wiki - Speed Driver series</a></p>
+<p><a href="https://github.com/shizmob/arcade-docs/"target="_blank" rel="noopener noreferrer">https://github.com/shizmob/arcade-docs/</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/reverse-engineering/>Reverse Engineering</a><a class="tag" href=/en/tags/igs/>IGS</a><a class="tag" href=/en/tags/arcade/>Arcade</a><a class="tag" href=/en/tags/crack/>Crack</a><a class="tag" href=/en/tags/international-games-system/>International Games System</a><a class="tag" href=/en/tags/e2000/>E2000</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/igs-arcade-re-2/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (2) - Recovering Game Files</a></p><p><a class="link" href="/en/posts/vw-id4-vehicle-control-analysis/"><span class="iconfont icon-article"></span>VW ID.4 ICAS1 Vehicle Control Analysis</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

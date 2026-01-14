@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="这段时间有不少进展，但是遇到瓶颈了，大概还有三篇的量，最近很忙，先更新第三篇。
+我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。"><title>IGS Arcade 逆向系列（三）- Getshell&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="IGS Arcade 逆向系列（三）- Getshell" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">IGS Arcade 逆向系列（三）- Getshell</h1><p class="article date">Monday, June 23, 2025</p></section><article class="article markdown-body"><p>这段时间有不少进展，但是遇到瓶颈了，大概还有三篇的量，最近很忙，先更新第三篇。</p>
+<p>我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。</p>
+<ul>
+<li>
+<p><a href="/posts/igs_arcade_re_1">IGS Arcade 逆向系列（一）- E2000平台分析</a></p>
+</li>
+<li>
+<p><a href="/posts/igs_arcade_re_2">IGS Arcade 逆向系列（二）- 游戏文件恢复</a></p>
+</li>
+</ul>
+<p>要高效分析游戏主程序，最好是设备上动态调试，首先需要shell权限。除了CF卡和IO口，我目前几乎没有任何对这个设备输入内容的途径。</p>
+<p>如果走串口调试，第一步找到硬件调试口，下一步修改kernel内置的boot command。很麻烦，还要重打包回去，不够优雅。</p>
+<p>CF卡有两个分区我可以直接写入，一个就是Kernel所在的Boot分区，另一个是日志和临时文件分区，那个说不定可以getshell，但是Pwn这个硬件不是我的目的。</p>
+<h2 id="igs-cramfs-重打包">IGS CRAMFS 重打包</h2>
+<p>之前我根据IGS魔改的cramfs特征，二次开发了cramfs-tools，但是它只能解包，不能重打包。它是不完美的，我有一点强迫症，想要让它作为真正的toolkits。</p>
+<p>IGS 魔改了cramfs的结构体，在cramfs_inode加入了校验值，也就是每次读取inode就会检查。</p>
+<pre tabindex="0"><code>struct cramfs_super {
+	unsigned int magic1;
+	unsigned int future;	/* future = CRAMFS_MAGIC ^ IGS_MAGIC_MASK2 ^ IGS_MAGIC_MASK1 */ 
+    char igs_info[64];
+	unsigned int size;	
+	unsigned int magic2;
+	unsigned int flags;	
+	unsigned int padding;	
+	struct cramfs_info fsid;
+	char name[64];	
+	struct cramfs_inode root;
+};
+struct cramfs_inode {
+	u32 inode_magic;
+	u32 namelen:CRAMFS_NAMELEN_WIDTH, offset:CRAMFS_OFFSET_WIDTH;
+	u32 size:CRAMFS_SIZE_WIDTH, gid:CRAMFS_GID_WIDTH;
+	u32 mode:CRAMFS_MODE_WIDTH, uid:CRAMFS_UID_WIDTH;
+};
+struct cramfs_info {
+	u32 crc;
+	u32 edition;
+	u32 blocks;
+	u32 files;
+};
+</code></pre><p>在get_cramfs_inode，有一个暗桩，用inode_magic异或根inode的magic，判断是否等于0x705DE1，如果不等于就出错。虽然简单，但是每个游戏都不一样，重复的patch工作也挺烦人的。</p>
+<p>下图的可读性看起来不错，是因为我做了一些费时间的工作。其实这里IDA的反编译一开始是识别错误的，和汇编完全不一样。要把结构体先还原了，这里的分支才会正确，不然就会丢失很多代码。</p>
+<p><img loading="lazy"  src="./get_inode.png"
+        alt="get_inode"/></p>
+<p>我已经实现了IGS cramfs重打包的功能 <a href="https://github.com/gorgiaxx/igs-toolkits/tree/master/"target="_blank" rel="noopener noreferrer">igs-toolkits cramfs-tools</a></p>
+<p>Unpack</p>
+<pre tabindex="0"><code>sudo ./igs-toolkits/cramfs-tools/cramfsck -v -x./out ./test.img
+</code></pre><p>Repack</p>
+<pre tabindex="0"><code>sudo ./igs-toolkits/cramfs-tools/mkcramfs ./out test.img
+</code></pre><h2 id="修复-shell-环境">修复 Shell 环境</h2>
+<p>IGS 在新版的PM2008，做了很多阻止破解的措施。这个Kernel非常老，我花了大量时间解决兼容性问题。操作系统，编译工具链，源代码反复测试了许多版本，终于找到了稳定的编译环境。</p>
+<h3 id="修复agetty">修复agetty</h3>
+<p>现在的系统初始化后是没有tty shell的，因为IGS移除了agetty。这个组件位于util-linux。需要重新编译，静态链接。</p>
+<pre tabindex="0"><code>CC=&#34;/opt/gcc_3.2.2/bin/gcc&#34;
+LDFLAGS=&#34;-static&#34;
+DESTDIR=/root/build-linux-utils
+export LDFLAGS CC DESTDIR
+./configure --enable-static
+make
+make install
+</code></pre><p>然后在 /etc/inittab，增加下面这行命令。看起来是有115200的串口输出，我还没有在COM口尝试。因为在卧室里研究，场地有限，我喜欢更优雅的调试方式。</p>
+<pre tabindex="0"><code>1:4:respawn:/sbin/agetty ttyS1 115200 vt102
+</code></pre><h3 id="修复ssh-services">修复SSH Services</h3>
+<p>IGS移除了ssh服务，本来想用现成的dropbear，结果没一个能运行。花了大量时间找到个兼容的dropbear 0.53版本，完成静态编译（解决了很多错误），很多特性是在代码里写死的，我甚至做了一些patch，但还会出现奇怪的问题。
+于是只能选择ssh，新版的ssh由于弃用了过时加密算法，连接旧版ssh都要指定算法。因此要选择较新版本的openssh，以及openssl。</p>
+<p>编译好后生成密钥对，因为算法和格式有差异，所以要重新生成</p>
+<pre tabindex="0"><code>ssh-keygen -q -t rsa -f ssh_host_key
+ssh-keygen -q -t rsa -f ssh_host_rsa_key
+</code></pre><p>sshd_config 需要手动配置这些</p>
+<pre tabindex="0"><code>HostKey /home/ssh_host_key
+HostKey /home/ssh_host_rsa_key
+SyslogFacility AUTHPRIV
+LogLevel INFO
+PermitRootLogin yes
+AuthorizedKeysFile	.ssh/authorized_keys
+PermitEmptyPasswords yes
+X11Forwarding yes
+Subsystem	sftp	/home/sftp-server
+</code></pre><p>最后需要修复sshd的权限，否则会出错</p>
+<pre tabindex="0"><code>mkdir /var/empty
+echo &#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin&#34; &gt;&gt; /etc/passwd
+</code></pre><p>在前文提到的启动脚本添加ssh启动命令</p>
+<pre tabindex="0"><code>/home/sshd -f /home/sshd_config -h /home/ssh_host_rsa_key -p 22 -E /PM2008v2/pm2_data/sshd.log &gt; /PM2008v2/pm2_data/sshd_run.log 2&gt;&amp;1
+</code></pre><h3 id="修复ifconfig并且启用网络">修复ifconfig并且启用网络</h3>
+<p>IGS 禁止了网络连接，我在游戏代码里看到是可以联网的，游戏有一个OnlineMode，早期是有全球排名的，但当前版本不支持，代码里有明显的修改痕迹。没有地方可以触发进入OnlineMode。</p>
+<p><img loading="lazy"  src="./nullsub.png"
+        alt="nullsub"/></p>
+<p>系统甚至还有DHCP服务。配置IP的逻辑写在代码里。</p>
+<p><img loading="lazy"  src="./network_enable.png"
+        alt="network_enable"/></p>
+<p>ifconfig被失效了，应该也是被魔改了，自己重新编译一个。</p>
+<pre tabindex="0"><code>/home/ifconfig eth0 up mtu 1500 &gt;&gt; /PM2008v2/pm2_data/game_stdout.log 2&gt;&amp;1
+/home/ifconfig eth0 192.168.2.128 netmask 255.255.255.0 broadcast 192.168.2.255 &gt;&gt; /PM2008v2/pm2_data/game_stdout.log 2&gt;&amp;1
+</code></pre><p>这样就可以连接外部网络了。</p>
+<p>我还编译了一版 busybox，遇到大量兼容性问题，做了一些patch，也花了很多时间才编译成功。二进制文件可以在这里下载</p>
+<p><a href="https://github.com/gorgiaxx/igs-toolkits/tree/master/E2000_binaries"target="_blank" rel="noopener noreferrer">https://github.com/gorgiaxx/igs-toolkits/tree/master/E2000_binaries</a></p>
+<p>将这些文件放到指定目录，然后重打包，写入CF卡，重启设备，ssh服务就可以直接访问了。</p>
+<p>由于没有回显，只能将stdout输出到rdisk4s4，也就是ext3分区，读取并挂载查看回显。花了很多时间才调试成功，这两条命令用了无数次。</p>
+<pre tabindex="0"><code>sudo dd if=/dev/rdisk4s4 of=./rdisk4s4.img bs=1M &amp;&amp; rm -rf ./part4 &amp;&amp; 7z x ./rdisk4s4.img -o./part4
+</code></pre><pre tabindex="0"><code>sudo ../igs-toolkits/cramfs-tools/mkcramfs ./out test.img &amp;&amp; sudo dd if=./test.img of=/dev/rdisk4s2 bs=1M
+</code></pre><h2 id="游戏环境分析">游戏环境分析</h2>
+<p>E2000主机有两个I/O接口，控制指令来自外部，即使拿到root也玩不了游戏。</p>
+<h3 id="游戏主程序">游戏主程序</h3>
+<p>游戏主程序实际运行在/exec/PM2008v2 会启动3个进程</p>
+<p><img loading="lazy"  src="./shell.png"
+        alt="shell"/></p>
+<p>根据地址空间，可以判断出，此程序运行在X11，OpenGL渲染。并且可以控制读卡器。调用了/dev/plx/Pci9030-0，访问方式是DMA转虚拟地址，应该是游戏的物理I/O。</p>
+<pre tabindex="0"><code>[IGS_Linux]root ~# cat /proc/120/maps 
+08048000-084b6000 r-xp 00000000 00:08 98         /exec/PM2008v2
+084b6000-084cb000 rw-p 0046e000 00:08 98         /exec/PM2008v2
+084cb000-0b044000 rwxp 00000000 00:00 0 
+40000000-40013000 r-xp 00000000 16:02 11153856   /lib/ld-2.3.2.so
+40013000-40014000 rw-p 00012000 16:02 11153856   /lib/ld-2.3.2.so
+40014000-40015000 rw-p 00000000 00:00 0 
+40015000-4001d000 r-xp 00000000 16:02 57643504   /usr/sbin/cardread/lib/libcasmcard.so
+4001d000-4001e000 rw-p 00007000 16:02 57643504   /usr/sbin/cardread/lib/libcasmcard.so
+4001e000-40020000 rwxp 00000000 00:0b 2217       /dev/zero
+40020000-4002d000 r-xp 00000000 16:02 12504408   /lib/libpthread-0.10.so
+4002d000-4002e000 rw-p 0000d000 16:02 12504408   /lib/libpthread-0.10.so
+4002e000-40070000 rw-p 00000000 00:00 0 
+40070000-40072000 r-xp 00000000 16:02 11995640   /lib/libdl-2.3.2.so
+40072000-40073000 rw-p 00001000 16:02 11995640   /lib/libdl-2.3.2.so
+40073000-400de000 r-xp 00000000 16:02 28323568   /usr/X11R6/lib/libGL.so.1.0.8762
+400de000-400f7000 rwxp 0006b000 16:02 28323568   /usr/X11R6/lib/libGL.so.1.0.8762
+400f7000-400f8000 rwxp 00000000 00:00 0 
+400f8000-400f9000 rw-p 00000000 00:00 0 
+400f9000-4021e000 r-xp 00000000 16:02 11262808   /lib/libc-2.3.2.so
+4021e000-40223000 rw-p 00124000 16:02 11262808   /lib/libc-2.3.2.so
+40223000-40225000 rw-p 00000000 00:00 0 
+40225000-40246000 r-xp 00000000 16:02 12066128   /lib/libm-2.3.2.so
+40246000-40247000 rw-p 00020000 16:02 12066128   /lib/libm-2.3.2.so
+40247000-40254000 r-xp 00000000 16:02 34514852   /usr/X11R6/lib/libXext.so.6.4
+40254000-40255000 rw-p 0000c000 16:02 34514852   /usr/X11R6/lib/libXext.so.6.4
+40255000-40331000 r-xp 00000000 16:02 33143504   /usr/X11R6/lib/libX11.so.6.2
+40331000-40334000 rw-p 000db000 16:02 33143504   /usr/X11R6/lib/libX11.so.6.2
+40334000-40342000 r-xp 00000000 16:02 57803624   /usr/sbin/cardread/lib/libpcsclite.so.0.0.1
+40342000-40343000 rw-p 0000d000 16:02 57803624   /usr/sbin/cardread/lib/libpcsclite.so.0.0.1
+40343000-40344000 rw-p 00000000 00:00 0 
+40344000-40ad2000 r-xp 00000000 16:02 28719620   /usr/X11R6/lib/libGLcore.so.1.0.8762
+40ad2000-40b02000 rwxp 0078d000 16:02 28719620   /usr/X11R6/lib/libGLcore.so.1.0.8762
+40b02000-40b06000 rwxp 00000000 00:00 0 
+40b06000-40b07000 rw-p 00000000 00:00 0 
+40b07000-40b08000 r-xp 00000000 16:02 40614972   /usr/X11R6/lib/libnvidia-tls.so.1.0.8762
+40b08000-40b09000 rw-p 00000000 16:02 40614972   /usr/X11R6/lib/libnvidia-tls.so.1.0.8762
+40b09000-40b6b000 rw-p 00000000 00:00 0 
+40b6b000-40b6c000 rw-s 00000000 00:0b 2004       /dev/plx/Pci9030-0
+40b6c000-40b8c000 rw-s 00000000 00:0b 2004       /dev/plx/Pci9030-0
+40b8c000-40b8d000 rw-s 00000000 00:0b 2004       /dev/plx/Pci9030-0
+40b8d000-4158e000 rw-p 00000000 00:00 0 
+4158e000-41596000 r-xp 00000000 16:02 34498192   /usr/X11R6/lib/libXcursor.so.1.0
+41596000-41597000 rw-p 00007000 16:02 34498192   /usr/X11R6/lib/libXcursor.so.1.0
+41597000-4159e000 r-xp 00000000 16:02 37237160   /usr/X11R6/lib/libXrender.so.1.2
+4159e000-4159f000 rw-p 00006000 16:02 37237160   /usr/X11R6/lib/libXrender.so.1.2
+4159f000-415a0000 rw-s e8001000 00:0b 1990       /dev/nvidia0
+415a0000-415a1000 rw-s e8c02000 00:0b 1990       /dev/nvidia0
+415a1000-415aa000 r-xp 00000000 16:02 12388932   /lib/libnss_files-2.3.2.so
+415aa000-415ab000 rw-p 00008000 16:02 12388932   /lib/libnss_files-2.3.2.so
+415ab000-415c2000 rw-s 00000000 00:04 0          /SYSV00000000 (deleted)
+415c2000-416ee000 rw-s d0000000 00:0b 1990       /dev/nvidia0
+416ee000-41750000 rw-p 00000000 00:0b 2217       /dev/zero
+41750000-41791000 rw-p 00000000 00:00 0 
+41791000-41893000 rw-s e0011000 00:0b 1990       /dev/nvidia0
+41893000-41894000 rw-s 16fc2000 00:0b 1990       /dev/nvidia0
+41894000-41895000 rw-s 17027000 00:0b 1990       /dev/nvidia0
+41895000-41896000 rw-s df93b000 00:0b 1990       /dev/nvidia0
+41896000-4189a000 rw-s 17025000 00:0b 1990       /dev/nvidia0
+4189a000-4189b000 rw-s df939000 00:0b 1990       /dev/nvidia0
+4189b000-4189c000 rw-s 17021000 00:0b 1990       /dev/nvidia0
+4189c000-4199c000 rw-s e0114000 00:0b 1990       /dev/nvidia0
+4199c000-4199d000 rw-s 00000000 00:04 98305      /SYSV00000000 (deleted)
+4199d000-4199e000 rw-s 00000000 00:04 131074     /SYSV00000000 (deleted)
+4199e000-41a56000 rw-p 00000000 00:00 0 
+41a56000-41a57000 ---p 00000000 00:00 0 
+41a57000-41c56000 rwxp 00001000 00:00 0 
+41c56000-43096000 rw-p 00003000 00:00 0 
+43096000-43097000 r--s 00000000 00:07 2709       /tmp/pcsc/.pcscpub
+43097000-43098000 r--s 00001000 00:07 2709       /tmp/pcsc/.pcscpub
+43098000-43099000 r--s 00002000 00:07 2709       /tmp/pcsc/.pcscpub
+43099000-4309a000 r--s 00003000 00:07 2709       /tmp/pcsc/.pcscpub
+4309a000-4309b000 r--s 00004000 00:07 2709       /tmp/pcsc/.pcscpub
+4309b000-4309c000 r--s 00005000 00:07 2709       /tmp/pcsc/.pcscpub
+4309c000-4309d000 r--s 00006000 00:07 2709       /tmp/pcsc/.pcscpub
+4309d000-4309e000 r--s 00007000 00:07 2709       /tmp/pcsc/.pcscpub
+4309e000-4309f000 r--s 00008000 00:07 2709       /tmp/pcsc/.pcscpub
+4309f000-430a0000 r--s 00009000 00:07 2709       /tmp/pcsc/.pcscpub
+430a0000-430a1000 r--s 0000a000 00:07 2709       /tmp/pcsc/.pcscpub
+430a1000-430a2000 r--s 0000b000 00:07 2709       /tmp/pcsc/.pcscpub
+430a2000-430a3000 r--s 0000c000 00:07 2709       /tmp/pcsc/.pcscpub
+430a3000-430a4000 r--s 0000d000 00:07 2709       /tmp/pcsc/.pcscpub
+430a4000-430a5000 r--s 0000e000 00:07 2709       /tmp/pcsc/.pcscpub
+430a5000-430a6000 r--s 0000f000 00:07 2709       /tmp/pcsc/.pcscpub
+430a6000-4352f000 rw-p 00000000 00:00 0 
+43530000-441c9000 rw-p 0048a000 00:00 0 
+4423c000-44322000 rw-p 01196000 00:00 0 
+443a7000-444b0000 rw-p 01301000 00:00 0 
+bfde2000-c0000000 rwxp ffde3000 00:00 0
+</code></pre><p>游戏程序本身有大量字符串，看起来像是编码后的数据，在此之前，我从来没接触过Big5编码，直接让deepseek帮我写了个脚本识别。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">chardet</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">encodings.aliases</span> <span class="kn">import</span> <span class="n">aliases</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">try_all_encodings</span><span class="p">(</span><span class="n">hex_str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">all_encodings</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">aliases</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="n">byte_data</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">hex_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&#34; &#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;原始16进制数据: </span><span class="si">{</span><span class="n">hex_str</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;字节长度: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">detected</span> <span class="o">=</span> <span class="n">chardet</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;自动检测结果: </span><span class="si">{</span><span class="n">detected</span><span class="p">[</span><span class="s1">&#39;encoding&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (置信度: </span><span class="si">{</span><span class="n">detected</span><span class="p">[</span><span class="s1">&#39;confidence&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">common_encodings</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;gbk&#39;</span><span class="p">,</span> <span class="s1">&#39;gb18030&#39;</span><span class="p">,</span> <span class="s1">&#39;gb2312&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="s1">&#39;utf-16&#39;</span><span class="p">,</span> <span class="s1">&#39;big5&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;hz&#39;</span><span class="p">,</span> <span class="s1">&#39;iso-2022-jp&#39;</span><span class="p">,</span> <span class="s1">&#39;euc-kr&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">=== 常见编码测试 ===&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">enc</span> <span class="ow">in</span> <span class="n">common_encodings</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">decoded</span> <span class="o">=</span> <span class="n">byte_data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">enc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[</span><span class="si">{</span><span class="n">enc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">decoded</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">=== 完整编码测试 ===&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">enc</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">all_encodings</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">decoded</span> <span class="o">=</span> <span class="n">byte_data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">enc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">decoded</span><span class="o">.</span><span class="n">isprintable</span><span class="p">():</span> 
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[</span><span class="si">{</span><span class="n">enc</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">decoded</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">hex_data</span> <span class="o">=</span> <span class="s2">&#34;C2 F7 B6 7D 3A A6 50 AE C9 BA 56 C0 BB 31 50 A4 CE 32 50 B9 AA AD B1&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">try_all_encodings</span><span class="p">(</span><span class="n">hex_data</span><span class="p">)</span>
+</span></span></code></pre></div><p>游戏是台湾地区研发的，使用了繁体中文，IDA不能自动识别。需要手动添加。</p>
+<p>Option -&gt; Strings -&gt; Default(8-bit) -&gt; Insert(Right Click) -&gt; Big5</p>
+<p><img loading="lazy"  src="./big5.png"
+        alt="big5"/></p>
+<p>因为非ASCII，也没有太好的识别方式，就还是参考上篇文章的修复字符串思路吧。</p>
+<p><img loading="lazy"  src="./strings.png"
+        alt="strings"/></p>
+<p>运行游戏主程序，只会打印这些日志。</p>
+<pre tabindex="0"><code>[IGS_Linux]root /proc/sys# /exec/PM2008v2
+Device Handle 4
+Version Major 4,Minor 3,Rev 0
+Get Virtual address!!
+
+[CommandPortAddresss]=0x40b8c000,[ShareRAMAddress]=0x40b6c000
+Clear CommandPort Complete.
+start
+</code></pre><p>代码里将dprintf逻辑移除了，所以不会打印日志。</p>
+<h2 id="瓶颈">瓶颈</h2>
+<p>现在遇到瓶颈了，因为节奏游戏的命中判定，是放到ASIC，ASIC把判定状态传递到CPU。主程序是没有判定逻辑的。目前把ASIC27协议分析出来了，自己写判定逻辑倒是没问题，但这就不叫破解了。只有破解了ASIC，才能完美模拟这些游戏。接下来需要Dump ASIC的固件，难度很高，不知道今年能不能搞定。</p>
+<p>接下来还有两篇已经完成的工作，等有空再写。</p>
+<ul>
+<li>IGS Arcade 逆向系列（四）- ASIC27协议和TSGROM文件静态分析</li>
+<li>IGS Arcade 逆向系列（五）- ASIC27协议Hook和主程序patch工作</li>
+</ul>
+<h2 id="吐槽-hexo">吐槽 Hexo</h2>
+<p>上个月我都Linux电脑CPU缩肛了，死因是长期运行，散热不好，我花了大量时间排查，迁移工具，然后把博客环境迁移到新电脑。</p>
+<p>以前写博客都是nvm到旧版node，运行Hexo框架生成静态页面，8年没有动过。因为从那时起，hexo的依赖就很烦人，更新必出问题，导致我不敢更新。</p>
+<p>旧环境在MacOS很难跑起来，不管是源码安装还是brew安装都不行。我不理解一个nodejs项目为什么要用到python3.8。</p>
+<p>那一堆乱七八糟的依赖，用最新版Hexo也不行，很多主题都不兼容。我都用asdf了，怎么还能这样？果断放弃Hexo，迁移博客到Hugo用了很多时间。</p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/>逆向工程</a><a class="tag" href=/zh/tags/igs/>IGS</a><a class="tag" href=/zh/tags/arcade/>Arcade</a><a class="tag" href=/zh/tags/crack/>Crack</a><a class="tag" href=/zh/tags/%E9%88%8A%E8%B1%A1%E7%94%B5%E5%AD%90/>鈊象电子</a><a class="tag" href=/zh/tags/e2000/>E2000</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/igs_arcade_re_4/"><span class="iconfont icon-article"></span>IGS Arcade 逆向系列（四）- ASIC27协议和TSGROM文件静态分析</a></p><p><a class="link" href="/zh/posts/igs_arcade_re_2/"><span class="iconfont icon-article"></span>IGS Arcade 逆向系列（二）- 游戏文件恢复</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Introduction to FlashROM
+半年多没写文章了，固件提取系列已经写到第11部，这一个我觉得没那么难，可以公开。"><title>固件提取系列 - 使用FlashROM读取Flash&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="固件提取系列 - 使用FlashROM读取Flash" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">固件提取系列 - 使用FlashROM读取Flash</h1><p class="article date">Saturday, July 20, 2019<span class="langs"><span class="lang">
+                    <a href="/en/posts/firmware-extraction-series-read-flash-with-flashrom/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="introduction-to-flashrom">Introduction to FlashROM</h2>
+<p>半年多没写文章了，固件提取系列已经写到第11部，这一个我觉得没那么难，可以公开。</p>
+<p>FlashROM是一款开源的Flash固件提取项目，支持多种硬件平台，SPI Flash和Parallel Flash。
+这一次遇到了一款NAND的SPI Flash，型号为IS38SML01G1，车规级存储芯片。起初以为SPI Flash都是NOR芯片，于是没有看手册，飞线用编程器读取，通常的编程器无法读取，又使用RT809H读取，也失败。于是查看手册才发现是NAND Flash，目前只有<a href="https://www.reveltronics.com/en/products/revelprog-is-serial-memory-programmer-usb"target="_blank" rel="noopener noreferrer">REVELPROG-IS</a>支持读写。
+一开始想使用FT2232HL来读取，发现官方对该芯片的文档支持不是很好，于是使用树莓派3B。</p>
+<p>flashchips.c文件保存了各个芯片的配置信息，设计的非常好，扩展性很强。</p>
+<pre tabindex="0"><code>{
+    .vendor		= Vendor name
+    .name		= Chip name
+    .bustype		= Supported flash bus types (Parallel, LPC...)
+    .manufacture_id	= Manufacturer chip ID
+    .model_id		= Model chip ID
+    .total_size		= Total size in (binary) kbytes
+    .page_size		= Page or eraseblock(?) size in bytes
+    .tested		= Test status
+    .probe		= Probe function
+    .probe_timing	= Probe function delay
+    .block_erasers[]	= Array of erase layouts and erase functions
+    {
+        .eraseblocks[]	= Array of { blocksize, blockcount }
+        .block_erase	= Block erase function
+    }
+    .printlock		= Chip lock status function
+    .unlock		= Chip unlock function
+    .write		= Chip write function
+    .read		= Chip read function
+    .voltage		= Voltage range in millivolt
+}
+</code></pre><p>根据文档，加入了38SM的配置信息。
+根据文档信息，一个NAND SPI Flash有1024个Block，每个Block有64Page，一个Page有2K+64字节，其中64是冗余区。
+这里的Total Size是以KB为单位，因此不需要加上冗余区的大小。电平范围根据文档设置成2.7V~3.6V。</p>
+<pre tabindex="0"><code>{
+	.vendor		= &#34;ISSI&#34;,
+	.name		= &#34;IS38SML01G1&#34;,
+	.bustype	= BUS_SPI,
+	.manufacture_id	= ISSI_NAND_ID,
+	.model_id	= ISSI_NAND_ID_SPI,
+	.total_size	= 131072, /* kb */
+	.page_size	= 2048, /* bytes, actual page size is 64 */
+	.tested		= {.probe = OK, .read = OK, .erase = NA, .write = NA},
+	.probe		= probe_spi_rdid5,
+	.probe_timing	= TIMING_ZERO,
+	.block_erasers	=
+	{
+		{
+			.eraseblocks = { {64 * 2048, 1024} },
+			.block_erase = spi_block_erase_d8,
+		}
+	},
+	.write		= NULL,
+	.read		= spi_read_issi,
+	.voltage	= {2700, 3600},
+},
+</code></pre><p>要读取Flash的内容，需要实现芯片的初始化和读取功能。因此我们只要对probe和read添加指针。下图是各个Command的定义，包括Op Code字节，寻址用的字节，填充字节和下位机返回的数据字节。数据的传输格式是MSB。</p>
+<p><img loading="lazy"  src="command_set.png"
+        alt="command_set"/></p>
+<p>初始化需要读取ID，首先把芯片ID定义写好。Mark Code 和 Device Code有用。剩下的Communication Code 0x7F7F7F也顺便写上去吧。</p>
+<p><img loading="lazy"  src="jedec_id.png"
+        alt="jedec_id"/></p>
+<pre tabindex="0"><code>#define ISSI_NAND_ID		0xC8
+#define ISSI_NAND_ID_SPI	0x21
+#define ISSI_38SML01G1		0x7F7F7F
+</code></pre><p>FlashROM内置的probe_spi_rdid4函数用于读取JEDEC ID，即发送0x9F，但是由于该芯片发送Read ID指令需要填充一个字节，正常情况使用probe_spi_rdid读取第一个字节会变成0x00。ISSI文档的时序图简直AV画质。</p>
+<p><img loading="lazy"  src="read_id_timing.png"
+        alt="read_id_timing"/></p>
+<p>因此需要新建一个函数，把它命名为probe_spi_rdid5。另外再加上读取的函数spi_read_issi，它们都要在chipdrivers.h里声明</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">probe_spi_rdid5</span><span class="p">(</span><span class="k">struct</span> <span class="n">flashctx</span> <span class="o">*</span><span class="n">flash</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">spi_read_issi</span><span class="p">(</span><span class="k">struct</span> <span class="n">flashctx</span> <span class="o">*</span><span class="n">flash</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">start</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
+</span></span></code></pre></div><p>Read ID函数，如果第一位是0x00，那么跳过这一位继续读取。也可以发送ID的时候填充一位，就不用判断MISO的数据了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">probe_spi_rdid5</span><span class="p">(</span><span class="k">struct</span> <span class="n">flashctx</span> <span class="o">*</span><span class="n">flash</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="k">struct</span> <span class="n">flashchip</span> <span class="o">*</span><span class="n">chip</span> <span class="o">=</span> <span class="n">flash</span><span class="o">-&gt;</span><span class="n">chip</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">readarr</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">id1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">id2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint32_t</span> <span class="n">bytes</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="nf">spi_rdid</span><span class="p">(</span><span class="n">flash</span><span class="p">,</span> <span class="n">readarr</span><span class="p">,</span> <span class="n">bytes</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">oddparity</span><span class="p">(</span><span class="n">readarr</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">msg_cdbg</span><span class="p">(</span><span class="s">&#34;RDID byte 0 parity violation. &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="cm">/* Check if this is a continuation vendor ID.
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * FIXME: Handle continuation device IDs.
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 */</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">readarr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">0x00</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">oddparity</span><span class="p">(</span><span class="n">readarr</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">msg_cdbg</span><span class="p">(</span><span class="s">&#34;RDID byte 1 parity violation. &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="n">id1</span> <span class="o">=</span> <span class="p">(</span><span class="n">readarr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">readarr</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">		<span class="n">id2</span> <span class="o">=</span> <span class="n">readarr</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">id1</span> <span class="o">=</span> <span class="n">readarr</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">		<span class="n">id2</span> <span class="o">=</span> <span class="p">(</span><span class="n">readarr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">readarr</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nf">msg_cdbg</span><span class="p">(</span><span class="s">&#34;%s: id1 0x%02x, id2 0x%02x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">,</span> <span class="n">id1</span><span class="p">,</span> <span class="n">id2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">id1</span> <span class="o">==</span> <span class="n">chip</span><span class="o">-&gt;</span><span class="n">manufacture_id</span> <span class="o">&amp;&amp;</span> <span class="n">id2</span> <span class="o">==</span> <span class="n">chip</span><span class="o">-&gt;</span><span class="n">model_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="cm">/* Test if this is a pure vendor match. */</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">id1</span> <span class="o">==</span> <span class="n">chip</span><span class="o">-&gt;</span><span class="n">manufacture_id</span> <span class="o">&amp;&amp;</span> <span class="n">GENERIC_DEVICE_ID</span> <span class="o">==</span> <span class="n">chip</span><span class="o">-&gt;</span><span class="n">model_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="cm">/* Test if there is any vendor ID. */</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">GENERIC_MANUF_ID</span> <span class="o">==</span> <span class="n">chip</span><span class="o">-&gt;</span><span class="n">manufacture_id</span> <span class="o">&amp;&amp;</span> <span class="n">id1</span> <span class="o">!=</span> <span class="mh">0xff</span> <span class="o">&amp;&amp;</span> <span class="n">id1</span> <span class="o">!=</span> <span class="mh">0x00</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>另外是读取函数，首先要知道芯片数据的读取过程。NAND主控先把NAND的数据放入Cache Memory，一次只能读一页，然后NAND主控再把数据从Cache读取出来输出到上位机。</p>
+<p><img loading="lazy"  src="blockdiagram.png"
+        alt="blockdiagram"/></p>
+<p>因此要先发送读取指令，告诉控制器要读取哪一页。在NAND数据传输到Cache的时候，不能做其他读写操作。此时状态寄存器应该处于繁忙状态。OIP==1。</p>
+<p>在发送完页读取指令后，应该循环发送0x0F 0xC0直到OIP==0。</p>
+<p><img loading="lazy"  src="status_register.png"
+        alt="status_register"/></p>
+<p>因此一次完整的读取流程的CMD如下：</p>
+<p>0x13 页读取
+0x0F 0xC0 轮询状态
+0x03 缓存读取</p>
+<p>页读取根据Command定义，寻址字节长度为3，其中有一字节为无效数据，所以最大地址为0xFFFF，换算成10进制长度为65536。1024 Blocks * 64 Pages = 65536 Pages。这里的填充数据暂时先理解为[7:0]，寻址数据为[23:8]</p>
+<p><img loading="lazy"  src="page_read.png"
+        alt="page_read"/></p>
+<p>缓存读取的寻址长度为2-bytes，填充字节为1-bytes + 4-bits，因此缓存的寻址长度为12-bits既4096，文档中规定的范围是0-2112，可以理解为2048-bytes + 64-bytes (OOB area)。</p>
+<p><img loading="lazy"  src="page_cache_read.png"
+        alt="page_cache_read"/></p>
+<p>下面是spi_read_issi的实现。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">spi_read_issi</span><span class="p">(</span><span class="k">struct</span> <span class="n">flashctx</span> <span class="o">*</span><span class="n">flash</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">start</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint8_t</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint8_t</span> <span class="n">page_read_resp</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">buf_off</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint8_t</span> <span class="n">cache_read_cmd</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">uint8_t</span> <span class="n">get_feature_cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mh">0x0f</span><span class="p">,</span> <span class="mh">0xc0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">address_h</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">address_h</span> <span class="o">&lt;</span> <span class="mi">256</span><span class="p">;</span> <span class="n">address_h</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">address_l</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">address_l</span> <span class="o">&lt;</span> <span class="mi">256</span><span class="p">;</span> <span class="n">address_l</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x13</span><span class="p">;</span> <span class="cm">/* page read cmd */</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">;</span> <span class="cm">/* dummy byte */</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cmd</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">address_h</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">address_l</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">ret</span> <span class="o">=</span> <span class="nf">spi_send_command</span><span class="p">(</span><span class="n">flash</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">cmd</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">page_read_resp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="cm">/* 7-0 bits: ECC_S1, ECC_S0, P_Fail, E_Fail, WEL3, OIP */</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">uint8_t</span> <span class="n">status</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">int</span> <span class="n">get_feature_ret</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nf">internal_sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="n">get_feature_ret</span> <span class="o">=</span> <span class="nf">spi_send_command</span><span class="p">(</span><span class="n">flash</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">get_feature_cmd</span><span class="p">),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">status</span><span class="p">),</span> <span class="n">get_feature_cmd</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span><span class="k">while</span> <span class="p">(</span><span class="n">get_feature_ret</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="cm">/* printf(&#34;\nStatus: 0x%X, get_feature_ret:%d\n&#34;, (unsigned int)status[0], get_feature_ret); */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">cache_read_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x03</span><span class="p">;</span> <span class="cm">/* page read cmd */</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cache_read_cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cache_read_cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cache_read_cmd</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">;</span> <span class="cm">/* dummy byte */</span>
+</span></span><span class="line"><span class="cl">			
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="n">status</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="kt">int</span> <span class="n">cache_read_ret</span> <span class="o">=</span> <span class="nf">spi_send_command</span><span class="p">(</span><span class="n">flash</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">cache_read_cmd</span><span class="p">),</span> <span class="mi">2048</span><span class="p">,</span> <span class="n">cache_read_cmd</span><span class="p">,</span> <span class="n">buf</span> <span class="o">+</span> <span class="mi">2048</span> <span class="o">*</span> <span class="n">buf_off</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="n">ret</span> <span class="o">=</span> <span class="n">cache_read_ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nf">printf</span><span class="p">(</span><span class="s">&#34;device busy. timeout</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="n">ret</span> <span class="o">=</span> <span class="nf">spi_send_command</span><span class="p">(</span><span class="n">flash</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">get_feature_cmd</span><span class="p">),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">status</span><span class="p">),</span> <span class="n">get_feature_cmd</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="cm">/* Send Read */</span>
+</span></span><span class="line"><span class="cl">			<span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">buf_addr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="p">)((</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span><span class="n">buf</span> <span class="o">+</span> <span class="mi">2048</span> <span class="o">*</span> <span class="n">buf_off</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="n">buf_addr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mh">0xffffffff</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">				<span class="nf">printf</span><span class="p">(</span><span class="s">&#34;buf_off:%d, address: 0x%x%x</span><span class="se">\n</span><span class="s">buf_addr: 0x%X</span><span class="se">\n</span><span class="s">data:</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf_off</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">)</span><span class="n">buf_addr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="cm">/*int* = 4* int8 */</span>
+</span></span><span class="line"><span class="cl">				<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">b</span> <span class="o">&lt;</span> <span class="mi">512</span><span class="p">;</span> <span class="n">b</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span>
+</span></span><span class="line"><span class="cl">					<span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%08x&#34;</span><span class="p">,</span> <span class="n">buf_addr</span><span class="p">[</span><span class="n">b</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">				<span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// printf(&#34;\n&#34;);
+</span></span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">				<span class="nf">printf</span><span class="p">(</span><span class="s">&#34;reading err&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">buf_off</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="飞线">飞线</h2>
+<p>首先使用夹具，热风枪400℃底部加热12秒</p>
+<p><img loading="lazy"  src="target_device.jpg"
+        alt="target_device"/></p>
+<p>将芯片焊在转接板上面</p>
+<p><img loading="lazy"  src="sop8.jpg"
+        alt="sop8"/></p>
+<p>一开始没有考虑到WSON封装的底部会导致短路，于是重新飞线</p>
+<p><img loading="lazy"  src="wson8.png"
+        alt="wson8"/></p>
+<p><img loading="lazy"  src="jumping1.jpg"
+        alt="jumping1"/></p>
+<p><img loading="lazy"  src="jumping2.jpg"
+        alt="jumping2"/></p>
+<p>接至树莓派3B
+<img loading="lazy"  src="reading_by_rpi.jpg"
+        alt="reading_by_rpi"/></p>
+<p>接线方式如下，HOLD要接在VCC上。</p>
+<table>
+  <thead>
+      <tr>
+          <th>RPi header</th>
+          <th>SPI flash</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>25</td>
+          <td>GND</td>
+      </tr>
+      <tr>
+          <td>24</td>
+          <td>/CS</td>
+      </tr>
+      <tr>
+          <td>23</td>
+          <td>SCK</td>
+      </tr>
+      <tr>
+          <td>21</td>
+          <td>DO</td>
+      </tr>
+      <tr>
+          <td>19</td>
+          <td>DI</td>
+      </tr>
+      <tr>
+          <td>17</td>
+          <td>VCC 3.3V (+ /HOLD, /WP)</td>
+      </tr>
+  </tbody>
+</table>
+<p>开启SPI模拟</p>
+<pre tabindex="0"><code>vi /boot/config.txt
+dtparam=spi=on
+</code></pre><p>加载内核模块</p>
+<pre tabindex="0"><code># If that fails you may wanna try the older spi_bcm2708 module instead
+sudo modprobe spi_bcm2835
+sudo modprobe spidev
+</code></pre><pre tabindex="0"><code>flashrom -p linux_spi:dev=/dev/spidev0.0,spispeed=10000 -c IS38SML01G1 -V -r /tmp/is38_nooob.bin
+</code></pre><p><img loading="lazy"  src="reading.png"
+        alt="reading"/></p>
+<h2 id="目标设备初始化分析">目标设备初始化分析</h2>
+<p>读取出来的128MB固件几乎全是0xFF，但是问了厂商，这个芯片存储了一些软件和配置信息。由于ISSI Flash文档没有写清楚页读取寻址的格式，寻址有3字节，高位字节和低位字节连续，所以有两种排列，再与填充字节组合，有4种地址格式，不知道哪一种是正确的。于是我把4种地址格式都读了一遍，只是数据的分布变化了，没有办法确定正确的分布。</p>
+<p><img loading="lazy"  src="flashdump1.png"
+        alt="flashdump1"/>
+<img loading="lazy"  src="flashdump2.png"
+        alt="flashdump2"/>
+<img loading="lazy"  src="flashdump3.png"
+        alt="flashdump3"/>
+<img loading="lazy"  src="flashdump4.png"
+        alt="flashdump4"/></p>
+<p>完全按照文档编写的驱动，读取出来几乎全是0xFF，感觉是哪里出问题了，于是上逻辑分析仪。
+只需要抓取三个通道的数据，MOSI,MISO,CLK。使用MSB，CPOL和CPHA都设为0。</p>
+<p><img loading="lazy"  src="spi_mode.png"
+        alt="spi_mode"/>
+<img loading="lazy"  src="kingst_spiconf.png"
+        alt="kingst_spiconf"/></p>
+<p>设置成时钟上升沿触发，采样频率200MHz。
+首先抓取树莓派读取Flash的的数据，符合文档规范，</p>
+<p>读取JEDEC ID</p>
+<p><img loading="lazy"  src="rpi_spi_init.png"
+        alt="rpi_spi_init"/></p>
+<p>读取状态</p>
+<p><img loading="lazy"  src="rpi_status.png"
+        alt="rpi_status"/></p>
+<p>当读取cache时，发完4个字节的数据，MISO就一直处于高电平，让人觉得是哪里不对。</p>
+<p><img loading="lazy"  src="rpi_spi_read_cache.png"
+        alt="rpi_spi_read_cache"/></p>
+<p>再对目标设备抓取数据</p>
+<p><img loading="lazy"  src="logical_analyzer_probe.jpg"
+        alt="logical_analyzer_probe"/></p>
+<p>首先读取JEDEC ID，没问题，和树莓派的区别是只返回前两个ID。</p>
+<p><img loading="lazy"  src="target_init.png"
+        alt="target_init"/></p>
+<p>页读取到缓存读取，首先发送读取页的指令，然后发送读取状态，等待控制器返回0，再发送缓存读取指令。这里就出问题了，后面的MISO也是输出0xFF，但是每四个字节输出，Master就会输入4个不知道什么含义的字节，循环交替。0x03可以确定是单路传输，并且在树莓派上，MOSI也不会产生数据，可以证明不是Slave发来的。</p>
+<p><img loading="lazy"  src="target_reading.png"
+        alt="target_reading"/></p>
+<p>至少证明我的代码没错，设备目前没有使用到存储芯片，</p>
+<h2 id="读取oob导致的后果">读取OOB导致的后果</h2>
+<p>一开始想把冗余区读取出来，所以响应buffer设成2112，最后在dump文件里看到了ELF的文件头，一开始以为目标设备使用了ELF文件。但是总觉得不对劲，车载网关怎么会使用Linux。</p>
+<p><img loading="lazy"  src="dump1.png"
+        alt="dump1"/></p>
+<p>后来查看内存的地址分布，感觉是超出了堆的大小，越界读到了后面的库文件</p>
+<p><img loading="lazy"  src="maps.png"
+        alt="maps"/></p>
+<p>计算一下，第一段是实际堆的大小，第二段是实际读取的大小，第三段是正常读取的大小，所以不要去读冗余区。</p>
+<p><img loading="lazy"  src="address_calc.png"
+        alt="address_calc"/></p>
+<h2 id="revelprog-is开箱">REVELPROG-IS开箱</h2>
+<p>时隔一个多月，购买了REVELPROG-IS，用于验证FlashROM读取的结果是否正确。</p>
+<p><img loading="lazy"  src="package.jpg"
+        alt="package"/></p>
+<p>这是波兰制造，包装和编程器外观都还行</p>
+<p><img loading="lazy"  src="revelprog.jpg"
+        alt="revelprog"/></p>
+<p>电路设计很简单，一颗STM32F103的芯片，价格有点小贵，还好没被抄板子</p>
+<p><img loading="lazy"  src="STM32F103.jpg"
+        alt="STM32F103"/></p>
+<h2 id="验证读取结果">验证读取结果</h2>
+<p>WSON8的烧录座还没到货，暂时飞线读取。</p>
+<p><img loading="lazy"  src="reading_with_prog.jpg"
+        alt="reading_with_prog"/></p>
+<p>读取速度超慢，花了几分钟时间。不支持调整速率，还是FlashROM速度最快</p>
+<p><img loading="lazy"  src="reading_with_prog2.png"
+        alt="reading_with_prog2"/></p>
+<p>读取的数据和前面一致</p>
+<p><img loading="lazy"  src="result.png"
+        alt="result"/></p>
+<p>寻址格式和第三种对应，具体顺序忘了，以后就用这个编程器读了。</p>
+<p><img loading="lazy"  src="flashdump5.png"
+        alt="flashdump5"/></p>
+<h2 id="勘误">勘误</h2>
+<p>在后续的研究中，发现这个文章存在一些坑。
+Address_h 和 address_l 是在不知道读取规则的前提下假设的，因为文档没有写。两者长度都假设是8-bit。
+在阅读了其他几款芯片的文档后，确定存在问题。
+<img loading="lazy"  src="readpage_address.png"
+        alt="readpage_address"/>
+实际上这两个参数代表块地址与页地址，块数量1024，占据10位，页地址64，占据6位，加起来刚好16-bits。不同大小的芯片有不同的规则。
+因此读取的结果会出现重复，加上有效数据刚好分布在存储设备的前面部分，剩余的都是无效数据，即使地址错误，读取出来的结果也不影响，最终呈现和编程器读取一致的结果。</p>
+<p>另外给出的代码里，Status判断存在问题，不一定要为0才能读取数据。BBM LUT FULL(Look-Up Table)也可能为1，ECC Err Status可能是0x20。
+<img loading="lazy"  src="status.png"
+        alt="status"/></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97/>固件提取系列</a><a class="tag" href=/zh/tags/flashrom/>FlashROM</a><a class="tag" href=/zh/tags/nand/>NAND</a><a class="tag" href=/zh/tags/raspberry/>Raspberry</a><a class="tag" href=/zh/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/>树莓派</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/4g-modem-attack-scenarios-in-vehicle-networking/"><span class="iconfont icon-article"></span>浅谈4G通信模组在车联网领域的攻击场景</a></p><p><a class="link" href="/zh/posts/firmware-extraction-series-sata-hdd-unlock/"><span class="iconfont icon-article"></span>固件提取系列 - SATA硬盘解锁</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

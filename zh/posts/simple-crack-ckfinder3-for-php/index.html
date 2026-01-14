@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+CKFinder是基于Web的Ajax文件管理器。很多小网站的后台都会使用CKFinder，方便上传资源的管理。"><title>简单破解CKFinder3 for PHP&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="简单破解CKFinder3 for PHP" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">简单破解CKFinder3 for PHP</h1><p class="article date">Monday, August 24, 2015<span class="langs"><span class="lang">
+                    <a href="/en/posts/simple-crack-ckfinder3-for-php/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>CKFinder是基于Web的Ajax文件管理器。很多小网站的后台都会使用CKFinder，方便上传资源的管理。</p>
+<p>由于某些原因，需要使用到这个东西，在网上下载了PHP的最新版。用时发现DEMO版本不能删除文件！后来在网上找破解版，居然找不到，作为一个强迫症，我一定要用上最新版。</p>
+<p><img loading="lazy"  src="./preview.jpg"
+        alt="preview"/></p>
+<h2 id="文件目录">文件目录</h2>
+<p><img loading="lazy"  src="./dir.png"
+        alt="dir"/></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">CKFinder
+</span></span><span class="line"><span class="cl">├─core          核心文件（包括PHP库文件）
+</span></span><span class="line"><span class="cl">├─lang          语言包
+</span></span><span class="line"><span class="cl">├─libs          JS库文件
+</span></span><span class="line"><span class="cl">├─plugins           插件目录
+</span></span><span class="line"><span class="cl">├─samples           demo页 <span class="o">(</span>可以删掉<span class="o">)</span>
+</span></span><span class="line"><span class="cl">├─skins         皮肤样式
+</span></span><span class="line"><span class="cl">├─userfiles         默认上传目录
+</span></span><span class="line"><span class="cl">├──ckfinder.html        管理器页面
+</span></span><span class="line"><span class="cl">├──ckfinder.js      主要程序代码
+</span></span><span class="line"><span class="cl">├──config.js        配置文件
+</span></span><span class="line"><span class="cl">└──config.php       服务端配置文件
+</span></span></code></pre></div><p>用户的验证代码就在ckfinder.js里面，我这里只采取解除限制的方法，这样比较简单
+先copy一份，把它解混淆和解压缩，方便分析。
+推荐这个在线工具站，<a href="http://tool.lu/js/"target="_blank" rel="noopener noreferrer">http://tool.lu/js/</a>
+ckfinder就只是限制了删除和文件上传数量，还有一个不知道什么鬼。</p>
+<h2 id="开始">开始</h2>
+<h3 id="代码1">代码1</h3>
+<p>这个不知道是什么鬼。。可以看到就是一个简单的判断语句，先把特征区域净化(去除空格换行)，反一下就好了</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="k">if</span><span class="p">((</span><span class="nx">I</span><span class="o">&amp;&amp;</span><span class="nx">q</span><span class="o">&amp;&amp;</span><span class="nx">K</span><span class="o">&amp;&amp;</span><span class="nx">_</span><span class="p">)</span><span class="o">||!</span><span class="nx">V</span><span class="p">)</span>
+</span></span></code></pre></div><p><img loading="lazy"  src="./1.png"
+        alt="1"/></p>
+<h3 id="代码2">代码2</h3>
+<p>这里也一样，去除demo展示，简单的判断语句，反一下</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="k">if</span><span class="p">((</span><span class="nx">E</span><span class="o">&amp;&amp;</span><span class="nx">k</span><span class="o">&amp;&amp;</span><span class="nx">T</span><span class="o">&amp;&amp;</span><span class="nx">M</span><span class="p">)</span><span class="o">||!</span><span class="nx">S</span><span class="p">)</span>
+</span></span></code></pre></div><p><img loading="lazy"  src="./2.png"
+        alt="2"/></p>
+<h3 id="代码3">代码3</h3>
+<p>setHandler就是把要执行的函数换成自定义的函数，这边是删除的功能换成demo版本提示。也是简单处理一下就好。
+<img loading="lazy"  src="./3.png"
+        alt="3"/>写成这个</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="k">if</span><span class="p">((</span><span class="nx">s</span><span class="o">&amp;&amp;</span><span class="nx">l</span><span class="o">&amp;&amp;</span><span class="nx">u</span><span class="o">&amp;&amp;</span><span class="nx">a</span><span class="p">)</span><span class="o">||!</span><span class="nx">d</span><span class="p">)</span>
+</span></span></code></pre></div><p><img loading="lazy"  src="./4.png"
+        alt="4"/></p>
+<h3 id="代码4">代码4</h3>
+<p>解除上传数限制
+直接把这一段删除</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">{</span><span class="kd">var</span> <span class="nx">y</span><span class="o">=</span><span class="nx">r</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s2">&#34;x66x69x6cx65x73u003ax67etCx75x72rx65nx74&#34;</span><span class="p">).</span><span class="nx">where</span><span class="p">({</span><span class="s2">&#34;view:isFolder&#34;</span><span class="o">:!</span><span class="mi">1</span><span class="p">}).</span><span class="nx">length</span><span class="p">;</span><span class="nx">y</span><span class="o">+</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="o">&gt;</span><span class="mi">10</span><span class="o">&amp;&amp;</span><span class="nx">r</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="s2">&#34;u0064iu0061x6cogu003ax69x6eu0066u006f&#34;</span><span class="p">,{</span><span class="nx">msg</span><span class="o">:</span><span class="s2">&#34;Thx65 nu0075u006du0062eru0020x6ffx20x66ilu0065u0073 u0070eru0020x66ou006cu0064x65r u0061u0066u0074x65x72 x74u0068u0065u0020uu0070x6cu006fau0064x20u0063ax6eu006ex6fu0074x20x65x78x63eeu0064u002010u0020x69u006eu0020deu006dox20x6du006fx64u0065x2e&#34;</span><span class="p">});</span><span class="kd">var</span> <span class="nx">b</span><span class="o">=-</span><span class="p">(</span><span class="nx">y</span><span class="o">-</span><span class="mi">10</span><span class="p">);</span><span class="mi">0</span><span class="o">&gt;</span><span class="nx">b</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="nx">b</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span><span class="nx">a</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">)}</span>
+</span></span></code></pre></div><p>完成√</p>
+<p><img loading="lazy"  src="./complete.png"
+        alt="complete"/></p>
+<p>另外附上破解后的文件
+<a href="https://drive.google.com/file/d/0B3hbKdJ8eeqfNkQ1ellxRkxaSlk/view?usp=sharing"target="_blank" rel="noopener noreferrer">Google Drive</a></p>
+<p><a href="https://mega.nz/#!jpIgVLia!JNvOu1mbIBm-tL5SleOaku9-CU6x_fdj3b6gmjAwrHQ"target="_blank" rel="noopener noreferrer">Mega</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E5%B7%A5%E5%85%B7/>工具</a><a class="tag" href=/zh/tags/ckfinder/>ckfinder</a><a class="tag" href=/zh/tags/%E7%A0%B4%E8%A7%A3/>破解</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/kali-nethunter-first-impressions/"><span class="iconfont icon-article"></span>Kali Nethunter初体验</a></p><p><a class="link" href="/zh/posts/reverse-engineering-a-campus-android-app/"><span class="iconfont icon-article"></span>一次校园Android平台应用的逆向分析</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

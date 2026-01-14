@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="绕过CDN的思路
+网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。
+站在站长的角度，不可能每个站都会用上CDN。
+站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。
+站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。"><title>绕过CDN找到源站的思路&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="绕过CDN找到源站的思路" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">绕过CDN找到源站的思路</h1><p class="article date">Saturday, October 28, 2017</p></section><article class="article markdown-body"><h1 id="绕过cdn的思路">绕过CDN的思路</h1>
+<p>网上有很多绕过CDN的思路，但是存在很多问题，以下是收集并总结的思路。
+站在站长的角度，不可能每个站都会用上CDN。
+站在DNS服务商的角度，历史解析记录可能不受CDN服务商控制。
+站在CDN服务商的角度，提供CDN服务的区域有限制，CDN流量有限制。</p>
+<h2 id="dns历史解析">DNS历史解析</h2>
+<p><a href="https://dnshistory.org/"target="_blank" rel="noopener noreferrer">https://dnshistory.org/</a>
+<a href="http://whoisrequest.com/history/"target="_blank" rel="noopener noreferrer">http://whoisrequest.com/history/</a>
+<a href="https://completedns.com/dns-history/"target="_blank" rel="noopener noreferrer">https://completedns.com/dns-history/</a>
+<a href="http://dnstrails.com/"target="_blank" rel="noopener noreferrer">http://dnstrails.com/</a>
+<a href="https://who.is/domain-history/"target="_blank" rel="noopener noreferrer">https://who.is/domain-history/</a>
+<a href="http://research.domaintools.com/research/hosting-history/"target="_blank" rel="noopener noreferrer">http://research.domaintools.com/research/hosting-history/</a>
+<a href="http://site.ip138.com/"target="_blank" rel="noopener noreferrer">http://site.ip138.com/</a>
+<a href="http://viewdns.info/iphistory/"target="_blank" rel="noopener noreferrer">http://viewdns.info/iphistory/</a></p>
+<h3 id="通过大量dns查漏">通过大量DNS查漏</h3>
+<p>查询冷门的DNS的解析。或者多地Ping</p>
+<ul>
+<li><a href="http://ping.chinaz.com/"target="_blank" rel="noopener noreferrer">http://ping.chinaz.com/</a></li>
+<li><a href="http://ce.cloud.360.cn/"target="_blank" rel="noopener noreferrer">http://ce.cloud.360.cn/</a></li>
+<li><a href="http://www.webkaka.com/ping.aspx"target="_blank" rel="noopener noreferrer">http://www.webkaka.com/ping.aspx</a></li>
+<li><a href="https://asm.ca.com/en/ping.php"target="_blank" rel="noopener noreferrer">https://asm.ca.com/en/ping.php</a></li>
+<li><a href="https://x.threatbook.cn/en"target="_blank" rel="noopener noreferrer">https://x.threatbook.cn/en</a></li>
+</ul>
+<h2 id="从目标服务器入手">从目标服务器入手</h2>
+<h3 id="被动获取">被动获取</h3>
+<p>让目标服务器主动链接我们的服务器，获取来源IP</p>
+<ul>
+<li>SSRF</li>
+<li>服务器主动发送Mail，获得请求IP</li>
+<li>RSS内带有的IP</li>
+</ul>
+<h3 id="服务器信息">服务器信息</h3>
+<ul>
+<li>探针文件</li>
+<li>服务器日志文件</li>
+<li>错误信息</li>
+</ul>
+<h2 id="旁站">旁站</h2>
+<ul>
+<li>查找子域名或者父域名对应IP</li>
+<li>查非子域名旁站</li>
+<li>通过搜索引擎查找公网上的相同站点（开发环境，备份站点等）</li>
+<li>MX、TXT记录</li>
+</ul>
+<h3 id="对比全网banner">对比全网banner</h3>
+<p>获取目标站点的banner，在全网搜索引擎搜索，也可以使用<a href="https://github.com/michenriksen/aquatone"target="_blank" rel="noopener noreferrer">AQUATONE</a>，在Shodan上搜索相同指纹站点。
+可以通过互联网络信息中心的IP数据，筛选目标地区IP，遍历Web服务的banner用来对比CDN站的banner，可以确定源IP。</p>
+<ul>
+<li>亚洲：<a href="ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest">ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest</a></li>
+<li>欧洲：<a href="ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-latest">http://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-latest</a></li>
+<li>北美：<a href="https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest"target="_blank" rel="noopener noreferrer">https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest</a></li>
+<li>非洲：<a href="ftp://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest">ftp://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-latest</a></li>
+<li>拉美：<a href="ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest">ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest</a></li>
+</ul>
+<p>该方法也能用于寻找内网服务器IP与域名的对应关系</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">bs4</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lxml</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="kn">import</span> <span class="n">Pool</span>
+</span></span><span class="line"><span class="cl"><span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">global</span> <span class="n">c</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">ip_host</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 计数器</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="n">c</span>
+</span></span><span class="line"><span class="cl">    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Host&#39;</span><span class="p">:</span> <span class="n">ip_host</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">               <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">r</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip_host</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="err">，</span><span class="n">verify</span><span class="o">=</span><span class="n">Fasle</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">t</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span><span class="s1">&#39;lxml&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&#34;title&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">string</span>
+</span></span><span class="line"><span class="cl">            <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">t</span> <span class="o">=</span> <span class="s2">&#34;notitle&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">ip_host</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&#34; mkdd1211 &#34;</span><span class="p">,</span><span class="n">ip_host</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s2">&#34; mkdd1211 &#34;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">),</span><span class="s2">&#34; mkdd1211 &#34;</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>  <span class="c1"># 打印出来放在exel，mkdd1211用来替换成分列符号</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">c</span><span class="o">%</span><span class="mi">1000</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>  <span class="c1"># 这个1000表示每1000次打印一下当前剩余的请求，便于你知道还有多久跑完，可以根据总请求调整</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">make_payload</span><span class="p">(</span><span class="n">ips</span><span class="p">,</span><span class="n">hosts</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">payload</span><span class="o">=</span><span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ips</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">payload</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&#34;https://&#34;</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">payload</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&#34;http://&#34;</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">payload</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">make_payload_c</span><span class="p">(</span><span class="n">ips_c</span><span class="p">,</span><span class="n">hosts</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">payload</span><span class="o">=</span><span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">u</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ips_c</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">u</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ip</span><span class="o">+</span><span class="s2">&#34;.&#34;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">u</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">payload</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&#34;https://&#34;</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">payload</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&#34;http://&#34;</span><span class="o">+</span><span class="n">ip</span><span class="p">,</span><span class="n">host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">payload</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ips=[&#34;1.1.1.1&#34;,&#34;2.2.2.2&#34;] </span>
+</span></span><span class="line"><span class="cl"><span class="c1"># d=make_payload(ips,hosts) #可以先用ip跑一下，没有收获选择跑C段</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ipc</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;1.1.1&#34;</span><span class="p">,</span><span class="s2">&#34;2.2.2&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">hosts</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;a.huoxian.cn&#34;</span><span class="p">,</span><span class="s2">&#34;b.huoxian.cn&#34;</span><span class="p">,</span><span class="s2">&#34;c.huoxian.cn&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">d</span><span class="o">=</span><span class="n">make_payload_c</span><span class="p">(</span><span class="n">ipc</span><span class="p">,</span><span class="n">hosts</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">c</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">demo</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="cdn服务商">CDN服务商</h2>
+<ul>
+<li>入侵CDN服务商</li>
+<li>根据CDN解析特性获取源IP(如www.crimeflare.com)</li>
+<li>耗尽CDN服务流量，暴露真实IP</li>
+</ul>
+<h2 id="f5-ltm">F5 LTM</h2>
+<p>F5 LTM解码法
+当服务器使用F5 LTM做负载均衡时，通过对set-cookie关键字的解码真实ip也可被获取，例如：Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000，先把第一小节的十进制数即487098378取出来，然后将其转为十六进制数1d08880a，接着从后至前，以此取四位数出来，也就是0a.88.08.1d，最后依次把他们转为十进制数10.136.8.29，也就是最后的真实ip。</p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/>网络安全</a><a class="tag" href=/zh/tags/cdn/>CDN</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/%E7%A1%AC%E4%BB%B6%E7%BB%B4%E4%BF%AE%E7%AC%94%E8%AE%B0/"><span class="iconfont icon-article"></span>硬件维修笔记</a></p><p><a class="link" href="/zh/posts/fios-g1100-%E8%8E%B7%E5%8F%96root%E6%9D%83%E9%99%90/"><span class="iconfont icon-article"></span>Verizon FIOS-G1100 获取ROOT权限</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

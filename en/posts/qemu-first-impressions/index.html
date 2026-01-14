@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+I’ve been using Linux seriously for 11 months now. From Debian to Arch, Linux has become part of my daily life."><title>First Impressions of KVM/QEMU&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="First Impressions of KVM/QEMU" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">First Impressions of KVM/QEMU</h1><p class="article date">Sunday, November 13, 2016<span class="langs"><span class="lang">
+                    <a href="/zh/posts/qemu-first-impressions/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>I’ve been using Linux seriously for 11 months now. From Debian to Arch, Linux has become part of my daily life.</p>
+<p>People around me use QQ and WeChat. I still need them to send files and pictures, but I don’t want to work in Windows, so I installed VMware Workstation to run a virtual machine.</p>
+<p>At first, running Windows 10 on Debian was smooth. After switching to Arch, it often stuttered because <code>ntfs3g</code> consumed too much CPU. Later I switched the host-side partition filesystem for the VM to Ext4, which helped a bit. After removing the built-in apps from Windows 10, things became much better.</p>
+<p>KVM is short for Kernel-based Virtual Machine. It’s an open-source system virtualization module and a full virtualization solution for x86 hardware platforms on Linux.</p>
+<p>QEMU is a powerful open-source emulator: it can emulate systems and a wide range of hardware.</p>
+<p><img loading="lazy"  src="./guide_fig.png"
+        alt="guide_fig"/></p>
+<p>With KVM acceleration, QEMU can achieve much better performance. I had never used QEMU before, so I spent a lot of time getting started and digging into details. I learned a lot in the process and gained a deeper understanding of virtualization.</p>
+<p><a href="http://www.ibm.com/developerworks/cn/"target="_blank" rel="noopener noreferrer">IBM DeveloperWorks (CN)</a> is full of high-quality content, along with official docs and wikis for many products. The built-in man pages are also very detailed.</p>
+<p>It’s thanks to developers’ great contributions that I can work and have fun on Linux so conveniently. I’m also a bit ashamed that I’m not yet in a position to contribute back.</p>
+<h2 id="installation">Installation</h2>
+<p>To make learning easier, I decided not to use a GUI at first. (Later I realized I was too naive: in a real environment there’s far more configuration than I expected, and it’s much more complex—CPU, keyboard, USB, audio, etc. are all tricky to get right.)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S qemu
+</span></span></code></pre></div><p>But installing a GUI frontend is still a good idea. I tried qtemu and qemu-launcher; aqemu feels more usable.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yaourt aqemu
+</span></span></code></pre></div><h2 id="adding-a-disk">Adding a Disk</h2>
+<h3 id="creating-a-disk-image">Creating a disk image</h3>
+<p>QEMU supports many image formats, including VMDK, VDI, VHD (vpc), VHDX, qcow1, and QED. You can manage them with <code>qemu-img</code>.</p>
+<p>In practice, <code>raw</code> and <code>qcow2</code> are most commonly used.</p>
+<p><code>raw</code> is a raw disk image format. It’s the fastest, but it allocates the disk space immediately.</p>
+<p><code>qcow2</code> is a bit slower, but it doesn’t need to allocate space upfront and supports many features such as snapshots, rollback, encryption, and compression.</p>
+<p>For example, create a <code>raw</code> disk image:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-img create -f raw Kali_Linux.img 20G
+</span></span></code></pre></div><p>Or create a <code>qcow2</code> image with 2MB cluster size and full preallocation:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-img create -f qcow2 -o <span class="nv">cluster_size</span><span class="o">=</span>2M,preallocation<span class="o">=</span>full Kali_Linux.qcow2 4G
+</span></span></code></pre></div><h3 id="format-conversion">Format conversion</h3>
+<p><code>qemu-img</code> also supports converting disk image formats. In some cases, you need to migrate disk images.</p>
+<p>For example, I wanted to compare Kali Linux performance under KVM vs VMware, so I needed to convert a VMDK into a disk image format that’s more suitable for QEMU.</p>
+<h1 id="convert-vmdk-to-raw">Convert vmdk to raw</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-img convert -f vmdk -O raw Kali<span class="se">\ </span>2016<span class="se">\ </span>64-bit.vmdk Kali_Linux.img
+</span></span></code></pre></div><h1 id="convert-vmdk-to-qcow2">Convert vmdk to qcow2</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-img convert -f vmdk -O qcow2 Kali<span class="se">\ </span>2016<span class="se">\ </span>64-bit.vmdk Kali_Linux.qcow2
+</span></span></code></pre></div><h2 id="enabling-hardware-assisted-virtualization">Enabling hardware-assisted virtualization</h2>
+<p>Make sure VT is enabled in the BIOS. My machine is Intel-based, so I added <code>intel_iommu=on</code> to the kernel parameters. For AMD, use <code>amd_iommu=on</code>.</p>
+<p>IOMMU essentially allows mapping hardware devices directly into a VM, addressing peripheral device support and improving hardware utilization.</p>
+<p>Edit <code>/boot/grub/grub.cfg</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">linux   /boot/vmlinuz-linux <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>6bb8eda5-d588-4e6a-8f5e-bbc856cc9f96 rw quiet <span class="nv">intel_iommu</span><span class="o">=</span>on
+</span></span></code></pre></div><p>After rebooting, verify that IOMMU is enabled:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gorgias@3vil ~&gt; dmesg <span class="p">|</span> grep -e DMAR -e IOMMU
+</span></span><span class="line"><span class="cl"><span class="o">[</span>    0.000000<span class="o">]</span> DMAR: IOMMU enabled
+</span></span></code></pre></div><p>Install a graphics driver—here I’ll try VMware’s first. After installing, the mouse-cursor issue is fixed, but when entering the desktop you may see a few seconds of screen corruption.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S xf86-video-vmware xf86-input-vmmouse
+</span></span></code></pre></div><p>Try launching the VM with these parameters: use the <code>Kali_Linux.qcow2</code> disk image, 2GB memory, VMware VGA, emulated Q35 chipset, KVM acceleration, and enable IOMMU.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-system-x86_64 /home/gorgias/media/Lancer/KVM/Kali<span class="se">\ </span>Linux/Kali_Linux.qcow2 -enable-kvm -m <span class="m">2048</span> -vga vmware -machine q35,accel<span class="o">=</span>kvm,type<span class="o">=</span>q35 -device intel-iommu
+</span></span></code></pre></div><p>It feels quite smooth.</p>
+<p><img loading="lazy"  src="./demo.png"
+        alt="demo"/></p>
+<h2 id="qemu-monitor">QEMU monitor</h2>
+<p>QEMU provides a monitor for inspecting a VM’s runtime state.</p>
+<p>In the QEMU window, press Ctrl + Alt + 2 (not on the numpad) to switch to the QEMU monitor. If it doesn’t work, check whether the shortcut conflicts with something else.</p>
+<p>You can also add <code>-monitor dev</code> when launching the VM. For example, <code>-monitor stdio</code> allows standard input as the monitor command source.</p>
+<p>In the monitor, run <code>info kvm</code> to check whether the KVM module is enabled:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">(</span>qemu<span class="o">)</span> info kvm
+</span></span><span class="line"><span class="cl">kvm support: enabled
+</span></span></code></pre></div><p><img loading="lazy"  src="./QEMU_monitor.png"
+        alt="QEMU_monitor"/></p>
+<h2 id="aqemu">AQEMU</h2>
+<p>There’s no way I’m configuring everything by hand. No way. Not in this lifetime.</p>
+<p>QEMU is extremely powerful and worth deep study—but for most of us, casually playing with it is enough.</p>
+<p><img loading="lazy"  src="./AQEMU.png"
+        alt="AQEMU"/></p>
+<p>The UI looks a bit like VirtualBox and it’s feature-complete. Configure it like you would in VMware and the VM will boot.</p>
+<p>In terms of both performance and usability, VMware is still much stronger.</p>
+<h2 id="reference">Reference</h2>
+<p><a href="https://wiki.archlinux.org/index.php/QEMU#Running_virtualized_system"target="_blank" rel="noopener noreferrer">Arch Linux Wiki - QEMU</a></p>
+<p><a href="https://en.wikibooks.org/wiki/QEMU/Monitor"target="_blank" rel="noopener noreferrer">WIKIBOOKS - QEMU/Monitor</a></p>
+<p><a href="http://www.linux-kvm.org/"target="_blank" rel="noopener noreferrer">linux-kvm.org</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/tools/>Tools</a><a class="tag" href=/en/tags/arch/>arch</a><a class="tag" href=/en/tags/kvm/>kvm</a><a class="tag" href=/en/tags/qemu/>qemu</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/build-openwrt-firmware-from-source-notes/"><span class="iconfont icon-article"></span>Building OpenWrt Firmware from Source</a></p><p><a class="link" href="/en/posts/crack-milk-card-with-acr122u-on-arch-linux/"><span class="iconfont icon-article"></span>Cracking a Milk Membership Card with an ACR122U on Arch Linux</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

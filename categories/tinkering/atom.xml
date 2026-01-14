@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tinkering on </title>
+    <link>https://gorgias.me/categories/tinkering/</link>
+    <description>Recent content in Tinkering on </description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 04 Apr 2016 18:16:01 +0800</lastBuildDate>
+    <atom:link href="https://gorgias.me/categories/tinkering/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>First Hardware Mod: OpenWrt on a Router</title>
+      <link>https://gorgias.me/posts/first-hardware-mod-router-openwrt/</link>
+      <pubDate>Mon, 04 Apr 2016 18:16:01 +0800</pubDate>
+      <guid>https://gorgias.me/posts/first-hardware-mod-router-openwrt/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;Our hackerspace recently got a new tool: a hot air rework station.&lt;br&gt;&#xA;I decided to use it to practice by hard-modding a router to run OpenWrt (I had never done this kind of hardware work before).&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://gorgias.me/posts/first-hardware-mod-router-openwrt/1.jpg&#34; alt=&#34;1&#34;&gt;&lt;/p&gt;&#xA;&lt;h2 id=&#34;preparation&#34;&gt;Preparation&lt;/h2&gt;&#xA;&lt;p&gt;&lt;strong&gt;Device&lt;/strong&gt;: TP-Link WR845N v4&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://gorgias.me/posts/first-hardware-mod-router-openwrt/2.jpg&#34; alt=&#34;2&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Hardware tools&lt;/strong&gt;: hot air rework station, temperature-controlled soldering iron (fine tip and knife tip), CH341A programmer, SOP 8/16 adapter board, desoldering braid, solder sucker, flux, rosin, tweezers, solder wire, heat‑resistant tape.&lt;br&gt;&#xA;&lt;strong&gt;Parts&lt;/strong&gt;:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

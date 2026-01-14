@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Soldering Station
+"><title>Hardware Repair Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Hardware Repair Notes" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Hardware Repair Notes</h1><p class="article date">Sunday, November 12, 2017<span class="langs"><span class="lang">
+                    <a href="/zh/posts/hardware-repair-notes/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="soldering-station">Soldering Station</h2>
+<p><img loading="lazy"  src="./soldering_station.png"
+        alt="soldering_station"/></p>
+<p>A soldering station consists of an external power supply plus a heat gun (hot air) or a soldering iron. It heats solder (usually solder wire) to melt it, so two parts can be joined together.</p>
+<p>Compared to a standalone soldering iron, a soldering station’s power supply can control output power, so it has many advantages: fast solder melting, anti-static, sleep mode, temperature control, and better safety.</p>
+<p>Depending on the power supply and intended use, the market mainly has the following types (and there are also 3-in-1 stations):</p>
+<ul>
+<li>Constant-temperature soldering station</li>
+<li>Hot air rework station</li>
+<li>High-frequency soldering station</li>
+</ul>
+<h3 id="soldering-iron-tips">Soldering Iron Tips</h3>
+<p>Soldering iron tips (Tips) are mainly made of copper, with plated layers containing iron, nickel, chromium, and tin. The core manufacturing process is electroplating.</p>
+<ul>
+<li>Copper - heat conduction</li>
+<li>Iron - corrosion resistance, extends service life</li>
+<li>Nickel - prevents the iron-plated layer from rusting</li>
+<li>Chromium - non-wetting, prevents solder from creeping upward</li>
+<li>Tin - used at the tip surface for tinning</li>
+</ul>
+<p>Tip lifetime is usually measured in solder joints; with normal use it is typically 15,000+ joints. Plating thickness affects lifetime, and so does temperature—generally keep it below 380°C.</p>
+<p>Maintain the tip properly: before soldering, clean off old solder and oxides, then tin and solder. After use, apply a layer of solder to prevent oxidation—once oxidized, it won’t wet with solder.</p>
+<p>Tips are also constrained by power rating; choose an appropriate tip based on the power supply’s output.</p>
+<p>Based on heater structure and heat transfer, tips/heating styles are commonly categorized as internal heating type and external heating type.</p>
+<h4 id="internal-heating-type">Internal heating type</h4>
+<p><img loading="lazy"  src="./internal_heating_type.png"
+        alt="internal_heating_type"/></p>
+<p>The heating wire is wound around a ceramic rod, insulated by a ceramic tube, and the tip sleeve sits over the ceramic tube. Heat transfers from the inside to the outside.</p>
+<p>Heats up quickly, has high thermal efficiency, uses lower power, suitable for precision components, produces no induced current, but has a shorter service life.</p>
+<h4 id="external-heating-type">External heating type</h4>
+<p><img loading="lazy"  src="./external_heating_type.png"
+        alt="external_heating_type"/></p>
+<p>The heating wire is wound around an iron tube with a hole in the middle, insulated inside and out with mica sheets. The tip is inserted into the center hole, and heat transfers from the outside to the inside.</p>
+<p>Heats up slowly, lower thermal efficiency, higher power, suitable for larger workpieces, and is more likely to generate induced current that can damage precision electronic components—grounding is recommended during soldering.</p>
+<h4 id="shapes-and-uses">Shapes and uses</h4>
+<p><img loading="lazy"  src="./soldering_iron_tip.png"
+        alt="soldering_iron_tip"/></p>
+<p>Different tip shapes have different uses. Common types on the market include:</p>
+<ul>
+<li>Round (B) - suitable for both point soldering and drag soldering</li>
+<li>Knife (K) - drag soldering; fixing solder bridges</li>
+<li>Conical (I) - jumper wires; fine soldering; fixing solder bridges</li>
+<li>Hoof / bent conical (I) - jumper wires; drag soldering; fine soldering; fixing solder bridges</li>
+<li>Bevel / chisel cup (C) - thicker wires/materials; large-area soldering</li>
+<li>Flat (D) - thicker wires/materials; large-area soldering</li>
+</ul>
+<h3 id="heat-gun">Heat gun</h3>
+<p>A heat gun mainly uses hot air blown from a heating element to solder components and to remove components. You can control airflow and temperature; temperature is generally set between 300°C and 400°C. Use different nozzles for different components.</p>
+<p><img loading="lazy"  src="./heat_gun_tuyere.png"
+        alt="heat_gun_tuyere"/></p>
+<h2 id="flux">Flux</h2>
+<h3 id="rosin-block">Rosin block</h3>
+<p><img loading="lazy"  src="./rosin.png"
+        alt="rosin"/></p>
+<p>Rosin blocks sold on the market are commonly used on soldering iron tips. Key properties:</p>
+<ul>
+<li>Removes oxide film</li>
+<li>Prevents oxidation</li>
+<li>Reduces the surface tension of molten solder</li>
+</ul>
+<h3 id="soldering-paste-flux-paste">Soldering paste (flux paste)</h3>
+<p><img loading="lazy"  src="./soldering_paste.png"
+        alt="soldering_paste"/></p>
+<p>Also called soldering oil/flux paste. It’s an oily substance with a melting point lower than rosin, and a boiling point only slightly higher than solder’s melting point. It increases solder flow/wetting and can also be used to clean excess solder. Its tackiness can temporarily hold IC components in place. Most flux pastes are acidic and can corrode PCBs; it’s recommended to use no-clean, neutral flux paste.</p>
+<h2 id="solder">Solder</h2>
+<p>Solder comes in leaded and lead-free types. The lead/tin ratio affects the melting point. Leaded solder is harmful to the environment and the human body. Fumes can contain tin oxides as well as lead and its compounds, which may cause pneumoconiosis. Lead-free solder has a higher melting point and poorer soldering performance. Wear a mask and work in a well-ventilated environment.</p>
+<h3 id="solder-wire">Solder wire</h3>
+<p><img loading="lazy"  src="./solder_wire.png"
+        alt="solder_wire"/></p>
+<p>It consists of two parts: solder alloy and flux core. For precision components, solder wire with flux is commonly used; it offers good flow and produces shiny, full solder joints.</p>
+<h3 id="solder-balls">Solder balls</h3>
+<p><img loading="lazy"  src="./solder_ball.png"
+        alt="solder_ball"/></p>
+<p>Also called Solder ball. These spherical solders are used for BGA reballing (reballing) and are soldered using reflow.</p>
+<h3 id="solder-paste">Solder paste</h3>
+<p><img loading="lazy"  src="./solder_paste.png"
+        alt="solder_paste"/></p>
+<p>Also called solder paste (Solder paste). It mainly consists of flux and solder powder. The flux is mainly made of activators, thixotropic agents, resins, and solvents. It’s used with reflow soldering: after heating, the paste flows to the joints and the solvent evaporates.</p>
+<p>Store it at 5–10°C. Shelf life is typically 6 months; after opening, it should be used within 5 days. If it dries out, dilute it with a few drops of solder paste thinner.</p>
+<p>Before use, let it warm up to room temperature, mix thoroughly. For BGA reballing, use a stencil and squeegee; for TSOP packages, apply a small amount directly with a brush.</p>
+<h2 id="other-tools">Other tools</h2>
+<h3 id="vacuum-pickup-pen">Vacuum pickup pen</h3>
+<p>Also called an IC puller. Used together with drag-soldering to lift SMD ICs.</p>
+<p><img loading="lazy"  src="./vacuum_pen.png"
+        alt="vacuum_pen"/></p>
+<h3 id="anti-static-tweezers">Anti-static tweezers</h3>
+<p>For all kinds of delicate work; essential for jumper wires.</p>
+<p><img loading="lazy"  src="./tweezers.png"
+        alt="tweezers"/></p>
+<h3 id="reballing-stencil">Reballing stencil</h3>
+<p><img loading="lazy"  src="./reballing_stencil.png"
+        alt="reballing_stencil"/></p>
+<h3 id="anti-static-soft-brush">Anti-static soft brush</h3>
+<p><img loading="lazy"  src="./banister_brush.png"
+        alt="banister_brush"/></p>
+<h3 id="scraper--squeegee">Scraper / squeegee</h3>
+<p>IC scraper: some manufacturers glue ICs in place; this is used to remove adhesive. It can also scrape off PCB solder mask for jumper wiring.</p>
+<p><img loading="lazy"  src="./IC_scraper.png"
+        alt="IC_scraper"/></p>
+<p>Solder paste squeegee: used to press solder paste into the reballing stencil.</p>
+<p><img loading="lazy"  src="./squeegee.png"
+        alt="squeegee"/></p>
+<h3 id="magnet-wire">Magnet wire</h3>
+<p>Typically 0.1mm diameter, used for jumper wires.</p>
+<p><img loading="lazy"  src="./magnet_wire.png"
+        alt="magnet_wire"/></p>
+<h3 id="conductive-silver-paint">Conductive silver paint</h3>
+<p>Used to connect two solder points on a PCB (acting like a jumper wire). It can also be used to repair lifted pads.</p>
+<p><img loading="lazy"  src="./Silver_Conductive_Wire_Glue_Paste.png"
+        alt="Silver_Conductive_Wire_Glue_Paste"/>
+<img loading="lazy"  src="./Silver_Conductive_Wire_Glue_Paste2.png"
+        alt="Silver_Conductive_Wire_Glue_Paste2"/></p>
+<p>Scrape open the trace leading to the pad, apply conductive silver paint, and after it dries the connection is repaired.</p>
+<p><img loading="lazy"  src="./pad.png"
+        alt="pad"/></p>
+<h2 id="cleaning">Cleaning</h2>
+<h3 id="high-temperature-sponge">High-temperature sponge</h3>
+<p><img loading="lazy"  src="./solder_sponge.png"
+        alt="solder_sponge"/></p>
+<p>Used to clean soldering tips. Wet it before use and squeeze out excess water; moisture can corrode the tip. When cleaning, use appropriate force and wipe repeatedly in the same direction. If the oxide layer is too thick, dip it in rosin and rub it off.</p>
+<h3 id="tip-cleaning-ball">Tip cleaning ball</h3>
+<p><img loading="lazy"  src="./Soldering_Iron_Tip_Cleaning_Ball.png"
+        alt="Soldering_Iron_Tip_Cleaning_Ball"/></p>
+<p>Used to clean tips. Compared to a high-temperature sponge, it cleans more aggressively. It’s made of copper shavings and contains flux, helping extend tip lifetime.</p>
+<h3 id="desoldering-braid">Desoldering braid</h3>
+<p>Mainly made of copper braid. Used together with flux paste to remove solder bridges or solder “nets”.</p>
+<p><img loading="lazy"  src="./desoldering_braid.png"
+        alt="desoldering_braid"/></p>
+<h3 id="desoldering-pump">Desoldering pump</h3>
+<p>Used to remove larger blobs of solder, after heating the solder with a soldering iron.</p>
+<p><img loading="lazy"  src="./desoldering_pump.png"
+        alt="desoldering_pump"/></p>
+<h3 id="pcb-cleaning-solution">PCB cleaning solution</h3>
+<p><img loading="lazy"  src="./BGA_IC_Adhesive_removing_liquid.png"
+        alt="BGA_IC_Adhesive_removing_liquid"/></p>
+<p>Also called adhesive remover. Used to dissolve flux residue left on a PCB, preventing solder paste from corroding the PCB.</p>
+<h2 id="wire-connector">Wire connector</h2>
+<p><img loading="lazy"  src="./wire_nut.png"
+        alt="wire_nut"/></p>
+<p>Insulation-displacement wire connector</p>
+<ul>
+<li>Solid single-core wire</li>
+<li>Solid multi-core wire</li>
+<li>Stranded wire</li>
+</ul>
+<h2 id="protection">Protection</h2>
+<h3 id="hot-glue-gun">Hot glue gun</h3>
+<p><img loading="lazy"  src="./hot_glues_gun.png"
+        alt="hot_glues_gun"/></p>
+<p>Used to glue components in place and protect solder joints. Typically applied after jumper wiring.</p>
+<p><img loading="lazy"  src="./apply_hot_glue.png"
+        alt="apply_hot_glue"/></p>
+<h3 id="high-temperature-tape">High-temperature tape</h3>
+<p><img loading="lazy"  src="./heat_type.png"
+        alt="heat_type"/></p>
+<p>High-temperature tape for PCB protection, also called PET. It comes in many colors (mainly just different pigments). Masking tape can also be used. Heat-resistant; used to protect electronic components that are not the soldering target.</p>
+<h2 id="component-types">Component types</h2>
+<p>Different component types require different soldering processes.</p>
+<h3 id="through-hole">Through-hole</h3>
+<p>PTH (Plating Through Hole) refers to through-hole components. Point soldering is commonly used.</p>
+<p><img loading="lazy"  src="./PTH.png"
+        alt="PTH"/></p>
+<h3 id="surface-mount">Surface-mount</h3>
+<p>SMT (surface mounting technology) refers to surface-mount technology. Different package types use different soldering methods. TQFP and TSOP are commonly drag-soldered or hot-air soldered. BGA typically requires hot air.</p>
+<h4 id="tqfp">TQFP</h4>
+<p><img loading="lazy"  src="./TQFP.png"
+        alt="TQFP"/></p>
+<h4 id="tsop">TSOP</h4>
+<p><img loading="lazy"  src="./TSOP.png"
+        alt="TSOP"/></p>
+<h4 id="bga">BGA</h4>
+<p><img loading="lazy"  src="./BGA.png"
+        alt="BGA"/></p>
+<p>The typical process is as follows. SMT requires higher skill; it’s recommended to use a rework station (rework station).</p>
+<ul>
+<li>Solder paste printing</li>
+<li>Placement</li>
+<li>Reflow soldering</li>
+</ul>
+<p><img loading="lazy"  src="./SMT.png"
+        alt="SMT"/></p>
+<p><img loading="lazy"  src="./rework_station.png"
+        alt="rework_station"/></p>
+<p>If it’s a BGA package without alignment marks/white lines, it’s recommended to use an optical rework station for alignment (these usually cost over ten thousand).</p>
+</article><section class="article labels"><a class="category" href=/en/categories/hardware-security/>Hardware Security</a><a class="tag" href=/en/tags/soldering-iron/>soldering iron</a><a class="tag" href=/en/tags/soldering-station/>soldering station</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/subdomain-enumeration-notes/"><span class="iconfont icon-article"></span>Subdomain Enumeration Notes</a></p><p><a class="link" href="/en/posts/find-origin-server-behind-cdn/"><span class="iconfont icon-article"></span>Approaches to Finding the Origin Server Behind a CDN</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

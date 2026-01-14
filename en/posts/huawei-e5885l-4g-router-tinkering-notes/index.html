@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="
+Introduction
+I often use a 4G hotspot when traveling for work. This 4G router is incredibly handy: it supports LTE/UMTS/GSM, can act as a power bank, a router, and a cellular modem, and supports both wireless and wired connections. With a proper unlock, you can customize the IMEI, bypass ICCID–IMEI binding restrictions, and evade network censorship."><title>Huawei E5885L 4G Router Tinkering Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Huawei E5885L 4G Router Tinkering Notes" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Huawei E5885L 4G Router Tinkering Notes</h1><p class="article date">Thursday, September 27, 2018<span class="langs"><span class="lang">
+                    <a href="/zh/posts/huawei-e5885l-4g-router-tinkering-notes/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><hr>
+<h2 id="introduction">Introduction</h2>
+<p>I often use a 4G hotspot when traveling for work. This 4G router is incredibly handy: it supports LTE/UMTS/GSM, can act as a power bank, a router, and a cellular modem, and supports both wireless and wired connections. With a proper unlock, you can customize the IMEI, bypass ICCID–IMEI binding restrictions, and evade network censorship.</p>
+<p><img loading="lazy"  src="./jumpwire.jpg"
+        alt="jumpwire"/></p>
+<p>The first thing I did after getting it was to open it up and look for a UART port. I was able to print logs, but it turned out to be password-protected with an 8-character password, and there was no way to recover it by reading NVRAM.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">þ
+</span></span><span class="line"><span class="cl">onchip
+</span></span><span class="line"><span class="cl">SEB_SecureInit OK, lcs = 7
+</span></span><span class="line"><span class="cl">SOC_ID: 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+</span></span><span class="line"><span class="cl">        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+</span></span><span class="line"><span class="cl">NF id boot!
+</span></span><span class="line"><span class="cl">NF ID 0x98AA9015 0x76160800
+</span></span><span class="line"><span class="cl">NF pagesz 0x00000800B,pagenm 0x00000040,oobsz 0x00000058B,ecc 0x00000008,addrnum 0x00000005,chipsz 0x00000100MB
+</span></span><span class="line"><span class="cl">nand spec save to 0x74650131
+</span></span><span class="line"><span class="cl">len 0x00004888
+</span></span><span class="line"><span class="cl">SEB_XloaderVerification ok.
+</span></span><span class="line"><span class="cl">mddrc init ok
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">code_base         = 0x00000055
+</span></span><span class="line"><span class="cl">code_tsensor      = 0x0000005A
+</span></span><span class="line"><span class="cl">code_base_high    = 0x00000000
+</span></span><span class="line"><span class="cl">code_tsensor_high = 0x00000000
+</span></span><span class="line"><span class="cl">trim_a            = 0x00000400
+</span></span><span class="line"><span class="cl">trim_b            = 0xFFFFFB00
+</span></span><span class="line"><span class="cl">123
+</span></span><span class="line"><span class="cl">boot fastboot from fastboot
+</span></span><span class="line"><span class="cl">SEB_XloaderVerification ok.
+</span></span><span class="line"><span class="cl">CHG:read NV success,mode=1
+</span></span><span class="line"><span class="cl">[00000422ms] CHG:read NV success,mode=1
+</span></span><span class="line"><span class="cl">[0000042Ems] CHG:exception_poweroff_poweron_enable=0
+</span></span><span class="line"><span class="cl">[00000430ms] CHG:no_battery_powerup_enable=0
+</span></span><span class="line"><span class="cl">[00000434ms] CHG:chg_boot_chip_init
+</span></span><span class="line"><span class="cl">[00000437ms] CHARGE INIT SUCCESS!
+</span></span><span class="line"><span class="cl">[0000043Dms]hkadc_bbp_convert read battery id voltage return volt=726
+</span></span><span class="line"><span class="cl">[00000440ms][zcw_test]:boot_bq27510 read temp val_low = 0000009b; val_high = 0000000b!
+</span></span><span class="line"><span class="cl">[00000448ms][zcw_test]:boot_bq27510 read temp batt_temp = 00000b9b!
+</span></span><span class="line"><span class="cl">[0000044Ems][zcw_test]:boot_bq27510 read temp val_low = 0000009b; val_high = 0000000b!
+</span></span><span class="line"><span class="cl">[00000456ms][zcw_test]:boot_bq27510 read temp batt_temp = 00000b9b!
+</span></span><span class="line"><span class="cl">[0000045Cms][zcw_test]:boot_bq27510 read volt val_low = 00000044; val_high = 0000000f!
+</span></span><span class="line"><span class="cl">[00000463ms][zcw_test]:boot_bq27510 read volt batt_volt = 00000f44!
+</span></span><span class="line"><span class="cl">[00000469ms]PRE-CHG: trickle charg batt only batt_voltage=3908
+</span></span><span class="line"><span class="cl">[0000046Fms] [zcw_test]:boot_bq27510 read volt val_low = 00000044; val_high = 0000000f!
+</span></span><span class="line"><span class="cl">[00000477ms][zcw_test]:boot_bq27510 read volt batt_volt = 00000f44!
+</span></span><span class="line"><span class="cl">[0000047Dms]EXTCHG:ext-charge limit to 2A in boot!!
+</span></span><span class="line"><span class="cl">[00000579ms]Hello  Welcom to input password
+</span></span><span class="line"><span class="cl">Password:
+</span></span></code></pre></div><h2 id="flashing-firmware">Flashing Firmware</h2>
+<p>ValdikSS has cracked the E5885L and wrote a detailed guide on 4PDA:</p>
+<p><a href="https://4pda.ru/forum/index.php?showtopic=842340"target="_blank" rel="noopener noreferrer">4PDA - Huawei E5885 (WiFi Pro 2 / WiFi 2 Pro) - discussion</a></p>
+<p>In essence, the approach relies on knowing the firmware’s partition/layout structure. There are many ways to get that layout: reverse-engineer the PC upgrade process, derive signatures from similar models, or dump the chip using a programmer (too expensive). The Balong series is fairly generic—one device’s firmware layout can often be reused for other devices. By modifying the official update package, you can flash a firmware build with telnet and ADB debugging enabled.</p>
+<p>Short the test point (boot pin) to GND, then plug in the USB cable and connect it to a PC to enter download mode. I didn’t have tweezers at the time, and the pad was too small to hold with my hands, so I just soldered wires directly.</p>
+<p><img loading="lazy"  src="./short_circuit.jpg"
+        alt="short_circuit"/></p>
+<p>Use forth32’s <a href="https://github.com/forth32/balong-usbdload"target="_blank" rel="noopener noreferrer">balong-usbdload</a>, compile it, and load <code>usbload</code>. The idea is to write data to the USB device via a serial port.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./balong-usbdload -h
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> Утилита предназначена для аварийной USB-загрузки устройств на чипете Balong V7
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./balong-usbdload <span class="o">[</span>ключи<span class="o">]</span> &lt;имя файла для загрузки&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> Допустимы следующие ключи:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">-p &lt;tty&gt; - 设备名 <span class="o">(</span>默认 /dev/ttyUSB0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">-f       - 仅将usbloader加载到fastboot（不运行Linux）
+</span></span><span class="line"><span class="cl">-b       - 擦除时不检查错误
+</span></span><span class="line"><span class="cl">-t &lt;file&gt;- 从指定文件中读取分区表
+</span></span><span class="line"><span class="cl">-m       - 显示引导加载程序分区表并完成工作
+</span></span><span class="line"><span class="cl">-s n     - 设置分区n的文件标志（可以多次指定密钥）
+</span></span><span class="line"><span class="cl">-c       - 不要自动修补分区擦除
+</span></span></code></pre></div><p>Enter download mode:</p>
+<p><img loading="lazy"  src="./download_mode.jpg"
+        alt="download_mode"/></p>
+<p>Flash <code>usbloader</code>. On Windows you’ll need to install a driver; download links are provided at the end of this post.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo balong_usbdload usbloader-e5885.bin
+</span></span></code></pre></div><p>Download <a href="https://github.com/forth32/balongflash"target="_blank" rel="noopener noreferrer">balongflash</a> and flash ValdikSS’s modified firmware.</p>
+<p>forth32 also wrote a GUI firmware customization tool: <a href="https://github.com/forth32/qhuaweiflash"target="_blank" rel="noopener noreferrer">qhuaweiflash</a>. Russian developers are seriously impressive.</p>
+<p><img loading="lazy"  src="./qhuaweiflash.png"
+        alt="qhuaweiflash"/></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ./balong_flash -h
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> Утилита предназначена для прошивки модемов на чипсете Balong V7
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./balong_flash <span class="o">[</span>ключи<span class="o">]</span> &lt;имя файла для загрузки или имя каталога с файлами&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> Допустимы следующие ключи:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">-p &lt;tty&gt; - 设备名 <span class="o">(</span>默认 /dev/ttyUSB0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">-n       - 指定目录中的多文件固件模式
+</span></span><span class="line"><span class="cl">-g#      - 设置数字签名模式
+</span></span><span class="line"><span class="cl">  -gl - 参数说明
+</span></span><span class="line"><span class="cl">  -gd - 禁止自动检测签名
+</span></span><span class="line"><span class="cl">-m       - 显示固件文件并退出
+</span></span><span class="line"><span class="cl">-e       - 将固件文件反汇编成不带标题的部分
+</span></span><span class="line"><span class="cl">-s       - 将固件文件反汇编成带标题的部分
+</span></span><span class="line"><span class="cl">-k       - 请勿在固件刷写结束时重新启动基带
+</span></span><span class="line"><span class="cl">-r       - 强制重新启动基带而不刷写分区
+</span></span><span class="line"><span class="cl">-f       - 就算CRC错误也强制刷写
+</span></span><span class="line"><span class="cl">-d#      - 安装固件类型（DLOAD_ID，0..7）， - dl - 类型列表
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo balong_flash E5885Ls-93a_Update_21.236.05.00.00_mod1.2.bin
+</span></span></code></pre></div><p><img loading="lazy"  src="./installing.jpg"
+        alt="installing"/></p>
+<p>After flashing <code>usbloader</code>, you can use <code>balong_flash</code> to flash arbitrary firmware.
+However, NVRAM will be wiped, which breaks mobile data connectivity, so you need to restore NVRAM:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mount /dev/block/mmcblk0p1 /sdcard
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /sdcard
+</span></span><span class="line"><span class="cl"><span class="k">for</span> i in <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span> <span class="m">7</span> 23<span class="p">;</span> <span class="k">do</span> cat mtdblock<span class="nv">$i</span> &gt; /dev/block/mtdblock<span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
+</span></span></code></pre></div><p>Then you can get a shell via ADB and telnet. The default username/password is <code>root/changemerightnow</code>.</p>
+<p><img loading="lazy"  src="./shell.png"
+        alt="shell"/></p>
+<h2 id="oled-hijacking">OLED Hijacking</h2>
+<p>ValdikSS wrote a tool to modify the OLED menu. The idea is to patch the original OLED program’s shared library: hijack <code>sprintf</code> to set a custom menu, hijack <code>register_notify_handler</code> to handle button events, and redirect them to a specified script. Based on that, we can add our own custom features.</p>
+<p>Project: <a href="https://github.com/ValdikSS/huawei_oled_hijack"target="_blank" rel="noopener noreferrer">https://github.com/ValdikSS/huawei_oled_hijack</a></p>
+<h2 id="imei-binding-bypass">IMEI Binding Bypass</h2>
+<p>First, refer to my earlier post <a href="https://gorgias.me/2017/12/10/eSIM%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"target="_blank" rel="noopener noreferrer">eSIM Learning Notes</a> which mentions a wire-soldering attack against eSIM.</p>
+<p>Before soldering wires, check the original IMEI:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">E5885Ls-93aroot@p722:/ <span class="c1"># imei</span>
+</span></span><span class="line"><span class="cl">/system/bin/imei <span class="o">[</span>VALUE<span class="o">]</span>
+</span></span><span class="line"><span class="cl">Current IMEI: <span class="m">358731070934433</span>
+</span></span></code></pre></div><p>With ValdikSS’s firmware, the IMEI is changed on every boot. You can also manually set it to a specific IMEI. You can use existing tools to set it to the target device IMEI; it takes effect after reboot. Switching networks, switching modes, etc. are also done via AT commands.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">imei <span class="m">864758031772807</span>
+</span></span><span class="line"><span class="cl">or
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> -e <span class="s2">&#34;AT^CIMEI=864758031772807&#34;</span> &gt; /dev/appvcom
+</span></span></code></pre></div><p>Finally, fill in the APN parameters in the web configuration UI:</p>
+<p><img loading="lazy"  src="./APN.png"
+        alt="APN"/></p>
+<h2 id="backup-partition">Backup Partition</h2>
+<p>Backing up is a good habit. Insert a microSD card first, mount it, and then dump NAND partitions to the SD card:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/system/busybox sh
+</span></span><span class="line"><span class="cl">mount /dev/block/mmcblk0p1 /sdcard
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /sdcard
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mkdir mtdblocks
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> mtdblocks
+</span></span><span class="line"><span class="cl"><span class="k">for</span> i in <span class="sb">`</span>seq <span class="m">0</span> 27<span class="sb">`</span><span class="p">;</span> <span class="k">do</span> cat /dev/block/mtdblock<span class="nv">$i</span> &gt; mtdblock<span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ..
+</span></span><span class="line"><span class="cl">mkdir nanddump
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> nanddump
+</span></span><span class="line"><span class="cl"><span class="k">for</span> i in <span class="sb">`</span>seq <span class="m">0</span> 27<span class="sb">`</span><span class="p">;</span> <span class="k">do</span> nanddump -f mtd<span class="nv">$i</span> /dev/mtd/mtd<span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> i in <span class="sb">`</span>seq <span class="m">0</span> 27<span class="sb">`</span><span class="p">;</span> <span class="k">do</span> nanddump -o -f mtdoob<span class="nv">$i</span> /dev/mtd/mtd<span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ..
+</span></span><span class="line"><span class="cl">tar cf files.tar /system /app /data /root /modem_log /modem_fw /online /mnvm2:0
+</span></span><span class="line"><span class="cl">cat /proc/mtd &gt; procmtd
+</span></span><span class="line"><span class="cl">cat /proc/kallsyms &gt; kallsyms
+</span></span><span class="line"><span class="cl">mount &gt; mount
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /
+</span></span><span class="line"><span class="cl">umount /sdcard
+</span></span></code></pre></div><h2 id="4pda-forum-verification-code">4PDA Forum Verification Code</h2>
+<p>To download files, you have to register on the 4PDA forum—and the CAPTCHA stopped me. So I learned some Russian numerals. In 4PDA’s CAPTCHA, the letters “м” and “т” are sometimes swapped. In the screenshot below, it says “six thousand seven hundred thirty-one”:
+шесть тысяч семьсот тринадцать Один</p>
+<p><img loading="lazy"  src="./verifycode.png"
+        alt="verifycode"/></p>
+<p>It’s actually straightforward: just compare against the alphabet and number word list I compiled below.</p>
+<p><img loading="lazy"  src="./alphabet.png"
+        alt="alphabet"/></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">一  Один    (&#34;a-deen&#34;)
+</span></span><span class="line"><span class="cl">二  два     (&#34;dva&#34;)
+</span></span><span class="line"><span class="cl">三  три     (&#34;tree&#34;)
+</span></span><span class="line"><span class="cl">四  четыре  (&#34;chye-tir-ye&#34;)
+</span></span><span class="line"><span class="cl">五  пять    (&#34;pyat&#34;)
+</span></span><span class="line"><span class="cl">六  шесть   (&#34;shest&#34;)
+</span></span><span class="line"><span class="cl">七  семь    (&#34;syem&#34;)
+</span></span><span class="line"><span class="cl">八  восемь  (&#34;vo-syem&#34;)
+</span></span><span class="line"><span class="cl">九  девять  (&#34;dyev-yat&#34;)
+</span></span><span class="line"><span class="cl">十  десять  (&#34;dyes-yat&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">二十    Двадцать
+</span></span><span class="line"><span class="cl">三十    тридцать
+</span></span><span class="line"><span class="cl">四十    сорок
+</span></span><span class="line"><span class="cl">五十    пятьдесят
+</span></span><span class="line"><span class="cl">六十    шестьдесят
+</span></span><span class="line"><span class="cl">七十    семьдесят
+</span></span><span class="line"><span class="cl">八十    восемьдесят
+</span></span><span class="line"><span class="cl">九十    девяносто
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">十一    Одиннадцать
+</span></span><span class="line"><span class="cl">十二    двенадцать
+</span></span><span class="line"><span class="cl">十三    тринадцать
+</span></span><span class="line"><span class="cl">十四    четырнадцать
+</span></span><span class="line"><span class="cl">十五    пятнадцать
+</span></span><span class="line"><span class="cl">十六    шестнадцать
+</span></span><span class="line"><span class="cl">十七    семнадцать
+</span></span><span class="line"><span class="cl">十八    восемнадцать
+</span></span><span class="line"><span class="cl">十九    девятнадцать
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">一百    Сто
+</span></span><span class="line"><span class="cl">二百    двести
+</span></span><span class="line"><span class="cl">三百    триста
+</span></span><span class="line"><span class="cl">四百    четыреста
+</span></span><span class="line"><span class="cl">五百    пятьсот
+</span></span><span class="line"><span class="cl">六百    шестьсот
+</span></span><span class="line"><span class="cl">七百    семьсот
+</span></span><span class="line"><span class="cl">八百    восемьсот
+</span></span><span class="line"><span class="cl">九百    девятьсот
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">一千    Тысяча
+</span></span><span class="line"><span class="cl">两千    две тысячи
+</span></span><span class="line"><span class="cl">三千    три тысячи
+</span></span><span class="line"><span class="cl">四千    четыре тысячи
+</span></span><span class="line"><span class="cl">五千    пять тысяч
+</span></span><span class="line"><span class="cl">六千    шесть тысяч
+</span></span><span class="line"><span class="cl">七千    семь тысяч
+</span></span><span class="line"><span class="cl">八千    восемь тысяч
+</span></span><span class="line"><span class="cl">九千    девять тысяч
+</span></span></code></pre></div><h2 id="reference">Reference</h2>
+<p><a href="https://4pda.ru/forum/index.php?showtopic=842340"target="_blank" rel="noopener noreferrer">4PDA - Huawei E5885 (WiFi Pro 2 / WiFi 2 Pro) - discussion</a></p>
+<p><a href="https://github.com/forth32/balongflash"target="_blank" rel="noopener noreferrer">balongflash - Github</a></p>
+<p><a href="https://github.com/forth32/balong-usbdload"target="_blank" rel="noopener noreferrer">balong-usbdload - Github</a></p>
+<p><a href="https://github.com/forth32/qhuaweiflash"target="_blank" rel="noopener noreferrer">qhuaweiflash - Github</a></p>
+<p><a href="https://github.com/ValdikSS/huawei_oled_hijack"target="_blank" rel="noopener noreferrer">huawei_oled_hijack - Github</a></p>
+<p><a href="https://mega.nz/#F!aoZkxAqR"target="_blank" rel="noopener noreferrer">Driver and firmware download links (Mega)</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/hardware-security/>Hardware Security</a><a class="category" href=/en/categories/tinkering/>Tinkering</a><a class="tag" href=/en/tags/e5885l/>E5885L</a><a class="tag" href=/en/tags/4g-router/>4G Router</a><a class="tag" href=/en/tags/balong/>Balong</a><a class="tag" href=/en/tags/huawei/>Huawei</a><a class="tag" href=/en/tags/esim/>eSIM</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/firmware-extraction-series-sd-card-unlock/"><span class="iconfont icon-article"></span>Firmware Extraction Series - SD Card Unlock</a></p><p><a class="link" href="/en/posts/remove-bcy-image-watermark-and-download-limit/"><span class="iconfont icon-article"></span>Remove Banciyuan Image Watermark and Download Limit</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="简介
+SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。"><title>eSIM学习笔记&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="eSIM学习笔记" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">eSIM学习笔记</h1><p class="article date">Sunday, December 10, 2017<span class="langs"><span class="lang">
+                    <a href="/en/posts/esim-notes/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="简介">简介</h2>
+<p>SIM(subscriber identification module,客户识别模块)是一个能够安全储存移动通讯配置的IC。</p>
+<p>然而，SIM卡是2G网络时代下的叫法，因为SIM由硬件和软件组成。而在3G时代，SIM变成了纯应用程序，和CSIM，USIM一样，可以运行在UICC里面，UICC(universal integrated circuit card,通用集成电路卡)就是我们手机里插的所谓SIM卡(SIM card)，属于IC智能卡的一种，下图包含多种智能卡。
+<img loading="lazy"  src="./smart_card.png"
+        alt="smart_card"/>
+SIM卡的叫法沿用至今，是不准确的，应该叫UICC，但是为了用户体验，厂商还是称作SIM卡，所以后面说的SIM卡就是指UICC智能卡。</p>
+<h2 id="存储">存储</h2>
+<p>SIM卡有数据存储的功能，存放了用来识别和验证客户端的配置信息。</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Subscriber_identity_module#ICCID"target="_blank" rel="noopener noreferrer">ICCID</a>(integrated circuit card identifier，IC卡识别码)</li>
+<li><a href="https://en.wikipedia.org/wiki/International_mobile_subscriber_identity"target="_blank" rel="noopener noreferrer">IMSI</a>(international mobile subscriber identity，国际移动用户识别码)</li>
+<li>[Authentication Key] 是GSM网络下的一个128位鉴权key，因为GSM算法存在漏洞，导致key被泄漏从而可以复制SIM卡。</li>
+</ul>
+<p>目前找回丢失手机原理，就是通过查IMEI对应的ICCID锁定手机号，这个ICCID就是新插入SIM卡的识别码。</p>
+<p>SIM卡的IC包括CPU、ROM、RAM、EEPROM和I/O，尺寸也是越做越小，直到2016年出现的e-SIM。</p>
+<p><img loading="lazy"  src="./sim_card_iteration.png"
+        alt="sim_card_iteration"/></p>
+<p>Embedded-SIM/embedded universal integrated circuit card
+嵌入式SIM(Embedded-SIM，又称eSIM，e-SIM)，也叫做eUICC。是芯片格式的SIM卡，大多数采用SON-8封装。
+<img loading="lazy"  src="./SON-8-Photo.jpg"
+        alt="SON-8"/></p>
+<p>eSIM是下一代SIM卡技术，遵循GSMA(全球移动通信系统协会，GSM Association)规范，核心思想是将SIM卡硬件(eUICC)的生产与运营商数据(Profile)的生产分离。
+运营商通过空中写卡方式将Profile下载，非常安全，不会被中间人攻击。</p>
+<p>优点：</p>
+<ol>
+<li>摆脱SIM卡限制，方便携号转网。</li>
+<li>包含其他安全信息，可以进行私有网络认证。</li>
+<li>弃用卡槽和IC卡。成本降低，节省空间。</li>
+<li>在运营平台就能开卡，压缩了制卡的流程。</li>
+</ol>
+<p>局限：</p>
+<ol>
+<li>不支持双卡双待。</li>
+<li>目前国内集成eSIM卡的设备，普遍是由运营商或指定网络服务方牵头的，无法转网。</li>
+</ol>
+<p>所以目前只有物联网设备使用eSIM。</p>
+<p>eSIM与SIM卡的引脚定义
+<img loading="lazy"  src="./esim_pin_assigment.png"
+        alt="esim_pin_assigment"/>
+根据引脚定义可以把eSIM飞线到SIM卡槽上，VPP引脚可以不接。
+<img loading="lazy"  src="./jump_wire.png"
+        alt="jump_wire"/></p>
+<p>在安全方面，SIM卡使用的是单向鉴权机制：在接入网络时只对SIM卡做身份认证，曾有黑客表示可以在短时间内远程控制任何一个SIM卡号码，甚至复制。而USIM卡使用的则是双向鉴权机制：通过AUTN（认证令牌）实现用户和网络的鉴权，接入网络时不仅对USIM卡进行身份认证，USIM卡同时也要对网络进行身份认证，因此可大幅提升破解难度，还能有效地识别或屏蔽伪基站，提升网络通讯的安全。</p>
+<h2 id="参考">参考</h2>
+<p><a href="https://wenku.baidu.com/view/dfc28735a9114431b90d6c85ec3a87c240288aaf.html?from=search"target="_blank" rel="noopener noreferrer">eSIM安全性分析及实现方案研究</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E7%A1%AC%E4%BB%B6%E5%AE%89%E5%85%A8/>硬件安全</a><a class="tag" href=/zh/tags/esim/>eSIM</a><a class="tag" href=/zh/tags/e-sim/>e-SIM</a><a class="tag" href=/zh/tags/sim%E5%8D%A1/>SIM卡</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/sangfor-ssl-vpn-port-acl-bypass/"><span class="iconfont icon-article"></span>深信服 SSL VPN 端口ACL 绕过实践</a></p><p><a class="link" href="/zh/posts/subdomain-enumeration-notes/"><span class="iconfont icon-article"></span>子域名收集笔记</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

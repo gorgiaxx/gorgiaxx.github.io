@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="
+完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。
+Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。
+Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作系统内核.
+"><title>小鲸鱼Docker新手学习笔记&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="小鲸鱼Docker新手学习笔记" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">小鲸鱼Docker新手学习笔记</h1><p class="article date">Saturday, August 29, 2015<span class="langs"><span class="lang">
+                    <a href="/en/posts/docker-beginner-notes/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><p><img loading="lazy"  src="./logo.png"
+        alt="logo"/>
+完全是被这个鲸鱼logo吸引的，初次看到这个logo就喜欢上了。
+Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。
+Docker container和普通的虚拟机Image相比, 最大的区别是它并不包含操作系统内核.
+<img loading="lazy"  src="./diff.png"
+        alt="diff"/></p>
+<h4 id="docker通常用于如下场景">Docker通常用于如下场景：</h4>
+<ul>
+<li>web应用的自动化打包和发布；</li>
+<li>自动化测试和持续集成、发布；</li>
+<li>在服务型环境中部署和调整数据库或其他的后台应用；</li>
+<li>从头编译或者扩展现有的OpenShift或Cloud Foundry平台来搭建自己的PaaS环境。</li>
+</ul>
+<p>Linux版本：<a href="http://www.ubuntu.com/download/server"target="_blank" rel="noopener noreferrer">ubuntu-15.04-server-amd64</a>
+环境：VMware Workstation 11</p>
+<p>下载安装docker</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt-get install docker.io
+</span></span></code></pre></div><p>查看docker版本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker version
+</span></span><span class="line"><span class="cl">Client version: 1.6.2
+</span></span><span class="line"><span class="cl">Client API version: 1.18
+</span></span><span class="line"><span class="cl">Go version <span class="o">(</span>client<span class="o">)</span>: go1.3.3
+</span></span><span class="line"><span class="cl">Git commit <span class="o">(</span>client<span class="o">)</span>: 7c8fca2
+</span></span><span class="line"><span class="cl">OS/Arch <span class="o">(</span>client<span class="o">)</span>: linux/amd64
+</span></span><span class="line"><span class="cl">Server version: 1.6.2
+</span></span><span class="line"><span class="cl">Server API version: 1.18
+</span></span><span class="line"><span class="cl">Go version <span class="o">(</span>server<span class="o">)</span>: go1.3.3
+</span></span><span class="line"><span class="cl">Git commit <span class="o">(</span>server<span class="o">)</span>: 7c8fca2
+</span></span><span class="line"><span class="cl">OS/Arch <span class="o">(</span>server<span class="o">)</span>: linux/amd64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker info
+</span></span><span class="line"><span class="cl">Containers: <span class="m">13</span>
+</span></span><span class="line"><span class="cl">Images: <span class="m">3</span>
+</span></span><span class="line"><span class="cl">Storage Driver: aufs
+</span></span><span class="line"><span class="cl"> Root Dir: /var/lib/docker/aufs
+</span></span><span class="line"><span class="cl"> Backing Filesystem: extfs
+</span></span><span class="line"><span class="cl"> Dirs: <span class="m">29</span>
+</span></span><span class="line"><span class="cl"> Dirperm1 Supported: <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Execution Driver: native-0.2
+</span></span><span class="line"><span class="cl">Kernel Version: 3.19.0-15-generic
+</span></span><span class="line"><span class="cl">Operating System: Ubuntu 15.04
+</span></span><span class="line"><span class="cl">CPUs: <span class="m">2</span>
+</span></span><span class="line"><span class="cl">Total Memory: 1.938 GiB
+</span></span><span class="line"><span class="cl">Name: ubuntu
+</span></span><span class="line"><span class="cl">ID: 5P2D:CFMQ:5WWP:U7RE:3SLE:Z2D3:L7D3:UMCI:LHZD:WNQK:Q6DD:ZRPA
+</span></span><span class="line"><span class="cl">WARNING: No swap limit support
+</span></span></code></pre></div><p>搜索可用的docker镜像
+这里用工具检索名字为tutorial的镜像</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker search learn/tutorial
+</span></span><span class="line"><span class="cl">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED
+</span></span><span class="line"><span class="cl">learn/tutorial                 <span class="m">11</span>
+</span></span></code></pre></div><p>下载容器镜像</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker search learn/tutorial
+</span></span><span class="line"><span class="cl">NAME             DESCRIPTION   STARS     OFFICIAL   AUTOMATED
+</span></span><span class="line"><span class="cl">learn/tutorial                 <span class="m">11</span>
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker pull learn/tutorial
+</span></span><span class="line"><span class="cl">Pulling repository learn/tutorial
+</span></span><span class="line"><span class="cl">8dbd9e392a96: Download <span class="nb">complete</span> Status: Downloaded newer image <span class="k">for</span> learn/tutorial:latest
+</span></span></code></pre></div><p>来一个hello gorigas!</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker run learn/tutorial <span class="nb">echo</span> <span class="s2">&#34;hello gorgias&#34;</span>
+</span></span><span class="line"><span class="cl">hello gorgias
+</span></span></code></pre></div><p>在容器中安装新的程序</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run learn/tutorial apt-get install -y ping
+</span></span></code></pre></div><p>在执行apt-get 命令的时候，要带上-y参数。如果不指定-y参数的话，apt-get命令会进入交互模式，需要用户输入命令来进行确认，但在docker环境中是无法响应这种交互的。</p>
+<p>保存对容器的修改
+当你对某一个容器做了修改之后（通过在容器中运行某一个命令），可以把对容器的修改保存下来，这样下次可以从保存后的最新状态运行该容器。docker中保存状态的过程称之为committing，它保存的新旧状态之间的区别，从而产生一个新的版本。
+首先使用docker ps -l命令获得安装完ping命令之后容器的id。然后把这个镜像保存为learn/ping。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker ps -l
+</span></span><span class="line"><span class="cl">CONTAINER ID        IMAGE                   COMMAND              CREATED              STATUS              PORTS               NAMES
+</span></span><span class="line"><span class="cl">824490fb9db6        learn/tutorial:latest   <span class="s2">&#34;ping 192.168.1.1&#34;</span>   About a minute ago
+</span></span><span class="line"><span class="cl">//只需取到能用于区分的量就行了，这里是824                                          suspicious_yalow
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker commit <span class="m">824</span> learn/ping
+</span></span><span class="line"><span class="cl">ae5aa76cc0f84a7a3ebb77e8c7557df0d89564dd5cb9830cb4d35424290a71ca //返回的版本号
+</span></span></code></pre></div><p>运行新的镜像
+一定要使用新的镜像名learn/ping来运行ping命令。(译者按：最开始下载的learn/tutorial镜像中是没有ping命令的)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># docker run learn/ping ping www.baidu.com</span>
+</span></span><span class="line"><span class="cl">PING www.a.shifen.com <span class="o">(</span>115.239.210.27<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 115.239.210.27: <span class="nv">icmp_req</span><span class="o">=</span><span class="m">1</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span>23.7 ms
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 115.239.210.27: <span class="nv">icmp_req</span><span class="o">=</span><span class="m">2</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span>23.2 ms
+</span></span><span class="line"><span class="cl"><span class="m">64</span> bytes from 115.239.210.27: <span class="nv">icmp_req</span><span class="o">=</span><span class="m">3</span> <span class="nv">ttl</span><span class="o">=</span><span class="m">53</span> <span class="nv">time</span><span class="o">=</span>23.4 ms
+</span></span></code></pre></div><p>停止运行中的镜像</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker stop id  //优♂雅地停止镜像
+</span></span><span class="line"><span class="cl">docker <span class="nb">kill</span> id  //强行停止镜像
+</span></span></code></pre></div><p>检查运行中的镜像
+先使用docker ps查看镜像，然后再用这条命令</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker inspect dc8 //这里dc8是镜像id的前三位
+</span></span></code></pre></div><p><img loading="lazy"  src="./inspect.png"
+        alt="inspect"/></p>
+<p>发布自己的镜像
+先在<a href="https://hub.docker.com/"target="_blank" rel="noopener noreferrer">Docker Hub</a>注册一个账号
+创建一个自己的仓库
+<img loading="lazy"  src="./repostitory.png"
+        alt="repostitory"/>
+push之前也可以先登录</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker login
+</span></span></code></pre></div><p>这里尝试把learn/ping发布到docker的index网站。你只能将镜像发布到自己的空间下面。这个模拟器登录的是learn帐号。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@ubuntu:~# docker images //列出所有安装过的镜像
+</span></span><span class="line"><span class="cl">REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE
+</span></span><span class="line"><span class="cl">learn/ping          latest              db66cd8a04ae        <span class="m">55</span> minutes ago       139.5 MB
+</span></span><span class="line"><span class="cl">learn/tutorial      latest              8dbd9e392a96        2.380344 years ago   <span class="m">128</span> MB
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker tag db6 gorgiaxx/learn-ping //修改镜像标签
+</span></span><span class="line"><span class="cl">root@ubuntu:~# docker push gorgiaxx/learn-ping //发布一个镜像到官方网站
+</span></span><span class="line"><span class="cl">The push refers to a repository <span class="o">[</span>gorgiaxx/learn-ping<span class="o">]</span> <span class="o">(</span>len: 1<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Sending image list
+</span></span><span class="line"><span class="cl">Pushing repository gorgiaxx/learn-ping <span class="o">(</span><span class="m">1</span> tags<span class="o">)</span>
+</span></span><span class="line"><span class="cl">8dbd9e392a96: Image already pushed, skipping
+</span></span><span class="line"><span class="cl">db66cd8a04ae: Image successfully pushed
+</span></span><span class="line"><span class="cl">Pushing tag <span class="k">for</span> rev <span class="o">[</span>db66cd8a04ae<span class="o">]</span> on <span class="o">{</span>https://cdn-registry-1.docker.io/v1/repositories/gorgiaxx/learn-ping/tags/latest<span class="o">}</span>
+</span></span></code></pre></div><p>成功发布到了Docker Hub上
+<img loading="lazy"  src="./pushed.png"
+        alt="pushed"/></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E8%99%9A%E6%8B%9F%E5%8C%96/>虚拟化</a><a class="tag" href=/zh/tags/docker/>Docker</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/deploy-hexo-blog-on-gitcafe/"><span class="iconfont icon-article"></span>在GitCafe上部署Hexo博客</a></p><p><a class="link" href="/zh/posts/kali-nethunter-first-impressions/"><span class="iconfont icon-article"></span>Kali Nethunter初体验</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

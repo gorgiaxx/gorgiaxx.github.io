@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+关于从加锁的硬盘提取信息的那些事，走了很多弯路。"><title>固件提取系列 - SATA硬盘解锁&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="固件提取系列 - SATA硬盘解锁" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">固件提取系列 - SATA硬盘解锁</h1><p class="article date">Saturday, April 20, 2019<span class="langs"><span class="lang">
+                    <a href="/en/posts/firmware-extraction-series-sata-hdd-unlock/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>关于从加锁的硬盘提取信息的那些事，走了很多弯路。</p>
+<p>以前买了NTG55的Head Unit，装配在奔驰E系车型。</p>
+<p><img loading="lazy"  src="./NTG55.jpg"
+        alt="NTG55"/></p>
+<p>将目标设备拆开后，可以发现一块车规级HDD</p>
+<p>硬盘信息如下
+MQ01AAD032C
+Serial ATA 2.6 / ATA8
+3.0 Gbit/s , 1.5 Gbit/s
+320 GB</p>
+<p>右侧是旧款 Head Unit 使用的硬盘，左边是新款，再新也不过是NTG55，现在已经到NTG7了</p>
+<p><img loading="lazy"  src="./hdd_compare.jpg"
+        alt="hdd_compare"/></p>
+<h2 id="探索过程">探索过程</h2>
+<p>该硬盘最高支持SATA 2.6。当我拿到手的时，接在USB硬盘盒上发现读不出来，以为硬盘是运输途中损坏了。实际上这个硬盘非常耐艹，碰撞了多次都没事，不愧是车规级。</p>
+<p>后来尝试接到台式机上，发现启动之后BIOS提示硬盘有密码，试过各种弱口令都不行。</p>
+<p>进入Linux查看两款不同型号的硬盘信息，Security节都提示locked。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">$ sudo hdparm -I /dev/sdb 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 东芝
+</span></span><span class="line"><span class="cl">ATA device, with non-removable media
+</span></span><span class="line"><span class="cl">	Model Number:       TOSHIBA MQ01AAD032C
+</span></span><span class="line"><span class="cl">	Serial Number:      46NHP01LT
+</span></span><span class="line"><span class="cl">	Firmware Revision:  AK001Y  
+</span></span><span class="line"><span class="cl">	Transport:          Serial, ATA8-AST, SATA 1.0a, SATA II Extensions, SATA Rev 2.5, SATA Rev 2.6
+</span></span><span class="line"><span class="cl">Standards:
+</span></span><span class="line"><span class="cl">	Supported: 8 7 6 5 
+</span></span><span class="line"><span class="cl">	Likely used: 8
+</span></span><span class="line"><span class="cl">Security: 
+</span></span><span class="line"><span class="cl">	Master password revision code = 7
+</span></span><span class="line"><span class="cl">		supported
+</span></span><span class="line"><span class="cl">		enabled
+</span></span><span class="line"><span class="cl">		locked
+</span></span><span class="line"><span class="cl">	not	frozen
+</span></span><span class="line"><span class="cl">	not	expired: security count
+</span></span><span class="line"><span class="cl">		supported: enhanced erase
+</span></span><span class="line"><span class="cl">	Security level high
+</span></span><span class="line"><span class="cl">	116min for SECURITY ERASE UNIT. 116min for ENHANCED SECURITY ERASE UNIT.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 日立
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ATA device, with non-removable media
+</span></span><span class="line"><span class="cl">	Model Number:       HGST HEJ423232H9E300                    
+</span></span><span class="line"><span class="cl">	Serial Number:      F63001FNJ7W93L
+</span></span><span class="line"><span class="cl">	Firmware Revision:  F6BOA200
+</span></span><span class="line"><span class="cl">	Transport:          Serial, ATA8-AST, SATA 1.0a, SATA II Extensions, SATA Rev 2.5, SATA Rev 2.6; Revision: ATA8-AST T13 Project D1697 Revision 0b
+</span></span><span class="line"><span class="cl">Security: 
+</span></span><span class="line"><span class="cl">	Master password revision code = 7
+</span></span><span class="line"><span class="cl">		supported
+</span></span><span class="line"><span class="cl">		enabled
+</span></span><span class="line"><span class="cl">		locked
+</span></span><span class="line"><span class="cl">	not	frozen
+</span></span><span class="line"><span class="cl">	not	expired: security count
+</span></span><span class="line"><span class="cl">		supported: enhanced erase
+</span></span><span class="line"><span class="cl">	Security level high
+</span></span><span class="line"><span class="cl">	104min for SECURITY ERASE UNIT. 106min for ENHANCED SECURITY ERASE UNIT.
+</span></span></code></pre></div><p>当时对于一个没有硬件基础的我来说，实在是太难了，寻求过硬盘数据恢复公司也没有能做的。</p>
+<p>网上能找到的资料太少，并没找到解锁SATA硬盘的相关资料。有人嗅探IDE数据来解密硬盘，但是这块硬盘是SATA的。</p>
+<p>参考：
+<a href="https://shackspace.de/2011/04/27/open-sesame-harddrive-password-hacking-with-a-openbench-logic-sniffer/"target="_blank" rel="noopener noreferrer">Open Sesame: Harddrive Password Hacking with a OpenBench Logic Sniffer</a></p>
+<p>曾经想过嗅探SATA的信息，因为SATA速度太快，计划用FPGA实现，但是太耗时间和资金，遂放弃。</p>
+<p>参考：
+<a href="https://www.dstchina.cn/news-578-53.html"target="_blank" rel="noopener noreferrer">硬盘数据恢复技术之SATA接口实现技术（一）</a></p>
+<p>将硬盘拆开，基本信息如下</p>
+<pre tabindex="0"><code>MCU：88i8317-RAI2
+DDR：Winbond 4MB
+Flash：MXIC MX25V4006EZNI 512K
+HDD Motor Combo IC: TLS2605
+</code></pre><p><img loading="lazy"  src="./board.jpg"
+        alt="board"/></p>
+<p><img loading="lazy"  src="./read_flash.jpg"
+        alt="read_flash"/></p>
+<p>后来我拆下里面的Flash芯片，读取了Toshiba的Flash固件，考虑到BIOS上能键盘输入硬盘解锁密码，猜测密码可能是字符串，但是并没有找到疑似密码的字符串。（实际上密码是非ASCII的字节） 。
+后来读取了两个日立硬盘的固件进行对比，如果一机一密并且是简单对比验证的密钥，就有可能成果获取。（实际上所有设备密码都一样）</p>
+<p><img loading="lazy"  src="./hdd_compare.png"
+        alt="hdd_compare"/></p>
+<p>虽然是ARM指令的固件，但是我当时并不擅长逆向嵌入式固件，也没有阅读过硬盘固件的源码，思路中断。</p>
+<p>本来想找调试接口，曾经看过别人通过JTAG调试硬盘固件，绕过加密认证，但是这个MCU没有公开的调试资料，当时我没有JTAGulator，所以也就放弃这条路了。</p>
+<p>参考：</p>
+<p><a href="https://www.malwaretech.com/2015/04/hard-disk-firmware-hacking-part-1.html"target="_blank" rel="noopener noreferrer">Hard Disk Firmware Hacking (Part 1)</a></p>
+<p><a href="https://www.malwaretech.com/2015/04/hard-disk-firmware-hacking-part-2.html"target="_blank" rel="noopener noreferrer">Hard Disk Firmware Hacking (Part 2)</a></p>
+<p>还有一种可行的方法，先在设备端通电让目标设备解锁，但是不断电，解锁的Key会保存在硬盘的RAM中，将硬盘接在电脑上就可以直接使用。这是我解锁之后才知道的。</p>
+<p>参考：
+<a href="https://www.ru.nl/publish/pages/909275/draft-paper_1.pdf"target="_blank" rel="noopener noreferrer">Self-encrypting deception: weaknesses in the encryption of solid state drives (SSDs)</a></p>
+<p>查阅ATA2.6标准，并没有找到解锁密码之类的信息，猜测可能是硬盘主控独有的特性。于是我又查找硬盘手册，终于找到了相关资料。</p>
+<p>密码长度是32字节，在Bootloader里除了SD卡密钥以外，也没发现相关信息。
+0xF2这个Command就可以作为逆向的切入点。不管是在JTAG动态调试MCU、还是调试硬盘驱动都能派上用场。</p>
+<p><img loading="lazy"  src="./HDD_unlock.png"
+        alt="HDD_unlock"/></p>
+<h2 id="解密过程">解密过程</h2>
+<p>HeadUnit的Bootloader并不会为硬盘解锁，而是Bootloader解密完WinCE Image之后，ATA驱动负责发送0xF2命令解锁。（可以初步判断这个硬盘里面的内容不是很重要）。</p>
+<p>毕竟解密了系统，干脆直接分析驱动文件</p>
+<p><img loading="lazy"  src="./ida1.png"
+        alt="ida1"/></p>
+<p>原始密码分别如下，搜索这些密码，发现已经有人在2014年用逻辑分析仪破解出来了，NTG4使用的是IDE接口硬盘。<a href="https://www.motor-talk.de/blogs/d-info/ntg4-und-ntg4-5-festplatte-einsehen-clonen-aendern-t4962617.html"target="_blank" rel="noopener noreferrer">NTG4 und NTG4.5 Festplatte Einsehen, Clonen, Ändern</a></p>
+<pre tabindex="0"><code>MELCO SANDA NTG55HUH Navi Master
+MELCO SANDA NTG55HUH Navi User
+</code></pre><p><img loading="lazy"  src="./ida2.png"
+        alt="ida2"/></p>
+<p>转码如下（当时嫌麻烦，直接模拟执行的，这次仔细看了下，F5有点问题，转码部分汇编就4行代码）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="s1">&#39;MELCO SANDA NTG55HUH Navi Master&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="mh">0xff</span><span class="o">-</span><span class="nb">ord</span><span class="p">(</span><span class="n">b</span><span class="p">)),</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34; &#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">()</span>
+</span></span></code></pre></div><p>PS: MELCO代表三菱电机公司，SANDA代表三田製作所。HU55就是三菱电机制造的。日本人的严谨程度非常变态，几个小安全问题就能开会开到晚上。所以这个设备使用了Bootloader加密，SD卡锁，硬盘锁，还有自毁式安全启动。</p>
+<p>接下来使用这些命令解密硬盘</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># MASTER PASS</span>
+</span></span><span class="line"><span class="cl">sudo hdparm --user-master m --security-unlock <span class="k">$(</span><span class="nb">printf</span> <span class="s1">&#39;\xb2\xba\xb3\xbc\xb0\xdf\xac\xbe\xb1\xbb\xbe\xdf\xb1\xab\xb8\xca\xca\xb7\xaa\xb7\xdf\xb1\x9e\x89\x96\xdf\xb2\x9e\x8c\x8b\x9a\x8d&#39;</span><span class="k">)</span> /dev/sdb
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># USER PASS</span>
+</span></span><span class="line"><span class="cl">sudo hdparm --user-master u --security-unlock <span class="k">$(</span><span class="nb">printf</span> <span class="s1">&#39;\xb2\xba\xb3\xbc\xb0\xdf\xac\xbe\xb1\xbb\xbe\xdf\xb1\xab\xb8\xca\xca\xb7\xaa\xb7\xdf\xb1\x9e\x89\x96\xdf\xaa\x8c\x9a\x8d\xdf\xdf&#39;</span><span class="k">)</span> /dev/sdb
+</span></span></code></pre></div><p>执行命令之后，分区就出现了，全都是地图文件，旧设备性能差，可能会冗余地图数据换取性能。而在NTG65中去掉了硬盘，取而代之的是大容量EMMC，所以不需要那么大的硬盘。</p>
+<pre tabindex="0"><code>Disk /dev/sdb: 298.1 GiB, 320072933376 bytes, 625142448 sectors
+Disk model: TOSHIBA MQ01AAD0
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disklabel type: dos
+Disk identifier: 0x17192a08
+
+Device     Boot     Start       End   Sectors   Size Id Type
+/dev/sdb1           36864  31494143  31457280    15G  c W95 FAT32 (LBA)
+/dev/sdb2        31494144 195071999 163577856    78G  c W95 FAT32 (LBA)
+/dev/sdb3       195072000 358649855 163577856    78G  c W95 FAT32 (LBA)
+/dev/sdb4       358649856 625137344 266487489 127.1G  f W95 Ext&#39;d (LBA)
+/dev/sdb5       358651904 503355391 144703488    69G  b W95 FAT32
+/dev/sdb6       503357440 545300479  41943040    20G  b W95 FAT32
+/dev/sdb7       545302528 576759807  31457280    15G  b W95 FAT32
+/dev/sdb8       576761856 578207743   1445888   706M  b W95 FAT32
+/dev/sdb9       578209792 592889855  14680064     7G  b W95 FAT32
+/dev/sdb10      592891904 597086207   4194304     2G  b W95 FAT32
+/dev/sdb11      597088256 603379711   6291456     3G  b W95 FAT32
+/dev/sdb12      603381760 609673215   6291456     3G  b W95 FAT32
+/dev/sdb13      609675264 625135615  15460352   7.4G  b W95 FAT32
+</code></pre><h2 id="相关链接">相关链接</h2>
+<p><a href="https://shackspace.de/2011/04/27/open-sesame-harddrive-password-hacking-with-a-openbench-logic-sniffer/"target="_blank" rel="noopener noreferrer">Open Sesame: Harddrive Password Hacking with a OpenBench Logic Sniffer</a></p>
+<p><a href="./Toshiba_2.5_disk_product_specification.pdf">Toshiba_2.5_disk_product_specification.pdf</a></p>
+<p><a href="./SerialATA_Revision_2_6_Gold.pdf">SerialATA_Revision_2_6_Gold.pdf</a></p>
+<p><a href="https://www.malwaretech.com/2015/04/hard-disk-firmware-hacking-part-1.html"target="_blank" rel="noopener noreferrer">Hard Disk Firmware Hacking (Part 1)</a></p>
+<p><a href="https://www.malwaretech.com/2015/04/hard-disk-firmware-hacking-part-2.html"target="_blank" rel="noopener noreferrer">Hard Disk Firmware Hacking (Part 2)</a></p>
+<p><a href="https://www.ru.nl/publish/pages/909275/draft-paper_1.pdf"target="_blank" rel="noopener noreferrer">Self-encrypting deception: weaknesses in the encryption of solid state drives (SSDs)</a></p>
+<p><a href="https://www.motor-talk.de/blogs/d-info/ntg4-und-ntg4-5-festplatte-einsehen-clonen-aendern-t4962617.html"target="_blank" rel="noopener noreferrer">NTG4 und NTG4.5 Festplatte Einsehen, Clonen, Ändern</a></p>
+<p><a href="http://www.dstchina.cn/news-557-53.html"target="_blank" rel="noopener noreferrer">技术宅：硬盘数据恢复技术之SATA协议分析（一） </a></p>
+<p><a href="http://www.dstchina.cn/news-562-53.html"target="_blank" rel="noopener noreferrer">技术宅：硬盘数据恢复技术之SATA协议分析（二） </a></p>
+<p><a href="http://www.dstchina.cn/news-570-53.html"target="_blank" rel="noopener noreferrer">技术宅：硬盘数据恢复技术之SATA协议分析（三） </a></p>
+<p><a href="http://www.dstchina.cn/news-577-53.html"target="_blank" rel="noopener noreferrer">技术宅：硬盘数据恢复技术之SATA协议分析（四） </a></p>
+<p><a href="http://www.dstchina.cn/news-577-53.html"target="_blank" rel="noopener noreferrer">技术宅：硬盘数据恢复技术之SATA协议分析（五） </a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E5%9B%BA%E4%BB%B6%E6%8F%90%E5%8F%96%E7%B3%BB%E5%88%97/>固件提取系列</a><a class="tag" href=/zh/tags/ntg64/>NTG64</a><a class="tag" href=/zh/tags/sata/>SATA</a><a class="tag" href=/zh/tags/unlock/>unlock</a><a class="tag" href=/zh/tags/hdd/>HDD</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/firmware-extraction-series-read-flash-with-flashrom/"><span class="iconfont icon-article"></span>固件提取系列 - 使用FlashROM读取Flash</a></p><p><a class="link" href="/zh/posts/firmware-extraction-series-rawnand-file-recovery/"><span class="iconfont icon-article"></span>固件提取系列 - RawNAND文件恢复</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

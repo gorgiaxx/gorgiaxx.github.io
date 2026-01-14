@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+Scheme 编程语言是一种Lisp方言，诞生于1975年，由 MIT 的 Gerald J. Sussman 和 Guy L. Steele Jr. 完成。它是现代两大Lisp方言之一；另一个方言是Common Lisp
+历史悠久的Scheme依然活跃，拥有针对各种计算机平台和环境的实现，例如Racket、Guile、MIT Scheme、Chez Scheme等。
+Tinyscheme是一款轻量级嵌入式的Scheme脚本解析器，使用R5RS(Revised 5 Report on the algorithmic language Scheme)语法规范，这个规范在1998年推出，现在已经被广泛使用。
+虽然Tinyscheme没有说明文档，但是使用R5RS规范，因此具体的用法可以参考其他主流Scheme实现，比如Racket"><title>TinyScheme读写文件&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="TinyScheme读写文件" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">TinyScheme读写文件</h1><p class="article date">Sunday, October 21, 2018<span class="langs"><span class="lang">
+                    <a href="/en/posts/tinyscheme-file-io/" title="English">
+                        <span class="lang-icon">🌐</span>English</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>Scheme 编程语言是一种Lisp方言，诞生于1975年，由 MIT 的 Gerald J. Sussman 和 Guy L. Steele Jr. 完成。它是现代两大Lisp方言之一；另一个方言是Common Lisp
+历史悠久的Scheme依然活跃，拥有针对各种计算机平台和环境的实现，例如Racket、Guile、MIT Scheme、Chez Scheme等。
+Tinyscheme是一款轻量级嵌入式的Scheme脚本解析器，使用R5RS(Revised 5 Report on the algorithmic language Scheme)语法规范，这个规范在1998年推出，现在已经被广泛使用。
+虽然Tinyscheme没有说明文档，但是使用R5RS规范，因此具体的用法可以参考其他主流Scheme实现，比如<a href="https://docs.racket-lang.org/reference/index.html"target="_blank" rel="noopener noreferrer">Racket</a></p>
+<h2 id="install">Install</h2>
+<p>下载地址</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">https://sourceforge.net/projects/tinyscheme/files/tinyscheme/
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ make all
+</span></span><span class="line"><span class="cl">$ ./scheme
+</span></span><span class="line"><span class="cl">TinyScheme 1.41
+</span></span><span class="line"><span class="cl">ts&gt;
+</span></span></code></pre></div><p>文件目录</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── BUILDING
+</span></span><span class="line"><span class="cl">├── CHANGES
+</span></span><span class="line"><span class="cl">├── COPYING
+</span></span><span class="line"><span class="cl">├── dynload.c
+</span></span><span class="line"><span class="cl">├── dynload.h
+</span></span><span class="line"><span class="cl">├── hack.txt
+</span></span><span class="line"><span class="cl">├── init.scm
+</span></span><span class="line"><span class="cl">├── makefile
+</span></span><span class="line"><span class="cl">├── Manual.txt
+</span></span><span class="line"><span class="cl">├── MiniSCHEMETribute.txt
+</span></span><span class="line"><span class="cl">├── opdefines.h             定义了tinyscheme的保留关键字，开发者可以自定义新的功能。
+</span></span><span class="line"><span class="cl">├── scheme.c                定义了如何解析代码
+</span></span><span class="line"><span class="cl">├── scheme.h
+</span></span><span class="line"><span class="cl">└── scheme-private.h
+</span></span></code></pre></div><h3 id="读文件">读文件</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lisp" data-lang="lisp"><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">打开文件</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">define</span> <span class="nf">shadow</span> <span class="p">(</span><span class="nv">open-input-file</span> <span class="s">&#34;/etc/shadow&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">读取文件一行并显示</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">read</span> <span class="nf">shadow</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="写文件">写文件</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lisp" data-lang="lisp"><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">打开文件</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">define</span> <span class="nv">ou</span> <span class="p">(</span><span class="nv">open-output-file</span> <span class="s">&#34;/tmp/shadow&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">定义要写的内容到变量</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">define</span> <span class="nv">text</span> <span class="s">&#34;root:aaddd.asdasd.:13333:0:99999:3:::&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">打印变量</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">display</span> <span class="nv">text</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">把变量值写到文件</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">write</span> <span class="nv">text</span> <span class="nv">ou</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">把字符c写到文件</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">write-char</span> <span class="sc">#\c</span> <span class="nv">ou</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">在ou末尾新增一行</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">newline</span> <span class="nv">ou</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">#</span> <span class="nv">保存并关闭文件</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">close-output-port</span> <span class="nv">ou</span><span class="p">)</span>
+</span></span></code></pre></div><p>直接把字符串变量写到文件，会带双引号，因此使用字符逐个写入，一次写入大量字符可能会出现失败。另外如果是远程tinyscheme shell，单个换行字符\n不能被识别，因此使用\newline代替换行符。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/python3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">argparse</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">description</span><span class="o">=</span><span class="s2">&#34;Write file by tinyscheme&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;-l&#34;</span><span class="p">,</span> <span class="s2">&#34;--local-file&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;directory to be read&#34;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;-t&#34;</span><span class="p">,</span> <span class="s2">&#34;--target-file&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;directory to be write&#34;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">file_path</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">local_file</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;(define ou (open-output-file </span><span class="se">\&#34;</span><span class="s2">&#34;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">target_file</span> <span class="o">+</span> <span class="s2">&#34;</span><span class="se">\&#34;</span><span class="s2">))&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">raw</span> <span class="o">=</span> <span class="n">local_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1"># print(&#34;\n&#34;, end=&#34;&#34;)</span>
+</span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;(newline ou)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;(write-char #</span><span class="se">\\</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">13</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\r</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\t</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34; &#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="nb">print</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34; ou)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">local_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;(newline ou)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;(close-output-port ou)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="reference">Reference</h2>
+<p><a href="https://schemers.org/Documents/Standards/R5RS/"target="_blank" rel="noopener noreferrer">R5RS</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/>网络安全</a><a class="tag" href=/zh/tags/tinyscheme/>tinyscheme</a><a class="tag" href=/zh/tags/lisp/>Lisp</a><a class="tag" href=/zh/tags/r5rs/>R5Rs</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/visteon-firmware-repacking/"><span class="iconfont icon-article"></span>Visteon固件重打包</a></p><p><a class="link" href="/zh/posts/firmware-extraction-series-sd-card-unlock/"><span class="iconfont icon-article"></span>固件提取系列 - SD卡解锁</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

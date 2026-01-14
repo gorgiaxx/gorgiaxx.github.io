@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
+This is about extracting information from a locked hard drive—and all the detours I took along the way."><title>Firmware Extraction Series - SATA HDD Unlock&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Firmware Extraction Series - SATA HDD Unlock" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Firmware Extraction Series - SATA HDD Unlock</h1><p class="article date">Saturday, April 20, 2019<span class="langs"><span class="lang">
+                    <a href="/zh/posts/firmware-extraction-series-sata-hdd-unlock/" title="中文">
+                        <span class="lang-icon">🌐</span>中文</a>
+                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+<p>This is about extracting information from a locked hard drive—and all the detours I took along the way.</p>
+<p>I previously bought an NTG55 head unit and installed it in a Mercedes-Benz E-Class.</p>
+<p><img loading="lazy"  src="./NTG55.jpg"
+        alt="NTG55"/></p>
+<p>After opening the target device, you can see an automotive-grade HDD.</p>
+<p>The drive information is:
+MQ01AAD032C<br>
+Serial ATA 2.6 / ATA8<br>
+3.0 Gbit/s , 1.5 Gbit/s<br>
+320 GB</p>
+<p>On the right is the HDD used by an older head unit; on the left is the newer one. “New” is still just NTG55—now they’re already at NTG7.</p>
+<p><img loading="lazy"  src="./hdd_compare.jpg"
+        alt="hdd_compare"/></p>
+<h2 id="exploration">Exploration</h2>
+<p>This HDD supports up to SATA 2.6. When I first got it, I connected it through a USB SATA enclosure and it didn’t show up, so I assumed the drive was damaged during shipping. In fact, this drive is surprisingly tough—it survived multiple impacts without issues, worthy of being automotive-grade.</p>
+<p>Later I tried connecting it to a desktop PC. After booting, the BIOS reported the drive had a password. I tried various weak/default passwords but none worked.</p>
+<p>In Linux, I checked the drive information for two different models; the <code>Security</code> section showed <code>locked</code> for both.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">$ sudo hdparm -I /dev/sdb 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 东芝
+</span></span><span class="line"><span class="cl">ATA device, with non-removable media
+</span></span><span class="line"><span class="cl">	Model Number:       TOSHIBA MQ01AAD032C
+</span></span><span class="line"><span class="cl">	Serial Number:      46NHP01LT
+</span></span><span class="line"><span class="cl">	Firmware Revision:  AK001Y  
+</span></span><span class="line"><span class="cl">	Transport:          Serial, ATA8-AST, SATA 1.0a, SATA II Extensions, SATA Rev 2.5, SATA Rev 2.6
+</span></span><span class="line"><span class="cl">Standards:
+</span></span><span class="line"><span class="cl">	Supported: 8 7 6 5 
+</span></span><span class="line"><span class="cl">	Likely used: 8
+</span></span><span class="line"><span class="cl">Security: 
+</span></span><span class="line"><span class="cl">	Master password revision code = 7
+</span></span><span class="line"><span class="cl">		supported
+</span></span><span class="line"><span class="cl">		enabled
+</span></span><span class="line"><span class="cl">		locked
+</span></span><span class="line"><span class="cl">	not	frozen
+</span></span><span class="line"><span class="cl">	not	expired: security count
+</span></span><span class="line"><span class="cl">		supported: enhanced erase
+</span></span><span class="line"><span class="cl">	Security level high
+</span></span><span class="line"><span class="cl">	116min for SECURITY ERASE UNIT. 116min for ENHANCED SECURITY ERASE UNIT.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 日立
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ATA device, with non-removable media
+</span></span><span class="line"><span class="cl">	Model Number:       HGST HEJ423232H9E300                    
+</span></span><span class="line"><span class="cl">	Serial Number:      F63001FNJ7W93L
+</span></span><span class="line"><span class="cl">	Firmware Revision:  F6BOA200
+</span></span><span class="line"><span class="cl">	Transport:          Serial, ATA8-AST, SATA 1.0a, SATA II Extensions, SATA Rev 2.5, SATA Rev 2.6; Revision: ATA8-AST T13 Project D1697 Revision 0b
+</span></span><span class="line"><span class="cl">Security: 
+</span></span><span class="line"><span class="cl">	Master password revision code = 7
+</span></span><span class="line"><span class="cl">		supported
+</span></span><span class="line"><span class="cl">		enabled
+</span></span><span class="line"><span class="cl">		locked
+</span></span><span class="line"><span class="cl">	not	frozen
+</span></span><span class="line"><span class="cl">	not	expired: security count
+</span></span><span class="line"><span class="cl">		supported: enhanced erase
+</span></span><span class="line"><span class="cl">	Security level high
+</span></span><span class="line"><span class="cl">	104min for SECURITY ERASE UNIT. 106min for ENHANCED SECURITY ERASE UNIT.
+</span></span></code></pre></div><p>Back then, for me—someone without a hardware background—this was extremely hard. I even contacted data recovery companies, but none could do it.</p>
+<p>There wasn’t much information online, and I couldn’t find practical materials on unlocking SATA drives. Some people sniff IDE signals to recover/decrypt passwords, but this drive is SATA.</p>
+<p>Reference:<br>
+<a href="https://shackspace.de/2011/04/27/open-sesame-harddrive-password-hacking-with-a-openbench-logic-sniffer/"target="_blank" rel="noopener noreferrer">Open Sesame: Harddrive Password Hacking with a OpenBench Logic Sniffer</a></p>
+<p>I also thought about sniffing SATA, but SATA is too fast. I planned to implement it with an FPGA, but it would cost too much time and money, so I gave up.</p>
+<p>Reference:<br>
+<a href="https://www.dstchina.cn/news-578-53.html"target="_blank" rel="noopener noreferrer">硬盘数据恢复技术之SATA接口实现技术（一）</a></p>
+<p>I disassembled the HDD; the basic information is:</p>
+<pre tabindex="0"><code>MCU：88i8317-RAI2
+DDR：Winbond 4MB
+Flash：MXIC MX25V4006EZNI 512K
+HDD Motor Combo IC: TLS2605
+</code></pre><p><img loading="lazy"  src="./board.jpg"
+        alt="board"/></p>
+<p><img loading="lazy"  src="./read_flash.jpg"
+        alt="read_flash"/></p>
+<p>Later I removed the internal Flash chip and read the Toshiba Flash firmware. Since the BIOS allows you to type an unlock password via keyboard, I guessed the password might be a string, but I didn’t find any suspicious string. (In fact, the password is non-ASCII bytes.)
+I then read firmware from two Hitachi drives and compared them. If it were “one device, one password” and used a simple compare/verify key, I might have been able to recover it. (In fact, the password is the same across devices.)</p>
+<p><img loading="lazy"  src="./hdd_compare.png"
+        alt="hdd_compare"/></p>
+<p>Although the firmware is ARM instructions, at that time I wasn’t good at reversing embedded firmware, and I had never read HDD firmware source code, so I got stuck.</p>
+<p>I wanted to find a debug interface. I had seen others debug HDD firmware via JTAG and bypass authentication, but there was no public debug documentation for this MCU. I also didn’t have a JTAGulator back then, so I dropped that path as well.</p>
+<p>References:</p>
+<p><a href="https://www.malwaretech.com/2015/04/hard-disk-firmware-hacking-part-1.html"target="_blank" rel="noopener noreferrer">Hard Disk Firmware Hacking (Part 1)</a></p>
+<p><a href="https://www.malwaretech.com/2015/04/hard-disk-firmware-hacking-part-2.html"target="_blank" rel="noopener noreferrer">Hard Disk Firmware Hacking (Part 2)</a></p>
+<p>Another feasible approach is to power the head unit so it unlocks the drive, and then (without powering off) move the drive to a PC. The unlocked key remains in the HDD’s RAM, so the drive can be accessed directly. I only learned about this after I had already unlocked it.</p>
+<p>Reference:<br>
+<a href="https://www.ru.nl/publish/pages/909275/draft-paper_1.pdf"target="_blank" rel="noopener noreferrer">Self-encrypting deception: weaknesses in the encryption of solid state drives (SSDs)</a></p>
+<p>I checked the ATA/SATA 2.6 specification and didn’t find details about an unlock password, so I suspected it was a vendor-specific feature of the drive controller. Then I looked up the HDD documentation and finally found relevant information.</p>
+<p>The password length is 32 bytes. In the bootloader, aside from the SD card key, I didn’t find anything relevant.
+The <code>0xF2</code> command can be a good entry point for reversing. Whether you dynamically debug the MCU via JTAG or debug the HDD driver, it can be useful.</p>
+<p><img loading="lazy"  src="./HDD_unlock.png"
+        alt="HDD_unlock"/></p>
+<h2 id="decryption-process">Decryption process</h2>
+<p>The head unit’s bootloader does not unlock the HDD. Instead, after the bootloader decrypts the WinCE image, the ATA driver sends the <code>0xF2</code> command to unlock it. (This suggests the HDD contents may not be very important.)</p>
+<p>Since the system was already decrypted, I simply analyzed the driver files directly.</p>
+<p><img loading="lazy"  src="./ida1.png"
+        alt="ida1"/></p>
+<p>The raw passwords are as follows. Searching for them, I found someone had already recovered them with a logic analyzer back in 2014. NTG4 uses an IDE HDD interface.<br>
+<a href="https://www.motor-talk.de/blogs/d-info/ntg4-und-ntg4-5-festplatte-einsehen-clonen-aendern-t4962617.html"target="_blank" rel="noopener noreferrer">NTG4 und NTG4.5 Festplatte Einsehen, Clonen, Ändern</a></p>
+<pre tabindex="0"><code>MELCO SANDA NTG55HUH Navi Master
+MELCO SANDA NTG55HUH Navi User
+</code></pre><p><img loading="lazy"  src="./ida2.png"
+        alt="ida2"/></p>
+<p>The transcoding is as follows. (Back then I was lazy and just emulated it. Looking carefully now, Hex-Rays F5 is a bit off; the transcoding part in assembly is only 4 lines.)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="s1">&#39;MELCO SANDA NTG55HUH Navi Master&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="mh">0xff</span><span class="o">-</span><span class="nb">ord</span><span class="p">(</span><span class="n">b</span><span class="p">)),</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34; &#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">()</span>
+</span></span></code></pre></div><p>PS: MELCO stands for Mitsubishi Electric, and SANDA stands for Mita Manufacturing. HU55 is manufactured by Mitsubishi Electric. They are extremely meticulous—small security issues can trigger meetings that go on late into the night. So this device uses bootloader encryption, an SD card lock, an HDD lock, and a self-destruct-style secure boot.</p>
+<p>Next, use these commands to unlock the HDD:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># MASTER PASS</span>
+</span></span><span class="line"><span class="cl">sudo hdparm --user-master m --security-unlock <span class="k">$(</span><span class="nb">printf</span> <span class="s1">&#39;\xb2\xba\xb3\xbc\xb0\xdf\xac\xbe\xb1\xbb\xbe\xdf\xb1\xab\xb8\xca\xca\xb7\xaa\xb7\xdf\xb1\x9e\x89\x96\xdf\xb2\x9e\x8c\x8b\x9a\x8d&#39;</span><span class="k">)</span> /dev/sdb
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># USER PASS</span>
+</span></span><span class="line"><span class="cl">sudo hdparm --user-master u --security-unlock <span class="k">$(</span><span class="nb">printf</span> <span class="s1">&#39;\xb2\xba\xb3\xbc\xb0\xdf\xac\xbe\xb1\xbb\xbe\xdf\xb1\xab\xb8\xca\xca\xb7\xaa\xb7\xdf\xb1\x9e\x89\x96\xdf\xaa\x8c\x9a\x8d\xdf\xdf&#39;</span><span class="k">)</span> /dev/sdb
+</span></span></code></pre></div><p>After running the commands, the partitions showed up. They were all map data. The old device had poor performance, so it might have used redundant map data in exchange for performance. In NTG65 the HDD was removed and replaced by a large-capacity eMMC, so such a large drive is no longer needed.</p>
+<pre tabindex="0"><code>Disk /dev/sdb: 298.1 GiB, 320072933376 bytes, 625142448 sectors
+Disk model: TOSHIBA MQ01AAD0
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disklabel type: dos
+Disk identifier: 0x17192a08
+
+Device     Boot     Start       End   Sectors   Size Id Type
+/dev/sdb1           36864  31494143  31457280    15G  c W95 FAT32 (LBA)
+/dev/sdb2        31494144 195071999 163577856    78G  c W95 FAT32 (LBA)
+/dev/sdb3       195072000 358649855 163577856    78G  c W95 FAT32 (LBA)
+/dev/sdb4       358649856 625137344 266487489 127.1G  f W95 Ext&#39;d (LBA)
+/dev/sdb5       358651904 503355391 144703488    69G  b W95 FAT32
+/dev/sdb6       503357440 545300479  41943040    20G  b W95 FAT32
+/dev/sdb7       545302528 576759807  31457280    15G  b W95 FAT32
+/dev/sdb8       576761856 578207743   1445888   706M  b W95 FAT32
+/dev/sdb9       578209792 592889855  14680064     7G  b W95 FAT32
+/dev/sdb10      592891904 597086207   4194304     2G  b W95 FAT32
+/dev/sdb11      597088256 603379711   6291456     3G  b W95 FAT32
+/dev/sdb12      603381760 609673215   6291456     3G  b W95 FAT32
+/dev/sdb13      609675264 625135615  15460352   7.4G  b W95 FAT32
+</code></pre><h2 id="related-links">Related links</h2>
+<p><a href="https://shackspace.de/2011/04/27/open-sesame-harddrive-password-hacking-with-a-openbench-logic-sniffer/"target="_blank" rel="noopener noreferrer">Open Sesame: Harddrive Password Hacking with a OpenBench Logic Sniffer</a></p>
+<p><a href="./Toshiba_2.5_disk_product_specification.pdf">Toshiba_2.5_disk_product_specification.pdf</a></p>
+<p><a href="./SerialATA_Revision_2_6_Gold.pdf">SerialATA_Revision_2_6_Gold.pdf</a></p>
+<p><a href="https://www.malwaretech.com/2015/04/hard-disk-firmware-hacking-part-1.html"target="_blank" rel="noopener noreferrer">Hard Disk Firmware Hacking (Part 1)</a></p>
+<p><a href="https://www.malwaretech.com/2015/04/hard-disk-firmware-hacking-part-2.html"target="_blank" rel="noopener noreferrer">Hard Disk Firmware Hacking (Part 2)</a></p>
+<p><a href="https://www.ru.nl/publish/pages/909275/draft-paper_1.pdf"target="_blank" rel="noopener noreferrer">Self-encrypting deception: weaknesses in the encryption of solid state drives (SSDs)</a></p>
+<p><a href="https://www.motor-talk.de/blogs/d-info/ntg4-und-ntg4-5-festplatte-einsehen-clonen-aendern-t4962617.html"target="_blank" rel="noopener noreferrer">NTG4 und NTG4.5 Festplatte Einsehen, Clonen, Ändern</a></p>
+<p><a href="http://www.dstchina.cn/news-557-53.html"target="_blank" rel="noopener noreferrer">Geek Notes: SATA protocol analysis (Part 1)</a></p>
+<p><a href="http://www.dstchina.cn/news-562-53.html"target="_blank" rel="noopener noreferrer">Geek Notes: SATA protocol analysis (Part 2)</a></p>
+<p><a href="http://www.dstchina.cn/news-570-53.html"target="_blank" rel="noopener noreferrer">Geek Notes: SATA protocol analysis (Part 3)</a></p>
+<p><a href="http://www.dstchina.cn/news-577-53.html"target="_blank" rel="noopener noreferrer">Geek Notes: SATA protocol analysis (Part 4)</a></p>
+<p><a href="http://www.dstchina.cn/news-577-53.html"target="_blank" rel="noopener noreferrer">Geek Notes: SATA protocol analysis (Part 5)</a></p>
+</article><section class="article labels"><a class="category" href=/en/categories/firmware-extraction-series/>Firmware Extraction Series</a><a class="tag" href=/en/tags/ntg64/>NTG64</a><a class="tag" href=/en/tags/sata/>SATA</a><a class="tag" href=/en/tags/unlock/>unlock</a><a class="tag" href=/en/tags/hdd/>HDD</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/firmware-extraction-series-read-flash-with-flashrom/"><span class="iconfont icon-article"></span>Firmware Extraction Series: Reading Flash with flashrom</a></p><p><a class="link" href="/en/posts/firmware-extraction-series-rawnand-file-recovery/"><span class="iconfont icon-article"></span>Firmware Extraction Series - Raw NAND File Recovery</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (Attribution-NonCommercial-ShareAlike).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>

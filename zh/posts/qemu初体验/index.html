@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="前言
+正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。"><title>KVM/QEMU初体验&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="KVM/QEMU初体验" /><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">KVM/QEMU初体验</h1><p class="article date">Sunday, November 13, 2016</p></section><article class="article markdown-body"><h2 id="前言">前言</h2>
+<p>正式使用Linux已经11个月了，从Debian到Arch，Linux已经成了我生活的一部分。</p>
+<p>周围人都用QQ和微信，需要传文件和图片，我不得不用，但是又不想使用Windows工作，所以安装了VMWare Workstation来跑虚拟机。
+期初在Debian上跑Win10很流畅，换Arch之后总是因为ntfs3g占用率过高而卡顿，后来把宿主机放虚拟机的分区文件系统换成Ext4缓解了一些，把Win10自带的应用删掉后才好了很多。</p>
+<p>KVM 是 kernel-based Virtual Machine 的简称,是一个开源的系统虚拟化模块,是 Linux 下 x86 硬件平台上的全功能虚拟化解决方案。
+QEMU是一个强大的开源仿真器，仿真系统，仿真各种硬件。
+<img loading="lazy"  src="./guide_fig.png"
+        alt="guide_fig"/>
+QEMU通过KVM虚拟化达到更好的性能，以前从来没有用过QEMU，于是花了很多时间入门，每个细节都不放过，学习过程中收获了很多，对虚拟机也有了更进一步的了解。</p>
+<p><a href="http://www.ibm.com/developerworks/cn/"target="_blank" rel="noopener noreferrer">IBM开发者社区</a>真是一大堆干货，还有各大产品的官方文档和Wiki。自带的man pages也非常详细。</p>
+<p>也正是开发者们做的伟大贡献，能让我方便地在Linux上进行工作和娱乐。也很惭愧目前自己没有能力做贡献。</p>
+<h2 id="安装">安装</h2>
+<p>为了更方便的学习，先不使用图形化界面。(后来发现不装图形化的我太年轻，正式环境中配置远比想象中要多，而且复杂很多，CPU，键盘，USB，声音等都很难配置)</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S qemu
+</span></span></code></pre></div><p>还是安装图形化界面吧，试过qtemu,qemu-launcher,aqemu要好用一点。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yaourt aqemu
+</span></span></code></pre></div><h2 id="添加硬盘">添加硬盘</h2>
+<h3 id="创建硬盘">创建硬盘</h3>
+<p>QEMU支持许多种镜像格式，包括VMDK, VDI, VHD (vpc), VHDX, qcow1 和 QED，可以通过qemu-img进行操作。</p>
+<p>目前一般采用raw和qcow2。</p>
+<p>raw是原始磁盘镜像格式，速度最快，但是要立即分配磁盘空间。</p>
+<p>qcow2速度稍慢，不用立即分配空间，支持很多特性，比如快照，回滚，加密，压缩等等。</p>
+<p>比如创建一个raw格式的硬盘镜像</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-img create -f raw Kali_Linux.img 20G
+</span></span></code></pre></div><p>或者创建一个簇大小为2M，立即分配所有空间的qcow2硬盘镜像</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-img create -f qcow2 -o <span class="nv">cluster_size</span><span class="o">=</span>2M,preallocation<span class="o">=</span>full Kali_Linux.qcow2 4G
+</span></span></code></pre></div><h3 id="格式转换">格式转换</h3>
+<p>qemu-img支持转换磁盘镜像格式。某些情况下，需要迁移磁盘镜像。</p>
+<p>比如我想要对比Kali Linux运行在KVM和VMware下的性能，需要把vmdk转换成更适合QEMU的磁盘镜像格式。</p>
+<h1 id="把vmdk转换成raw">把vmdk转换成raw</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-img convert -f vmdk -O raw Kali<span class="se">\ </span>2016<span class="se">\ </span>64-bit.vmdk Kali_Linux.img
+</span></span></code></pre></div><h1 id="把vmdk转换成qcow2">把vmdk转换成qcow2</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-img convert -f vmdk -O qcow2 Kali<span class="se">\ </span>2016<span class="se">\ </span>64-bit.vmdk Kali_Linux.qcow2
+</span></span></code></pre></div><h2 id="开启硬件辅助虚拟化">开启硬件辅助虚拟化</h2>
+<p>确保在BIOS里开启了VT。我的电脑是Intel平台，把<code>intel_iommu=on</code>加进内核参数。如果是AMD平台则用<code>amd_iommu=on</code>。
+IOMMU技术可以说是把硬件设备直接映射到虚拟机上，解决外围设备的支持问题和硬件利用效率问题。
+在<code>/boot/grub/grub.cfg</code>文件里修改。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">linux   /boot/vmlinuz-linux <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>6bb8eda5-d588-4e6a-8f5e-bbc856cc9f96 rw quiet <span class="nv">intel_iommu</span><span class="o">=</span>on
+</span></span></code></pre></div><p>重启之后查看IOMMU是否开启</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gorgias@3vil ~&gt; dmesg <span class="p">|</span> grep -e DMAR -e IOMMU
+</span></span><span class="line"><span class="cl"><span class="o">[</span>    0.000000<span class="o">]</span> DMAR: IOMMU enabled
+</span></span></code></pre></div><p>安装图形驱动，这里先试试vmware的。安装后可以解决鼠标不显示的问题，但是进入桌面会花屏几秒。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S xf86-video-vmware xf86-input-vmmouse
+</span></span></code></pre></div><p>尝试启动虚拟机，参数：使用Kali_Linux.qcow2硬盘镜像，内存2GB，使用vmware图形驱动，仿真Q35芯片组，使用KVM，开启iommu。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-system-x86_64 /home/gorgias/media/Lancer/KVM/Kali<span class="se">\ </span>Linux/Kali_Linux.qcow2 -enable-kvm -m <span class="m">2048</span> -vga vmware -machine q35,accel<span class="o">=</span>kvm,type<span class="o">=</span>q35 -device intel-iommu
+</span></span></code></pre></div><p>用起来挺流畅的
+<img loading="lazy"  src="./demo.png"
+        alt="demo"/></p>
+<h2 id="qemu-monitor">QEMU monitor</h2>
+<p>QEMU提供一个检查虚拟机运行状态的监视器，
+在QEMU界面按Ctrl + Alt + 2(不是小键盘)可以切换到QEMU monitor。如果不能，请检查快捷键是否冲突。
+也可以在启动虚拟机的时候，添加<code>-monitor dev</code>参数，比如<code>-monitor stdio</code>将允许使用标准输入作为 monitor 命令源。</p>
+<p>在monitor输入info kvm检查kvm模块是否开启。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">(</span>qemu<span class="o">)</span> info kvm
+</span></span><span class="line"><span class="cl">kvm support: enabled
+</span></span></code></pre></div><p><img loading="lazy"  src="./QEMU_monitor.png"
+        alt="QEMU_monitor"/></p>
+<h2 id="aqemu">AQEMU</h2>
+<p>配置是不可能全手动配置的，这辈子不可能全手动配置的。
+QEMU是非常强大的工具，值得深入研究，吾等还是随便玩玩就好。</p>
+<p><img loading="lazy"  src="./AQEMU.png"
+        alt="AQEMU"/></p>
+<p>界面有点像Virtual Box，功能齐全。像VMware一样配置就能跑起虚拟机了。
+不管是性能还是易用性，VMware都要强很多。</p>
+<h2 id="reference">Reference</h2>
+<p><a href="https://wiki.archlinux.org/index.php/QEMU#Running_virtualized_system"target="_blank" rel="noopener noreferrer">Arch Linux Wiki - QEMU</a></p>
+<p><a href="https://en.wikibooks.org/wiki/QEMU/Monitor"target="_blank" rel="noopener noreferrer">WIKIBOOKS - QEMU/Monitor</a></p>
+<p><a href="http://www.linux-kvm.org/"target="_blank" rel="noopener noreferrer">linux-kvm.org</a></p>
+</article><section class="article labels"><a class="category" href=/zh/categories/%E5%B7%A5%E5%85%B7/>工具</a><a class="tag" href=/zh/tags/arch/>arch</a><a class="tag" href=/zh/tags/kvm/>kvm</a><a class="tag" href=/zh/tags/qemu/>qemu</a></section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/arch-linux-%E5%8F%8C%E6%98%BE%E5%8D%A1-%E5%AE%89%E8%A3%85-nvidia-%E9%97%AD%E6%BA%90%E9%A9%B1%E5%8A%A8/"><span class="iconfont icon-article"></span>Arch Linux 双显卡 安装 NVIDIA 闭源驱动</a></p><p><a class="link" href="/zh/posts/arch-linux%E4%B8%8A%E4%BD%BF%E7%94%A8acr122u%E7%A0%B4%E8%A7%A3%E9%B2%9C%E5%A5%B6%E5%8D%A1/"><span class="iconfont icon-article"></span>Arch Linux上使用ACR122U破解鲜奶卡</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />
+            CC BY-NC-SA 4.0
+        </a>
+        (署名-非商业性使用-相同方式共享).
+    </p><p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section></body>
+
+</html>
