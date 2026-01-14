@@ -1,22 +1,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Unbricking on Gorgias&#39; Blog</title>
-    <link>https://gorgias.me/en/tags/unbricking/</link>
+    <link>http://localhost:1313/en/tags/unbricking/</link>
     <description>Recent content in Unbricking on Gorgias&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>2015 - 2026 Gorgias&#39; Blog. </copyright>
     <lastBuildDate>Mon, 20 Jun 2016 12:08:27 +0800</lastBuildDate>
     
-        <atom:link href="https://gorgias.me/en/tags/unbricking/atom.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="http://localhost:1313/en/tags/unbricking/atom.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and Static Analysis of TSGROM Files</title>
-      <link>https://gorgias.me/en/posts/igs-arcade-re-4/</link>
+      <link>http://localhost:1313/en/posts/igs-arcade-re-4/</link>
       <pubDate>Mon, 08 Sep 2025 02:23:48 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/igs-arcade-re-4/</guid>
+      <guid>http://localhost:1313/en/posts/igs-arcade-re-4/</guid>
       <description>&lt;h1 id=&#34;embedded-architecture-analysis&#34;&gt;Embedded Architecture Analysis&lt;/h1&gt;
 &lt;p&gt;IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely weird—probably because the code quality is terrible.&lt;/p&gt;
 &lt;p&gt;IGS E2000 is essentially a combination of &lt;strong&gt;PC + game baseboard&lt;/strong&gt; (designed by Advantech). It has to consider both &lt;strong&gt;Anti-Copy&lt;/strong&gt; and software-engineering reuse. The ASIC is basically a completely black-box compute module: putting the game’s key logic inside it both improves performance and makes cracking harder.&lt;/p&gt;
@@ -487,18 +487,18 @@ Found 174 image data zones
     
     <item>
       <title>IGS Arcade Reverse Engineering Series (3) - Getting a Shell</title>
-      <link>https://gorgias.me/en/posts/igs-arcade-re-3/</link>
+      <link>http://localhost:1313/en/posts/igs-arcade-re-3/</link>
       <pubDate>Mon, 23 Jun 2025 23:03:18 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/igs-arcade-re-3/</guid>
+      <guid>http://localhost:1313/en/posts/igs-arcade-re-3/</guid>
       <description>&lt;p&gt;I’ve made quite a bit of progress lately, but I’ve hit a bottleneck. There are probably about three more posts’ worth of material. I’ve been very busy recently, so I’m publishing part three first.&lt;/p&gt;
 &lt;p&gt;I peeled off the chip sticker and did a detailed analysis. The hardware-analysis direction in part one was basically correct; I updated the chip description for IGS. The code in part two had some bugs, and I’ve updated that as well.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;a href=&#34;https://gorgias.me/posts/igs_arcade_re_1&#34;&gt;IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/igs_arcade_re_1&#34;&gt;IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;a href=&#34;https://gorgias.me/posts/igs_arcade_re_2&#34;&gt;IGS Arcade Reverse Engineering Series (2) - Game File Recovery&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/igs_arcade_re_2&#34;&gt;IGS Arcade Reverse Engineering Series (2) - Game File Recovery&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;To analyze the game main program efficiently, it’s best to do dynamic debugging on the device, which means getting shell access first. Aside from the CF card and I/O ports, I currently have almost no way to input anything into this device.&lt;/p&gt;
@@ -761,10 +761,10 @@ start
     
     <item>
       <title>IGS Arcade Reverse Engineering Series (2) - Recovering Game Files</title>
-      <link>https://gorgias.me/en/posts/igs-arcade-re-2/</link>
+      <link>http://localhost:1313/en/posts/igs-arcade-re-2/</link>
       <pubDate>Sun, 25 May 2025 20:37:31 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/igs-arcade-re-2/</guid>
+      <guid>http://localhost:1313/en/posts/igs-arcade-re-2/</guid>
       <description>&lt;p&gt;In the previous post, I mentioned that the game has a protection mechanism that destroys partitions. In this post, we’ll dig deeper into it.&lt;/p&gt;
 &lt;p&gt;For a game released in 2007, its hardening/protection is relatively outdated. It mainly relies on things like concatenation and signature-tweaking. It doesn’t have the “modern app hardening arms race” vibe. The annoying part is that there are many stages in the protection flow, and each game does it differently. On top of that, some development traits (compiler optimizations, coding style) make reverse engineering more difficult.&lt;/p&gt;
 &lt;p&gt;Extracting the game itself is actually straightforward: once the game is running, you can dump it via a shell from memory or from the filesystem (if the files are written to disk). But if you want to extract multiple different games, that becomes a hassle—so let’s start with static analysis.&lt;/p&gt;
@@ -1620,10 +1620,10 @@ rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 sk
     
     <item>
       <title>IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis</title>
-      <link>https://gorgias.me/en/posts/igs-arcade-re-1/</link>
+      <link>http://localhost:1313/en/posts/igs-arcade-re-1/</link>
       <pubDate>Sat, 17 May 2025 22:34:31 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/igs-arcade-re-1/</guid>
+      <guid>http://localhost:1313/en/posts/igs-arcade-re-1/</guid>
       <description>&lt;h1 id=&#34;preface&#34;&gt;Preface&lt;/h1&gt;
 &lt;p&gt;2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has not been favored by capital for a long time. The 2020 pandemic dealt an even heavier blow to the arcade business.&lt;/p&gt;
 &lt;p&gt;Back then, 100 RMB might only buy 50 credits; now 100 RMB can buy 200 credits.&lt;/p&gt;
@@ -1954,10 +1954,10 @@ test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
     
     <item>
       <title>VW ID.4 ICAS1 Vehicle Control Analysis</title>
-      <link>https://gorgias.me/en/posts/vw-id4-vehicle-control-analysis/</link>
+      <link>http://localhost:1313/en/posts/vw-id4-vehicle-control-analysis/</link>
       <pubDate>Thu, 26 Dec 2024 22:04:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/vw-id4-vehicle-control-analysis/</guid>
+      <guid>http://localhost:1313/en/posts/vw-id4-vehicle-control-analysis/</guid>
       <description>&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
 &lt;p&gt;Back in 2021 at 360, I built a bench environment for the ID.4. I was close to getting results (I had internal ODIS access, and root on ICAS3), but then I got assigned to a business trip to build a demo car, and the follow-up plan got disrupted. During that period, both work and life threw a lot of unpleasant things at me, so I stopped the research.&lt;/p&gt;
 &lt;p&gt;You could call this a “regret project”. This May, by coincidence, I picked up the vehicle-control logic of the ID.4’s ICAS1 again. Another “regret project” is CAN-Pick NG—I wrote half of it and shelved it again. Not sure if I can finish it in 2025.&lt;/p&gt;
@@ -2576,10 +2576,10 @@ for i in range(20):
     
     <item>
       <title>QNX 7 Password Hash Analysis and Writing a Hashcat Module</title>
-      <link>https://gorgias.me/en/posts/qnx7-password-hash-analysis-and-hashcat-module/</link>
+      <link>http://localhost:1313/en/posts/qnx7-password-hash-analysis-and-hashcat-module/</link>
       <pubDate>Thu, 14 Sep 2023 22:04:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/qnx7-password-hash-analysis-and-hashcat-module/</guid>
+      <guid>http://localhost:1313/en/posts/qnx7-password-hash-analysis-and-hashcat-module/</guid>
       <description>&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
 &lt;p&gt;Back in 2021, when I wanted to crack QNX hashes, I found that hashcat did not support QNX 6.6.0. There was already an issue requesting this feature at the time, but I was too busy to implement it.&lt;/p&gt;
 &lt;p&gt;Until the hard “solo run” of the MIIT vehicle-to-everything (V2X) offensive/defensive exercise in September 2023, I ran into QNX 7 hashes again—and after so many years, it was still not supported.&lt;/p&gt;
@@ -2900,10 +2900,10 @@ for i in range(20):
     
     <item>
       <title>General Tips for Firmware Reverse Engineering</title>
-      <link>https://gorgias.me/en/posts/general-firmware-reversing-tips/</link>
+      <link>http://localhost:1313/en/posts/general-firmware-reversing-tips/</link>
       <pubDate>Mon, 15 Aug 2022 21:39:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/general-firmware-reversing-tips/</guid>
+      <guid>http://localhost:1313/en/posts/general-firmware-reversing-tips/</guid>
       <description>&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
 &lt;p&gt;These are old notes I wrote years ago for quick reference. They’re fragmented thoughts, messy, and don’t include step-by-step procedures. I keep updating them over time.&lt;/p&gt;
 &lt;p&gt;Here, “firmware” refers to the raw dump extracted from storage chips, or vendor upgrade packages.&lt;/p&gt;
@@ -3060,10 +3060,10 @@ Sometimes addresses are relative offsets; subtract the base.&lt;/p&gt;
     
     <item>
       <title>Bypassing JVMTI-Based Encryption Protection</title>
-      <link>https://gorgias.me/en/posts/bypass-jvmti-encryption-protection/</link>
+      <link>http://localhost:1313/en/posts/bypass-jvmti-encryption-protection/</link>
       <pubDate>Mon, 28 Jun 2021 21:39:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/bypass-jvmti-encryption-protection/</guid>
+      <guid>http://localhost:1313/en/posts/bypass-jvmti-encryption-protection/</guid>
       <description>&lt;h2 id=&#34;research-process&#34;&gt;Research Process&lt;/h2&gt;
 &lt;p&gt;While researching a certain vehicle recently, I ran into a Windows application used to connect to a dealer intranet.&lt;/p&gt;
 &lt;p&gt;After installation, the directory contained both &lt;code&gt;.jar&lt;/code&gt; files and an &lt;code&gt;.exe&lt;/code&gt; file.&lt;/p&gt;
@@ -3122,10 +3122,10 @@ Sometimes addresses are relative offsets; subtract the base.&lt;/p&gt;
     
     <item>
       <title>Firmware Extraction Series: Firmware</title>
-      <link>https://gorgias.me/en/posts/firmware-extraction-series-firmware-media/</link>
+      <link>http://localhost:1313/en/posts/firmware-extraction-series-firmware-media/</link>
       <pubDate>Sat, 28 Dec 2019 21:39:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/firmware-extraction-series-firmware-media/</guid>
+      <guid>http://localhost:1313/en/posts/firmware-extraction-series-firmware-media/</guid>
       <description>&lt;h2 id=&#34;firmware&#34;&gt;Firmware&lt;/h2&gt;
 &lt;p&gt;Firmware, also called &lt;em&gt;firmware image&lt;/em&gt; in some contexts (and sometimes referred to as “ROM” in mobile communities), resides in &lt;strong&gt;non-volatile memory&lt;/strong&gt; (Non-Volatile Memory, NVM) and can be read and written. In embedded systems, the most common NVM types are &lt;strong&gt;ROM&lt;/strong&gt; (read-only memory) and &lt;strong&gt;Flash memory&lt;/strong&gt;. ROM includes Mask ROM, PROM, EPROM, and EEPROM. Today, the “mainstream ROM” is typically EEPROM, often integrated inside the MCU; meanwhile, the more common external storage is Flash memory.&lt;/p&gt;
 &lt;p&gt;In embedded devices, besides plain NAND or NOR flash chips, you may also encounter &lt;strong&gt;eMMC&lt;/strong&gt;. For expandable storage, devices may use SD cards, CF cards, HDDs, etc. These are essentially a &lt;em&gt;controller + storage&lt;/em&gt; design: the controller talks to the host, and as long as you can access the controller, you can read/write the underlying storage. For devices like eMMC/SD/CF/HDD, the controller exposes a standard external interface, so you can read them with a card reader or a programming socket. For flash chips managed directly by the SoC, there is no generic external interface—but the SoC controls them via drivers. As long as you can access memory-mapped peripherals (their address space), you can interact with them. That’s why techniques like &lt;strong&gt;reading firmware via JTAG&lt;/strong&gt;, &lt;strong&gt;IAP&lt;/strong&gt;, or &lt;strong&gt;U-Boot&lt;/strong&gt; exist; and in theory, even if the main controller is dead, you may still be able to recover firmware from the storage.&lt;/p&gt;
@@ -3345,10 +3345,10 @@ More advanced firmware-extraction topics will be shared in follow-up posts.&lt;/
     
     <item>
       <title>Firmware Extraction Series: UBI Filesystem Extraction and Repacking</title>
-      <link>https://gorgias.me/en/posts/firmware-extraction-series-ubi-extract-and-repack/</link>
+      <link>http://localhost:1313/en/posts/firmware-extraction-series-ubi-extract-and-repack/</link>
       <pubDate>Sat, 28 Dec 2019 21:39:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/en/posts/firmware-extraction-series-ubi-extract-and-repack/</guid>
+      <guid>http://localhost:1313/en/posts/firmware-extraction-series-ubi-extract-and-repack/</guid>
       <description>&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
 &lt;p&gt;I wrote this last year. I accidentally set the GitHub repo to private and lost the README; after re-uploading it, it felt a bit awkward. Anyway, let’s publish this post first.&lt;/p&gt;
 &lt;p&gt;UBI (Unsorted Block Images) is a volume management system for raw flash devices designed by IBM. It can manage multiple logical volumes on a single physical device and supports wear leveling. It is widely used in embedded devices.&lt;/p&gt;

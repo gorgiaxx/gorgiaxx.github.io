@@ -1,22 +1,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>4G路由器 on Gorgias&#39; Blog</title>
-    <link>https://gorgias.me/zh/tags/4g%E8%B7%AF%E7%94%B1%E5%99%A8/</link>
+    <link>http://localhost:1313/zh/tags/4g%E8%B7%AF%E7%94%B1%E5%99%A8/</link>
     <description>Recent content in 4G路由器 on Gorgias&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2015 - 2026 Gorgias&#39; Blog. </copyright>
     <lastBuildDate>Thu, 27 Sep 2018 23:11:11 +0800</lastBuildDate>
     
-        <atom:link href="https://gorgias.me/zh/tags/4g%E8%B7%AF%E7%94%B1%E5%99%A8/atom.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="http://localhost:1313/zh/tags/4g%E8%B7%AF%E7%94%B1%E5%99%A8/atom.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>IGS Arcade 逆向系列（四）- ASIC27协议和TSGROM文件静态分析</title>
-      <link>https://gorgias.me/zh/posts/igs-arcade-re-4/</link>
+      <link>http://localhost:1313/zh/posts/igs-arcade-re-4/</link>
       <pubDate>Mon, 08 Sep 2025 02:23:48 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/igs-arcade-re-4/</guid>
+      <guid>http://localhost:1313/zh/posts/igs-arcade-re-4/</guid>
       <description>&lt;h1 id=&#34;嵌入式架构分析&#34;&gt;嵌入式架构分析&lt;/h1&gt;
 &lt;p&gt;IGS的反盗版技术上不难，但是非常诡异，可能是代码写的太烂了。&lt;/p&gt;
 &lt;p&gt;IGS E2000 本质上，是 PC + 游戏基板 的组合（研华设计）。既要考虑到 Anti-Copy （反盗版），又需要考虑到软件工程上的复用。ASIC相当于一个完全黑盒的计算模块，将游戏关键逻辑放在里面，既能提升性能，也可以防止破解。&lt;/p&gt;
@@ -488,18 +488,18 @@ Found 174 image data zones
     
     <item>
       <title>IGS Arcade 逆向系列（三）- Getshell</title>
-      <link>https://gorgias.me/zh/posts/igs-arcade-re-3/</link>
+      <link>http://localhost:1313/zh/posts/igs-arcade-re-3/</link>
       <pubDate>Mon, 23 Jun 2025 23:03:18 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/igs-arcade-re-3/</guid>
+      <guid>http://localhost:1313/zh/posts/igs-arcade-re-3/</guid>
       <description>&lt;p&gt;这段时间有不少进展，但是遇到瓶颈了，大概还有三篇的量，最近很忙，先更新第三篇。&lt;/p&gt;
 &lt;p&gt;我把芯片贴纸拆开并做了详细的分析工作，第一篇硬件分析方向基本上没错，更新了对IGS的芯片描述，第二篇文章代码有一些bug，已更新。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;a href=&#34;https://gorgias.me/posts/igs_arcade_re_1&#34;&gt;IGS Arcade 逆向系列（一）- E2000平台分析&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/igs_arcade_re_1&#34;&gt;IGS Arcade 逆向系列（一）- E2000平台分析&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;a href=&#34;https://gorgias.me/posts/igs_arcade_re_2&#34;&gt;IGS Arcade 逆向系列（二）- 游戏文件恢复&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/igs_arcade_re_2&#34;&gt;IGS Arcade 逆向系列（二）- 游戏文件恢复&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;要高效分析游戏主程序，最好是设备上动态调试，首先需要shell权限。除了CF卡和IO口，我目前几乎没有任何对这个设备输入内容的途径。&lt;/p&gt;
@@ -762,10 +762,10 @@ start
     
     <item>
       <title>IGS Arcade 逆向系列（二）- 游戏文件恢复</title>
-      <link>https://gorgias.me/zh/posts/igs-arcade-re-2/</link>
+      <link>http://localhost:1313/zh/posts/igs-arcade-re-2/</link>
       <pubDate>Sun, 25 May 2025 20:37:31 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/igs-arcade-re-2/</guid>
+      <guid>http://localhost:1313/zh/posts/igs-arcade-re-2/</guid>
       <description>&lt;p&gt;上一篇文章写到游戏有个破坏分区的保护机制，本篇将深入分析。&lt;/p&gt;
 &lt;p&gt;作为2007年发布的游戏，此游戏加固机制还是比较落后的，主要是靠一些拼接，修改特征的方法来加固。并没有现代APP加固的那么卷的特性。主要是加固的环节有点多，并且每个游戏都不一样。然后由于开发上的特性，（编译优化，代码风格），使得逆向分析变麻烦了。&lt;/p&gt;
 &lt;p&gt;要提取游戏其实比较简单，等游戏运行时通过shell从内存或者从文件系统（如果文件落地）dump就行了。但是如果要提取不同游戏，这样就太麻烦了，还是先静态分析吧。&lt;/p&gt;
@@ -1621,10 +1621,10 @@ rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 sk
     
     <item>
       <title>IGS Arcade 逆向系列（一）- E2000平台分析</title>
-      <link>https://gorgias.me/zh/posts/igs-arcade-re-1/</link>
+      <link>http://localhost:1313/zh/posts/igs-arcade-re-1/</link>
       <pubDate>Sat, 17 May 2025 22:34:31 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/igs-arcade-re-1/</guid>
+      <guid>http://localhost:1313/zh/posts/igs-arcade-re-1/</guid>
       <description>&lt;h1 id=&#34;前言&#34;&gt;前言&lt;/h1&gt;
 &lt;p&gt;2010年是街机的黄金时代，随着移动终端和家用游戏机普及，街机行业也逐渐走向没落，尽管国内出台了一些政策鼓励游戏游艺设备行业发展，但此行业在未来一直都不被资本看好。2020 疫情更是给电玩行业带来了很大的打击。&lt;/p&gt;
 &lt;p&gt;在以前，100元可能只能买50个币，现在100元可以买200个币。&lt;/p&gt;
@@ -1955,10 +1955,10 @@ test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
     
     <item>
       <title>VW ID.4 ICAS1 车控分析</title>
-      <link>https://gorgias.me/zh/posts/vw-id4-vehicle-control-analysis/</link>
+      <link>http://localhost:1313/zh/posts/vw-id4-vehicle-control-analysis/</link>
       <pubDate>Thu, 26 Dec 2024 22:04:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/vw-id4-vehicle-control-analysis/</guid>
+      <guid>http://localhost:1313/zh/posts/vw-id4-vehicle-control-analysis/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;2021年在360搭了一套ID.4台架环境，本来快要出成果了（拿到了ODIS内网权限，还有ICAS3的root），被安排出差去搭建展示车，后续工作计划被打乱。这期间不管是工作还是生活都遇到了许多糟心事，便停止了研究。&lt;/p&gt;
 &lt;p&gt;算是一个怨念项目吧，今年5月我在机缘巧合下又研究了ID.4的ICAS1的车控逻辑，还有一个怨念项目是CAN-Pick NG，写了一半又搁置了，不知道2025可不可以完成。&lt;/p&gt;
@@ -2577,10 +2577,10 @@ for i in range(20):
     
     <item>
       <title>QNX7 密码 hash 算法分析以及 Hashcat 模块编写</title>
-      <link>https://gorgias.me/zh/posts/qnx7-password-hash-analysis-and-hashcat-module/</link>
+      <link>http://localhost:1313/zh/posts/qnx7-password-hash-analysis-and-hashcat-module/</link>
       <pubDate>Thu, 14 Sep 2023 22:04:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/qnx7-password-hash-analysis-and-hashcat-module/</guid>
+      <guid>http://localhost:1313/zh/posts/qnx7-password-hash-analysis-and-hashcat-module/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;在 2021 年想要碰撞 QNX Hash 发现 hashcat 不支持 QNX 6.6.0版本。当时 issue 就有人提了这个需求，但我一直很忙没时间开发。&lt;/p&gt;
 &lt;p&gt;直到2023年9月的艰难单刷工信部车联网攻防演练，又遇到了 QNX 7 的 Hash，发现那么多年过去了还是没支持。&lt;/p&gt;
@@ -2901,10 +2901,10 @@ for i in range(20):
     
     <item>
       <title>固件逆向的通用技巧</title>
-      <link>https://gorgias.me/zh/posts/general-firmware-reversing-tips/</link>
+      <link>http://localhost:1313/zh/posts/general-firmware-reversing-tips/</link>
       <pubDate>Mon, 15 Aug 2022 21:39:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/general-firmware-reversing-tips/</guid>
+      <guid>http://localhost:1313/zh/posts/general-firmware-reversing-tips/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;这个是多年前自己为了方便查阅的写的笔记，记录的是碎片话思路，很乱，没有操作步骤，持续更新。&lt;/p&gt;
 &lt;p&gt;这里指的固件是从存储芯片提取的原始文件或升级文件。&lt;/p&gt;
@@ -3061,10 +3061,10 @@ kfree&lt;/p&gt;
     
     <item>
       <title>JVMTI加密保护绕过</title>
-      <link>https://gorgias.me/zh/posts/bypass-jvmti-encryption-protection/</link>
+      <link>http://localhost:1313/zh/posts/bypass-jvmti-encryption-protection/</link>
       <pubDate>Mon, 28 Jun 2021 21:39:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/bypass-jvmti-encryption-protection/</guid>
+      <guid>http://localhost:1313/zh/posts/bypass-jvmti-encryption-protection/</guid>
       <description>&lt;h2 id=&#34;研究过程&#34;&gt;研究过程&lt;/h2&gt;
 &lt;p&gt;最近研究某汽车，遇到一个Win下的软件，用于连接经销商内网。&lt;/p&gt;
 &lt;p&gt;安装完成，目录有jar文件又有exe文件。&lt;/p&gt;
@@ -3123,10 +3123,10 @@ kfree&lt;/p&gt;
     
     <item>
       <title>固件提取系列 UBI文件系统提取以及重打包</title>
-      <link>https://gorgias.me/zh/posts/firmware-extraction-series-ubi-extract-and-repack/</link>
+      <link>http://localhost:1313/zh/posts/firmware-extraction-series-ubi-extract-and-repack/</link>
       <pubDate>Sat, 28 Dec 2019 21:39:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/firmware-extraction-series-ubi-extract-and-repack/</guid>
+      <guid>http://localhost:1313/zh/posts/firmware-extraction-series-ubi-extract-and-repack/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;去年写的，不小心把github仓库弄成私有，Readme没了，重新传了个Readme，觉得有点不好意思。先把这篇文章放出来吧&lt;/p&gt;
 &lt;p&gt;UBI(Unsorted Block Images)全称未分类块镜像。由IBM公司设计，是一个基于Raw Flash设备的卷管理系统，可以在单个物理设备上管理多个逻辑卷，并且支持耗损均衡(wear-leveling)。广泛应用于嵌入式设备。&lt;/p&gt;
@@ -3634,10 +3634,10 @@ ubinize: error!: cannot load the input ini file &amp;ldquo;ubi_config.ini&amp;rd
     
     <item>
       <title>固件提取系列 固件载体</title>
-      <link>https://gorgias.me/zh/posts/firmware-extraction-series-firmware-media/</link>
+      <link>http://localhost:1313/zh/posts/firmware-extraction-series-firmware-media/</link>
       <pubDate>Sat, 28 Dec 2019 21:39:11 +0800</pubDate>
       
-      <guid>https://gorgias.me/zh/posts/firmware-extraction-series-firmware-media/</guid>
+      <guid>http://localhost:1313/zh/posts/firmware-extraction-series-firmware-media/</guid>
       <description>&lt;h2 id=&#34;固件载体&#34;&gt;固件载体&lt;/h2&gt;
 &lt;p&gt;固件 (Firmware), 在港澳台称作韧体, 在手机领域又称作字库。它位于非易失性存储(Non-Volatile Memory，NVM)中，可以被读写。在嵌入式领域，最常见的NVM类型是ROM(read-only memory)和Flash Memory， 其中ROM包括Mask ROM、PROM、EPROM、EEPROM；现在主流的ROM就是EEPROM，一般是在MCU内部；而更加主流的外存一般都是Flash Memory。&lt;/p&gt;
 &lt;p&gt;在嵌入式设备中，除了使用最基本的NAND或者NOR Flash芯片，还可能会使用eMMC；扩展存储会用到SD卡，CF卡，HDD等；这些都是有一个主控再加一个存储区，主控和上位机通信，只要能访问主控，就能读写存储芯片的内容。对于eMMC、SD卡、CF卡、HDD之类的设备，它的主控对外有通用的接口，只要用读卡器或者烧录座就可以读取。但是对于SoC直接管理的存储芯片，并没有对外部的通用接口，但是主控都是驱动控制的，所以只要能访问内存（外围设备的地址）就行了，因此有一些JTAG读固件、IAP读取固件、U-Boot读取固件的技巧，是而且理论上主控坏了，我们还能从存储区读取出固件。&lt;/p&gt;

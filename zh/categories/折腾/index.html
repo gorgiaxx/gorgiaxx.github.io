@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="zh"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="人终究会被其年少不可得之物困扰一生"><title>折腾&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><link rel="alternate" type="application/rss+xml" href="/zh/categories/%E6%8A%98%E8%85%BE/atom.xml" title="Gorgias' Blog" /><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="折腾" /><body><section id="header">
@@ -8,43 +8,48 @@
         
         <a class="note" href="/zh/posts/huawei-e5885l-4g-router-tinkering-notes/">
         
-            <p class="note title">华为 E5885L 4G路由器折腾笔记</p><p class="note date">Thursday, September 27, 2018</p><p class="note content"> Introduction 平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。
+            <p class="note title">华为 E5885L 4G路由器折腾笔记</p><p class="note date">2018-09-27</p><p class="note content"> Introduction 平时出差会用上4G网卡，这款4G路由器太好用了，支持LTE,UMTS,GSM，可以作为充电宝、路由器、上网卡，支持无线有线。通过破解可以自定义IMEI，绕过ICCID与IMEI绑定限制，逃避网络审查。
 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E7%A1%AC%E4%BB%B6%E5%AE%89%E5%85%A8/">硬件安全</a><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/e5885l/">E5885L</a><a class="tag" href="/zh/tags/4g%E8%B7%AF%E7%94%B1%E5%99%A8/">4G路由器</a><a class="tag" href="/zh/tags/balong/">Balong</a><a class="tag" href="/zh/tags/huawei/">Huawei</a><a class="tag" href="/zh/tags/esim/">eSIM</a></p></li><li class="item">
         
         <a class="note" href="/zh/posts/build-openwrt-firmware-from-source-notes/">
         
-            <p class="note title">源码编译OpenWrt固件笔记</p><p class="note date">Friday, February 24, 2017</p><p class="note content">前言 最近学校的移动宽带运营商开始搞事情，搞流量劫持，下载投毒，步入电信联通之流。这个学期也不能多拨了，会被系统检测到，封停半个小时。 去年夏天乔治学长送我的路由器，OYE-0001，用了半年多了，软件上挺稳定的，就是接口太松，不小心碰到会掉线。 之前改装的TP-Link WR845N刷Hackpascal的固件会定期宕机，因为不能多拨了，所以打算换回原来的路由器刷官方固件稳定一点，反正不在寝室住了，对于流控也没有要求。 但是官方似乎放弃了WR845N V4版本，已经下载不到固件了，其他版本固件刷入后不能开机。 于是打算自己尝试编译，踩了不少坑呢。 记录下步骤吧！
+            <p class="note title">源码编译OpenWrt固件笔记</p><p class="note date">2017-02-24</p><p class="note content">前言 最近学校的移动宽带运营商开始搞事情，搞流量劫持，下载投毒，步入电信联通之流。这个学期也不能多拨了，会被系统检测到，封停半个小时。 去年夏天乔治学长送我的路由器，OYE-0001，用了半年多了，软件上挺稳定的，就是接口太松，不小心碰到会掉线。 之前改装的TP-Link WR845N刷Hackpascal的固件会定期宕机，因为不能多拨了，所以打算换回原来的路由器刷官方固件稳定一点，反正不在寝室住了，对于流控也没有要求。 但是官方似乎放弃了WR845N V4版本，已经下载不到固件了，其他版本固件刷入后不能开机。 于是打算自己尝试编译，踩了不少坑呢。 记录下步骤吧！
 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="category" href="/zh/categories/iot/">IoT</a><a class="tag" href="/zh/tags/openwrt/">openwrt</a><a class="tag" href="/zh/tags/tp-link/">TP-Link</a></p></li><li class="item">
+        
+        <a class="note" href="/zh/posts/arch-linux-dual-gpu-install-nvidia-proprietary-driver/">
+        
+            <p class="note title">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</p><p class="note date">2017-01-17</p><p class="note content">前言 我的笔记本电脑是联想Y410P，双显卡GT755M + HD4600。以前在Debian上安装NVIDIA闭源驱动也没成功过，在Arch Linux上也没成功过，只好使用Nouveau驱动。 但是这一次需要使用hashcat跑字典，hashcat不支持Nouveau，只能使用闭源驱动。
+<span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/arch/">arch</a><a class="tag" href="/zh/tags/bumblebee/">bumblebee</a><a class="tag" href="/zh/tags/%E5%8F%8C%E6%98%BE%E5%8D%A1/">双显卡</a></p></li><li class="item">
         
         <a class="note" href="/zh/posts/my-old-phone-as-backup-device/">
         
-            <p class="note title">五太子不能退休，快当我的备用机！</p><p class="note date">Saturday, October 8, 2016</p><p class="note content"> 起因 我的Nexus 5用了两年，电池也是越来越尿崩，从一天一充到一天三充。出门在外，接上充电宝使用，越充越少。结果没电关机，自己失联了好几次，耽误了很多事情。 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/">网络安全</a><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/kali/">kali</a><a class="tag" href="/zh/tags/nethunter/">nethunter</a><a class="tag" href="/zh/tags/%E5%A4%87%E7%94%A8%E6%9C%BA/">备用机</a></p></li><li class="item">
+            <p class="note title">五太子不能退休，快当我的备用机！</p><p class="note date">2016-10-08</p><p class="note content"> 起因 我的Nexus 5用了两年，电池也是越来越尿崩，从一天一充到一天三充。出门在外，接上充电宝使用，越充越少。结果没电关机，自己失联了好几次，耽误了很多事情。 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/">网络安全</a><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/kali/">kali</a><a class="tag" href="/zh/tags/nethunter/">nethunter</a><a class="tag" href="/zh/tags/%E5%A4%87%E7%94%A8%E6%9C%BA/">备用机</a></p></li><li class="item">
         
         <a class="note" href="/zh/posts/lenovo-y410p-bios-recovery-notes/">
         
-            <p class="note title">联想Y410p BIOS 拯救笔记</p><p class="note date">Monday, June 20, 2016</p><p class="note content">前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！ 黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。 依然没用，只能今天去再用编程器烧写。
+            <p class="note title">联想Y410p BIOS 拯救笔记</p><p class="note date">2016-06-20</p><p class="note content">前言 昨天，研究电脑刷的第三方BIOS，因为有些选项找不到资料，于是手动试，然后把面板颜色从18bit调到24bit后，电脑又跪了！！ 黑屏，听声音输完BIOS密码就直接死机，于是赶紧拆机拆主板电池。 依然没用，只能今天去再用编程器烧写。
 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/bios/">BIOS</a><a class="tag" href="/zh/tags/%E6%95%91%E7%A0%96/">救砖</a><a class="tag" href="/zh/tags/%E7%BC%96%E7%A8%8B%E5%99%A8/">编程器</a></p></li><li class="item">
         
         <a class="note" href="/zh/posts/add-free-ssl-certificate-to-website/">
         
-            <p class="note title">给网站添加免费SSL证书</p><p class="note date">Monday, May 9, 2016</p><p class="note content">
+            <p class="note title">给网站添加免费SSL证书</p><p class="note date">2016-05-09</p><p class="note content">
 为什么要添加SSL证书/使用HTTPS协议 目前互联网常用的HTTP协议是明文传输协议，数据在网络上是透明的，可以被中间人利用。 近些年来ISP劫持越来越频繁，黑客攻击的门槛也越来越低，为了安全，使用HTTPS加密协议访问网站，实现高强度双向加密传输，防止传输数据被泄露或篡改。
 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/certbot/">certbot</a><a class="tag" href="/zh/tags/ssl/">SSL</a><a class="tag" href="/zh/tags/%E8%AF%81%E4%B9%A6/">证书</a></p></li><li class="item">
         
         <a class="note" href="/zh/posts/first-hardware-mod-router-openwrt/">
         
-            <p class="note title">记第一次硬改路由器上Openwrt</p><p class="note date">Monday, April 4, 2016</p><p class="note content">前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）
+            <p class="note title">记第一次硬改路由器上Openwrt</p><p class="note date">2016-04-04</p><p class="note content">前言 最近社团多了一个新工具，热风焊台，于是我来练手改装路由器（以前从来没学过这方面的知识）
 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/openwrt/">Openwrt</a><a class="tag" href="/zh/tags/tplink/">tplink</a><a class="tag" href="/zh/tags/%E7%A1%AC%E6%94%B9/">硬改</a></p></li><li class="item">
         
         <a class="note" href="/zh/posts/esxi-5-5-tinkering-notes-1/">
         
-            <p class="note title">ESXi 5.5 折腾笔记一</p><p class="note date">Monday, November 16, 2015</p><p class="note content">
+            <p class="note title">ESXi 5.5 折腾笔记一</p><p class="note date">2015-11-16</p><p class="note content">
 简介 VMware ESX 服务器是在通用环境下分区和整合系统的虚拟主机软件。它是具有高级资源管理功能高效，灵活的虚拟主机平台。 ESXi (现在叫做VMware vSphere Hypervisor)是免费的，基本功能差不多，更小，更安全。
 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/esxi/">ESXi</a><a class="tag" href="/zh/tags/vmware/">VMware</a><a class="tag" href="/zh/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a></p></li><li class="item">
         
         <a class="note" href="/zh/posts/deploy-hexo-blog-on-gitcafe/">
         
-            <p class="note title">在GitCafe上部署Hexo博客</p><p class="note date">Sunday, November 1, 2015</p><p class="note content">hexo是一款基于Node.js的静态博客框架。速度快，撰写方便，扩展性高。
+            <p class="note title">在GitCafe上部署Hexo博客</p><p class="note date">2015-11-01</p><p class="note content">hexo是一款基于Node.js的静态博客框架。速度快，撰写方便，扩展性高。
 注意事项 不要用中文输入法的符号 要开启文件扩展名的显示
 <span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/zh/categories/%E6%8A%98%E8%85%BE/">折腾</a><a class="tag" href="/zh/tags/git/">git</a><a class="tag" href="/zh/tags/hexo/">hexo</a><a class="tag" href="/zh/tags/%E5%8D%9A%E5%AE%A2/">博客</a></p></li></ul></section><section id="footer"><div class="footer-wrap">
     <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
