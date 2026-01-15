@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>OpenWrt on Gorgias&#39; Blog</title>
+    <title>Openwrt on Gorgias&#39; Blog</title>
     <link>https://gorgias.me/en/tags/openwrt/</link>
-    <description>Recent content in OpenWrt on Gorgias&#39; Blog</description>
+    <description>Recent content in Openwrt on Gorgias&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>2015 - 2026 Gorgias&#39; Blog. </copyright>

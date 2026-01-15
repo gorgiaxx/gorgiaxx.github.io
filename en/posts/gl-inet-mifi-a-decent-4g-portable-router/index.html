@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark"><meta name="description" content="I’ve been using the Huawei E5885L for over a year. For me, it’s not only a near-perfect 4G portable router, but after some mods it also becomes a great tool for penetration testing. Even though it’s a very nice product, I still ran into quite a few pain points during security research. After switching to the GL.iNet MIFI, it fully met my testing needs. It solves the problems—but in some places it feels a bit rough around the edges."><title>GL.iNet MIFI: A Decent 4G Portable Router&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="I have relied on the Huawei E5885L for over a year. While it acts as a near-perfect 4G portable router, modifications can transform it into a potent tool for penetration testing. Despite its merits, I encountered several limitations during security research. Switching to the GL.iNet MIFI addressed these needs. While it resolves the core technical issues I faced with the E5885L, the hardware design feels somewhat unrefined."><title>GL.iNet MIFI: A Decent 4G Portable Router&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="GL.iNet MIFI: A Decent 4G Portable Router" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/gl-inet-mifi-a-decent-4g-portable-router/" title="中文">
@@ -140,54 +140,51 @@
     <h1 class="article title">GL.iNet MIFI: A Decent 4G Portable Router</h1><p class="article date">Friday, August 30, 2019<span class="langs"><span class="lang">
                     <a href="/zh/posts/gl-inet-mifi-a-decent-4g-portable-router/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
-                </span></span></p></section><article class="article markdown-body"><p>I’ve been using the Huawei E5885L for over a year. For me, it’s not only a near-perfect 4G portable router, but after some mods it also becomes a great tool for penetration testing. Even though it’s a very nice product, I still ran into quite a few pain points during security research. After switching to the GL.iNet MIFI, it fully met my testing needs. It solves the problems—but in some places it feels a bit rough around the edges.</p>
+                </span></span></p></section><article class="article markdown-body"><p>I have relied on the Huawei E5885L for over a year. While it acts as a near-perfect 4G portable router, modifications can transform it into a potent tool for penetration testing. Despite its merits, I encountered several limitations during security research. Switching to the GL.iNet MIFI addressed these needs. While it resolves the core technical issues I faced with the E5885L, the hardware design feels somewhat unrefined.</p>
 <p>Chassis</p>
 <p><img loading="lazy"  src="external.jpg"
         alt="external"/></p>
-<p>On the side there’s a very “special” air outlet that looks like eyes (o皿o). You can even see a fan shape inside—ugly and useless.</p>
+<p>The side features a peculiar air vent resembling a face (o皿o), revealing a fan-shaped structure inside. The aesthetics are debatable, and the functionality seems questionable.</p>
 <p><img loading="lazy"  src="air_outlet.jpg"
         alt="air_outlet"/></p>
-<p>After taking it apart, you can see a bare-bones battery stuck to the shell, covered by a dark green sheet.</p>
+<p>Disassembling the unit reveals a generic battery adhered directly to the chassis, covered only by a dark green insulating sheet.</p>
 <p><img loading="lazy"  src="battery.jpg"
         alt="battery"/></p>
-<p>First, the E5885L uses a HiSilicon LTE Cat6 chipset, with the baseband model <code>hi6932</code>. This baseband is also used in the automotive-grade 919 series, so performance is at least respectable. However, when an automotive-grade chip is used as an NAD, network load is typically very low. In portable-router designs, RAM is also much smaller than in automotive systems. Once the load increases, network instability can show up—this scenario tends to happen during testing.</p>
-<p>In some cases I need two RJ45 ports. The E5885L can’t satisfy that, but the GL-MIFI has two RJ45 ports, and the WAN port can be configured as a LAN port. It’s very flexible.</p>
-<p>Sometimes I need to do ARP spoofing, and due to the E5885L’s configuration it can’t be implemented successfully.</p>
-<p>On the E5885L, changing the IMEI requires rebooting the system to take effect. On the GL-MIFI, the application processor and the baseband are separated, so you only need to reset the 4G module for the change to take effect.</p>
-<p>GL-MIFI supports using an external 3G/4G modem via USB. Often a PC can’t dial with a modem—maybe the driver isn’t supported, maybe <code>pppd</code> isn’t configured correctly. In that case, you can plug the target modem into the GL-MIFI to get it recognized, avoiding the hassle of doing E-SIM fly-wire work.</p>
+<p>The E5885L utilizes a HiSilicon LTE Cat6 chipset (baseband model <code>hi6932</code>), which is also found in the automotive-grade 919 series. While performance is generally respectable, automotive Network Access Devices (NADs) typically operate under low network loads. Portable routers often have significantly less RAM than their automotive counterparts. Consequently, heavy network loads—common during penetration testing—can lead to system instability.</p>
+<p>I often require twin RJ45 ports. Unlike the E5885L, the GL-MIFI features dual RJ45 ports, with the WAN port reconfigurable as a LAN port, offering superior flexibility.</p>
+<p>Additionally, specific network configurations on the E5885L hinder the successful execution of ARP spoofing attacks.</p>
+<p>Regarding IMEI modification: the E5885L requires a full system reboot to apply changes. In contrast, the GL-MIFI separates the application processor from the baseband, allowing IMEI changes to take effect by simply resetting the 4G module.</p>
+<p>The GL-MIFI supports external 3G/4G USB modems. This is particularly useful when a PC lacks the necessary drivers or configuration to dial out directly. Plugging the target modem into the GL-MIFI bypasses these compatibility issues, often saving the effort of soldering wires for eSIM interfacing.</p>
 <h2 id="usage">Usage</h2>
-<p>The internal antennas are also stuck to the shell. The GL-MIFI uses the Quectel EC20 4G module (Mini PCI-E). The domestic version uses the EC20-CEHCLG variant, which supports data only and cannot make phone calls.</p>
+<p>Like the battery, the internal antennas are adhered to the casing. The device uses a Quectel EC20 4G module (Mini PCI-E). The Chinese domestic version typically includes the EC20-CEHCLG variant, which is data-only and lacks voice call support.</p>
 <p><img loading="lazy"  src="internal.jpg"
         alt="internal"/></p>
-<p>Many AR9331 GPIO pins are broken out on the PCB, which is helpful for developing IoT applications.</p>
+<p>The PCB exposes numerous AR9331 GPIO pins, facilitating IoT application development.</p>
 <pre tabindex="0"><code>/dev/ttyUSB0 DM
 /dev/ttyUSB1 GPS NMEA message output
 /dev/ttyUSB2 AT commands
 /dev/ttyUSB3 PPP connection or AT commands
 wwan0 (QMI mode)USB network adapter
-</code></pre><p>The web UI provides a plugin for quickly sending AT commands.</p>
-<p><img loading="lazy"  src="AT_Commands.png"
-        alt="AT_Commands.png"/></p>
-<p>It’s very convenient for basic operations.</p>
+</code></pre><p>The web interface includes a plugin for sending raw AT commands, which simplifies basic operations.</p>
 <p><img loading="lazy"  src="AT_Commands2.png"
         alt="AT_Commands2.png"/></p>
-<p>Changing the IMEI is very easy.</p>
+<p>Modifying the IMEI is straightforward.</p>
 <p><img loading="lazy"  src="imei.png"
         alt="imei.png"/></p>
-<p>APN configuration is supported, which is very handy.</p>
+<p>APN configuration is also fully supported.</p>
 <p><img loading="lazy"  src="imei.png"
         alt="imei.png"/></p>
-<p>SSH is enabled by default. It’s built on OpenWrt, and GL.iNet’s package feeds are fast.</p>
+<p>SSH is enabled by default. The firmware is based on OpenWrt, and GL.iNet maintains high-speed package repositories.</p>
 <p><img loading="lazy"  src="openwrt.png"
         alt="openwrt.png"/></p>
-<h2 id="install-opkg-packages-onto-the-sd-card">Install opkg packages onto the SD card</h2>
+<h2 id="installing-opkg-packages-on-sd-card">Installing OPKG Packages on SD Card</h2>
 <p><a href="https://forum.gl-inet.com/t/mifi-install-package-on-external-storage-usb-or-sd-card/4332"target="_blank" rel="noopener noreferrer">https://forum.gl-inet.com/t/mifi-install-package-on-external-storage-usb-or-sd-card/4332</a></p>
-<h2 id="other-notes">Other notes</h2>
+<h2 id="additional-notes">Additional Notes</h2>
 <p>You can refer to the official tutorial for using the MIFI communication module:</p>
 <p><a href="https://github.com/domino-team/docs/blob/master/docs/mini/mifi.md"target="_blank" rel="noopener noreferrer">https://github.com/domino-team/docs/blob/master/docs/mini/mifi.md</a></p>
 <p>Osmocom also has notes on hacking the Quectel EC20:</p>
 <p><a href="https://osmocom.org/projects/quectel-modems/wiki/EC20"target="_blank" rel="noopener noreferrer">https://osmocom.org/projects/quectel-modems/wiki/EC20</a></p>
-<p>In newer firmware, <code>AT+QLINUXCMD</code> has been disabled, so you can’t send commands directly.</p>
+<p>In newer firmware versions, <code>AT+QLINUXCMD</code> has been disabled, preventing the direct execution of system commands via AT.</p>
 </article><section class="article labels"><a class="category" href=/en/categories/hardware-security/>Hardware Security</a><a class="tag" href=/en/tags/gl%2einet/>GL.iNet</a><a class="tag" href=/en/tags/mifi/>MIFI</a><a class="tag" href=/en/tags/4g-module/>4G module</a><a class="tag" href=/en/tags/ec20/>EC20</a><a class="tag" href=/en/tags/quectel/>Quectel</a></section>
 </div>
 
@@ -197,8 +194,8 @@ wwan0 (QMI mode)USB network adapter
         <nav id="TableOfContents">
   <ol>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#install-opkg-packages-onto-the-sd-card">Install opkg packages onto the SD card</a></li>
-    <li><a href="#other-notes">Other notes</a></li>
+    <li><a href="#installing-opkg-packages-on-sd-card">Installing OPKG Packages on SD Card</a></li>
+    <li><a href="#additional-notes">Additional Notes</a></li>
   </ol>
 </nav>
     </div>
