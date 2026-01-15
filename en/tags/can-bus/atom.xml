@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>CAN-Bus on Gorgias&#39; Blog</title>
+    <title>CAN Bus on Gorgias&#39; Blog</title>
     <link>https://gorgias.me/en/tags/can-bus/</link>
-    <description>Recent content in CAN-Bus on Gorgias&#39; Blog</description>
+    <description>Recent content in CAN Bus on Gorgias&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>2015 - 2026 Gorgias&#39; Blog. </copyright>
@@ -19,11 +19,11 @@
       <guid>https://gorgias.me/en/posts/igs-arcade-re-4/</guid>
       <description>&lt;h1 id=&#34;embedded-architecture-analysis&#34;&gt;Embedded Architecture Analysis&lt;/h1&gt;
 &lt;p&gt;IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely weird—probably because the code quality is terrible.&lt;/p&gt;
-&lt;p&gt;IGS E2000 is essentially a combination of &lt;strong&gt;PC + game baseboard&lt;/strong&gt; (designed by Advantech). It has to consider both &lt;strong&gt;Anti-Copy&lt;/strong&gt; and software-engineering reuse. The ASIC is basically a completely black-box compute module: putting the game’s key logic inside it both improves performance and makes cracking harder.&lt;/p&gt;
+&lt;p&gt;IGS E2000 is essentially a combination of &lt;strong&gt;PC + game baseboard&lt;/strong&gt; (designed by Advantech). It has to consider both &lt;strong&gt;anti-piracy&lt;/strong&gt; and software reusability. The ASIC is basically a closed-box computational module: putting the game’s key logic inside it both improves performance and makes cracking harder.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;diagram.png&#34;
         alt=&#34;diagram&#34;/&gt;&lt;/p&gt;
-&lt;h2 id=&#34;main-program-flow-analysis&#34;&gt;Main Program Flow Analysis&lt;/h2&gt;
-&lt;p&gt;The game’s main program allocates a stack frame of &lt;code&gt;0x200034&lt;/code&gt;, where the buffer alone takes &lt;code&gt;0x200000&lt;/code&gt;. And after allocating this stack, it never restores it. This causes IDA Pro to fail to decompile—no idea if this is intentional.&lt;/p&gt;
+&lt;h2 id=&#34;main-executable-flow-analysis&#34;&gt;Main Executable Flow Analysis&lt;/h2&gt;
+&lt;p&gt;The main game executable allocates a stack frame of &lt;code&gt;0x200034&lt;/code&gt;, where the buffer alone takes &lt;code&gt;0x200000&lt;/code&gt;. And after allocating this stack, it never restores it. This causes IDA Pro to fail to decompile—no idea if this is intentional.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;main.png&#34;
         alt=&#34;main&#34;/&gt;&lt;/p&gt;
 &lt;p&gt;The workaround is to patch the buffer size, shrink the function stack frame, undefine the function, and then re-identify it; then it can be decompiled successfully.&lt;/p&gt;
@@ -42,7 +42,7 @@
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;main_loop.png&#34;
         alt=&#34;main_loop&#34;/&gt;&lt;/p&gt;
 &lt;p&gt;The game was developed with SDL 1.2.7. SDL (Simple DirectMedia Layer) is a cross-platform multimedia development library, mainly providing low-level access to audio, input devices (keyboard/mouse/gamepad), and graphics hardware. However, its performance is relatively low and is only suitable for 2D games. Percussion Master 2008 is a 2D game. Speed Driver 2 is a 3D game, so the difference between the two may be significant.&lt;/p&gt;
-&lt;p&gt;At every place in the main program where it interacts with the ASIC, the developer inserted a stub; I’ll temporarily call it &lt;code&gt;RealTimeEvent&lt;/code&gt;. It should be a unified event handler: every logic change and animation change requires refreshing events. It’s used to implement various complex control functions and also bundles some anti-piracy behavior. Honestly, the code quality is awful—each call does a lot of computation, performance is poor, and it feels like building a SPA in pure JS + HTML.&lt;/p&gt;
+&lt;p&gt;At every place in the main executable where it interacts with the ASIC, the developer inserted a stub; I’ll temporarily call it &lt;code&gt;RealTimeEvent&lt;/code&gt;. It should be a unified event handler: every logic change and animation change requires refreshing events. It’s used to implement various complex control functions and also bundles some anti-piracy behavior. Honestly, the code quality is awful—each call does a lot of computation, performance is poor, and it feels like building a SPA in pure JS + HTML.&lt;/p&gt;
 &lt;p&gt;Logic of the state-check stub:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Update clock&lt;/li&gt;
@@ -69,7 +69,7 @@
 &lt;p&gt;The kernel runs a driver &lt;code&gt;/dev/roio&lt;/code&gt;. The game compares it against a built-in version info table to perform validation. Both the kernel and the game embed tables. The likely workflow is that the developer parsed BIOS information using some tooling and then hard-coded physical offsets into both the game and the kernel.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;bios_table.png&#34;
         alt=&#34;bios_table&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;The BIOS info table structure differs slightly between kernel and main program. The kernel uses 4-byte alignment, but the underlying idea is the same.&lt;/p&gt;
+&lt;p&gt;The BIOS info table structure differs slightly between kernel and main executable. The kernel uses 4-byte alignment, but the underlying idea is the same.&lt;/p&gt;
 &lt;p&gt;Game BIOS table:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;struct bios_item {
     unsigned int index;  // index
@@ -89,8 +89,8 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The comparison logic is also very simple:&lt;/p&gt;
 &lt;p&gt;Step 1: iterate the program’s built-in BIOS table to get the version string address, the target string physical address, iteration counts, etc.&lt;br&gt;
 Step 2: perform an IOCTL call to &lt;code&gt;/dev/roio&lt;/code&gt; to compare the specified offset within System ROM against the program’s built-in string. If &lt;strong&gt;any single character&lt;/strong&gt; matches, it passes. That’s unbelievably dumb.&lt;/p&gt;
-&lt;p&gt;This kernel only allows running on 4 motherboard variants, but the game allows running on more devices, so it needs to validate whether the main program, kernel, and motherboard match. This is an anti-piracy mechanism—just patch it out.&lt;/p&gt;
-&lt;p&gt;After statistics, the addresses and version strings are as follows; all addresses start from &lt;code&gt;0x0f0000&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This kernel only allows running on 4 motherboard variants, but the game allows running on more devices, so it needs to validate whether the main executable, kernel, and motherboard match. This is an anti-piracy mechanism—just patch it out.&lt;/p&gt;
+&lt;p&gt;Based on my analysis, the addresses and version strings are as follows; all addresses start from &lt;code&gt;0x0f0000&lt;/code&gt;.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Kernel + Game
 0x0F086E   i852-W83627HF
 0x0FEC7C   i852-W83627HF
@@ -177,12 +177,12 @@ fec00000-ffffffff : reserved
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;It checks whether a value in &lt;code&gt;[1, 255]&lt;/code&gt; hits an entry in the list. It tries 5–30 times. If it hits, it decrements the attempt count by 1 and tries again. If it doesn’t hit, it requests via ioctl the offset corresponding to the random value (parameter &lt;code&gt;[17, 768]&lt;/code&gt;), and the “magic number” is the matched value. My guess is it might be used to initialize the driver, but I can’t think of any other purpose. Why make it so complicated?&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;pccard_random_value_check.png&#34;
         alt=&#34;pccard_random_value_check&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;In some place in the game main program, I found leftover code. The XOR constant is &lt;code&gt;0xD4AA268A&lt;/code&gt;. In Percussion Master 2008 I didn’t find any trigger logic; it should be a hidden stub for another game. This makes it more certain that this functionality is for anti-piracy (even though the design is awful).&lt;/p&gt;
+&lt;p&gt;Somewhere in the main game executable, I found leftover code. The XOR constant is &lt;code&gt;0xD4AA268A&lt;/code&gt;. In Percussion Master 2008 I didn’t find any trigger logic; it should be a hidden stub for another game. This makes it more certain that this functionality is for anti-piracy (even though the design is awful).&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;pccard_random_value_check2.png&#34;
         alt=&#34;pccard_random_value_check2&#34;/&gt;&lt;/p&gt;
 &lt;h2 id=&#34;asic-27-protocol&#34;&gt;ASIC 27 Protocol&lt;/h2&gt;
 &lt;h3 id=&#34;a27-initialization&#34;&gt;A27 Initialization&lt;/h3&gt;
-&lt;p&gt;Communication between the game main program and the I/O board goes through the PLX PCI 9030 chip and exchanges data via shared memory.&lt;/p&gt;
+&lt;p&gt;Communication between the main game executable and the I/O board goes through the PLX PCI 9030 chip and exchanges data via shared memory.&lt;/p&gt;
 &lt;p&gt;After game startup and before ASIC 27 initialization, it loads the PCI 9030 driver and allocates a buffer specifically used to store the ASIC buffer, containing various state data. The developer calls it CommandPort.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;pci9030_init.png&#34;
         alt=&#34;pci9030_init&#34;/&gt;&lt;/p&gt;
@@ -232,7 +232,7 @@ fec00000-ffffffff : reserved
 &lt;/ul&gt;
 &lt;p&gt;Other values trigger an assert.&lt;/p&gt;
 &lt;h3 id=&#34;a27-system-mode-analysis-state-machine&#34;&gt;A27 System Mode Analysis State Machine&lt;/h3&gt;
-&lt;p&gt;Data returned by ASIC is handled by the game main program. When &lt;code&gt;sm&lt;/code&gt; is one of the following values, there is no processing logic and it returns 1:&lt;/p&gt;
+&lt;p&gt;Data returned by ASIC is handled by the main game executable. When &lt;code&gt;sm&lt;/code&gt; is one of the following values, there is no processing logic and it returns 1:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0x0,0x6,0x9,0xa,0xa,0xb,0x11,0x12,0x15,0x16,0x17,0x18,0x19,0x1b,0x1c,0x1d,0x1e
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;System Mode handling:&lt;/p&gt;
 &lt;ul&gt;
@@ -308,7 +308,7 @@ fec00000-ffffffff : reserved
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unknown&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;a27-response-checksum&#34;&gt;A27 Response Checksum&lt;/h3&gt;
-&lt;p&gt;ASIC 27 responses also carry a checksum, which the main program verifies. It is computed by summing the following fields:&lt;/p&gt;
+&lt;p&gt;ASIC 27 responses also carry a checksum, which the main executable verifies. It is computed by summing the following fields:&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;a27_has_message + inet_password_data + rd_is_light_io_reset + error_number + asic27_error + coin_inserted + system_mode[0] + buffer_size&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id=&#34;buffer-obfuscation-analysis&#34;&gt;Buffer Obfuscation Analysis&lt;/h3&gt;
 &lt;p&gt;Compared to the older version, Percussion Master 2008 added a simple obfuscation layer. The goal is anti-piracy: to avoid running a copied ROM directly. When copying from the buffer into the ASIC 27 buffer, the data is obfuscated.&lt;/p&gt;
@@ -340,7 +340,7 @@ mask_table = [0x00, 0x00, 0x00, 0x00, 0x39, 0x4E, 0xC1, 0xE6, 0x02, 0x19, 0xB1, 
 BLOCK_SIZE = 0x500
 
 def obfuscate_block(block: bytes) -&amp;gt; bytes:
-    &amp;#34;&amp;#34;&amp;#34;混淆单个 0x500 大小的数据块&amp;#34;&amp;#34;&amp;#34;
+    &amp;#34;&amp;#34;&amp;#34;Obfuscate a single 0x500 byte block&amp;#34;&amp;#34;&amp;#34;
     if len(block) &amp;lt; 4:
         return block
 
@@ -350,36 +350,36 @@ def obfuscate_block(block: bytes) -&amp;gt; bytes:
     for i in range(1, 4):
         obfs_value ^= mask_table[block_header[i]]
 
-    # 计算偏移量（范围 4 ~ 0x4FF）
+    # Calculate offset (range 4 ~ 0x4FF)
     obfs_value = obfs_value % 0x4FC + 4
 
-    # 数据重排：
+    # Data reordering:
     #   [obfs_value:end] + [4:obfs_value]
-    part1 = block[obfs_value:]       # 从 obfs_value 开始到结尾
-    part2 = block[4:obfs_value]      # 从 4 到 obfs_value
+    part1 = block[obfs_value:]       # From obfs_value to end
+    part2 = block[4:obfs_value]      # From 4 to obfs_value
     new_block = part1 + part2
     return new_block
 
 
 def deobfuscate_block(block: bytes, header: bytes) -&amp;gt; bytes:
-    &amp;#34;&amp;#34;&amp;#34;反混淆单个 0x500 数据块，需要原始 header&amp;#34;&amp;#34;&amp;#34;
+    &amp;#34;&amp;#34;&amp;#34;Deobfuscate a single 0x500 byte block, requires original header&amp;#34;&amp;#34;&amp;#34;
     if len(block) &amp;lt; 4:
         return block
 
-    # 重新计算扰动值（必须用原始 header）
+    # Re-calculate perturbation value (must use original header)
     obfs_value = mask_table[header[0]]
     for i in range(1, 4):
         obfs_value ^= mask_table[header[i]]
     obfs_value = obfs_value % 0x4FC + 4
 
-    # block 的排列规则是：
+    # The block arrangement rule is:
     #   new_block = block[obfs_value:] + block[4:obfs_value]
-    # 我们要反过来拼回原始
-    part1_len = len(block) - (obfs_value - 4)  # 对应 obfs_value ~ end
+    # We need to reverse this to reconstruct the original
+    part1_len = len(block) - (obfs_value - 4)  # Corresponds to obfs_value ~ end
     part1 = block[:part1_len]
     part2 = block[part1_len:]
 
-    # 恢复成 [0:4] + [4:obfs_value] + [obfs_value:end]
+    # Restore to [0:4] + [4:obfs_value] + [obfs_value:end]
     original = header + part2 + part1
     return original
 
@@ -410,17 +410,17 @@ if __name__ == &amp;#34;__main__&amp;#34;:
         body = bytes([blk]* (BLOCK_SIZE - 4))
         data.extend(header + body)
 
-    print(&amp;#34;原始数据前 32 字节:&amp;#34;, data[:32])
+    print(&amp;#34;First 32 bytes of original data:&amp;#34;, data[:32])
 
     obfs = obfuscate(data)
-    print(&amp;#34;混淆后前 32 字节:&amp;#34;, obfs[:32])
+    print(&amp;#34;First 32 bytes of obfuscated data:&amp;#34;, obfs[:32])
 
     deobfs = deobfuscate(obfs, headers)
-    print(&amp;#34;反混淆前 32 字节:&amp;#34;, deobfs[:32])
-    print(&amp;#34;反混淆是否正确:&amp;#34;, deobfs == data)
+    print(&amp;#34;First 32 bytes of deobfuscated data:&amp;#34;, deobfs[:32])
+    print(&amp;#34;Deobfuscation correct:&amp;#34;, deobfs == data)
 &lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;tsgrom-parsing&#34;&gt;TSGROM Parsing&lt;/h2&gt;
 &lt;p&gt;TSGROM is the game’s multimedia resource file, containing scripts and textures—similar to Unity’s assets.&lt;/p&gt;
-&lt;p&gt;The TSGROM version supported by PM2008 is at least &lt;code&gt;00.0000.0004&lt;/code&gt;, consistent with PM1. The code is simple and brutal—full of &lt;code&gt;while(1)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The TSGROM version supported by PM2008 is at least &lt;code&gt;00.0000.0004&lt;/code&gt;, consistent with PM1. The code is crude and brute-force—full of &lt;code&gt;while(1)&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;tsgrom_parse.png&#34;
         alt=&#34;tsgrom_parse&#34;/&gt;&lt;/p&gt;
 &lt;p&gt;Some ROMs don’t carry version information, and I’m not sure what they’re for—for example, &lt;code&gt;biglogo.rom&lt;/code&gt;. It has a lot of LZSS image data, but it doesn’t match the color format in the code, so it’s likely historical baggage.&lt;/p&gt;
@@ -451,7 +451,7 @@ Found 174 image data zones
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;tsgrom_extracted.png&#34;
         alt=&#34;tsgrom_extracted&#34;/&gt;&lt;/p&gt;
 &lt;h3 id=&#34;action-parser&#34;&gt;Action Parser&lt;/h3&gt;
-&lt;p&gt;IGS’s TSGROM defines various graphical behaviors of the game and calls them actions. The main program implements functionality by parsing actions. If you want to run the game main program on a PC, various game events are related to the A27 protocol, so you need to reverse the corresponding actions. But I want to try the most “perfect” cracking approach: dump the ASIC ROM and run it in an emulator. I don’t want to analyze this pile of spaghetti code.&lt;/p&gt;
+&lt;p&gt;IGS’s TSGROM defines various graphical behaviors of the game and calls them actions. The main executable implements functionality by parsing actions. If you want to run the main game executable on a PC, various game events are related to the A27 protocol, so you need to reverse the corresponding actions. But I want to try the most “perfect” cracking approach: dump the ASIC ROM and run it in an emulator. I don’t want to analyze this pile of spaghetti code.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;ACT BLOCK: number of data blocks&lt;/li&gt;
 &lt;li&gt;ACT INDEX: ACT index&lt;/li&gt;
@@ -459,7 +459,7 @@ Found 174 image data zones
 &lt;li&gt;ACT POOL: action data&lt;/li&gt;
 &lt;li&gt;ACT STEP: animation frames&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;The main program is stripped, so analysis is time-consuming. Here are brief notes:&lt;/p&gt;
+&lt;p&gt;The main executable is stripped, so analysis is time-consuming. Here are brief notes:&lt;/p&gt;
 &lt;p&gt;When loading a TSGROM, the program loads &lt;code&gt;act_data&lt;/code&gt; into memory; based on the number of &lt;code&gt;act_pool&lt;/code&gt;, it also loads pool data into memory. Each TSGROM gets an independent Group ID. The action-related functions distinguish by Group ID. There can be up to &lt;code&gt;0x80&lt;/code&gt; action groups, each group length is &lt;code&gt;0x2AA4&lt;/code&gt;. Each group also has a corresponding index; action index size is &lt;code&gt;0xaa9&lt;/code&gt;, and the list length is also &lt;code&gt;0x80&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Before loading tsgrom, it first creates action objects: a total of 1024 &lt;code&gt;action_data&lt;/code&gt; instances, each &lt;code&gt;action_data&lt;/code&gt; is &lt;code&gt;0x8D&lt;/code&gt; bytes.&lt;/p&gt;
 &lt;p&gt;Then it calls &lt;code&gt;ActionUse&lt;/code&gt; to initialize &lt;code&gt;act_data&lt;/code&gt; and allocate graphics display resources. It uses &lt;code&gt;ActionFace&lt;/code&gt;, &lt;code&gt;ActionShow&lt;/code&gt;, etc. to configure graphics display control, and finally calls &lt;code&gt;RealTimeEvent&lt;/code&gt; to refresh the screen in a unified way.&lt;/p&gt;
@@ -477,11 +477,11 @@ Found 174 image data zones
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;load_igslogolc_to_memory.png&#34;
         alt=&#34;load_igslogolc_to_memory&#34;/&gt;&lt;/p&gt;
 &lt;h2 id=&#34;closing-notes&#34;&gt;Closing Notes&lt;/h2&gt;
-&lt;p&gt;IGS tightly couples the game’s main program with hardware. If you want to pirate the game onto another platform, you have to spend a lot of time.&lt;/p&gt;
+&lt;p&gt;IGS tightly couples the game’s main executable with hardware. Porting the game to another platform requires a significant amount of effort.&lt;/p&gt;
 &lt;p&gt;The game framework and song charts are implemented as state machines and are relatively complex; they’re not within my cracking target.&lt;/p&gt;
-&lt;p&gt;Writing reverse engineering into blog posts feels like spending even more energy. When reversing for yourself, you only need to record some data; but to make it into an article, you have to write it in a way others can understand.&lt;/p&gt;
-&lt;p&gt;Next topic: IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Program Patching&lt;/p&gt;
-&lt;p&gt;In memory of the Blood Moon. Praise the Goddess.&lt;/p&gt;
+&lt;p&gt;Documenting reverse engineering in blog posts feels even more exhausting than the work itself. When reversing for yourself, you only need to record some data; but to make it into an article, you have to write it in a way others can understand.&lt;/p&gt;
+&lt;p&gt;Next topic: IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Executable Patching&lt;/p&gt;
+&lt;p&gt;Commemorating the Blood Moon. Praise the Lady.&lt;/p&gt;
 </description>
     </item>
     
@@ -492,7 +492,7 @@ Found 174 image data zones
       
       <guid>https://gorgias.me/en/posts/igs-arcade-re-3/</guid>
       <description>&lt;p&gt;I’ve made quite a bit of progress lately, but I’ve hit a bottleneck. There are probably about three more posts’ worth of material. I’ve been very busy recently, so I’m publishing part three first.&lt;/p&gt;
-&lt;p&gt;I peeled off the chip sticker and did a detailed analysis. The hardware-analysis direction in part one was basically correct; I updated the chip description for IGS. The code in part two had some bugs, and I’ve updated that as well.&lt;/p&gt;
+&lt;p&gt;I peeled off the chip sticker and did a detailed analysis. The direction of the hardware analysis in part one was basically correct; I updated the chip description for IGS. The code in part two had some bugs, and I’ve updated that as well.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a href=&#34;https://gorgias.me/posts/igs_arcade_re_1&#34;&gt;IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis&lt;/a&gt;&lt;/p&gt;
@@ -501,11 +501,11 @@ Found 174 image data zones
 &lt;p&gt;&lt;a href=&#34;https://gorgias.me/posts/igs_arcade_re_2&#34;&gt;IGS Arcade Reverse Engineering Series (2) - Game File Recovery&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;To analyze the game main program efficiently, it’s best to do dynamic debugging on the device, which means getting shell access first. Aside from the CF card and I/O ports, I currently have almost no way to input anything into this device.&lt;/p&gt;
+&lt;p&gt;To analyze the game main executable efficiently, it’s best to do dynamic debugging on the device, which means getting shell access first. Aside from the CF card and I/O ports, I currently have almost no way to input anything into this device.&lt;/p&gt;
 &lt;p&gt;If I go the serial-debug route, the first step is finding the hardware debug port, and the next step is modifying the kernel’s built-in boot command. It’s a hassle, requires repacking everything back, and isn’t elegant.&lt;/p&gt;
 &lt;p&gt;The CF card has two partitions I can write to directly: one is the boot partition where the kernel lives, and the other is a partition for logs and temporary files. That second one might be able to get a shell, but “pwning” this hardware isn’t my goal.&lt;/p&gt;
 &lt;h2 id=&#34;repacking-igs-cramfs&#34;&gt;Repacking IGS CRAMFS&lt;/h2&gt;
-&lt;p&gt;Previously, based on the characteristics of IGS’s heavily modified cramfs, I extended &lt;code&gt;cramfs-tools&lt;/code&gt; a second time—but it could only unpack, not repack. It wasn’t perfect, and I’m a bit obsessive; I want it to be a real toolkit.&lt;/p&gt;
+&lt;p&gt;Previously, based on the characteristics of IGS’s heavily modified cramfs, I extended &lt;code&gt;cramfs-tools&lt;/code&gt; a second time—but it could only unpack, not repack. It wasn’t perfect, and I’m a bit of a perfectionist; I want it to be a real toolkit.&lt;/p&gt;
 &lt;p&gt;IGS modified cramfs structures. They added a checksum field into &lt;code&gt;cramfs_inode&lt;/code&gt;, meaning the inode is verified on every read.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;struct cramfs_super {
 	unsigned int magic1;
@@ -531,7 +531,7 @@ struct cramfs_info {
 	u32 blocks;
 	u32 files;
 };
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In &lt;code&gt;get_cramfs_inode&lt;/code&gt;, there’s a hidden check: it XORs &lt;code&gt;inode_magic&lt;/code&gt; with the root inode’s magic and checks whether the result equals &lt;code&gt;0x705DE1&lt;/code&gt;. If not, it errors out. It’s simple, but it differs per game, and doing the same patch over and over is annoying.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In &lt;code&gt;get_cramfs_inode&lt;/code&gt;, there’s a hidden check: it XORs &lt;code&gt;inode_magic&lt;/code&gt; with the root inode’s magic and checks whether the result equals &lt;code&gt;0x705DE1&lt;/code&gt;. If not, it aborts. It’s simple, but it differs per game, and doing the same patch over and over is annoying.&lt;/p&gt;
 &lt;p&gt;The screenshot below looks readable because I spent some time on it. In fact, IDA’s decompilation was initially wrong and didn’t match the assembly at all. You have to reconstruct the struct first so the branches become correct; otherwise a lot of code gets lost.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./get_inode.png&#34;
         alt=&#34;get_inode&#34;/&gt;&lt;/p&gt;
@@ -581,7 +581,7 @@ echo &amp;#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 &lt;p&gt;The system even has a DHCP service. The IP configuration logic is written in code.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./network_enable.png&#34;
         alt=&#34;network_enable&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;ifconfig&lt;/code&gt; was neutered—probably also modified—so I rebuilt my own.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ifconfig&lt;/code&gt; was stripped down—probably also modified—so I rebuilt my own.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;/home/ifconfig eth0 up mtu 1500 &amp;gt;&amp;gt; /PM2008v2/pm2_data/game_stdout.log 2&amp;gt;&amp;amp;1
 /home/ifconfig eth0 192.168.2.128 netmask 255.255.255.0 broadcast 192.168.2.255 &amp;gt;&amp;gt; /PM2008v2/pm2_data/game_stdout.log 2&amp;gt;&amp;amp;1
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;With that, it can connect to an external network.&lt;/p&gt;
@@ -593,11 +593,11 @@ echo &amp;#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 &lt;/code&gt;&lt;/pre&gt;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sudo ../igs-toolkits/cramfs-tools/mkcramfs ./out test.img &amp;amp;&amp;amp; sudo dd if=./test.img of=/dev/rdisk4s2 bs=1M
 &lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;game-environment-analysis&#34;&gt;Game environment analysis&lt;/h2&gt;
 &lt;p&gt;The E2000 host has two I/O interfaces. Control commands come from outside, so even if you get root you still can’t play the game.&lt;/p&gt;
-&lt;h3 id=&#34;game-main-program&#34;&gt;Game main program&lt;/h3&gt;
-&lt;p&gt;The game main program actually runs at &lt;code&gt;/exec/PM2008v2&lt;/code&gt; and starts three processes.&lt;/p&gt;
+&lt;h3 id=&#34;game-main-executable&#34;&gt;Game main executable&lt;/h3&gt;
+&lt;p&gt;The main game executable actually runs at &lt;code&gt;/exec/PM2008v2&lt;/code&gt; and starts three processes.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./shell.png&#34;
         alt=&#34;shell&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;From the address space mapping you can tell this program runs under X11 with OpenGL rendering. It can also control the card reader. It calls &lt;code&gt;/dev/plx/Pci9030-0&lt;/code&gt;, accessing it via DMA to a virtual address—this should be the game’s physical I/O.&lt;/p&gt;
+&lt;p&gt;From the memory map you can tell this executable runs under X11 with OpenGL rendering. It can also control the card reader. It calls &lt;code&gt;/dev/plx/Pci9030-0&lt;/code&gt;, accessing it via DMA to a virtual address—this should be the game’s physical I/O.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[IGS_Linux]root ~# cat /proc/120/maps 
 08048000-084b6000 r-xp 00000000 00:08 98         /exec/PM2008v2
 084b6000-084cb000 rw-p 0046e000 00:08 98         /exec/PM2008v2
@@ -687,7 +687,7 @@ echo &amp;#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 4423c000-44322000 rw-p 01196000 00:00 0 
 443a7000-444b0000 rw-p 01301000 00:00 0 
 bfde2000-c0000000 rwxp ffde3000 00:00 0
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The game program itself contains a lot of strings that look like encoded data. Before this, I had never dealt with Big5 encoding. I just asked DeepSeek to write a script to identify it.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The game executable itself contains a lot of strings that look like encoded data. Before this, I had never dealt with Big5 encoding. I just asked DeepSeek to write a script to identify it.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;chardet&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;encodings.aliases&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;aliases&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
@@ -734,7 +734,7 @@ bfde2000-c0000000 rwxp ffde3000 00:00 0
 &lt;p&gt;Since it’s non-ASCII and there isn’t a great automatic way to detect it, I’ll just follow the same “fix strings” approach from the previous post.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./strings.png&#34;
         alt=&#34;strings&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;When running the game main program, it only prints these logs:&lt;/p&gt;
+&lt;p&gt;When running the main game executable, it only prints these logs:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[IGS_Linux]root /proc/sys# /exec/PM2008v2
 Device Handle 4
 Version Major 4,Minor 3,Rev 0
@@ -745,17 +745,17 @@ Clear CommandPort Complete.
 start
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;dprintf&lt;/code&gt; logic was removed in the code, so it won’t print logs.&lt;/p&gt;
 &lt;h2 id=&#34;bottleneck&#34;&gt;Bottleneck&lt;/h2&gt;
-&lt;p&gt;I’ve hit a bottleneck: for rhythm games, hit detection is handled by the ASIC, and the ASIC passes the judgment state to the CPU. The main program contains no judgment logic. I’ve already analyzed the ASIC27 protocol; writing my own judgment logic would be fine, but that’s no longer “cracking”. Only by cracking the ASIC can you perfectly emulate these games. Next I need to dump the ASIC firmware, which is very difficult—I’m not sure I can finish it this year.&lt;/p&gt;
+&lt;p&gt;I’ve hit a bottleneck: for rhythm games, hit detection is handled by the ASIC, and the ASIC passes the judgments to the CPU. The main executable contains no judgment logic. I’ve already analyzed the ASIC27 protocol; writing my own judgment logic would be fine, but that’s no longer “cracking”. Only by cracking the ASIC can you perfectly emulate these games. Next I need to dump the ASIC firmware, which is very difficult—I’m not sure I can finish it this year.&lt;/p&gt;
 &lt;p&gt;There are two more posts’ worth of work already done; I’ll write them when I have time.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and TSGROM Static Analysis&lt;/li&gt;
-&lt;li&gt;IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Program Patching&lt;/li&gt;
+&lt;li&gt;IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Executable Patching&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;rant-hexo&#34;&gt;Rant: Hexo&lt;/h2&gt;
 &lt;p&gt;Last month my Linux PC’s CPU basically cooked itself. The cause was long-term operation and poor cooling. I spent a lot of time troubleshooting, migrating tools, and then moved the blog environment to a new computer.&lt;/p&gt;
 &lt;p&gt;I used to write posts by using &lt;code&gt;nvm&lt;/code&gt; to switch to an old Node version and running the Hexo framework to generate static pages. I hadn’t touched that setup for 8 years. Ever since then, Hexo’s dependencies have been a mess—updates always break something—so I didn’t dare to upgrade.&lt;/p&gt;
 &lt;p&gt;The old environment was very hard to run on macOS. Neither building from source nor using Homebrew worked. I don’t understand why a Node.js project needs Python 3.8.&lt;/p&gt;
-&lt;p&gt;With that pile of messy dependencies, even the latest Hexo wouldn’t work; lots of themes were incompatible. I’m already using &lt;code&gt;asdf&lt;/code&gt;, how is it still like this? I gave up on Hexo decisively and spent a lot of time migrating the blog to Hugo.&lt;/p&gt;
+&lt;p&gt;With that pile of messy dependencies, even the latest Hexo wouldn’t work; lots of themes were incompatible. I’m already using &lt;code&gt;asdf&lt;/code&gt;, how is it still like this? I dropped Hexo completely and spent a lot of time migrating the blog to Hugo.&lt;/p&gt;
 </description>
     </item>
     
@@ -768,7 +768,7 @@ start
       <description>&lt;p&gt;In the previous post, I mentioned that the game has a protection mechanism that destroys partitions. In this post, we’ll dig deeper into it.&lt;/p&gt;
 &lt;p&gt;For a game released in 2007, its hardening/protection is relatively outdated. It mainly relies on things like concatenation and signature-tweaking. It doesn’t have the “modern app hardening arms race” vibe. The annoying part is that there are many stages in the protection flow, and each game does it differently. On top of that, some development traits (compiler optimizations, coding style) make reverse engineering more difficult.&lt;/p&gt;
 &lt;p&gt;Extracting the game itself is actually straightforward: once the game is running, you can dump it via a shell from memory or from the filesystem (if the files are written to disk). But if you want to extract multiple different games, that becomes a hassle—so let’s start with static analysis.&lt;/p&gt;
-&lt;p&gt;All in all, this reversing process feels like solving a MISC challenge: it requires quite a bit of logical deduction.&lt;/p&gt;
+&lt;p&gt;All in all, this reversing process feels like solving a CTF Misc challenge: it requires quite a bit of logical deduction.&lt;/p&gt;
 &lt;h2 id=&#34;reverse-engineering-traps&#34;&gt;Reverse Engineering Traps&lt;/h2&gt;
 &lt;p&gt;In general, when analyzing filesystem contents, you rarely start from the kernel. Usually you start with init-related files.&lt;/p&gt;
 &lt;p&gt;The first step is typically checking &lt;code&gt;/etc/inittab&lt;/code&gt;. The script starts &lt;code&gt;rc&lt;/code&gt; first, and then starts the graphical interface:&lt;/p&gt;
@@ -855,10 +855,10 @@ do
 	./PM2008v2 &amp;amp;&amp;gt; /dev/null
 	sleep 5
 done
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Next, I analyzed &lt;code&gt;PM2008v2&lt;/code&gt;. At first glance, it contains a lot of “program loader” style code. Combined with the fact that many files previously had no magic bytes, I guessed it might be dynamically loading code and reconstructing ELF binaries. Later, Nova told me this thing is not the game at all—only then did I realize how abnormal it is. This file has a lot of glibc fingerprints and feels like a statically linked glibc program.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Next, I analyzed &lt;code&gt;PM2008v2&lt;/code&gt;. At first glance, it contains a lot of “executable loader” style code. Combined with the fact that many files previously had no magic bytes, I guessed it might be dynamically loading code and reconstructing ELF binaries. Later, Nova told me this thing is not the game at all—only then did I realize how abnormal it is. This file has a lot of glibc fingerprints and feels like a statically linked glibc executable.&lt;/p&gt;
 &lt;p&gt;For convenience in reversing and later porting the game, I needed to confirm the GCC and glibc versions. &lt;code&gt;PM2008v2&lt;/code&gt; shows &lt;code&gt;GCC: (GNU) 3.3.1&lt;/code&gt;, but has no glibc version string.&lt;/p&gt;
 &lt;p&gt;So I went straight to the system &lt;code&gt;libc.so&lt;/code&gt; and tentatively treated it as glibc 2.3.2. It’s hard to build on modern Linux; even in Docker I ran into issues.&lt;/p&gt;
-&lt;h2 id=&#34;analyzing-the-fake-game-program&#34;&gt;Analyzing the “Fake Game” Program&lt;/h2&gt;
+&lt;h2 id=&#34;analyzing-the-fake-game-executable&#34;&gt;Analyzing the “Fake Game” Executable&lt;/h2&gt;
 &lt;h3 id=&#34;building-gcc-331&#34;&gt;Building GCC 3.3.1&lt;/h3&gt;
 &lt;p&gt;The target kernel is i686, so I built it on CentOS 4 running in VMware. To keep the optimized assembly as consistent as possible, I wanted the same GCC version and build settings. Building this environment also helps future analysis of other games on this platform—more upfront work means fewer detours later.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;wget http://mirrors.aliyun.com/gnu/gcc/gcc-3.3.1/gcc-3.3.1.tar.gz
@@ -888,7 +888,7 @@ patch -p1 &amp;lt; ../patches/glibc-2.3.2-test_lfs-1.patch
 &lt;li&gt;Inlining: calls inside some medium-length functions in the target binary are optimized into inline code.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;Even if I set optimization to O3, it barely changes. Manually tweaking &lt;code&gt;-fomit-frame-pointer&lt;/code&gt;, &lt;code&gt;-finline-limit=n&lt;/code&gt;, etc. also didn’t help. Maybe it needs &lt;code&gt;__inline__&lt;/code&gt; somewhere; I didn’t have time to verify.&lt;/p&gt;
-&lt;p&gt;With this situation, generating FLIRT signatures with flare barely recovers symbols for functions that still contain internal calls.&lt;/p&gt;
+&lt;p&gt;With this situation, generating FLIRT signatures with FLAIR barely recovers symbols for functions that still contain internal calls.&lt;/p&gt;
 &lt;p&gt;After analysis, &lt;code&gt;PM2008v2&lt;/code&gt; is basically just a &lt;code&gt;killdisk&lt;/code&gt; function, statically linked with glibc.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;killdisk.png&#34;
         alt=&#34;killdisk.png&#34;/&gt;&lt;/p&gt;
@@ -1005,7 +1005,7 @@ run_init_process(&amp;#34;/bin/sh&amp;#34;);    // 指向bash
 /Applications/IDA\ Professional\ 9.1.app/Contents/MacOS/tools/flair/pelf ~/RE/igs/libc.a ~/RE/igs/libc.pat
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;zsh.png&#34;
         alt=&#34;zsh.png&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;At this point I still don’t know exactly which GCC and glibc it was based on. Considering that many programs later may also use glibc, I need to pin down the version and see if there’s a fast way to recover symbols.&lt;/p&gt;
+&lt;p&gt;At this point I still don’t know exactly which GCC and glibc it was based on. Considering that many executables later may also use glibc, I need to pin down the version and see if there’s a fast way to recover symbols.&lt;/p&gt;
 &lt;h4 id=&#34;dependency-analysis&#34;&gt;Dependency analysis&lt;/h4&gt;
 &lt;p&gt;Using YAFAF (a tool I wrote five years ago), I can quickly find relevant dependencies. &lt;code&gt;rc*.d&lt;/code&gt; should be game code.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;gcc_glibc.png&#34;
@@ -1037,12 +1037,12 @@ GCC: (GNU) 3.2.1 20030202 (Red Hat Linux 8.0 3.2.1-7)
 GCC: (GNU) 3.2.2 20030222 (Red Hat Linux 3.2.2-4)
 GCC: (GNU) 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;From these fingerprints, these files look like fragments stitched together from ELF files built in multiple different environments.&lt;/p&gt;
-&lt;p&gt;And &lt;code&gt;/sbin/init&lt;/code&gt; also appears to be based on glibc 2.3.x, so I tried building glibc 2.3.2 with GCC 3.2.2. On CentOS 3, building this GCC version can’t be parallelized, or it fails. Luckily, I’d seen similar errors when building OpenWrt in the past—otherwise I would’ve been stuck for a long time with zero search results about the root cause.&lt;/p&gt;
+&lt;p&gt;And &lt;code&gt;/sbin/init&lt;/code&gt; also appears to be based on glibc 2.3.x, so I tried building glibc 2.3.2 with GCC 3.2.2. On CentOS 3, parallel compilation fails for this GCC version. Luckily, I’d seen similar errors when building OpenWrt in the past—otherwise I would’ve been stuck for a long time with zero search results about the root cause.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;../gcc-3.2.2/configure --prefix=/opt/gcc_3.2.2 --infodir=/usr/share/info --enable-shared --enable-threads=posix --disable-checking --with-system-zlib --enable-__cxa_atexit
 
 make
 make install
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;When building glibc, whether O2 or O3, it almost never inlines functions. I still don’t understand why, can’t find answers, and asking AI didn’t help either.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;When building glibc, whether O2 or O3, it almost never inlines functions. I still don’t understand why, can’t find answers, and asking LLMs didn’t help either.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;CC=/opt/gcc_3.2.2/bin/gcc CFLAGS=&amp;#34;-march=pentium4 -O2&amp;#34; ../glibc-2.3.2/configure --prefix=/lib --disable-profile --enable-add-ons --libexecdir=/usr/lib --with-headers=/usr/include
 CC=/opt/gcc_3.2.2/bin/gcc CFLAGS=&amp;#34;-O3&amp;#34; ../glibc-2.3.2/configure --prefix=/lib --disable-profile --enable-add-ons --libexecdir=/usr/lib --with-headers=/usr/include
 &lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;recovering-zsh-symbols&#34;&gt;Recovering ZSH Symbols&lt;/h3&gt;
@@ -1085,7 +1085,7 @@ CC=/opt/gcc_3.2.2/bin/gcc CFLAGS=&amp;#34;-O3&amp;#34; ../glibc-2.3.2/configure 
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Search finished, &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; instruments created&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;found_count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;find_and_make_instrument&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x080480B4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x0808F000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Since there’s no way to use a glibc signature here, I came up with a somewhat dumb approach—but it’s faster than invoking MCP-based analysis.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Since there’s no way to use a glibc signature here, I came up with a somewhat naive approach—but it’s faster than invoking MCP-based analysis.&lt;/p&gt;
 &lt;p&gt;First, fully recover glibc strings from file A (my self-compiled one) and recover function entry points.
 For file B, first fix function entry points, then fix immediate-value offsets, fix strings, deduplicate, remove overly short strings, then match strings one-by-one against file A and filter results.&lt;/p&gt;
 &lt;p&gt;Then traverse xrefs from the filtered results, and pick those that are not duplicated and are functions:&lt;/p&gt;
@@ -1537,7 +1537,7 @@ For file B, first fix function entry points, then fix immediate-value offsets, f
 &lt;p&gt;Read &lt;code&gt;0x400&lt;/code&gt; bytes from the end of &lt;code&gt;/bin/arch&lt;/code&gt; and write it to &lt;code&gt;/mnt/GECA&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Then append &lt;code&gt;/etc/init.d/rc0.d&lt;/code&gt; to the end of &lt;code&gt;/mnt/GECA&lt;/code&gt;.&lt;/p&gt;
 &lt;h3 id=&#34;recovering-game-files&#34;&gt;Recovering Game Files&lt;/h3&gt;
-&lt;p&gt;Before I started my analysis, Nova shared progress from his research with BatteryShark. They had already reconstructed the ELF for Speed Driver 2, but the ELF still had issues and couldn’t be used for other games such as Percussion Master 2008.&lt;/p&gt;
+&lt;p&gt;Before I started my analysis, Nova shared findings from BatteryShark. BatteryShark had already reconstructed the ELF for Speed Driver 2, but the ELF still had issues and couldn’t be used for other games such as Percussion Master 2008.&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/batteryshark/igstools/blob/main/scripts/igs_rofsv1_dumpexec.py&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;IGS Dump EXEC&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;So I still had to do it myself, and I also wanted to reverse the code that reconstructs the game files anyway.&lt;/p&gt;
 &lt;p&gt;During kernel boot, after &lt;code&gt;GECA&lt;/code&gt; is repaired by zsh, it is immediately executed with the same environment variables and arguments.&lt;/p&gt;
@@ -1556,7 +1556,7 @@ dd if=/etc/rc.d/rc4.d of=/mnt/rc4 bs=1K count=[file_size / 1024 - 400 + 35] &amp
 dd if=/etc/rc.d/rc7.d of=/mnt/rc7 bs=1K count=[file_size / 1024 - 400 + 42] &amp;amp;&amp;gt; /dev/null
 dd if=/etc/rc.d/rc6.d of=/mnt/rc6 bs=1K count=[file_size / 1024 - 400 + 49] &amp;amp;&amp;gt; /dev/null
 dd if=/etc/rc.d/rc9.d of=/mnt/rc9 bs=1 count=[file_size - 400 * 1024] &amp;amp;&amp;gt; /dev/null
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Then it mounts a ramfs at &lt;code&gt;/exec&lt;/code&gt;, concatenates these files into the real game binary, and replaces the original disk-destruction program.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Then it mounts a ramfs at &lt;code&gt;/exec&lt;/code&gt;, concatenates these files into the real game binary, and replaces the original disk-destruction executable.&lt;/p&gt;
 &lt;p&gt;After that, the boot process matches what we saw earlier in &lt;code&gt;/etc/X11/IGS&lt;/code&gt;.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mount -n -t ramfs GameExecution /exec &amp;amp;&amp;gt; /dev/null
 cat /mnt/head /mnt/rc2 /mnt/rc1 /mnt/rc3 /mnt/rc5 /mnt/rc8 /mnt/rc4 /mnt/rc7 /mnt/rc6 /mnt/rc9 &amp;gt; /exec/PM2008v2 &amp;amp;&amp;amp; chmod 777 /exec/PM2008v2 &amp;amp;&amp;gt; /dev/null
@@ -1614,7 +1614,7 @@ rc7.d size: 0x00080000, write 0x00026800 bytes to game file, write block 154 ski
 rc6.d size: 0x00080000, write 0x00028400 bytes to game file, write block 161 skip block_num: 351
 rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 skip block_num: 344
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;After recovery, although we avoid multi-version glibc fingerprints, the ELF might still have issues. Each game’s main binary recovery algorithm differs slightly. PM2008’s recovery logic takes two more parameters than SD2, so I’ll focus on PM2008 first.&lt;/p&gt;
-&lt;p&gt;I still need to do dynamic analysis to understand how the in-memory ELF is loaded. But I’ve noticed that plugging in an Ethernet cable or a keyboard causes the cabinet to crash automatically—no idea whether that’s a safety mechanism. In the next post, I’ll analyze how to do dynamic debugging on the device.&lt;/p&gt;
+&lt;p&gt;I still need to do dynamic analysis to understand how the in-memory ELF is loaded. But I’ve noticed that plugging in an Ethernet cable or a keyboard causes the cabinet to crash immediately—no idea whether that’s a protection mechanism. In the next post, I’ll analyze how to do dynamic debugging on the device.&lt;/p&gt;
 </description>
     </item>
     
@@ -1625,9 +1625,9 @@ rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 sk
       
       <guid>https://gorgias.me/en/posts/igs-arcade-re-1/</guid>
       <description>&lt;h1 id=&#34;preface&#34;&gt;Preface&lt;/h1&gt;
-&lt;p&gt;2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has not been favored by capital for a long time. The 2020 pandemic dealt an even heavier blow to the arcade business.&lt;/p&gt;
+&lt;p&gt;2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has long been out of favor with investors. The 2020 pandemic dealt an even heavier blow to the arcade business.&lt;/p&gt;
 &lt;p&gt;Back then, 100 RMB might only buy 50 credits; now 100 RMB can buy 200 credits.&lt;/p&gt;
-&lt;p&gt;I like racing games. Wangan Midnight, Initial D, and Speed Driver have been the hottest games in arcades in recent years, because they have accounts and thus a social component. Some time ago, when I was cracking the player app for Speed Driver 5, I learned that IGS (International Games System) is the company behind the Romance of the Three Kingdoms arcade game I played as a kid and Journey to the West. IGS’s anti-cracking is top-tier across the entire industry, and the Speed Driver series is even known as “uncrackable.”&lt;/p&gt;
+&lt;p&gt;I like racing games. Wangan Midnight, Initial D, and Speed Driver have been the hottest games in arcades in recent years, because they have accounts and thus a social component. Some time ago, when I was cracking the player app for Speed Driver 5, I learned that IGS (International Games System) is the company behind the Knights of Valour arcade game I played as a kid and Journey to the West. IGS’s anti-cracking is top-tier across the entire industry, and the Speed Driver series is even known as “uncrackable.”&lt;/p&gt;
 &lt;p&gt;Last month, the “Big Player” arcade near my home shut down. I feel that sooner or later the Speed Driver series may disappear, so I wanted to challenge myself to crack it.&lt;/p&gt;
 &lt;p&gt;The release order of the IGS Speed Driver series is as follows:&lt;/p&gt;
 &lt;table&gt;
@@ -1640,7 +1640,7 @@ rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 sk
   &lt;/thead&gt;
   &lt;tbody&gt;
       &lt;tr&gt;
-          &lt;td&gt;Speed Driver:Evolution Evolution&lt;/td&gt;
+          &lt;td&gt;Speed Driver: Evolution&lt;/td&gt;
           &lt;td&gt;&lt;/td&gt;
           &lt;td&gt;2004&lt;/td&gt;
       &lt;/tr&gt;
@@ -1666,10 +1666,10 @@ rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 sk
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;I planned to start with the E2000 platform. The difficulty should definitely be lower than PGM (PolyGame Master) because it’s PC-based: there’s no need to emulate a sound card or GPU. The hardware has almost no physical protection, the CPU ISA is x86, the OS is Linux, there’s no anti-debugging, and no VMP—this is basically the beginner village.&lt;/p&gt;
-&lt;p&gt;In Asia, the Speed Driver series has influence comparable to Wangan Midnight, Initial D, and Raiden G (all of which have been cracked). IGS’s anti-cracking is the most successful: throughout the entire product lifecycle, it was never cracked.&lt;/p&gt;
+&lt;p&gt;I planned to start with the E2000 platform. The difficulty should definitely be lower than PGM (PolyGame Master) because it’s PC-based: there’s no need to emulate a sound card or GPU. The hardware has almost no physical protection, the CPU ISA is x86, the OS is Linux, there’s no anti-debugging, and no VMP—this is basically a tutorial level.&lt;/p&gt;
+&lt;p&gt;In Asia, the Speed Driver series has influence comparable to Wangan Midnight, Initial D, and Storm Racer G (all of which have been cracked). IGS’s anti-cracking is the most successful: throughout the entire product lifecycle, it was never cracked.&lt;/p&gt;
 &lt;h1 id=&#34;hardware-analysis&#34;&gt;Hardware analysis&lt;/h1&gt;
-&lt;p&gt;In &lt;a href=&#34;https://github.com/shizmob/arcade-docs/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Arcade-docs&lt;/a&gt; you can look up the hardware information of each device and the games it supports.
+&lt;p&gt;In &lt;a href=&#34;https://github.com/shizmob/arcade-docs/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;Arcade-docs&lt;/a&gt;, you can look up the hardware information of each device and the games it supports.
 Leveraging my “skill” at scavenging e-waste, I managed to get an E2000 host. There are quite a few enthusiasts abroad buying them too, so the price has gone up.&lt;/p&gt;
 &lt;h2 id=&#34;external-interface-analysis&#34;&gt;External interface analysis&lt;/h2&gt;
 &lt;p&gt;On the front there are two RS-485 ports, and the CF card can be removed externally.&lt;/p&gt;
@@ -1749,7 +1749,7 @@ Partition 2: IGS CRAMFS, RootFS
 Partition 3: Ext3, Log Data
 Partition 4: IGS SquashFS, Game Data
 &lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;kernel-reversing&#34;&gt;Kernel reversing&lt;/h2&gt;
-&lt;p&gt;So far I have not found the rootfs or the game program; they are most likely located in partition 2 and partition 4.
+&lt;p&gt;So far I have not found the rootfs or the game executable; they are most likely located in partition 2 and partition 4.
 I think reversing the kernel can save a lot of detours. Without relying on the kernel, you could also directly reverse the filesystem format from the raw data, but that’s boring. And whatever extractor you end up writing won’t beat open-source filesystem unpacking tools anyway.
 First, look at partition 1: it contains a loader and a kernel. The kernel version is shown, but it may not be the correct one.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;SD2:        LILO (LInux LOder)
@@ -1813,7 +1813,7 @@ SD2-OS-61P: Linux kernel x86 boot executable, bzImage, version 2.4.31-IGS_V0.5a 
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# You can define function entry opcodes based on your case&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Of course, even at this point, not all xrefs are fully recognized. In the data segment, some strings and offsets are not recovered well either, but it doesn’t matter much. If you’re completely stuck, recovering those bits may lead to new discoveries.&lt;/p&gt;
-&lt;p&gt;Next is to find an entry point for analysis. There’s honestly not much technical content here—I have many approaches, for example starting from filesystem characteristics. But writing everything out would be like saying “the character 茴 has five ways to write it,” which is kind of ridiculous.&lt;/p&gt;
+&lt;p&gt;Next is to find an entry point for analysis. There’s honestly not much technical content here—I have many approaches, for example starting from filesystem characteristics. But writing everything out would be pedantic and unnecessary.&lt;/p&gt;
 &lt;p&gt;We can confirm the kernel version is 2.4.31, and the IGS version is v1.0, not v0.5 as shown by the &lt;code&gt;bzImage&lt;/code&gt; banner.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;igs_strings.png&#34;
         alt=&#34;igs_strings&#34;/&gt;&lt;/p&gt;
@@ -1840,7 +1840,7 @@ sys_mount(&amp;#34;/dev/hdc4&amp;#34;, &amp;#34;/PM2008v2/pm2_data&amp;#34;, &am
   -&amp;gt;rd_load_disk
      -&amp;gt;rd_load_image
        -&amp;gt;identify_ramdisk_image
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Here we can confirm IGS supports ramdisks in squashfs and IGS ROFS formats, and we can also identify their magics.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Here we can confirm IGS supports ramdisks in squashfs and IGS ROFS formats, and we can also identify their magic numbers.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;identify_ramdisk_image.png&#34;
         alt=&#34;identify_ramdisk_image&#34;/&gt;&lt;/p&gt;
 &lt;p&gt;I won’t record the full analysis process. They modified the FS header, which makes the analysis somewhat nasty 🤢.&lt;/p&gt;
@@ -1959,49 +1959,51 @@ test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
       
       <guid>https://gorgias.me/en/posts/vw-id4-vehicle-control-analysis/</guid>
       <description>&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
-&lt;p&gt;Back in 2021 at 360, I built a bench environment for the ID.4. I was close to getting results (I had internal ODIS access, and root on ICAS3), but then I got assigned to a business trip to build a demo car, and the follow-up plan got disrupted. During that period, both work and life threw a lot of unpleasant things at me, so I stopped the research.&lt;/p&gt;
-&lt;p&gt;You could call this a “regret project”. This May, by coincidence, I picked up the vehicle-control logic of the ID.4’s ICAS1 again. Another “regret project” is CAN-Pick NG—I wrote half of it and shelved it again. Not sure if I can finish it in 2025.&lt;/p&gt;
-&lt;p&gt;The ID.4 is based on Volkswagen’s MEB platform. Its EE architecture has two domain controllers: ICAS1 and ICAS3. ICAS1 (J533) is related to body control.&lt;/p&gt;
+&lt;p&gt;In 2021, while working at 360, I built a test bench for the VW ID.4. I was close to getting significant results—I had internal ODIS access and root privileges on ICAS3—but I was abruptly reassigned to build a demo vehicle during a business trip, which disrupted my follow-up plans. During that period, a combination of professional obligations and personal challenges forced me to pause the research.&lt;/p&gt;
+&lt;p&gt;You could call this a &amp;ldquo;regret project&amp;rdquo;—an unfinished endeavor I wish I had completed. By coincidence, I revisited the vehicle control logic of the ID.4’s ICAS1 this past May. Another such project is CAN-Pick NG, which I partially wrote before shelving. I am unsure if I will be able to finish it in 2025.&lt;/p&gt;
+&lt;p&gt;The ID.4 is based on Volkswagen’s MEB platform. Its EE (Electrical/Electronic) architecture features two primary domain controllers: ICAS1 and ICAS3. ICAS1 (J533) is responsible for body control.&lt;/p&gt;
 &lt;p&gt;The figure below shows the location of J533 at position 13. By mounting a drive-by-wire module here, you can monitor and control body functions.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./icas1.png&#34;
         alt=&#34;icas1&#34;/&gt;&lt;/p&gt;
 &lt;h2 id=&#34;in-vehicle-ecu-topology&#34;&gt;In-Vehicle ECU Topology&lt;/h2&gt;
-&lt;p&gt;Classic CAN: 500k&lt;/p&gt;
-&lt;p&gt;CAN-FD: arbitration 500k, data 2M. If you want to analyze CAN-FD, ZLG devices are the best fit.&lt;/p&gt;
-&lt;p&gt;By analyzing the ELSA wiring diagrams and VW internal training materials, I found the bus naming to be messy. You have to re-organize it to get the correct CAN topology.&lt;/p&gt;
-&lt;p&gt;J533 has a total of 9 CAN buses and 4 LIN buses (LIN is not needed for now). Key ECUs are as follows:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Running-Gear CAN (CAN-FD)
+&lt;li&gt;&lt;strong&gt;Classic CAN:&lt;/strong&gt; 500 kbps&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CAN-FD:&lt;/strong&gt; Arbitration phase 500 kbps, Data phase 2 Mbps. (For CAN-FD analysis, ZLG devices are highly recommended).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Analyzing the ELSA wiring diagrams and internal VW training materials revealed inconsistent bus naming. Reorganizing this information is necessary to derive the correct CAN topology.&lt;/p&gt;
+&lt;p&gt;The J533 gateway manages a total of 9 CAN buses and 4 LIN buses (LIN is not utilized in this analysis). The key ECUs are as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Running-Gear CAN (CAN-FD)&lt;/strong&gt;
 &lt;ul&gt;
 &lt;li&gt;J104 - ABS&lt;/li&gt;
-&lt;li&gt;J500 - EPS, Electric Power Steering control unit&lt;/li&gt;
-&lt;li&gt;NX6 - Brake controller (Brake Booster)&lt;/li&gt;
+&lt;li&gt;J500 - EPS (Electric Power Steering control unit)&lt;/li&gt;
+&lt;li&gt;NX6 - Brake Controller (Brake Booster)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;Powertrain CAN (CAN-FD)
+&lt;li&gt;&lt;strong&gt;Powertrain CAN (CAN-FD)&lt;/strong&gt;
 &lt;ul&gt;
 &lt;li&gt;J623 - Engine/Motor Control Module&lt;/li&gt;
-&lt;li&gt;J841/J944 - Electric drive unit&lt;/li&gt;
-&lt;li&gt;J234 - Airbag (do not fuzz here; it’s dangerous)&lt;/li&gt;
+&lt;li&gt;J841/J944 - Electric Drive Unit&lt;/li&gt;
+&lt;li&gt;J234 - Airbag (Do not fuzz this; it is dangerous)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;Driver Assistance CAN, CAN-FAS (CAN-FD)
+&lt;li&gt;&lt;strong&gt;Driver Assistance CAN (CAN-FAS) (CAN-FD)&lt;/strong&gt;
 &lt;ul&gt;
-&lt;li&gt;J428 - Distance control unit&lt;/li&gt;
-&lt;li&gt;J446 - Parking radar control unit&lt;/li&gt;
-&lt;li&gt;J769/J770 - Lane change assist control units&lt;/li&gt;
-&lt;li&gt;J928 - Surround-view camera control unit&lt;/li&gt;
+&lt;li&gt;J428 - Distance Control Unit&lt;/li&gt;
+&lt;li&gt;J446 - Parking Radar Control Unit&lt;/li&gt;
+&lt;li&gt;J769/J770 - Lane Change Assist Control Units&lt;/li&gt;
+&lt;li&gt;J928 - Surround-View Camera Control Unit&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;Convenience CAN (Classic)
+&lt;li&gt;&lt;strong&gt;Convenience CAN (Classic)&lt;/strong&gt;
 &lt;ul&gt;
-&lt;li&gt;J527 - Steering Column Electronics Control Module (shift-by-wire module)&lt;/li&gt;
-&lt;li&gt;J605 - Tailgate control unit&lt;/li&gt;
-&lt;li&gt;J764 - Steering column lock&lt;/li&gt;
-&lt;li&gt;&amp;hellip; other body controls&lt;/li&gt;
+&lt;li&gt;J527 - Steering Column Electronics Control Module (Shift-by-wire module)&lt;/li&gt;
+&lt;li&gt;J605 - Tailgate Control Unit&lt;/li&gt;
+&lt;li&gt;J764 - Steering Column Lock&lt;/li&gt;
+&lt;li&gt;&amp;hellip;and other body controls&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;CAN-EV (CAN-FD)
+&lt;li&gt;&lt;strong&gt;CAN-EV (CAN-FD)&lt;/strong&gt;
 &lt;ul&gt;
 &lt;li&gt;J979 - Heater and Air Conditioning Control Module&lt;/li&gt;
 &lt;/ul&gt;
@@ -2010,259 +2012,259 @@ test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./topicdiagram.png&#34;
         alt=&#34;topicdiagram&#34;/&gt;&lt;/p&gt;
 &lt;h2 id=&#34;j533-connector-t40a-definition&#34;&gt;J533 Connector T40a Definition&lt;/h2&gt;
-&lt;p&gt;The T40a connector and the table correspond as follows.&lt;/p&gt;
+&lt;p&gt;The following table details the T40a connector pinout.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./T40a_datasheet.png&#34;
         alt=&#34;T40a_datasheet&#34;/&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./T40a.png&#34;
         alt=&#34;T40a&#34;/&gt;&lt;/p&gt;
 &lt;h2 id=&#34;bus-security-strategy&#34;&gt;Bus Security Strategy&lt;/h2&gt;
 &lt;h3 id=&#34;gateway-isolation&#34;&gt;Gateway Isolation&lt;/h3&gt;
-&lt;p&gt;Multifunction steering wheel control signals are received on the Convenience CAN, but ECUs on the chassis CAN can also see them. However, multifunction steering wheel control signals originating from the chassis CAN will not be forwarded by J533 to the target ECU.&lt;/p&gt;
+&lt;p&gt;Multifunction steering wheel control signals originate on the Convenience CAN, but ECUs on the Chassis CAN can also observe them. However, the J533 gateway blocks any steering wheel control signals originating from the Chassis CAN, preventing them from reaching their target ECUs.&lt;/p&gt;
 &lt;h2 id=&#34;crc-check&#34;&gt;CRC Check&lt;/h2&gt;
-&lt;p&gt;By observing CAN bus changes, you can see the pattern for most messages: the first byte looks random, while the second byte increases in a regular way. The first byte is the CRC, and the second byte is the counter.&lt;/p&gt;
+&lt;p&gt;Observing the CAN bus traffic reveals a pattern in most messages: the first byte appears random, while the second byte increments regularly. The first byte is the CRC (Cyclic Redundancy Check), and the second byte is a counter.&lt;/p&gt;
 &lt;h3 id=&#34;crc-seeds&#34;&gt;CRC Seeds&lt;/h3&gt;
-&lt;p&gt;Reference: &lt;a href=&#34;https://github.com/commaai/opendbc&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;OpenDBC github&lt;/a&gt;&lt;br&gt;
+&lt;p&gt;&lt;strong&gt;Reference:&lt;/strong&gt; &lt;a href=&#34;https://github.com/commaai/opendbc&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;OpenDBC github&lt;/a&gt;
 &lt;code&gt;/opendbc/can/common.cc&lt;/code&gt; &lt;code&gt;volkswagen_mqb_checksum&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;You can obtain checksum seeds for the VW MQB platform, but the ID.4 has many new CRC seeds. I reverse-engineered them and recorded them below.&lt;/p&gt;
-&lt;p&gt;Most control signals include both CRC and a counter. ECUs won’t validate CRC for some less critical functions (e.g., sunroof, windows, horn), but they will validate it for functions that affect driving, such as EPS, tailgate opening, and wipers.&lt;/p&gt;
+&lt;p&gt;While checksum seeds for the VW MQB platform are available, the ID.4 introduces many new CRC seeds. I reverse-engineered them and listed them below.&lt;/p&gt;
+&lt;p&gt;Most control signals include both a CRC and a counter. ECUs typically skip CRC validation for non-critical functions (e.g., sunroof, windows, horn) but enforce it for safety-critical functions such as EPS, tailgate operation, and wipers.&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
-          &lt;th&gt;Signal&lt;/th&gt;
-          &lt;th&gt;CAN ID&lt;/th&gt;
-          &lt;th&gt;CRC Seed&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Signal&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;CAN ID&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;CRC Seed&lt;/th&gt;
       &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
       &lt;tr&gt;
-          &lt;td&gt;AAA_01&lt;/td&gt;
-          &lt;td&gt;0x12DD5502&lt;/td&gt;
-          &lt;td&gt;0x62,0x14,0x7c,0xa1,0x49,0x95,0x43,0x04,0x78,0x46,0x74,0x19,0x39,0x17,0x9f,0x1c&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;AAA_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x12DD5502&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x62,0x14,0x7c,0xa1,0x49,0x95,0x43,0x04,0x78,0x46,0x74,0x19,0x39,0x17,0x9f,0x1c&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ACC_18&lt;/td&gt;
-          &lt;td&gt;0x14D&lt;/td&gt;
-          &lt;td&gt;0x1a,0x65,0x81,0x96,0xc0,0xdf,0x11,0x92,0xd3,0x61,0xc6,0x95,0x8c,0x29,0x21,0xb5&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;ACC_18&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x14D&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x1a,0x65,0x81,0x96,0xc0,0xdf,0x11,0x92,0xd3,0x61,0xc6,0x95,0x8c,0x29,0x21,0xb5&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Airbag_01&lt;/td&gt;
-          &lt;td&gt;0x040&lt;/td&gt;
-          &lt;td&gt;0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Airbag_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x040&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Airbag_02&lt;/td&gt;
-          &lt;td&gt;0x520&lt;/td&gt;
-          &lt;td&gt;0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Airbag_02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x520&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44,0x44&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;APS_Master&lt;/td&gt;
-          &lt;td&gt;0x380&lt;/td&gt;
-          &lt;td&gt;0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;APS_Master&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x380&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;AWV_03&lt;/td&gt;
-          &lt;td&gt;0x0DB&lt;/td&gt;
-          &lt;td&gt;0x09,0xfa,0xca,0x8e,0x62,0xd5,0xd1,0xf0,0x31,0xa0,0xaf,0xda,0x4d,0x1a,0x0a,0x97&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;AWV_03&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x0DB&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x09,0xfa,0xca,0x8e,0x62,0xd5,0xd1,0xf0,0x31,0xa0,0xaf,0xda,0x4d,0x1a,0x0a,0x97&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;BEM_06&lt;/td&gt;
-          &lt;td&gt;0x48B&lt;/td&gt;
-          &lt;td&gt;0x54,0xaf,0x8a,0xfb,0x0d,0x87,0x6a,0x0f,0x47,0x78,0x31,0x4f,0x35,0x28,0x82,0x6d&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;BEM_06&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x48B&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x54,0xaf,0x8a,0xfb,0x0d,0x87,0x6a,0x0f,0x47,0x78,0x31,0x4f,0x35,0x28,0x82,0x6d&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Blinkmodi_02&lt;/td&gt;
-          &lt;td&gt;0x366&lt;/td&gt;
-          &lt;td&gt;0xa9,0xbd,0xfb,0x3c,0x95,0x0f,0x75,0x3a,0x4f,0x19,0x59,0x6d,0xb2,0xe9,0xd1,0x97&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blinkmodi_02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x366&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xa9,0xbd,0xfb,0x3c,0x95,0x0f,0x75,0x3a,0x4f,0x19,0x59,0x6d,0xb2,0xe9,0xd1,0x97&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;EA_01&lt;/td&gt;
-          &lt;td&gt;0x1A4&lt;/td&gt;
-          &lt;td&gt;0x69,0xbb,0x54,0xe6,0x4e,0x46,0x8d,0x7b,0xea,0x87,0xe9,0xb3,0x63,0xce,0xf8,0xbf&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;EA_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x1A4&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x69,0xbb,0x54,0xe6,0x4e,0x46,0x8d,0x7b,0xea,0x87,0xe9,0xb3,0x63,0xce,0xf8,0xbf&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;EA_02&lt;/td&gt;
-          &lt;td&gt;0x1F0&lt;/td&gt;
-          &lt;td&gt;0x2f,0x3c,0x22,0x60,0x18,0xeb,0x63,0x76,0xc5,0x91,0x0f,0x27,0x34,0x04,0x7f,0x02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;EA_02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x1F0&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x2f,0x3c,0x22,0x60,0x18,0xeb,0x63,0x76,0xc5,0x91,0x0f,0x27,0x34,0x04,0x7f,0x02&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ELV_01&lt;/td&gt;
-          &lt;td&gt;0x656&lt;/td&gt;
-          &lt;td&gt;0xab,0x2f,0xd3,0x39,0x6f,0x37,0xfa,0x59,0xa4,0x70,0xce,0x11,0x54,0x82,0x62,0x56&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;ELV_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x656&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xab,0x2f,0xd3,0x39,0x6f,0x37,0xfa,0x59,0xa4,0x70,0xce,0x11,0x54,0x82,0x62,0x56&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;EM1_01&lt;/td&gt;
-          &lt;td&gt;0x0C0&lt;/td&gt;
-          &lt;td&gt;0x2f,0x44,0x72,0xd3,0x07,0xf2,0x39,0x09,0x8d,0x6f,0x57,0x20,0x37,0xf9,0x9b,0xfa&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;EM1_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x0C0&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x2f,0x44,0x72,0xd3,0x07,0xf2,0x39,0x09,0x8d,0x6f,0x57,0x20,0x37,0xf9,0x9b,0xfa&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;EML_02&lt;/td&gt;
-          &lt;td&gt;0x1A555541&lt;/td&gt;
-          &lt;td&gt;0x3e,0xb4,0x25,0xc1,0x31,0x1f,0xf1,0xd7,0xb1,0xbe,0xcc,0xe0,0x0f,0x46,0x51,0xb2&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;EML_02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x1A555541&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x3e,0xb4,0x25,0xc1,0x31,0x1f,0xf1,0xd7,0xb1,0xbe,0xcc,0xe0,0x0f,0x46,0x51,0xb2&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;EML_06&lt;/td&gt;
-          &lt;td&gt;0x20A&lt;/td&gt;
-          &lt;td&gt;0x9d,0xe8,0x36,0xa1,0xca,0x3b,0x1d,0x33,0xe0,0xd5,0xbb,0x5f,0xae,0x3c,0x31,0x9f&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;EML_06&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x20A&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x9d,0xe8,0x36,0xa1,0xca,0x3b,0x1d,0x33,0xe0,0xd5,0xbb,0x5f,0xae,0x3c,0x31,0x9f&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ESC_50&lt;/td&gt;
-          &lt;td&gt;0x102&lt;/td&gt;
-          &lt;td&gt;0xd7,0x12,0x85,0x7e,0x0b,0x34,0xfa,0x16,0x7a,0x25,0x2d,0x8f,0x04,0x8e,0x5d,0x35&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;ESC_50&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x102&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xd7,0x12,0x85,0x7e,0x0b,0x34,0xfa,0x16,0x7a,0x25,0x2d,0x8f,0x04,0x8e,0x5d,0x35&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ESC_51&lt;/td&gt;
-          &lt;td&gt;0x0FC&lt;/td&gt;
-          &lt;td&gt;0x77,0x5c,0xa0,0x89,0x4b,0x7c,0xbb,0xd6,0x1f,0x6c,0x4f,0xf6,0x20,0x2b,0x43,0xdd&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;ESC_51&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x0FC&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x77,0x5c,0xa0,0x89,0x4b,0x7c,0xbb,0xd6,0x1f,0x6c,0x4f,0xf6,0x20,0x2b,0x43,0xdd&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ESP_10&lt;/td&gt;
-          &lt;td&gt;0x116&lt;/td&gt;
-          &lt;td&gt;0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;ESP_10&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x116&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac,0xac&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ESP_20&lt;/td&gt;
-          &lt;td&gt;0x65D&lt;/td&gt;
-          &lt;td&gt;0xac,0xb3,0xab,0xeb,0x7a,0xe1,0x3b,0xf7,0x73,0xba,0x7c,0x9e,0x06,0x5f,0x02,0xd9&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;ESP_20&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x65D&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xac,0xb3,0xab,0xeb,0x7a,0xe1,0x3b,0xf7,0x73,0xba,0x7c,0x9e,0x06,0x5f,0x02,0xd9&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ESP_21&lt;/td&gt;
-          &lt;td&gt;0x0FD&lt;/td&gt;
-          &lt;td&gt;0xb4,0xef,0xf8,0x49,0x1e,0xe5,0xc2,0xc0,0x97,0x19,0x3c,0xc9,0xf1,0x98,0xd6,0x61&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;ESP_21&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x0FD&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xb4,0xef,0xf8,0x49,0x1e,0xe5,0xc2,0xc0,0x97,0x19,0x3c,0xc9,0xf1,0x98,0xd6,0x61&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ESP_24&lt;/td&gt;
-          &lt;td&gt;0x31B&lt;/td&gt;
-          &lt;td&gt;0x67,0x8a,0xae,0x22,0x4d,0xd0,0x51,0x80,0x5c,0xb9,0xce,0x1e,0xdf,0x02,0x2d,0xd4&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;ESP_24&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x31B&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x67,0x8a,0xae,0x22,0x4d,0xd0,0x51,0x80,0x5c,0xb9,0xce,0x1e,0xdf,0x02,0x2d,0xd4&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Getriebe_11&lt;/td&gt;
-          &lt;td&gt;0x0AD&lt;/td&gt;
-          &lt;td&gt;0x3f,0x69,0x39,0xdc,0x94,0xf9,0x14,0x64,0xd8,0x6a,0x34,0xce,0xa2,0x55,0xb5,0x2c&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Getriebe_11&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x0AD&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x3f,0x69,0x39,0xdc,0x94,0xf9,0x14,0x64,0xd8,0x6a,0x34,0xce,0xa2,0x55,0xb5,0x2c&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;GRA_ACC_01&lt;/td&gt;
-          &lt;td&gt;0x12B&lt;/td&gt;
-          &lt;td&gt;0x6a,0x38,0xb4,0x27,0x22,0xef,0xe1,0xbb,0xf8,0x80,0x84,0x49,0xc7,0x9e,0x1e,0x2b&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;GRA_ACC_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x12B&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x6a,0x38,0xb4,0x27,0x22,0xef,0xe1,0xbb,0xf8,0x80,0x84,0x49,0xc7,0x9e,0x1e,0x2b&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;HCA_01&lt;/td&gt;
-          &lt;td&gt;0x126&lt;/td&gt;
-          &lt;td&gt;0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;HCA_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x126&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda,0xda&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;HVL_01&lt;/td&gt;
-          &lt;td&gt;0x12DD553D&lt;/td&gt;
-          &lt;td&gt;0x1d,0x82,0x7b,0x79,0xa5,0xee,0x3a,0xb9,0xb7,0xf9,0xe4,0x67,0x7f,0x97,0x11,0xad&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;HVL_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x12DD553D&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x1d,0x82,0x7b,0x79,0xa5,0xee,0x3a,0xb9,0xb7,0xf9,0xe4,0x67,0x7f,0x97,0x11,0xad&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;IPA_01&lt;/td&gt;
-          &lt;td&gt;0x138&lt;/td&gt;
-          &lt;td&gt;0x77,0x4e,0x14,0x87,0xf2,0xf8,0xb2,0x61,0xf6,0xa4,0x52,0x94,0xd4,0x81,0x2a,0xb1&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;IPA_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x138&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x77,0x4e,0x14,0x87,0xf2,0xf8,0xb2,0x61,0xf6,0xa4,0x52,0x94,0xd4,0x81,0x2a,0xb1&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;IPA_02&lt;/td&gt;
-          &lt;td&gt;0x16A9545F&lt;/td&gt;
-          &lt;td&gt;0xc6,0x7f,0x85,0xb6,0xe6,0xae,0xf8,0x26,0xb0,0x8c,0x19,0x10,0x5b,0x33,0x64,0x6c&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;IPA_02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x16A9545F&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xc6,0x7f,0x85,0xb6,0xe6,0xae,0xf8,0x26,0xb0,0x8c,0x19,0x10,0x5b,0x33,0x64,0x6c&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Klemmen_Status_01&lt;/td&gt;
-          &lt;td&gt;0x3C0&lt;/td&gt;
-          &lt;td&gt;0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Klemmen_Status_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x3C0&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3,0xc3&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;LH_EPS_02&lt;/td&gt;
-          &lt;td&gt;0x11D&lt;/td&gt;
-          &lt;td&gt;0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;LH_EPS_02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x11D&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c,0x1c&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;LH_EPS_03&lt;/td&gt;
-          &lt;td&gt;0x09F&lt;/td&gt;
-          &lt;td&gt;0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;LH_EPS_03&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x09F&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5,0xf5&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Licht_Anf_01&lt;/td&gt;
-          &lt;td&gt;0x3D5&lt;/td&gt;
-          &lt;td&gt;0xc5,0x39,0xc7,0xf9,0x92,0xd8,0x24,0xce,0xf1,0xb5,0x7a,0xc4,0xbc,0x60,0xe3,0xd1&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Licht_Anf_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x3D5&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xc5,0x39,0xc7,0xf9,0x92,0xd8,0x24,0xce,0xf1,0xb5,0x7a,0xc4,0xbc,0x60,0xe3,0xd1&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;LWI_01&lt;/td&gt;
-          &lt;td&gt;0x086&lt;/td&gt;
-          &lt;td&gt;0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;LWI_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x086&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86,0x86&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Motor_14&lt;/td&gt;
-          &lt;td&gt;0x3BE&lt;/td&gt;
-          &lt;td&gt;0x1f,0x28,0xc6,0x85,0xe6,0xf8,0xb0,0x19,0x5b,0x64,0x35,0x21,0xe4,0xf7,0x9c,0x24&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Motor_14&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x3BE&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x1f,0x28,0xc6,0x85,0xe6,0xf8,0xb0,0x19,0x5b,0x64,0x35,0x21,0xe4,0xf7,0x9c,0x24&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Motor_51&lt;/td&gt;
-          &lt;td&gt;0x10B&lt;/td&gt;
-          &lt;td&gt;0x77,0x5c,0xa0,0x89,0x4b,0x7c,0xbb,0xd6,0x1f,0x6c,0x4f,0xf6,0x20,0x2b,0x43,0xdd&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Motor_51&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x10B&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x77,0x5c,0xa0,0x89,0x4b,0x7c,0xbb,0xd6,0x1f,0x6c,0x4f,0xf6,0x20,0x2b,0x43,0xdd&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Motor_54&lt;/td&gt;
-          &lt;td&gt;0x14C&lt;/td&gt;
-          &lt;td&gt;0x16,0x35,0x59,0x15,0x9a,0x2a,0x97,0xb8,0x0e,0x4e,0x30,0xcc,0xb3,0x07,0x01,0xad&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Motor_54&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x14C&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x16,0x35,0x59,0x15,0x9a,0x2a,0x97,0xb8,0x0e,0x4e,0x30,0xcc,0xb3,0x07,0x01,0xad&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Motor_Code_01&lt;/td&gt;
-          &lt;td&gt;0x641&lt;/td&gt;
-          &lt;td&gt;0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Motor_Code_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x641&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47,0x47&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;Parken_01&lt;/td&gt;
-          &lt;td&gt;0x206&lt;/td&gt;
-          &lt;td&gt;0x09,0xfa,0xca,0x8e,0x62,0xd5,0xd1,0xf0,0x31,0xa0,0xaf,0xda,0x4d,0x1a,0x0a,0x97&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Parken_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x206&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x09,0xfa,0xca,0x8e,0x62,0xd5,0xd1,0xf0,0x31,0xa0,0xaf,0xda,0x4d,0x1a,0x0a,0x97&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;PLA_04&lt;/td&gt;
-          &lt;td&gt;0x407&lt;/td&gt;
-          &lt;td&gt;0xef,0x60,0x04,0xa8,0x0c,0x1c,0xda,0x07,0x36,0xd7,0x28,0x92,0xa9,0x88,0x2c,0x4a&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;PLA_04&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x407&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xef,0x60,0x04,0xa8,0x0c,0x1c,0xda,0x07,0x36,0xd7,0x28,0x92,0xa9,0x88,0x2c,0x4a&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;QFK_01&lt;/td&gt;
-          &lt;td&gt;0x13D&lt;/td&gt;
-          &lt;td&gt;0x20,0xca,0x68,0xd5,0x1b,0x31,0xe2,0xda,0x08,0x0a,0xd4,0xde,0x9c,0xe4,0x35,0x5b&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;QFK_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x13D&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x20,0xca,0x68,0xd5,0x1b,0x31,0xe2,0xda,0x08,0x0a,0xd4,0xde,0x9c,0xe4,0x35,0x5b&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;RCTA_01&lt;/td&gt;
-          &lt;td&gt;0x2B7&lt;/td&gt;
-          &lt;td&gt;0x5e,0xc7,0x04,0x11,0x4d,0x27,0x0d,0x31,0x91,0xb8,0x62,0x76,0x64,0x09,0xeb,0xec&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;RCTA_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x2B7&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x5e,0xc7,0x04,0x11,0x4d,0x27,0x0d,0x31,0x91,0xb8,0x62,0x76,0x64,0x09,0xeb,0xec&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;SAL_01&lt;/td&gt;
-          &lt;td&gt;0x12DD54C9&lt;/td&gt;
-          &lt;td&gt;0xde,0xa9,0x83,0x0b,0x0c,0x64,0x79,0x44,0x0f,0xf6,0xc6,0xc7,0x05,0x45,0xb7,0x59&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;SAL_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x12DD54C9&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xde,0xa9,0x83,0x0b,0x0c,0x64,0x79,0x44,0x0f,0xf6,0xc6,0xc7,0x05,0x45,0xb7,0x59&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;SAM_01&lt;/td&gt;
-          &lt;td&gt;0x205&lt;/td&gt;
-          &lt;td&gt;0x19,0x36,0xd4,0x1e,0x80,0x22,0xf4,0xb8,0xad,0x41,0x0b,0x3f,0x87,0x42,0x25,0x40&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;SAM_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x205&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x19,0x36,0xd4,0x1e,0x80,0x22,0xf4,0xb8,0xad,0x41,0x0b,0x3f,0x87,0x42,0x25,0x40&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;SMLS_01&lt;/td&gt;
-          &lt;td&gt;0x3D4&lt;/td&gt;
-          &lt;td&gt;0xc3,0x79,0xbf,0xdb,0xe9,0x11,0x46,0x86,0x69,0xb6,0x9b,0x29,0x15,0x9c,0x45,0x0d&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;SMLS_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x3D4&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xc3,0x79,0xbf,0xdb,0xe9,0x11,0x46,0x86,0x69,0xb6,0x9b,0x29,0x15,0x9c,0x45,0x0d&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;TA_01&lt;/td&gt;
-          &lt;td&gt;0x26B&lt;/td&gt;
-          &lt;td&gt;0xce,0xcc,0xbd,0x69,0xa1,0x3c,0x18,0x76,0x0f,0x04,0xf2,0x3a,0x93,0x24,0x19,0x51&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;TA_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x26B&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xce,0xcc,0xbd,0x69,0xa1,0x3c,0x18,0x76,0x0f,0x04,0xf2,0x3a,0x93,0x24,0x19,0x51&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;TSG_FT_02&lt;/td&gt;
-          &lt;td&gt;0x3E5&lt;/td&gt;
-          &lt;td&gt;0xc4,0x6a,0x69,0x30,0xcf,0x61,0x58,0x51,0x1b,0x86,0x99,0xd3,0xf6,0x1d,0x9a,0x37&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;TSG_FT_02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x3E5&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xc4,0x6a,0x69,0x30,0xcf,0x61,0x58,0x51,0x1b,0x86,0x99,0xd3,0xf6,0x1d,0x9a,0x37&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;VMM_01&lt;/td&gt;
-          &lt;td&gt;0x105&lt;/td&gt;
-          &lt;td&gt;0xde,0x0e,0xa7,0x1d,0xc3,0x83,0xbd,0x82,0x8c,0xa2,0x0c,0x7b,0x4d,0x3c,0x58,0x79&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;VMM_01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x105&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xde,0x0e,0xa7,0x1d,0xc3,0x83,0xbd,0x82,0x8c,0xa2,0x0c,0x7b,0x4d,0x3c,0x58,0x79&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;VMM_02&lt;/td&gt;
-          &lt;td&gt;0x139&lt;/td&gt;
-          &lt;td&gt;0xed,0x03,0x1c,0x13,0xc6,0x23,0x78,0x7a,0x8b,0x40,0x14,0x51,0xbf,0x68,0x32,0xba&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;VMM_02&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0x139&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0xed,0x03,0x1c,0x13,0xc6,0x23,0x78,0x7a,0x8b,0x40,0x14,0x51,0xbf,0x68,0x32,0xba&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
@@ -2303,10 +2305,10 @@ test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;address&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MEB_Kennungsfolge&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MEB_Kennungsfolge&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;address&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;][&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# 无需校验&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x00&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 默认情况下，返回全 0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# No validation required&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x00&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# Return all 0s by default&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc8_lut_8h2f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 标准 CRC8 8H2F/AUTOSAR 最后一个 XOR&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc8_lut_8h2f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# Standard CRC8 8H2F/AUTOSAR final XOR&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xFF&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;can_id&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x126&lt;/span&gt;
@@ -2315,261 +2317,261 @@ test:$1$JjP1oLAJ$xilZIedv3S3jbs8oTZAad1:13074:0:99999:7:::
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;volkswagen_mqb_checksum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;can_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;can-signals&#34;&gt;CAN Signals&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;The Convenience CAN carries the following signal traffic. It can be used for state reading, and most body functions can essentially be controlled through this CAN bus, including HVAC, front/rear lights, horn, wipers, windows, door locks, and various vehicle status information.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0x12B	GRA_ACC_01	自适应巡航，GRA系统，ACC，
-0x1F0	EA_02	应急辅助
-0x205	SAM_01	开关和执行模块
-0x2B7	RCTA_01	Rear Cross Traffic Alert，后方交通警示
-0x31B	ESP_24	
-0x366	Blinkmodi_02	闪烁模式
-0x397	LDW_02	车道偏离警示系统
-0x3BE	Motor_14	电机控制
-0x3C0	Klemmen_Status_01	端子状态
-0x3CE	TSG_HFS_01	后座门窗功能系统
-0x3CF	TSG_HBFS_01	后门窗户功能系统
-0x3D0	TSG_FT_01	前门功能系统
-0x3D4	SMLS_01	转向柱开关模块
-0x3D5	Licht_Anf_01	灯光要求
-0x3D6	Licht_hinten_01	后部灯光状态
-0x3DC	Gateway_73	这些信息涉及车辆的各种信号和状态，包括系统提示、安全提示、故障诊断、信号更新和旧信号的替换
-0x48B	BEM_06	低电压能源管理
-0x520	Airbag_02	气囊2
-0x551	WFS_01	车钥匙防盗
-0x582	HDSG_01	后备箱管理状态
-0x583	ZV_02	中央门锁系统
-0x585	Systeminfo_01	诊断和生产模式设置
-0x592	Kessy_04	智能钥匙系统（Kessy）以及远程停车功能的状态和控制
-0x5A0	RLS_01	光传感器和雨量传感器
-0x5A7	TM_01	Telematics
-0x5F0	Dimmung_01	调光
-0x5F4	Innenlicht_11	车内灯光
-0x641	Motor_Code_01	电机设码
-0x643	Einheiten_01	单位设置
-0x656	ELV_01	电子转向柱锁
-0x658	Licht_vorne_01	前灯状态
-0x65D	ESP_20	
-0x668	Klima_12	空调系统
-0x670	Motor_18	
-0x6AE	Spiegel_01	后视镜
-0x6AF	Rear_View_01	后视摄像头
-0x6B2	Diagnose_01	
-0x6B4	VIN_01	
-0x12DD54C9	SAL_01	照明模块
+&lt;p&gt;The Convenience CAN carries the signal traffic listed below. It allows for state monitoring and control of most body functions, including HVAC, front/rear lights, horn, wipers, windows, door locks, and various vehicle status updates.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0x12B   GRA_ACC_01          Adaptive Cruise Control (GRA/ACC)
+0x1F0   EA_02               Emergency Assist
+0x205   SAM_01              Switches and Execution Module
+0x2B7   RCTA_01             Rear Cross Traffic Alert
+0x31B   ESP_24  
+0x366   Blinkmodi_02        Blinking Mode (Turn Signals)
+0x397   LDW_02              Lane Departure Warning System
+0x3BE   Motor_14            Motor Control
+0x3C0   Klemmen_Status_01   Terminal Status (Clamp Status)
+0x3CE   TSG_HFS_01          Rear Door Window Function System (Left?)
+0x3CF   TSG_HBFS_01         Rear Door Window Function System (Right?)
+0x3D0   TSG_FT_01           Front Door Function System
+0x3D4   SMLS_01             Steering Column Switch Module
+0x3D5   Licht_Anf_01        Light Request
+0x3D6   Licht_hinten_01     Rear Light Status
+0x3DC   Gateway_73          Gateway Info (System alerts, safety warnings, fault diagnosis, signal updates)
+0x48B   BEM_06              Low Voltage Energy Management
+0x520   Airbag_02           Airbag 2
+0x551   WFS_01              Immobilizer
+0x582   HDSG_01             Trunk Management Status
+0x583   ZV_02               Central Locking System
+0x585   Systeminfo_01       Diagnostic and Production Mode Settings
+0x592   Kessy_04            Smart Key System (Kessy) / Remote Parking Status/Control
+0x5A0   RLS_01              Light and Rain Sensor
+0x5A7   TM_01               Telematics
+0x5F0   Dimmung_01          Dimming
+0x5F4   Innenlicht_11       Interior Lighting
+0x641   Motor_Code_01       Motor Coding
+0x643   Einheiten_01        Unit Settings
+0x656   ELV_01              Electronic Steering Column Lock
+0x658   Licht_vorne_01      Front Light Status
+0x65D   ESP_20  
+0x668   Klima_12            Air Conditioning System
+0x670   Motor_18    
+0x6AE   Spiegel_01          Mirrors
+0x6AF   Rear_View_01        Rear View Camera
+0x6B2   Diagnose_01 
+0x6B4   VIN_01  
+0x12DD54C9  SAL_01          Lighting Module
 &lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;other-signals&#34;&gt;Other Signals&lt;/h2&gt;
-&lt;p&gt;The DBC has been analyzed, but it is not published for now.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0x184
-1. 锁车
-  1. 第二字节 后视镜开 0x20 开
-  2. 第三字节 后视镜关 0x40 关
-2. 车窗
-  1. 第六字节 车窗  04 左前下，02 左前上，40 左后下，08右前上，10右前下
-  2. 第七字节，01右后下
-0x185
-1. 车窗控制，10 20 up 40 80 down
-  1. 第一字节 前排
-  2. 第二字节 后排
-0x598
-1. 天窗控制
-  1. 第三字节 0x20 无 0x21 tap 0x22 滑动 0x25 长按
-  2. 第七字节：04 关一下，08 一直关，0C 开一下，10 一直开， 14，1c其他
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;steering-control&#34;&gt;Steering Control&lt;/h2&gt;
-&lt;p&gt;The gear must be in D/B or R. The following five signals can be used to control the steering wheel:&lt;/p&gt;
+&lt;p&gt;While the DBC has been analyzed, it is not currently published.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0x184
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;1. Lock Vehicle
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   1. Byte 2: Mirror Open (0x20 Open)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   2. Byte 3: Mirror Close (0x40 Close)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;2. Windows
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   1. Byte 6: Window Control - 04 Front Left Down, 02 Front Left Up, 40 Rear Left Down, 08 Front Right Up, 10 Front Right Down
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   2. Byte 7: 01 Rear Right Down
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0x185
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;1. Window Control (10, 20 Up; 40, 80 Down)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   1. Byte 1: Front Row
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   2. Byte 2: Rear Row
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0x598
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;1. Sunroof Control
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   1. Byte 3: 0x20 None, 0x21 Tap, 0x22 Slide, 0x25 Long Press
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   2. Byte 7: 04 Close Once, 08 Close Cont., 0C Open Once, 10 Open Cont., 14/1C Others
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;steering-control&#34;&gt;Steering Control&lt;/h2&gt;
+&lt;p&gt;The vehicle must be in Gear D/B or R. The following five signals can be used to control the steering wheel:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;LWI_01        Lenkwinkelsensor&lt;/li&gt;
-&lt;li&gt;LH_EPS_03     Lenkhilfe Electric Power Steering&lt;/li&gt;
-&lt;li&gt;HCA_01        Heading Control Assist&lt;/li&gt;
-&lt;li&gt;GRA_ACC_01    Geschwindigkeitsregelanlage &amp;amp; Adaptive Cruise Control&lt;/li&gt;
-&lt;li&gt;PLA_05        Park Lane Assist&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LWI_01:&lt;/strong&gt; Steering Angle Sensor&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LH_EPS_03:&lt;/strong&gt; Electric Power Steering (Steering Assist)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;HCA_01:&lt;/strong&gt; Heading Control Assist&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;GRA_ACC_01:&lt;/strong&gt; Adaptive Cruise Control&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PLA_05:&lt;/strong&gt; Park Lane Assist&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;Notes:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Notes:&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;By combining signals 0x86, 0x9f, 0x126, 0x12b, and 0x302 and sending them on CAN-FAS, you can achieve parking steering-wheel actuation.&lt;/li&gt;
-&lt;li&gt;By combining signals 0x86, 0x9f, and 0x302 and sending them on the Gear-Running CAN, you can actuate the steering wheel.&lt;/li&gt;
-&lt;li&gt;Among them, both 0x9f (LH_EPS_03) and 0x302 (PLA_05) can directly control the steering wheel.&lt;/li&gt;
-&lt;li&gt;0x302 has no CRC check, so controlling the steering wheel via 0x302 is easier than via 0x9f.&lt;/li&gt;
+&lt;li&gt;Combining signals 0x86, 0x9f, 0x126, 0x12b, and 0x302 on the &lt;strong&gt;CAN-FAS&lt;/strong&gt; bus allows for parking steering actuation.&lt;/li&gt;
+&lt;li&gt;Combining signals 0x86, 0x9f, and 0x302 on the &lt;strong&gt;Gear-Running CAN&lt;/strong&gt; can also actuate the steering wheel.&lt;/li&gt;
+&lt;li&gt;Both 0x9f (LH_EPS_03) and 0x302 (PLA_05) can directly control the steering wheel.&lt;/li&gt;
+&lt;li&gt;Since 0x302 (PLA_05) lacks a CRC check, it offers a simpler method for steering control compared to 0x9f.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;demo&#34;&gt;DEMO&lt;/h3&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;def create_pla_control(sendestatus, positive, degree):
-    data = bytearray(bytes(24))
-    data[1] = 0x40
-    # PLA_QFK_Spuerb
-    data[2] = 0xFA
-    # PLA_QFK_KruemmSoll
-    data = set_value(data, degree, 32, 15)
-    # PLA_QFK_KruemmSoll_VZ
-    if positive:
-        data = set_value(data, 1, 47, 1)
-    else:
-        data = set_value(data, 0, 47, 1)
-    
-    # PLA_05_Sendestatus
-    if sendestatus:
-        data = set_value(data, 1, 74, 1)
-    else:
-        data = set_value(data, 0, 74, 1)
-    return data
-
-hca_01_counter = 0
-degree = 0
-for i in range(20):
-    # data = create_steering_control(10 * i, 1)
-    # meb_can_send(0x126, 0.1, data)
-    degree += 0x10
-    data = create_pla_control(1, 1, degree)
-    can_send(0x302, 0.1, data)
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;rpi-can-hat&#34;&gt;RPi CAN HAT&lt;/h3&gt;
-&lt;p&gt;This steering control demo only makes the steering wheel move. To implement true remote driving, you need knowledge of dynamics and you must design a control algorithm.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import os
-import can
-import time
-
-can0 = can.interface.Bus(channel = &amp;#39;can0&amp;#39;, bustype = &amp;#39;socketcan&amp;#39;, fd=True, bitrate=500000)
-
-# msg = can.Message(is_extended_id=False, arbitration_id=0x123, data=[0, 1, 2, 3, 4, 5, 6, 7])
-# can0.send(msg)
-
-MEB_Kennungsfolge = {
-    # LWI_01 Steering Angle
-    0x86: [0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86, 0x86],
-    # LH_EPS_03 Electric Power Steering
-    0x9F: [0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5, 0xF5],
-    # HCA_01 Heading Control Assist
-    0x126: [0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA, 0xDA],
-    # GRA_ACC_01 Steering wheel controls for ACC
-    0x12B: [0x6A, 0x38, 0xB4, 0x27, 0x22, 0xEF, 0xE1, 0xBB, 0xF8, 0x80, 0x84, 0x49, 0xC7, 0x9E, 0x1E, 0x2B]
-}
-
-def volkswagen_mqb_checksum(address, data):
-    global crc8_lut_8h2f
-    crc = 0xFF  # CRC8 8H2F/AUTOSAR
-
-    for i in range(1, len(data)):
-        crc = crc ^ data[i]
-        # print(hex(crc), hex(i))
-        crc = crc8_lut_8h2f[crc]
-
-    counter = data[1] &amp;amp; 0x0F
-    if address in MEB_Kennungsfolge:
-        crc ^= MEB_Kennungsfolge[address][counter]
-    else:
-        print(&amp;#34;Attempt to CRC check undefined Volkswagen message 0x%02X&amp;#34; % address)
-        crc ^= [0x00] * 16  # 默认情况下，返回全 0
-
-    crc = crc8_lut_8h2f[crc]  # 标准 CRC8 8H2F/AUTOSAR 最后一个 XOR
-    return crc ^ 0xFF
-
-def gen_crc_lookup_table_8(poly):
-    crc_lut = [0] * 256
-    for i in range(256):
-        crc = i
-        for j in range(8):
-            if crc &amp;amp; 0x80:
-                crc = (crc &amp;lt;&amp;lt; 1) ^ poly
-            else:
-                crc &amp;lt;&amp;lt;= 1
-        crc_lut[i] = crc &amp;amp; 0xFF
-    return crc_lut
-
-def meb_can_send(can_id, interval, data):
-    global hca_01_counter
-    data[1] = data[1] | hca_01_counter
-    crc = volkswagen_mqb_checksum(can_id, data)
-    data[0] = crc
-    hca_01_counter += 1
-    for j in data:
-        print(hex(j), end=&amp;#34;, &amp;#34;)
-    time.sleep(interval)
-    msg = can.Message(is_extended_id=False, arbitration_id=can_id, data=data, is_fd=True)
-    can0.send(msg)
-    
-def can_send(can_id, interval, data):
-    time.sleep(interval)
-    msg = can.Message(is_extended_id=False, arbitration_id=can_id, data=data, is_fd=True)
-    can0.send(msg)
-
-crc8_lut_8h2f = gen_crc_lookup_table_8(0x2f)
-
-def set_value(data, value, start_pos, value_length):
-    end_pos = start_pos + value_length
-    for bit_index in range(start_pos, end_pos):
-        byte_index = bit_index // 8
-        bit_offset = bit_index % 8
-        bit_value = (value &amp;gt;&amp;gt; (bit_index - start_pos)) &amp;amp; 1
-        # print(&amp;#34;\n&amp;#34;)
-        # print(&amp;#34;index&amp;#34;, bit_index, start_pos, end_pos, &amp;#34;byte_index:&amp;#34;, byte_index, &amp;#34;bit_offset:&amp;#34;, bit_offset, &amp;#34;v:&amp;#34;, bit_value)
-        if bit_value:
-            data[byte_index] |= 1 &amp;lt;&amp;lt; bit_offset
-        else:
-            data[byte_index] &amp;amp;= ~(1 &amp;lt;&amp;lt; bit_offset)
-    # for i in data:
-    #     print(bin(i), end=&amp;#34;,&amp;#34;)
-    return data
-
-def set_bit(b, bit, bit_index):
-    if bit_index &amp;lt; 0 or bit_index &amp;gt; 7:
-        raise ValueError(&amp;#34;bit_index must be between 0 and 7&amp;#34;)
-    mask = 1 &amp;lt;&amp;lt; bit_index
-    flipped_byte = b ^ mask
-    return flipped_byte
-
-def create_steering_control(apply_steer, lkas_enabled):
-    data = bytearray(bytes(8))
-    if lkas_enabled:
-        # HCA_01_Sendestatus
-        data = set_value(data, 5, 30, 1)
-        # HCA_01_Status_HCA
-        data = set_value(data, 1, 32, 4)
-    else:
-        # HCA_01_Sendestatus
-        data = set_value(data, 3, 30, 1)
-        # HCA_01_Status_HCA
-        data = set_value(data, 0, 32, 4)
-    # HCA_01_LM_Offset
-    print(&amp;#34;create_steering_control&amp;#34;, apply_steer)
-    data = set_value(data, abs(apply_steer), 16, 9)
-    # HCA_01_LM_OffSign
-    v = 1 if apply_steer &amp;lt; 0 else 0
-    data = set_value(data, v, 31, 1)
-    # HCA_01_Vib_Freq
-    data = set_value(data, 3, 12, 4)
-    # HCA_01_Vib_Amp
-    data = set_value(data, 10, 36, 4)
-    return data
-
-def create_pla_control(sendestatus, positive, degree):
-    data = bytearray(bytes(24))
-    data[1] = 0x40
-    # PLA_QFK_Spuerb
-    data[2] = 0xFA
-    # PLA_QFK_KruemmSoll
-    data = set_value(data, degree, 32, 15)
-    # PLA_QFK_KruemmSoll_VZ
-    if positive:
-        data = set_value(data, 1, 47, 1)
-    else:
-        data = set_value(data, 0, 47, 1)
-    
-    # PLA_05_Sendestatus
-    if sendestatus:
-        data = set_value(data, 1, 74, 1)
-    else:
-        data = set_value(data, 0, 74, 1)
-    return data
-
-hca_01_counter = 0
-degree = 0
-for i in range(20):
-    # data = create_steering_control(10 * i, 1)
-    # meb_can_send(0x126, 0.1, data)
-    degree += 0x10
-    data = create_pla_control(1, 1, degree)
-    can_send(0x302, 0.1, data)
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;notes&#34;&gt;Notes&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;create_pla_control&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sendestatus&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;positive&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;bytearray&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;bytes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;24&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x40&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# PLA_QFK_Spuerb&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xFA&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# PLA_QFK_KruemmSoll&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# PLA_QFK_KruemmSoll_VZ&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;positive&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;47&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;47&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# PLA_05_Sendestatus&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sendestatus&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;74&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;74&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;hca_01_counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# data = create_steering_control(10 * i, 1)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# meb_can_send(0x126, 0.1, data)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;create_pla_control&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;can_send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x302&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;0.1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;rpi-can-hat&#34;&gt;RPi CAN HAT&lt;/h3&gt;
+&lt;p&gt;This steering control demo only makes the steering wheel move. To implement true remote driving, you need a solid understanding of vehicle dynamics and must design a proper control algorithm.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;os&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;can&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;time&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;can0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;can&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;interface&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Bus&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;channel&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;can0&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bustype&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;socketcan&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bitrate&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;500000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# msg = can.Message(is_extended_id=False, arbitration_id=0x123, data=[0, 1, 2, 3, 4, 5, 6, 7])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# can0.send(msg)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;MEB_Kennungsfolge&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# LWI_01 Steering Angle&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x86&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# LH_EPS_03 Electric Power Steering&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;mh&#34;&gt;0x9F&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# HCA_01 Heading Control Assist&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;mh&#34;&gt;0x126&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xDA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# GRA_ACC_01 Steering wheel controls for ACC&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;mh&#34;&gt;0x12B&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x6A&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x38&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xB4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x27&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x22&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xEF&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xE1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xBB&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xF8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x80&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x84&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x49&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xC7&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x9E&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x1E&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x2B&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;volkswagen_mqb_checksum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;address&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;global&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc8_lut_8h2f&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xFF&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# CRC8 8H2F/AUTOSAR&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# print(hex(crc), hex(i))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc8_lut_8h2f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x0F&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;address&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MEB_Kennungsfolge&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MEB_Kennungsfolge&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;address&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;][&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Attempt to CRC check undefined Volkswagen message 0x&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%02X&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;address&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x00&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# Return all 0s by default&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc8_lut_8h2f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# Standard CRC8 8H2F/AUTOSAR final XOR&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xFF&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;gen_crc_lookup_table_8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;poly&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;crc_lut&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;256&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;256&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;j&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x80&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;poly&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;crc_lut&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xFF&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc_lut&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;meb_can_send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;can_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;global&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;hca_01_counter&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;hca_01_counter&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;volkswagen_mqb_checksum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;can_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;hca_01_counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;j&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;hex&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;j&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;end&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;, &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;can&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Message&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;is_extended_id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;False&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;arbitration_id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;can_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;is_fd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;can0&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;can_send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;can_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;can&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Message&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;is_extended_id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;False&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;arbitration_id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;can_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;is_fd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;can0&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;crc8_lut_8h2f&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;gen_crc_lookup_table_8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x2f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;start_pos&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value_length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;end_pos&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;start_pos&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value_length&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_index&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;start_pos&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;end_pos&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;byte_index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;bit_offset&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;bit_value&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;value&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bit_index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;start_pos&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# print(&amp;#34;\n&amp;#34;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# print(&amp;#34;index&amp;#34;, bit_index, start_pos, end_pos, &amp;#34;byte_index:&amp;#34;, byte_index, &amp;#34;bit_offset:&amp;#34;, bit_offset, &amp;#34;v:&amp;#34;, bit_value)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;byte_index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_offset&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;byte_index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;~&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_offset&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# for i in data:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;#     print(bin(i), end=&amp;#34;,&amp;#34;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;set_bit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;7&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;ValueError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;bit_index must be between 0 and 7&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;mask&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bit_index&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;flipped_byte&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;^&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mask&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flipped_byte&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;create_steering_control&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;apply_steer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lkas_enabled&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;bytearray&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;bytes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lkas_enabled&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# HCA_01_Sendestatus&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# HCA_01_Status_HCA&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# HCA_01_Sendestatus&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# HCA_01_Status_HCA&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# HCA_01_LM_Offset&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;create_steering_control&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;apply_steer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;abs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;apply_steer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;9&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# HCA_01_LM_OffSign&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;v&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;apply_steer&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;v&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;31&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# HCA_01_Vib_Freq&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# HCA_01_Vib_Amp&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;36&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;create_pla_control&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sendestatus&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;positive&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;bytearray&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;bytes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;24&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x40&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# PLA_QFK_Spuerb&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0xFA&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# PLA_QFK_KruemmSoll&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# PLA_QFK_KruemmSoll_VZ&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;positive&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;47&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;47&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# PLA_05_Sendestatus&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sendestatus&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;74&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;74&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;hca_01_counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# data = create_steering_control(10 * i, 1)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# meb_can_send(0x126, 0.1, data)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;create_pla_control&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;degree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;can_send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0x302&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;0.1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;notes&#34;&gt;Notes&lt;/h2&gt;
 &lt;ol&gt;
-&lt;li&gt;Before leaving the vehicle, make sure the CAN bus remains powered on; otherwise it may drain a lot of battery.&lt;/li&gt;
-&lt;li&gt;Do not fuzz the Powertrain and Running Gear CAN buses. It can directly cause personal injury, and it may also trigger ECU abnormal behavior and introduce hidden risks (e.g., turn signals failing, mirrors not unfolding).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Ensure the CAN bus enters sleep mode before leaving the vehicle&lt;/strong&gt;; otherwise, it may drain the battery considerably.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Do not fuzz the Powertrain and Running Gear CAN buses.&lt;/strong&gt; This poses a direct risk of physical injury and may trigger abnormal ECU behavior or introduce hidden hazards (e.g., turn signal failure, mirrors not unfolding).&lt;/li&gt;
 &lt;/ol&gt;
 </description>
     </item>
@@ -2581,31 +2583,31 @@ for i in range(20):
       
       <guid>https://gorgias.me/en/posts/qnx7-password-hash-analysis-and-hashcat-module/</guid>
       <description>&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
-&lt;p&gt;Back in 2021, when I wanted to crack QNX hashes, I found that hashcat did not support QNX 6.6.0. There was already an issue requesting this feature at the time, but I was too busy to implement it.&lt;/p&gt;
-&lt;p&gt;Until the hard “solo run” of the MIIT vehicle-to-everything (V2X) offensive/defensive exercise in September 2023, I ran into QNX 7 hashes again—and after so many years, it was still not supported.&lt;/p&gt;
-&lt;p&gt;To avoid hitting the same requirement next time, I took some time to study the QNX libraries and hashcat. I also took a few detours while writing the hashcat module.&lt;/p&gt;
+&lt;p&gt;Back in 2021, while attempting to crack QNX hashes, I discovered that Hashcat lacked support for QNX 6.6.0. Although there was an existing issue requesting this feature, I was too occupied to implement it at the time.&lt;/p&gt;
+&lt;p&gt;It wasn&amp;rsquo;t until the grueling &amp;ldquo;solo&amp;rdquo; phase of the MIIT vehicle-to-everything (V2X) offensive/defensive exercise in September 2023 that I encountered QNX 7 hashes. Surprisingly, after all these years, support was still missing.&lt;/p&gt;
+&lt;p&gt;To avoid facing this same roadblock in the future, I dedicated some time to studying the QNX libraries and Hashcat&amp;rsquo;s architecture. I also took a few detours along the way while developing the Hashcat module.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;qnxhash.png&#34;
         alt=&#34;qnxhash.png&#34;/&gt;&lt;/p&gt;
 &lt;h2 id=&#34;qnx-etcshadow-hash-algorithm-analysis&#34;&gt;QNX &lt;code&gt;/etc/shadow&lt;/code&gt; hash algorithm analysis&lt;/h2&gt;
 &lt;p&gt;According to the official documentation &lt;a href=&#34;https://www.qnx.com/developers/docs/7.0.0/index.html#com.qnx.doc.neutrino.user_guide/topic/accounts_etc_shadow.html&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;QNX 700 docs: accounts_etc_shadow&lt;/a&gt;, the hash format is:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;@digest@hash@salt
 @digest,iterations@hash@salt
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This hash uses &lt;code&gt;@&lt;/code&gt; as a delimiter. Uppercase &lt;code&gt;S&lt;/code&gt; indicates SHA-512, while lowercase &lt;code&gt;s&lt;/code&gt; indicates SHA-256. If there is a comma followed by a number, it represents the iteration count. After that comes the Base64-encoded hash and the Base64-encoded salt.&lt;/p&gt;
-&lt;p&gt;After reading the QNX official documentation, it feels like it should be that simple. If you look at hashcat’s QNX 6 module (&lt;code&gt;-m 19200&lt;/code&gt;), the first thought is: can’t we just tweak the iterations and the format?&lt;/p&gt;
-&lt;p&gt;So I copied the QNX 6 cracking module, hoping to reuse code and reduce workload. After adapting it to the official documentation, hashcat kept failing the self-test. Then I analyzed &lt;code&gt;/src/OpenCL/m19200.cl&lt;/code&gt; and found it references John’s code and includes some hacks—not very elegant. My first guess was that this OpenCL code had bugs, so the next step was to analyze how QNX 7 generates the hash.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The hash uses &lt;code&gt;@&lt;/code&gt; as a delimiter. Uppercase &lt;code&gt;S&lt;/code&gt; indicates SHA-512, while lowercase &lt;code&gt;s&lt;/code&gt; refers to SHA-256. If a comma followed by a number is present, it specifies the iteration count. This is followed by the Base64-encoded hash and the Base64-encoded salt.&lt;/p&gt;
+&lt;p&gt;Reading the official documentation, it seemed deceptively simple. My initial thought, looking at Hashcat&amp;rsquo;s QNX 6 module (&lt;code&gt;-m 19200&lt;/code&gt;), was whether I could simply adjust the iteration count and format.&lt;/p&gt;
+&lt;p&gt;I attempted to clone the QNX 6 module to minimize effort, but after adapting it to match the documented format, the Hashcat self-tests repeatedly failed. Analyzing &lt;code&gt;/src/OpenCL/m19200.cl&lt;/code&gt;, I noticed it referenced code from John the Ripper and contained some inelegant hacks. Suspecting bugs in the OpenCL code, I decided to analyze how QNX 7 actually generates its hashes.&lt;/p&gt;
 &lt;p&gt;The hash generation logic is in &lt;code&gt;/usr/lib/pam.qnx.so&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;After analyzing the logic and comparing it with &lt;code&gt;m19200.cl&lt;/code&gt;, I found that in the old OpenCL code the rounds are wrong: the first round is a SHA over &lt;code&gt;salt || password&lt;/code&gt;, and the newly generated digest is not XORed with the previous result. So it’s not as simple as “just Base64”.&lt;/p&gt;
+&lt;p&gt;After analyzing the logic and comparing it with &lt;code&gt;m19200.cl&lt;/code&gt;, I discovered the issue: the round logic in the old OpenCL code was incorrect. The first round performed a SHA calculation on &lt;code&gt;salt || password&lt;/code&gt;, but the resulting digest wasn&amp;rsquo;t XORed with the previous result as expected. It wasn&amp;rsquo;t just a simple Base64 encoding issue.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;pam_qnx.png&#34;
         alt=&#34;pam_qnx.png&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;In fact, the new hash generation logic uses the standard PBKDF2 (Password-Based Key Derivation Function) algorithm. Many products (Adobe, macOS, Cisco, etc.) use PBKDF2 to generate hashes. The higher the iteration count, the lower the cracking efficiency. QNX’s official documentation does not explicitly mention the algorithm name and only says “SHA-512”, which in a sense raises the barrier for security research.&lt;/p&gt;
+&lt;p&gt;In reality, the new hash generation logic employs the standard PBKDF2 (Password-Based Key Derivation Function) algorithm, widely used by products like Adobe, macOS, and Cisco. While higher iteration counts reduce cracking efficiency, they improve security. QNX’s documentation vague reference to only “SHA-512” without explicitly mentioning PBKDF2 somewhat obscures the implementation details for security researchers.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;pbkdf2.png&#34;
         alt=&#34;PBKDF2&#34;/&gt;&lt;/p&gt;
 &lt;p&gt;You can verify it with CyberChef:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;https://gchq.github.io/CyberChef/#recipe=Derive_PBKDF2_key(%7B&amp;#39;option&amp;#39;:&amp;#39;UTF8&amp;#39;,&amp;#39;string&amp;#39;:&amp;#39;hashcat&amp;#39;%7D,512,4096,&amp;#39;SHA512&amp;#39;,%7B&amp;#39;option&amp;#39;:&amp;#39;Base64&amp;#39;,&amp;#39;string&amp;#39;:&amp;#39;NDY2MDEwNjk3YjBjYzM2MzliMzc3Mzc0ZTNiMTAzNzE%3D&amp;#39;%7D)&amp;amp;input=dm0ybkJHSGVzNlFrWHJhMGY3NFhtb3VTaVJ6allEM3IvMHB5K3R4djBLcjhBNGhDUE1HRkhvWnFyNDFKRmlZY0pQUE9lSWhlcUZzZU15THl3LzE1UHc9PQ
 &lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;writing-a-hashcat-module&#34;&gt;Writing a Hashcat module&lt;/h2&gt;
-&lt;p&gt;See the official documentation:&lt;/p&gt;
+&lt;p&gt;Refer to the official documentation:&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://github.com/hashcat/hashcat/blob/master/docs/hashcat-plugin-development-guide.md&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;https://github.com/hashcat/hashcat/blob/master/docs/hashcat-plugin-development-guide.md&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;At first I was still thinking about writing new OpenCL code. After realizing it’s a standard algorithm, I basically gave up and decided to pick an existing, decent-looking module to modify.&lt;/p&gt;
+&lt;p&gt;Initially, I considered writing new OpenCL code. However, once I realized it was a standard algorithm (PBKDF2), I abandoned that idea and looked for a suitable existing module to modify.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;./hashcat -hh | grep PBKDF2
   11900 | PBKDF2-HMAC-MD5                                            | Generic KDF
   12000 | PBKDF2-HMAC-SHA1                                           | Generic KDF
@@ -2617,8 +2619,8 @@ for i in range(20):
   12800 | MS-AzureSync PBKDF2-HMAC-SHA256                            | Operating System
    9200 | Cisco-IOS $8$ (PBKDF2-SHA256)                              | Operating System
    7100 | macOS v10.8+ (PBKDF2-SHA512)                               | Operating System
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Hashcat self-tests each module on every run. &lt;code&gt;ST_HASH&lt;/code&gt; and &lt;code&gt;ST_PASS&lt;/code&gt; are the test vectors. So I directly changed &lt;code&gt;KERN_TYPE&lt;/code&gt; to 7100 and planned to debug step by step—but surprisingly, it worked on the first try.&lt;/p&gt;
-&lt;p&gt;Hashcat is an open-source project and merging code can take a while, so I’m attaching the code here.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Hashcat runs self-tests on every module at startup, using &lt;code&gt;ST_HASH&lt;/code&gt; and &lt;code&gt;ST_PASS&lt;/code&gt; as test vectors. I set &lt;code&gt;KERN_TYPE&lt;/code&gt; to 7100 and prepared to debug iteratively—but to my surprise, it worked on the first attempt.&lt;/p&gt;
+&lt;p&gt;Since Hashcat is open-source and the pull request merge process can be lengthy, I have included the source code below.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/**
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; * Author......: See docs/credits.txt
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt; * License.....: MIT

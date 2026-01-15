@@ -2,17 +2,18 @@
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="Communication Module Overview
-In the connected-car domain, the TCU (Telematics Control Unit) is an indispensable unit in an internet-connected vehicle (also called a T-Box, Telematics Box). The TCU’s networking capability is implemented by a cellular communication module (also called an M2M module). The baseband chipsets used by these modules almost always support multiple carriers, which gives OEMs more flexibility when choosing network operators."><title>A Brief Look at 4G Modem Attack Scenarios in Vehicle Networking&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="A Brief Look at 4G Modem Attack Scenarios in Vehicle Networking" /><body><section id="header">
+In the connected-car domain, the TCU (Telematics Control Unit) is an indispensable unit in an internet-connected vehicle (also called a T-Box, Telematics Box). The TCU’s networking capability is implemented by a cellular communication module (also called an M2M module). The baseband chipsets used by these modules almost always support multiple carriers, which gives OEMs more flexibility when choosing network operators."><title>Overview of 4G Modem Attack Scenarios in Vehicle Networking&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Overview of 4G Modem Attack Scenarios in Vehicle Networking" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
-        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">A Brief Look at 4G Modem Attack Scenarios in Vehicle Networking</h1><p class="article date">Thursday, August 8, 2019<span class="reading-time"> • 13 minutes to read</span><span class="langs"><span class="lang">
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/4g-modem-attack-scenarios-in-vehicle-networking/" title="中文">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Overview of 4G Modem Attack Scenarios in Vehicle Networking</h1><p class="article date">Thursday, August 8, 2019<span class="reading-time"> • 13 minutes to read</span><span class="langs"><span class="lang">
                     <a href="/zh/posts/4g-modem-attack-scenarios-in-vehicle-networking/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><h2 id="communication-module-overview">Communication Module Overview</h2>
 <p>In the connected-car domain, the TCU (Telematics Control Unit) is an indispensable unit in an internet-connected vehicle (also called a T-Box, Telematics Box). The TCU’s networking capability is implemented by a cellular communication module (also called an M2M module). The baseband chipsets used by these modules almost always support multiple carriers, which gives OEMs more flexibility when choosing network operators.</p>
 <p>Over the past four years of researching connected-car security, we have completed security research on dozens of mainstream domestic telematics products, analyzed the security of TCUs from multiple OEMs and Tier 1 suppliers, and gained a deeper understanding of the current security posture of TCUs used in the domestic market. As the external internet-facing communication interface of a vehicle, the cellular module is one of the most critical components to secure, because the broadest-coverage remote attacks almost always involve the cellular module in one way or another.</p>
-<p>There are many Tier 1 suppliers and the TCU products vary. However, the automotive-grade cellular modules used domestically tend to be a small set of models. Below is a simple classification of vendors. Whether praising or criticizing, we will not name specific domestic vendors.</p>
+<p>There are many Tier 1 suppliers and the TCU products vary. However, the automotive-grade cellular modules used in China tend to be a small set of models. Below is a simple classification of vendors. Regardless of positive or negative findings, we will not name specific domestic vendors.</p>
 <table>
   <thead>
       <tr>
@@ -81,7 +82,7 @@ In the connected-car domain, the TCU (Telematics Control Unit) is an indispensab
       </tr>
       <tr>
           <td>Vendor Z</td>
-          <td>Source code closed; some docs available to foreigners</td>
+          <td>Source code closed; some docs available to international developers</td>
           <td>Low</td>
           <td>No</td>
       </tr>
@@ -118,7 +119,7 @@ In the connected-car domain, the TCU (Telematics Control Unit) is an indispensab
   </tbody>
 </table>
 <p>Sierra doesn’t provide much hardware documentation, but there is plenty of software documentation, and there are open-source projects on GitHub. The docs sometimes include security advice.</p>
-<p>Vendor H’s module code used to be closed by default. I emailed Vendor H and tried to request access “by following the process” (this is how some people handle it), but because the products are sold domestically, the overseas support redirected me to the CN support, and the CN support played dumb. After the trade war started, Vendor H also open-sourced the cellular module code. Distributors don’t provide deeper development materials unless you sign an NDA. Still, Vendor H’s documentation does include security guidance.</p>
+<p>Vendor H’s module code used to be closed by default. I emailed Vendor H and tried to request access “by following the process” (this is how some people handle it), but because the products are sold domestically, the overseas support redirected me to the CN support, and the CN support claimed ignorance. After the trade war started, Vendor H also open-sourced the cellular module code. Distributors rarely provide in-depth development materials unless you sign an NDA. Still, Vendor H’s documentation does include security guidance.</p>
 <p>Vendor Q provides documentation officially, but recently some materials have become unavailable to download. After signing an NDA with Vendor Q, the materials provided were mostly source code and standard development docs—still no security guidance.</p>
 <h3 id="hardware-appearance">Hardware Appearance</h3>
 <p>Vendor H used Qualcomm solutions in earlier products, and gradually switched to HiSilicon LTE Cat6 solutions later—commonly HI6932. Other vendors mostly use Qualcomm MDM96xx; the most common baseband chips are MDM9615 and MDM9628.</p>
@@ -166,17 +167,17 @@ In the connected-car domain, the TCU (Telematics Control Unit) is an indispensab
 <li>Firmware extraction: extract and parse NAND Flash contents through various means.</li>
 <li>Get shell: gain command execution capability for further exploitation.</li>
 <li>Firmware tampering: flash backdoored firmware via different paths and successfully boot it.</li>
-<li>Network device pivoting: wire out the USB interface and use it as a 4G NIC to penetrate internal networks.</li>
+<li>Network pivoting: expose the communication interface (e.g., USB) and use it as a 4G NIC to penetrate internal networks.</li>
 </ul>
 <p>Based on these directions, you can define concrete attack scenarios. The last one is straightforward, so we won’t expand on it here.</p>
 <h3 id="information-disclosure-scenario-obtain-information-for-intranet-penetration-testing">Information Disclosure Scenario: obtain information for intranet penetration testing</h3>
-<p>For TCUs using the external MCU design, sniff the UART communication between the MCU and the LTE module to obtain APN configuration information. Alternatively, wire directly to the UART interface responsible for AT commands and query the network configuration.</p>
+<p>For TCUs using the external MCU design, sniff the UART communication between the MCU and the LTE module to obtain APN configuration information. Alternatively, connect directly to the UART interface responsible for AT commands and query the network configuration.</p>
 <p><img loading="lazy"  src="./private_apn.png"
         alt="private_apn"/></p>
 <p>You can also extract the external eMMC and analyze log files to recover APN configuration information, or obtain debugging APN information via UART logs.</p>
 <p><img loading="lazy"  src="./private_apn2.png"
         alt="private_apn2"/></p>
-<p>Then, by wiring to the E-SIM, you can pivot into the OEM’s or Tier 1’s internal network.</p>
+<p>Then, by tapping into the E-SIM, you can pivot to the OEM’s or Tier 1’s internal network.</p>
 <p><img loading="lazy"  src="./esim_jumpwire.png"
         alt="esim_jumpwire"/></p>
 <p>Obtain TSP service addresses from UART logs:</p>
@@ -196,9 +197,9 @@ In the connected-car domain, the TCU (Telematics Control Unit) is an indispensab
 <p><img loading="lazy"  src="./comm3.png"
         alt="comm3"/></p>
 <h3 id="mitm-scenario-2-sms-hijacking-attacks">MitM Scenario 2: SMS hijacking attacks</h3>
-<p>In some situations, vehicles need SMS to wake up. Some developers also try to support vehicle remote control when data is unavailable. One shared-car module accepts SMS-based AT commands to control the vehicle body—meaning you can attack it simply by sending an SMS. That design is, bluntly, irresponsible.</p>
+<p>In some situations, vehicles need SMS to wake up. Some developers also try to support vehicle remote control when data is unavailable. One shared-car module accepts SMS-based AT commands to control the vehicle body—meaning you can attack it simply by sending an SMS. That design is, frankly, irresponsible.</p>
 <p>In another early software version of a vehicle, when data was unavailable the platform would deliver vehicle-control commands through an SMS tunnel. Early on, it neither authenticated the platform’s phone number nor used signatures. The format was special: no encryption, only VIN and Base64.</p>
-<p>You can retrieve SMS content via an external AT interface. You can also sniff via a fake base station, then use AT commands to send SMS to other phone numbers, obtain the M2M SIM number, and then send vehicle-control commands to that number from another phone.</p>
+<p>You can retrieve SMS content via an external AT interface. You can also sniff via a rogue base station, then use AT commands to send SMS to other phone numbers, obtain the M2M SIM number, and then send vehicle-control commands to that number from another phone.</p>
 <p><img loading="lazy"  src="./sms.jpg"
         alt="sms"/></p>
 <p>In the next version, a message authentication code (MAC) check was added. The signature used VIN + a unique dynamic secret; the dynamic secret was synchronized from the cloud over a mutually authenticated channel, but the key was deleted on every sleep cycle. As in scenario 1, if you prevent the module from using the data network, it cannot sync the key from the cloud, and can only accept SMS—therefore this version remained compatible with both protocols.</p>
@@ -227,7 +228,7 @@ In the connected-car domain, the TCU (Telematics Control Unit) is an indispensab
 <p>Then perform wiring:</p>
 <p><img loading="lazy"  src="./nand_dump.png"
         alt="nand_dump"/></p>
-<p>If you don’t want to wire, and you can find a JTAG interface, you can use OpenOCD to extract firmware. Currently, only Vendor H provides JTAG labeling and also has dedicated security guidance for JTAG debugging—developers simply ignored it.</p>
+<p>If you don’t want to solder wires, and you can find a JTAG interface, you can use OpenOCD to extract firmware. Currently, only Vendor H provides JTAG labeling and also has dedicated security guidance for JTAG debugging—developers simply ignored it.</p>
 <p><img loading="lazy"  src="./jtag1.png"
         alt="jtag1"/></p>
 <p>You need to time the interruption properly:</p>
@@ -273,11 +274,11 @@ In the connected-car domain, the TCU (Telematics Control Unit) is an indispensab
 <li>If you modify boot-related partitions, modules with secure boot can prevent this attack (e.g., Vendor H, Vendor Q).</li>
 </ol>
 <h2 id="thoughts">Thoughts</h2>
-<h3 id="what-harm-can-these-attacks-cause">What harm can these attacks cause?</h3>
+<h3 id="potential-impact">Potential Impact</h3>
 <p>The TCU has a CAN-bus interface. For an OpenCPU solution, once you obtain root on the cellular module, in many scenarios you can reflash MCU firmware and get access to the CAN-bus domain where the TCU resides, which can further compromise the vehicle and even impact personal safety.</p>
-<h3 id="who-is-really-at-fault">Who is really at fault?</h3>
+<h3 id="attribution-of-responsibility">Attribution of Responsibility</h3>
 <p>The vulnerabilities behind the scenarios above are not entirely the module vendor’s fault (aside from some “hard” design flaws). The primary issue is that Tier 1 suppliers did not consider security at the design stage. That said, module vendors also have a responsibility to raise Tier 1 suppliers’ security awareness.</p>
-<h3 id="what-should-be-done-to-prevent-these-problems">What should be done to prevent these problems?</h3>
+<h3 id="mitigation-strategies">Mitigation Strategies</h3>
 <p>The security gaps between these modules mainly reflect differences in the development process and the built-in operating system.</p>
 <p>First, withholding documentation does not automatically make a module secure. Vendor H discloses more than Vendor Q, but if you consider security guidance, Vendor H’s devices are still somewhat safer than Vendor Q’s. Module vendors should provide production hardening guidance at every point that could lead to exploitation, so developers know what to do.</p>
 <p>Second, in product positioning, Tier 1 suppliers should choose modules carefully. If it’s for a vehicle, they should use automotive-grade modules.</p>
@@ -294,7 +295,7 @@ In the connected-car domain, the TCU (Telematics Control Unit) is an indispensab
 <p><a href="https://skygo.360.cn/2018/10/16/penetrate-intranet-via-tbox/"target="_blank" rel="noopener noreferrer">How Hackers Pivot from a T-Box into an OEM’s Intranet</a></p>
 </article><section class="article labels"><a class="category" href=/en/categories/hardware-security/>Hardware Security</a><a class="tag" href=/en/tags/carhacking/>carhacking</a><a class="tag" href=/en/tags/4g-modem/>4G modem</a><a class="tag" href=/en/tags/connected-car-security/>connected car security</a><a class="tag" href=/en/tags/cellular-module/>cellular module</a></section>
 </div>
-<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/gl-inet-mifi-a-decent-4g-portable-router/"><span class="iconfont icon-article"></span>GL.iNet MIFI: A Decent 4G Portable Router</a></p><p><a class="link" href="/en/posts/car-bus-knowledge-primer-intro/"><span class="iconfont icon-article"></span>Car Bus Knowledge Primer: Introduction</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/car-bus-knowledge-primer-intro/"><span class="iconfont icon-article"></span>Car Bus Knowledge Primer: Introduction</a></p><p><a class="link" href="/en/posts/firmware-extraction-series-read-flash-with-flashrom/"><span class="iconfont icon-article"></span>Firmware Extraction Series: Reading Flash with flashrom</a></p></section></div></section><section id="footer"><div class="footer-wrap">
     <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
         <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
             <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />

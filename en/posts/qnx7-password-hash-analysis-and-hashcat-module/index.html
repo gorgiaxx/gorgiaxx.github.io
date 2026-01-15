@@ -2,39 +2,40 @@
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
-Back in 2021, when I wanted to crack QNX hashes, I found that hashcat did not support QNX 6.6.0. There was already an issue requesting this feature at the time, but I was too busy to implement it."><title>QNX 7 Password Hash Analysis and Writing a Hashcat Module&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+Back in 2021, while attempting to crack QNX hashes, I discovered that Hashcat lacked support for QNX 6.6.0. Although there was an existing issue requesting this feature, I was too occupied to implement it at the time."><title>QNX 7 Password Hash Analysis and Writing a Hashcat Module&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="QNX 7 Password Hash Analysis and Writing a Hashcat Module" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
-        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/qnx7-password-hash-analysis-and-hashcat-module/" title="中文">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
     <h1 class="article title">QNX 7 Password Hash Analysis and Writing a Hashcat Module</h1><p class="article date">Thursday, September 14, 2023<span class="langs"><span class="lang">
                     <a href="/zh/posts/qnx7-password-hash-analysis-and-hashcat-module/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
-<p>Back in 2021, when I wanted to crack QNX hashes, I found that hashcat did not support QNX 6.6.0. There was already an issue requesting this feature at the time, but I was too busy to implement it.</p>
-<p>Until the hard “solo run” of the MIIT vehicle-to-everything (V2X) offensive/defensive exercise in September 2023, I ran into QNX 7 hashes again—and after so many years, it was still not supported.</p>
-<p>To avoid hitting the same requirement next time, I took some time to study the QNX libraries and hashcat. I also took a few detours while writing the hashcat module.</p>
+<p>Back in 2021, while attempting to crack QNX hashes, I discovered that Hashcat lacked support for QNX 6.6.0. Although there was an existing issue requesting this feature, I was too occupied to implement it at the time.</p>
+<p>It wasn&rsquo;t until the grueling &ldquo;solo&rdquo; phase of the MIIT vehicle-to-everything (V2X) offensive/defensive exercise in September 2023 that I encountered QNX 7 hashes. Surprisingly, after all these years, support was still missing.</p>
+<p>To avoid facing this same roadblock in the future, I dedicated some time to studying the QNX libraries and Hashcat&rsquo;s architecture. I also took a few detours along the way while developing the Hashcat module.</p>
 <p><img loading="lazy"  src="qnxhash.png"
         alt="qnxhash.png"/></p>
 <h2 id="qnx-etcshadow-hash-algorithm-analysis">QNX <code>/etc/shadow</code> hash algorithm analysis</h2>
 <p>According to the official documentation <a href="https://www.qnx.com/developers/docs/7.0.0/index.html#com.qnx.doc.neutrino.user_guide/topic/accounts_etc_shadow.html"target="_blank" rel="noopener noreferrer">QNX 700 docs: accounts_etc_shadow</a>, the hash format is:</p>
 <pre tabindex="0"><code>@digest@hash@salt
 @digest,iterations@hash@salt
-</code></pre><p>This hash uses <code>@</code> as a delimiter. Uppercase <code>S</code> indicates SHA-512, while lowercase <code>s</code> indicates SHA-256. If there is a comma followed by a number, it represents the iteration count. After that comes the Base64-encoded hash and the Base64-encoded salt.</p>
-<p>After reading the QNX official documentation, it feels like it should be that simple. If you look at hashcat’s QNX 6 module (<code>-m 19200</code>), the first thought is: can’t we just tweak the iterations and the format?</p>
-<p>So I copied the QNX 6 cracking module, hoping to reuse code and reduce workload. After adapting it to the official documentation, hashcat kept failing the self-test. Then I analyzed <code>/src/OpenCL/m19200.cl</code> and found it references John’s code and includes some hacks—not very elegant. My first guess was that this OpenCL code had bugs, so the next step was to analyze how QNX 7 generates the hash.</p>
+</code></pre><p>The hash uses <code>@</code> as a delimiter. Uppercase <code>S</code> indicates SHA-512, while lowercase <code>s</code> refers to SHA-256. If a comma followed by a number is present, it specifies the iteration count. This is followed by the Base64-encoded hash and the Base64-encoded salt.</p>
+<p>Reading the official documentation, it seemed deceptively simple. My initial thought, looking at Hashcat&rsquo;s QNX 6 module (<code>-m 19200</code>), was whether I could simply adjust the iteration count and format.</p>
+<p>I attempted to clone the QNX 6 module to minimize effort, but after adapting it to match the documented format, the Hashcat self-tests repeatedly failed. Analyzing <code>/src/OpenCL/m19200.cl</code>, I noticed it referenced code from John the Ripper and contained some inelegant hacks. Suspecting bugs in the OpenCL code, I decided to analyze how QNX 7 actually generates its hashes.</p>
 <p>The hash generation logic is in <code>/usr/lib/pam.qnx.so</code>.</p>
-<p>After analyzing the logic and comparing it with <code>m19200.cl</code>, I found that in the old OpenCL code the rounds are wrong: the first round is a SHA over <code>salt || password</code>, and the newly generated digest is not XORed with the previous result. So it’s not as simple as “just Base64”.</p>
+<p>After analyzing the logic and comparing it with <code>m19200.cl</code>, I discovered the issue: the round logic in the old OpenCL code was incorrect. The first round performed a SHA calculation on <code>salt || password</code>, but the resulting digest wasn&rsquo;t XORed with the previous result as expected. It wasn&rsquo;t just a simple Base64 encoding issue.</p>
 <p><img loading="lazy"  src="pam_qnx.png"
         alt="pam_qnx.png"/></p>
-<p>In fact, the new hash generation logic uses the standard PBKDF2 (Password-Based Key Derivation Function) algorithm. Many products (Adobe, macOS, Cisco, etc.) use PBKDF2 to generate hashes. The higher the iteration count, the lower the cracking efficiency. QNX’s official documentation does not explicitly mention the algorithm name and only says “SHA-512”, which in a sense raises the barrier for security research.</p>
+<p>In reality, the new hash generation logic employs the standard PBKDF2 (Password-Based Key Derivation Function) algorithm, widely used by products like Adobe, macOS, and Cisco. While higher iteration counts reduce cracking efficiency, they improve security. QNX’s documentation vague reference to only “SHA-512” without explicitly mentioning PBKDF2 somewhat obscures the implementation details for security researchers.</p>
 <p><img loading="lazy"  src="pbkdf2.png"
         alt="PBKDF2"/></p>
 <p>You can verify it with CyberChef:</p>
 <pre tabindex="0"><code>https://gchq.github.io/CyberChef/#recipe=Derive_PBKDF2_key(%7B&#39;option&#39;:&#39;UTF8&#39;,&#39;string&#39;:&#39;hashcat&#39;%7D,512,4096,&#39;SHA512&#39;,%7B&#39;option&#39;:&#39;Base64&#39;,&#39;string&#39;:&#39;NDY2MDEwNjk3YjBjYzM2MzliMzc3Mzc0ZTNiMTAzNzE%3D&#39;%7D)&amp;input=dm0ybkJHSGVzNlFrWHJhMGY3NFhtb3VTaVJ6allEM3IvMHB5K3R4djBLcjhBNGhDUE1HRkhvWnFyNDFKRmlZY0pQUE9lSWhlcUZzZU15THl3LzE1UHc9PQ
 </code></pre><h2 id="writing-a-hashcat-module">Writing a Hashcat module</h2>
-<p>See the official documentation:</p>
+<p>Refer to the official documentation:</p>
 <p><a href="https://github.com/hashcat/hashcat/blob/master/docs/hashcat-plugin-development-guide.md"target="_blank" rel="noopener noreferrer">https://github.com/hashcat/hashcat/blob/master/docs/hashcat-plugin-development-guide.md</a></p>
-<p>At first I was still thinking about writing new OpenCL code. After realizing it’s a standard algorithm, I basically gave up and decided to pick an existing, decent-looking module to modify.</p>
+<p>Initially, I considered writing new OpenCL code. However, once I realized it was a standard algorithm (PBKDF2), I abandoned that idea and looked for a suitable existing module to modify.</p>
 <pre tabindex="0"><code>./hashcat -hh | grep PBKDF2
   11900 | PBKDF2-HMAC-MD5                                            | Generic KDF
   12000 | PBKDF2-HMAC-SHA1                                           | Generic KDF
@@ -46,8 +47,8 @@ Back in 2021, when I wanted to crack QNX hashes, I found that hashcat did not su
   12800 | MS-AzureSync PBKDF2-HMAC-SHA256                            | Operating System
    9200 | Cisco-IOS $8$ (PBKDF2-SHA256)                              | Operating System
    7100 | macOS v10.8+ (PBKDF2-SHA512)                               | Operating System
-</code></pre><p>Hashcat self-tests each module on every run. <code>ST_HASH</code> and <code>ST_PASS</code> are the test vectors. So I directly changed <code>KERN_TYPE</code> to 7100 and planned to debug step by step—but surprisingly, it worked on the first try.</p>
-<p>Hashcat is an open-source project and merging code can take a while, so I’m attaching the code here.</p>
+</code></pre><p>Hashcat runs self-tests on every module at startup, using <code>ST_HASH</code> and <code>ST_PASS</code> as test vectors. I set <code>KERN_TYPE</code> to 7100 and prepared to debug iteratively—but to my surprise, it worked on the first attempt.</p>
+<p>Since Hashcat is open-source and the pull request merge process can be lengthy, I have included the source code below.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/**
 </span></span></span><span class="line"><span class="cl"><span class="cm"> * Author......: See docs/credits.txt
 </span></span></span><span class="line"><span class="cl"><span class="cm"> * License.....: MIT

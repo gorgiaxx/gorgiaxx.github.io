@@ -4,14 +4,15 @@
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="In the previous post, I mentioned that the game has a protection mechanism that destroys partitions. In this post, we’ll dig deeper into it."><title>IGS Arcade Reverse Engineering Series (2) - Recovering Game Files&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="IGS Arcade Reverse Engineering Series (2) - Recovering Game Files" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
-        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/igs-arcade-re-2/" title="中文">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
     <h1 class="article title">IGS Arcade Reverse Engineering Series (2) - Recovering Game Files</h1><p class="article date">Sunday, May 25, 2025<span class="langs"><span class="lang">
                     <a href="/zh/posts/igs-arcade-re-2/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><p>In the previous post, I mentioned that the game has a protection mechanism that destroys partitions. In this post, we’ll dig deeper into it.</p>
 <p>For a game released in 2007, its hardening/protection is relatively outdated. It mainly relies on things like concatenation and signature-tweaking. It doesn’t have the “modern app hardening arms race” vibe. The annoying part is that there are many stages in the protection flow, and each game does it differently. On top of that, some development traits (compiler optimizations, coding style) make reverse engineering more difficult.</p>
 <p>Extracting the game itself is actually straightforward: once the game is running, you can dump it via a shell from memory or from the filesystem (if the files are written to disk). But if you want to extract multiple different games, that becomes a hassle—so let’s start with static analysis.</p>
-<p>All in all, this reversing process feels like solving a MISC challenge: it requires quite a bit of logical deduction.</p>
+<p>All in all, this reversing process feels like solving a CTF Misc challenge: it requires quite a bit of logical deduction.</p>
 <h2 id="reverse-engineering-traps">Reverse Engineering Traps</h2>
 <p>In general, when analyzing filesystem contents, you rarely start from the kernel. Usually you start with init-related files.</p>
 <p>The first step is typically checking <code>/etc/inittab</code>. The script starts <code>rc</code> first, and then starts the graphical interface:</p>
@@ -98,10 +99,10 @@ do
 	./PM2008v2 &amp;&gt; /dev/null
 	sleep 5
 done
-</code></pre><p>Next, I analyzed <code>PM2008v2</code>. At first glance, it contains a lot of “program loader” style code. Combined with the fact that many files previously had no magic bytes, I guessed it might be dynamically loading code and reconstructing ELF binaries. Later, Nova told me this thing is not the game at all—only then did I realize how abnormal it is. This file has a lot of glibc fingerprints and feels like a statically linked glibc program.</p>
+</code></pre><p>Next, I analyzed <code>PM2008v2</code>. At first glance, it contains a lot of “executable loader” style code. Combined with the fact that many files previously had no magic bytes, I guessed it might be dynamically loading code and reconstructing ELF binaries. Later, Nova told me this thing is not the game at all—only then did I realize how abnormal it is. This file has a lot of glibc fingerprints and feels like a statically linked glibc executable.</p>
 <p>For convenience in reversing and later porting the game, I needed to confirm the GCC and glibc versions. <code>PM2008v2</code> shows <code>GCC: (GNU) 3.3.1</code>, but has no glibc version string.</p>
 <p>So I went straight to the system <code>libc.so</code> and tentatively treated it as glibc 2.3.2. It’s hard to build on modern Linux; even in Docker I ran into issues.</p>
-<h2 id="analyzing-the-fake-game-program">Analyzing the “Fake Game” Program</h2>
+<h2 id="analyzing-the-fake-game-executable">Analyzing the “Fake Game” Executable</h2>
 <h3 id="building-gcc-331">Building GCC 3.3.1</h3>
 <p>The target kernel is i686, so I built it on CentOS 4 running in VMware. To keep the optimized assembly as consistent as possible, I wanted the same GCC version and build settings. Building this environment also helps future analysis of other games on this platform—more upfront work means fewer detours later.</p>
 <pre tabindex="0"><code>wget http://mirrors.aliyun.com/gnu/gcc/gcc-3.3.1/gcc-3.3.1.tar.gz
@@ -131,7 +132,7 @@ patch -p1 &lt; ../patches/glibc-2.3.2-test_lfs-1.patch
 <li>Inlining: calls inside some medium-length functions in the target binary are optimized into inline code.</li>
 </ol>
 <p>Even if I set optimization to O3, it barely changes. Manually tweaking <code>-fomit-frame-pointer</code>, <code>-finline-limit=n</code>, etc. also didn’t help. Maybe it needs <code>__inline__</code> somewhere; I didn’t have time to verify.</p>
-<p>With this situation, generating FLIRT signatures with flare barely recovers symbols for functions that still contain internal calls.</p>
+<p>With this situation, generating FLIRT signatures with FLAIR barely recovers symbols for functions that still contain internal calls.</p>
 <p>After analysis, <code>PM2008v2</code> is basically just a <code>killdisk</code> function, statically linked with glibc.</p>
 <p><img loading="lazy"  src="killdisk.png"
         alt="killdisk.png"/></p>
@@ -248,7 +249,7 @@ run_init_process(&#34;/bin/sh&#34;);    // 指向bash
 /Applications/IDA\ Professional\ 9.1.app/Contents/MacOS/tools/flair/pelf ~/RE/igs/libc.a ~/RE/igs/libc.pat
 </code></pre><p><img loading="lazy"  src="zsh.png"
         alt="zsh.png"/></p>
-<p>At this point I still don’t know exactly which GCC and glibc it was based on. Considering that many programs later may also use glibc, I need to pin down the version and see if there’s a fast way to recover symbols.</p>
+<p>At this point I still don’t know exactly which GCC and glibc it was based on. Considering that many executables later may also use glibc, I need to pin down the version and see if there’s a fast way to recover symbols.</p>
 <h4 id="dependency-analysis">Dependency analysis</h4>
 <p>Using YAFAF (a tool I wrote five years ago), I can quickly find relevant dependencies. <code>rc*.d</code> should be game code.</p>
 <p><img loading="lazy"  src="gcc_glibc.png"
@@ -280,12 +281,12 @@ GCC: (GNU) 3.2.1 20030202 (Red Hat Linux 8.0 3.2.1-7)
 GCC: (GNU) 3.2.2 20030222 (Red Hat Linux 3.2.2-4)
 GCC: (GNU) 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
 </code></pre><p>From these fingerprints, these files look like fragments stitched together from ELF files built in multiple different environments.</p>
-<p>And <code>/sbin/init</code> also appears to be based on glibc 2.3.x, so I tried building glibc 2.3.2 with GCC 3.2.2. On CentOS 3, building this GCC version can’t be parallelized, or it fails. Luckily, I’d seen similar errors when building OpenWrt in the past—otherwise I would’ve been stuck for a long time with zero search results about the root cause.</p>
+<p>And <code>/sbin/init</code> also appears to be based on glibc 2.3.x, so I tried building glibc 2.3.2 with GCC 3.2.2. On CentOS 3, parallel compilation fails for this GCC version. Luckily, I’d seen similar errors when building OpenWrt in the past—otherwise I would’ve been stuck for a long time with zero search results about the root cause.</p>
 <pre tabindex="0"><code>../gcc-3.2.2/configure --prefix=/opt/gcc_3.2.2 --infodir=/usr/share/info --enable-shared --enable-threads=posix --disable-checking --with-system-zlib --enable-__cxa_atexit
 
 make
 make install
-</code></pre><p>When building glibc, whether O2 or O3, it almost never inlines functions. I still don’t understand why, can’t find answers, and asking AI didn’t help either.</p>
+</code></pre><p>When building glibc, whether O2 or O3, it almost never inlines functions. I still don’t understand why, can’t find answers, and asking LLMs didn’t help either.</p>
 <pre tabindex="0"><code>CC=/opt/gcc_3.2.2/bin/gcc CFLAGS=&#34;-march=pentium4 -O2&#34; ../glibc-2.3.2/configure --prefix=/lib --disable-profile --enable-add-ons --libexecdir=/usr/lib --with-headers=/usr/include
 CC=/opt/gcc_3.2.2/bin/gcc CFLAGS=&#34;-O3&#34; ../glibc-2.3.2/configure --prefix=/lib --disable-profile --enable-add-ons --libexecdir=/usr/lib --with-headers=/usr/include
 </code></pre><h3 id="recovering-zsh-symbols">Recovering ZSH Symbols</h3>
@@ -328,7 +329,7 @@ CC=/opt/gcc_3.2.2/bin/gcc CFLAGS=&#34;-O3&#34; ../glibc-2.3.2/configure --prefix
 </span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Search finished, </span><span class="si">{}</span><span class="s2"> instruments created&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">found_count</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">find_and_make_instrument</span><span class="p">(</span><span class="mh">0x080480B4</span><span class="p">,</span> <span class="mh">0x0808F000</span><span class="p">)</span>
-</span></span></code></pre></div><p>Since there’s no way to use a glibc signature here, I came up with a somewhat dumb approach—but it’s faster than invoking MCP-based analysis.</p>
+</span></span></code></pre></div><p>Since there’s no way to use a glibc signature here, I came up with a somewhat naive approach—but it’s faster than invoking MCP-based analysis.</p>
 <p>First, fully recover glibc strings from file A (my self-compiled one) and recover function entry points.
 For file B, first fix function entry points, then fix immediate-value offsets, fix strings, deduplicate, remove overly short strings, then match strings one-by-one against file A and filter results.</p>
 <p>Then traverse xrefs from the filtered results, and pick those that are not duplicated and are functions:</p>
@@ -780,7 +781,7 @@ For file B, first fix function entry points, then fix immediate-value offsets, f
 <p>Read <code>0x400</code> bytes from the end of <code>/bin/arch</code> and write it to <code>/mnt/GECA</code>.</p>
 <p>Then append <code>/etc/init.d/rc0.d</code> to the end of <code>/mnt/GECA</code>.</p>
 <h3 id="recovering-game-files">Recovering Game Files</h3>
-<p>Before I started my analysis, Nova shared progress from his research with BatteryShark. They had already reconstructed the ELF for Speed Driver 2, but the ELF still had issues and couldn’t be used for other games such as Percussion Master 2008.</p>
+<p>Before I started my analysis, Nova shared findings from BatteryShark. BatteryShark had already reconstructed the ELF for Speed Driver 2, but the ELF still had issues and couldn’t be used for other games such as Percussion Master 2008.</p>
 <p><a href="https://github.com/batteryshark/igstools/blob/main/scripts/igs_rofsv1_dumpexec.py"target="_blank" rel="noopener noreferrer">IGS Dump EXEC</a></p>
 <p>So I still had to do it myself, and I also wanted to reverse the code that reconstructs the game files anyway.</p>
 <p>During kernel boot, after <code>GECA</code> is repaired by zsh, it is immediately executed with the same environment variables and arguments.</p>
@@ -799,7 +800,7 @@ dd if=/etc/rc.d/rc4.d of=/mnt/rc4 bs=1K count=[file_size / 1024 - 400 + 35] &amp
 dd if=/etc/rc.d/rc7.d of=/mnt/rc7 bs=1K count=[file_size / 1024 - 400 + 42] &amp;&gt; /dev/null
 dd if=/etc/rc.d/rc6.d of=/mnt/rc6 bs=1K count=[file_size / 1024 - 400 + 49] &amp;&gt; /dev/null
 dd if=/etc/rc.d/rc9.d of=/mnt/rc9 bs=1 count=[file_size - 400 * 1024] &amp;&gt; /dev/null
-</code></pre><p>Then it mounts a ramfs at <code>/exec</code>, concatenates these files into the real game binary, and replaces the original disk-destruction program.</p>
+</code></pre><p>Then it mounts a ramfs at <code>/exec</code>, concatenates these files into the real game binary, and replaces the original disk-destruction executable.</p>
 <p>After that, the boot process matches what we saw earlier in <code>/etc/X11/IGS</code>.</p>
 <pre tabindex="0"><code>mount -n -t ramfs GameExecution /exec &amp;&gt; /dev/null
 cat /mnt/head /mnt/rc2 /mnt/rc1 /mnt/rc3 /mnt/rc5 /mnt/rc8 /mnt/rc4 /mnt/rc7 /mnt/rc6 /mnt/rc9 &gt; /exec/PM2008v2 &amp;&amp; chmod 777 /exec/PM2008v2 &amp;&gt; /dev/null
@@ -857,7 +858,7 @@ rc7.d size: 0x00080000, write 0x00026800 bytes to game file, write block 154 ski
 rc6.d size: 0x00080000, write 0x00028400 bytes to game file, write block 161 skip block_num: 351
 rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 skip block_num: 344
 </code></pre><p>After recovery, although we avoid multi-version glibc fingerprints, the ELF might still have issues. Each game’s main binary recovery algorithm differs slightly. PM2008’s recovery logic takes two more parameters than SD2, so I’ll focus on PM2008 first.</p>
-<p>I still need to do dynamic analysis to understand how the in-memory ELF is loaded. But I’ve noticed that plugging in an Ethernet cable or a keyboard causes the cabinet to crash automatically—no idea whether that’s a safety mechanism. In the next post, I’ll analyze how to do dynamic debugging on the device.</p>
+<p>I still need to do dynamic analysis to understand how the in-memory ELF is loaded. But I’ve noticed that plugging in an Ethernet cable or a keyboard causes the cabinet to crash immediately—no idea whether that’s a protection mechanism. In the next post, I’ll analyze how to do dynamic debugging on the device.</p>
 </article><section class="article labels"><a class="category" href=/en/categories/reverse-engineering/>Reverse Engineering</a><a class="tag" href=/en/tags/igs/>IGS</a><a class="tag" href=/en/tags/arcade/>Arcade</a><a class="tag" href=/en/tags/crack/>Crack</a><a class="tag" href=/en/tags/international-games-system/>International Games System</a><a class="tag" href=/en/tags/e2000/>E2000</a></section>
 </div>
 <div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/igs-arcade-re-3/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (3) - Getting a Shell</a></p><p><a class="link" href="/en/posts/igs-arcade-re-1/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis</a></p></section></div></section><section id="footer"><div class="footer-wrap">

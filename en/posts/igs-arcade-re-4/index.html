@@ -5,17 +5,18 @@
 IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely weird—probably because the code quality is terrible."><title>IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and Static Analysis of TSGROM Files&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and Static Analysis of TSGROM Files" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
-        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/igs-arcade-re-4/" title="中文">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
     <h1 class="article title">IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and Static Analysis of TSGROM Files</h1><p class="article date">Monday, September 8, 2025<span class="langs"><span class="lang">
                     <a href="/zh/posts/igs-arcade-re-4/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><h1 id="embedded-architecture-analysis">Embedded Architecture Analysis</h1>
 <p>IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely weird—probably because the code quality is terrible.</p>
-<p>IGS E2000 is essentially a combination of <strong>PC + game baseboard</strong> (designed by Advantech). It has to consider both <strong>Anti-Copy</strong> and software-engineering reuse. The ASIC is basically a completely black-box compute module: putting the game’s key logic inside it both improves performance and makes cracking harder.</p>
+<p>IGS E2000 is essentially a combination of <strong>PC + game baseboard</strong> (designed by Advantech). It has to consider both <strong>anti-piracy</strong> and software reusability. The ASIC is basically a closed-box computational module: putting the game’s key logic inside it both improves performance and makes cracking harder.</p>
 <p><img loading="lazy"  src="diagram.png"
         alt="diagram"/></p>
-<h2 id="main-program-flow-analysis">Main Program Flow Analysis</h2>
-<p>The game’s main program allocates a stack frame of <code>0x200034</code>, where the buffer alone takes <code>0x200000</code>. And after allocating this stack, it never restores it. This causes IDA Pro to fail to decompile—no idea if this is intentional.</p>
+<h2 id="main-executable-flow-analysis">Main Executable Flow Analysis</h2>
+<p>The main game executable allocates a stack frame of <code>0x200034</code>, where the buffer alone takes <code>0x200000</code>. And after allocating this stack, it never restores it. This causes IDA Pro to fail to decompile—no idea if this is intentional.</p>
 <p><img loading="lazy"  src="main.png"
         alt="main"/></p>
 <p>The workaround is to patch the buffer size, shrink the function stack frame, undefine the function, and then re-identify it; then it can be decompiled successfully.</p>
@@ -34,7 +35,7 @@ IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely w
 <p><img loading="lazy"  src="main_loop.png"
         alt="main_loop"/></p>
 <p>The game was developed with SDL 1.2.7. SDL (Simple DirectMedia Layer) is a cross-platform multimedia development library, mainly providing low-level access to audio, input devices (keyboard/mouse/gamepad), and graphics hardware. However, its performance is relatively low and is only suitable for 2D games. Percussion Master 2008 is a 2D game. Speed Driver 2 is a 3D game, so the difference between the two may be significant.</p>
-<p>At every place in the main program where it interacts with the ASIC, the developer inserted a stub; I’ll temporarily call it <code>RealTimeEvent</code>. It should be a unified event handler: every logic change and animation change requires refreshing events. It’s used to implement various complex control functions and also bundles some anti-piracy behavior. Honestly, the code quality is awful—each call does a lot of computation, performance is poor, and it feels like building a SPA in pure JS + HTML.</p>
+<p>At every place in the main executable where it interacts with the ASIC, the developer inserted a stub; I’ll temporarily call it <code>RealTimeEvent</code>. It should be a unified event handler: every logic change and animation change requires refreshing events. It’s used to implement various complex control functions and also bundles some anti-piracy behavior. Honestly, the code quality is awful—each call does a lot of computation, performance is poor, and it feels like building a SPA in pure JS + HTML.</p>
 <p>Logic of the state-check stub:</p>
 <ol>
 <li>Update clock</li>
@@ -61,7 +62,7 @@ IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely w
 <p>The kernel runs a driver <code>/dev/roio</code>. The game compares it against a built-in version info table to perform validation. Both the kernel and the game embed tables. The likely workflow is that the developer parsed BIOS information using some tooling and then hard-coded physical offsets into both the game and the kernel.</p>
 <p><img loading="lazy"  src="bios_table.png"
         alt="bios_table"/></p>
-<p>The BIOS info table structure differs slightly between kernel and main program. The kernel uses 4-byte alignment, but the underlying idea is the same.</p>
+<p>The BIOS info table structure differs slightly between kernel and main executable. The kernel uses 4-byte alignment, but the underlying idea is the same.</p>
 <p>Game BIOS table:</p>
 <pre tabindex="0"><code>struct bios_item {
     unsigned int index;  // index
@@ -81,8 +82,8 @@ IGS’s anti-piracy technology isn’t particularly hard, but it’s extremely w
 </code></pre><p>The comparison logic is also very simple:</p>
 <p>Step 1: iterate the program’s built-in BIOS table to get the version string address, the target string physical address, iteration counts, etc.<br>
 Step 2: perform an IOCTL call to <code>/dev/roio</code> to compare the specified offset within System ROM against the program’s built-in string. If <strong>any single character</strong> matches, it passes. That’s unbelievably dumb.</p>
-<p>This kernel only allows running on 4 motherboard variants, but the game allows running on more devices, so it needs to validate whether the main program, kernel, and motherboard match. This is an anti-piracy mechanism—just patch it out.</p>
-<p>After statistics, the addresses and version strings are as follows; all addresses start from <code>0x0f0000</code>.</p>
+<p>This kernel only allows running on 4 motherboard variants, but the game allows running on more devices, so it needs to validate whether the main executable, kernel, and motherboard match. This is an anti-piracy mechanism—just patch it out.</p>
+<p>Based on my analysis, the addresses and version strings are as follows; all addresses start from <code>0x0f0000</code>.</p>
 <pre tabindex="0"><code># Kernel + Game
 0x0F086E   i852-W83627HF
 0x0FEC7C   i852-W83627HF
@@ -169,12 +170,12 @@ fec00000-ffffffff : reserved
 </code></pre><p>It checks whether a value in <code>[1, 255]</code> hits an entry in the list. It tries 5–30 times. If it hits, it decrements the attempt count by 1 and tries again. If it doesn’t hit, it requests via ioctl the offset corresponding to the random value (parameter <code>[17, 768]</code>), and the “magic number” is the matched value. My guess is it might be used to initialize the driver, but I can’t think of any other purpose. Why make it so complicated?</p>
 <p><img loading="lazy"  src="pccard_random_value_check.png"
         alt="pccard_random_value_check"/></p>
-<p>In some place in the game main program, I found leftover code. The XOR constant is <code>0xD4AA268A</code>. In Percussion Master 2008 I didn’t find any trigger logic; it should be a hidden stub for another game. This makes it more certain that this functionality is for anti-piracy (even though the design is awful).</p>
+<p>Somewhere in the main game executable, I found leftover code. The XOR constant is <code>0xD4AA268A</code>. In Percussion Master 2008 I didn’t find any trigger logic; it should be a hidden stub for another game. This makes it more certain that this functionality is for anti-piracy (even though the design is awful).</p>
 <p><img loading="lazy"  src="pccard_random_value_check2.png"
         alt="pccard_random_value_check2"/></p>
 <h2 id="asic-27-protocol">ASIC 27 Protocol</h2>
 <h3 id="a27-initialization">A27 Initialization</h3>
-<p>Communication between the game main program and the I/O board goes through the PLX PCI 9030 chip and exchanges data via shared memory.</p>
+<p>Communication between the main game executable and the I/O board goes through the PLX PCI 9030 chip and exchanges data via shared memory.</p>
 <p>After game startup and before ASIC 27 initialization, it loads the PCI 9030 driver and allocates a buffer specifically used to store the ASIC buffer, containing various state data. The developer calls it CommandPort.</p>
 <p><img loading="lazy"  src="pci9030_init.png"
         alt="pci9030_init"/></p>
@@ -224,7 +225,7 @@ fec00000-ffffffff : reserved
 </ul>
 <p>Other values trigger an assert.</p>
 <h3 id="a27-system-mode-analysis-state-machine">A27 System Mode Analysis State Machine</h3>
-<p>Data returned by ASIC is handled by the game main program. When <code>sm</code> is one of the following values, there is no processing logic and it returns 1:</p>
+<p>Data returned by ASIC is handled by the main game executable. When <code>sm</code> is one of the following values, there is no processing logic and it returns 1:</p>
 <pre tabindex="0"><code>0x0,0x6,0x9,0xa,0xa,0xb,0x11,0x12,0x15,0x16,0x17,0x18,0x19,0x1b,0x1c,0x1d,0x1e
 </code></pre><p>System Mode handling:</p>
 <ul>
@@ -300,7 +301,7 @@ fec00000-ffffffff : reserved
 </span></span><span class="line"><span class="cl">  <span class="kt">char</span>   <span class="n">data</span><span class="p">[</span><span class="n">unknown</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><h3 id="a27-response-checksum">A27 Response Checksum</h3>
-<p>ASIC 27 responses also carry a checksum, which the main program verifies. It is computed by summing the following fields:</p>
+<p>ASIC 27 responses also carry a checksum, which the main executable verifies. It is computed by summing the following fields:</p>
 <p><code>a27_has_message + inet_password_data + rd_is_light_io_reset + error_number + asic27_error + coin_inserted + system_mode[0] + buffer_size</code></p>
 <h3 id="buffer-obfuscation-analysis">Buffer Obfuscation Analysis</h3>
 <p>Compared to the older version, Percussion Master 2008 added a simple obfuscation layer. The goal is anti-piracy: to avoid running a copied ROM directly. When copying from the buffer into the ASIC 27 buffer, the data is obfuscated.</p>
@@ -332,7 +333,7 @@ mask_table = [0x00, 0x00, 0x00, 0x00, 0x39, 0x4E, 0xC1, 0xE6, 0x02, 0x19, 0xB1, 
 BLOCK_SIZE = 0x500
 
 def obfuscate_block(block: bytes) -&gt; bytes:
-    &#34;&#34;&#34;混淆单个 0x500 大小的数据块&#34;&#34;&#34;
+    &#34;&#34;&#34;Obfuscate a single 0x500 byte block&#34;&#34;&#34;
     if len(block) &lt; 4:
         return block
 
@@ -342,36 +343,36 @@ def obfuscate_block(block: bytes) -&gt; bytes:
     for i in range(1, 4):
         obfs_value ^= mask_table[block_header[i]]
 
-    # 计算偏移量（范围 4 ~ 0x4FF）
+    # Calculate offset (range 4 ~ 0x4FF)
     obfs_value = obfs_value % 0x4FC + 4
 
-    # 数据重排：
+    # Data reordering:
     #   [obfs_value:end] + [4:obfs_value]
-    part1 = block[obfs_value:]       # 从 obfs_value 开始到结尾
-    part2 = block[4:obfs_value]      # 从 4 到 obfs_value
+    part1 = block[obfs_value:]       # From obfs_value to end
+    part2 = block[4:obfs_value]      # From 4 to obfs_value
     new_block = part1 + part2
     return new_block
 
 
 def deobfuscate_block(block: bytes, header: bytes) -&gt; bytes:
-    &#34;&#34;&#34;反混淆单个 0x500 数据块，需要原始 header&#34;&#34;&#34;
+    &#34;&#34;&#34;Deobfuscate a single 0x500 byte block, requires original header&#34;&#34;&#34;
     if len(block) &lt; 4:
         return block
 
-    # 重新计算扰动值（必须用原始 header）
+    # Re-calculate perturbation value (must use original header)
     obfs_value = mask_table[header[0]]
     for i in range(1, 4):
         obfs_value ^= mask_table[header[i]]
     obfs_value = obfs_value % 0x4FC + 4
 
-    # block 的排列规则是：
+    # The block arrangement rule is:
     #   new_block = block[obfs_value:] + block[4:obfs_value]
-    # 我们要反过来拼回原始
-    part1_len = len(block) - (obfs_value - 4)  # 对应 obfs_value ~ end
+    # We need to reverse this to reconstruct the original
+    part1_len = len(block) - (obfs_value - 4)  # Corresponds to obfs_value ~ end
     part1 = block[:part1_len]
     part2 = block[part1_len:]
 
-    # 恢复成 [0:4] + [4:obfs_value] + [obfs_value:end]
+    # Restore to [0:4] + [4:obfs_value] + [obfs_value:end]
     original = header + part2 + part1
     return original
 
@@ -402,17 +403,17 @@ if __name__ == &#34;__main__&#34;:
         body = bytes([blk]* (BLOCK_SIZE - 4))
         data.extend(header + body)
 
-    print(&#34;原始数据前 32 字节:&#34;, data[:32])
+    print(&#34;First 32 bytes of original data:&#34;, data[:32])
 
     obfs = obfuscate(data)
-    print(&#34;混淆后前 32 字节:&#34;, obfs[:32])
+    print(&#34;First 32 bytes of obfuscated data:&#34;, obfs[:32])
 
     deobfs = deobfuscate(obfs, headers)
-    print(&#34;反混淆前 32 字节:&#34;, deobfs[:32])
-    print(&#34;反混淆是否正确:&#34;, deobfs == data)
+    print(&#34;First 32 bytes of deobfuscated data:&#34;, deobfs[:32])
+    print(&#34;Deobfuscation correct:&#34;, deobfs == data)
 </code></pre><h2 id="tsgrom-parsing">TSGROM Parsing</h2>
 <p>TSGROM is the game’s multimedia resource file, containing scripts and textures—similar to Unity’s assets.</p>
-<p>The TSGROM version supported by PM2008 is at least <code>00.0000.0004</code>, consistent with PM1. The code is simple and brutal—full of <code>while(1)</code>.</p>
+<p>The TSGROM version supported by PM2008 is at least <code>00.0000.0004</code>, consistent with PM1. The code is crude and brute-force—full of <code>while(1)</code>.</p>
 <p><img loading="lazy"  src="tsgrom_parse.png"
         alt="tsgrom_parse"/></p>
 <p>Some ROMs don’t carry version information, and I’m not sure what they’re for—for example, <code>biglogo.rom</code>. It has a lot of LZSS image data, but it doesn’t match the color format in the code, so it’s likely historical baggage.</p>
@@ -443,7 +444,7 @@ Found 174 image data zones
 <p><img loading="lazy"  src="tsgrom_extracted.png"
         alt="tsgrom_extracted"/></p>
 <h3 id="action-parser">Action Parser</h3>
-<p>IGS’s TSGROM defines various graphical behaviors of the game and calls them actions. The main program implements functionality by parsing actions. If you want to run the game main program on a PC, various game events are related to the A27 protocol, so you need to reverse the corresponding actions. But I want to try the most “perfect” cracking approach: dump the ASIC ROM and run it in an emulator. I don’t want to analyze this pile of spaghetti code.</p>
+<p>IGS’s TSGROM defines various graphical behaviors of the game and calls them actions. The main executable implements functionality by parsing actions. If you want to run the main game executable on a PC, various game events are related to the A27 protocol, so you need to reverse the corresponding actions. But I want to try the most “perfect” cracking approach: dump the ASIC ROM and run it in an emulator. I don’t want to analyze this pile of spaghetti code.</p>
 <ul>
 <li>ACT BLOCK: number of data blocks</li>
 <li>ACT INDEX: ACT index</li>
@@ -451,7 +452,7 @@ Found 174 image data zones
 <li>ACT POOL: action data</li>
 <li>ACT STEP: animation frames</li>
 </ul>
-<p>The main program is stripped, so analysis is time-consuming. Here are brief notes:</p>
+<p>The main executable is stripped, so analysis is time-consuming. Here are brief notes:</p>
 <p>When loading a TSGROM, the program loads <code>act_data</code> into memory; based on the number of <code>act_pool</code>, it also loads pool data into memory. Each TSGROM gets an independent Group ID. The action-related functions distinguish by Group ID. There can be up to <code>0x80</code> action groups, each group length is <code>0x2AA4</code>. Each group also has a corresponding index; action index size is <code>0xaa9</code>, and the list length is also <code>0x80</code>.</p>
 <p>Before loading tsgrom, it first creates action objects: a total of 1024 <code>action_data</code> instances, each <code>action_data</code> is <code>0x8D</code> bytes.</p>
 <p>Then it calls <code>ActionUse</code> to initialize <code>act_data</code> and allocate graphics display resources. It uses <code>ActionFace</code>, <code>ActionShow</code>, etc. to configure graphics display control, and finally calls <code>RealTimeEvent</code> to refresh the screen in a unified way.</p>
@@ -469,11 +470,11 @@ Found 174 image data zones
 <p><img loading="lazy"  src="load_igslogolc_to_memory.png"
         alt="load_igslogolc_to_memory"/></p>
 <h2 id="closing-notes">Closing Notes</h2>
-<p>IGS tightly couples the game’s main program with hardware. If you want to pirate the game onto another platform, you have to spend a lot of time.</p>
+<p>IGS tightly couples the game’s main executable with hardware. Porting the game to another platform requires a significant amount of effort.</p>
 <p>The game framework and song charts are implemented as state machines and are relatively complex; they’re not within my cracking target.</p>
-<p>Writing reverse engineering into blog posts feels like spending even more energy. When reversing for yourself, you only need to record some data; but to make it into an article, you have to write it in a way others can understand.</p>
-<p>Next topic: IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Program Patching</p>
-<p>In memory of the Blood Moon. Praise the Goddess.</p>
+<p>Documenting reverse engineering in blog posts feels even more exhausting than the work itself. When reversing for yourself, you only need to record some data; but to make it into an article, you have to write it in a way others can understand.</p>
+<p>Next topic: IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Executable Patching</p>
+<p>Commemorating the Blood Moon. Praise the Lady.</p>
 </article><section class="article labels"><a class="category" href=/en/categories/reverse-engineering/>Reverse Engineering</a><a class="tag" href=/en/tags/igs/>IGS</a><a class="tag" href=/en/tags/arcade/>Arcade</a><a class="tag" href=/en/tags/crack/>Crack</a><a class="tag" href=/en/tags/international-games-system/>International Games System</a><a class="tag" href=/en/tags/e2000/>E2000</a></section>
 </div>
 <div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/igs-arcade-re-3/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (3) - Getting a Shell</a></p></section></div></section><section id="footer"><div class="footer-wrap">

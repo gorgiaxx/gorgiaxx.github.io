@@ -2,17 +2,18 @@
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
-2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has not been favored by capital for a long time. The 2020 pandemic dealt an even heavier blow to the arcade business."><title>IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has long been out of favor with investors. The 2020 pandemic dealt an even heavier blow to the arcade business."><title>IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
-        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/igs-arcade-re-1/" title="中文">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
     <h1 class="article title">IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis</h1><p class="article date">Saturday, May 17, 2025<span class="langs"><span class="lang">
                     <a href="/zh/posts/igs-arcade-re-1/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><h1 id="preface">Preface</h1>
-<p>2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has not been favored by capital for a long time. The 2020 pandemic dealt an even heavier blow to the arcade business.</p>
+<p>2010 was the golden era of arcades. As mobile devices and home consoles became widespread, the arcade industry gradually declined. Although some policies were introduced domestically to encourage the amusement gaming equipment industry, the sector has long been out of favor with investors. The 2020 pandemic dealt an even heavier blow to the arcade business.</p>
 <p>Back then, 100 RMB might only buy 50 credits; now 100 RMB can buy 200 credits.</p>
-<p>I like racing games. Wangan Midnight, Initial D, and Speed Driver have been the hottest games in arcades in recent years, because they have accounts and thus a social component. Some time ago, when I was cracking the player app for Speed Driver 5, I learned that IGS (International Games System) is the company behind the Romance of the Three Kingdoms arcade game I played as a kid and Journey to the West. IGS’s anti-cracking is top-tier across the entire industry, and the Speed Driver series is even known as “uncrackable.”</p>
+<p>I like racing games. Wangan Midnight, Initial D, and Speed Driver have been the hottest games in arcades in recent years, because they have accounts and thus a social component. Some time ago, when I was cracking the player app for Speed Driver 5, I learned that IGS (International Games System) is the company behind the Knights of Valour arcade game I played as a kid and Journey to the West. IGS’s anti-cracking is top-tier across the entire industry, and the Speed Driver series is even known as “uncrackable.”</p>
 <p>Last month, the “Big Player” arcade near my home shut down. I feel that sooner or later the Speed Driver series may disappear, so I wanted to challenge myself to crack it.</p>
 <p>The release order of the IGS Speed Driver series is as follows:</p>
 <table>
@@ -25,7 +26,7 @@
   </thead>
   <tbody>
       <tr>
-          <td>Speed Driver:Evolution Evolution</td>
+          <td>Speed Driver: Evolution</td>
           <td></td>
           <td>2004</td>
       </tr>
@@ -51,10 +52,10 @@
       </tr>
   </tbody>
 </table>
-<p>I planned to start with the E2000 platform. The difficulty should definitely be lower than PGM (PolyGame Master) because it’s PC-based: there’s no need to emulate a sound card or GPU. The hardware has almost no physical protection, the CPU ISA is x86, the OS is Linux, there’s no anti-debugging, and no VMP—this is basically the beginner village.</p>
-<p>In Asia, the Speed Driver series has influence comparable to Wangan Midnight, Initial D, and Raiden G (all of which have been cracked). IGS’s anti-cracking is the most successful: throughout the entire product lifecycle, it was never cracked.</p>
+<p>I planned to start with the E2000 platform. The difficulty should definitely be lower than PGM (PolyGame Master) because it’s PC-based: there’s no need to emulate a sound card or GPU. The hardware has almost no physical protection, the CPU ISA is x86, the OS is Linux, there’s no anti-debugging, and no VMP—this is basically a tutorial level.</p>
+<p>In Asia, the Speed Driver series has influence comparable to Wangan Midnight, Initial D, and Storm Racer G (all of which have been cracked). IGS’s anti-cracking is the most successful: throughout the entire product lifecycle, it was never cracked.</p>
 <h1 id="hardware-analysis">Hardware analysis</h1>
-<p>In <a href="https://github.com/shizmob/arcade-docs/"target="_blank" rel="noopener noreferrer">Arcade-docs</a> you can look up the hardware information of each device and the games it supports.
+<p>In <a href="https://github.com/shizmob/arcade-docs/"target="_blank" rel="noopener noreferrer">Arcade-docs</a>, you can look up the hardware information of each device and the games it supports.
 Leveraging my “skill” at scavenging e-waste, I managed to get an E2000 host. There are quite a few enthusiasts abroad buying them too, so the price has gone up.</p>
 <h2 id="external-interface-analysis">External interface analysis</h2>
 <p>On the front there are two RS-485 ports, and the CF card can be removed externally.</p>
@@ -134,7 +135,7 @@ Partition 2: IGS CRAMFS, RootFS
 Partition 3: Ext3, Log Data
 Partition 4: IGS SquashFS, Game Data
 </code></pre><h2 id="kernel-reversing">Kernel reversing</h2>
-<p>So far I have not found the rootfs or the game program; they are most likely located in partition 2 and partition 4.
+<p>So far I have not found the rootfs or the game executable; they are most likely located in partition 2 and partition 4.
 I think reversing the kernel can save a lot of detours. Without relying on the kernel, you could also directly reverse the filesystem format from the raw data, but that’s boring. And whatever extractor you end up writing won’t beat open-source filesystem unpacking tools anyway.
 First, look at partition 1: it contains a loader and a kernel. The kernel version is shown, but it may not be the correct one.</p>
 <pre tabindex="0"><code>SD2:        LILO (LInux LOder)
@@ -198,7 +199,7 @@ SD2-OS-61P: Linux kernel x86 boot executable, bzImage, version 2.4.31-IGS_V0.5a 
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># You can define function entry opcodes based on your case</span>
 </span></span></code></pre></div><p>Of course, even at this point, not all xrefs are fully recognized. In the data segment, some strings and offsets are not recovered well either, but it doesn’t matter much. If you’re completely stuck, recovering those bits may lead to new discoveries.</p>
-<p>Next is to find an entry point for analysis. There’s honestly not much technical content here—I have many approaches, for example starting from filesystem characteristics. But writing everything out would be like saying “the character 茴 has five ways to write it,” which is kind of ridiculous.</p>
+<p>Next is to find an entry point for analysis. There’s honestly not much technical content here—I have many approaches, for example starting from filesystem characteristics. But writing everything out would be pedantic and unnecessary.</p>
 <p>We can confirm the kernel version is 2.4.31, and the IGS version is v1.0, not v0.5 as shown by the <code>bzImage</code> banner.</p>
 <p><img loading="lazy"  src="igs_strings.png"
         alt="igs_strings"/></p>
@@ -225,7 +226,7 @@ sys_mount(&#34;/dev/hdc4&#34;, &#34;/PM2008v2/pm2_data&#34;, &#34;ext3&#34;, fla
   -&gt;rd_load_disk
      -&gt;rd_load_image
        -&gt;identify_ramdisk_image
-</code></pre><p>Here we can confirm IGS supports ramdisks in squashfs and IGS ROFS formats, and we can also identify their magics.</p>
+</code></pre><p>Here we can confirm IGS supports ramdisks in squashfs and IGS ROFS formats, and we can also identify their magic numbers.</p>
 <p><img loading="lazy"  src="identify_ramdisk_image.png"
         alt="identify_ramdisk_image"/></p>
 <p>I won’t record the full analysis process. They modified the FS header, which makes the analysis somewhat nasty 🤢.</p>

@@ -4,12 +4,13 @@
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="I’ve made quite a bit of progress lately, but I’ve hit a bottleneck. There are probably about three more posts’ worth of material. I’ve been very busy recently, so I’m publishing part three first."><title>IGS Arcade Reverse Engineering Series (3) - Getting a Shell&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="IGS Arcade Reverse Engineering Series (3) - Getting a Shell" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
-        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/igs-arcade-re-3/" title="中文">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
     <h1 class="article title">IGS Arcade Reverse Engineering Series (3) - Getting a Shell</h1><p class="article date">Monday, June 23, 2025<span class="langs"><span class="lang">
                     <a href="/zh/posts/igs-arcade-re-3/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><p>I’ve made quite a bit of progress lately, but I’ve hit a bottleneck. There are probably about three more posts’ worth of material. I’ve been very busy recently, so I’m publishing part three first.</p>
-<p>I peeled off the chip sticker and did a detailed analysis. The hardware-analysis direction in part one was basically correct; I updated the chip description for IGS. The code in part two had some bugs, and I’ve updated that as well.</p>
+<p>I peeled off the chip sticker and did a detailed analysis. The direction of the hardware analysis in part one was basically correct; I updated the chip description for IGS. The code in part two had some bugs, and I’ve updated that as well.</p>
 <ul>
 <li>
 <p><a href="/posts/igs_arcade_re_1">IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis</a></p>
@@ -18,11 +19,11 @@
 <p><a href="/posts/igs_arcade_re_2">IGS Arcade Reverse Engineering Series (2) - Game File Recovery</a></p>
 </li>
 </ul>
-<p>To analyze the game main program efficiently, it’s best to do dynamic debugging on the device, which means getting shell access first. Aside from the CF card and I/O ports, I currently have almost no way to input anything into this device.</p>
+<p>To analyze the game main executable efficiently, it’s best to do dynamic debugging on the device, which means getting shell access first. Aside from the CF card and I/O ports, I currently have almost no way to input anything into this device.</p>
 <p>If I go the serial-debug route, the first step is finding the hardware debug port, and the next step is modifying the kernel’s built-in boot command. It’s a hassle, requires repacking everything back, and isn’t elegant.</p>
 <p>The CF card has two partitions I can write to directly: one is the boot partition where the kernel lives, and the other is a partition for logs and temporary files. That second one might be able to get a shell, but “pwning” this hardware isn’t my goal.</p>
 <h2 id="repacking-igs-cramfs">Repacking IGS CRAMFS</h2>
-<p>Previously, based on the characteristics of IGS’s heavily modified cramfs, I extended <code>cramfs-tools</code> a second time—but it could only unpack, not repack. It wasn’t perfect, and I’m a bit obsessive; I want it to be a real toolkit.</p>
+<p>Previously, based on the characteristics of IGS’s heavily modified cramfs, I extended <code>cramfs-tools</code> a second time—but it could only unpack, not repack. It wasn’t perfect, and I’m a bit of a perfectionist; I want it to be a real toolkit.</p>
 <p>IGS modified cramfs structures. They added a checksum field into <code>cramfs_inode</code>, meaning the inode is verified on every read.</p>
 <pre tabindex="0"><code>struct cramfs_super {
 	unsigned int magic1;
@@ -48,7 +49,7 @@ struct cramfs_info {
 	u32 blocks;
 	u32 files;
 };
-</code></pre><p>In <code>get_cramfs_inode</code>, there’s a hidden check: it XORs <code>inode_magic</code> with the root inode’s magic and checks whether the result equals <code>0x705DE1</code>. If not, it errors out. It’s simple, but it differs per game, and doing the same patch over and over is annoying.</p>
+</code></pre><p>In <code>get_cramfs_inode</code>, there’s a hidden check: it XORs <code>inode_magic</code> with the root inode’s magic and checks whether the result equals <code>0x705DE1</code>. If not, it aborts. It’s simple, but it differs per game, and doing the same patch over and over is annoying.</p>
 <p>The screenshot below looks readable because I spent some time on it. In fact, IDA’s decompilation was initially wrong and didn’t match the assembly at all. You have to reconstruct the struct first so the branches become correct; otherwise a lot of code gets lost.</p>
 <p><img loading="lazy"  src="./get_inode.png"
         alt="get_inode"/></p>
@@ -98,7 +99,7 @@ echo &#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin&#34
 <p>The system even has a DHCP service. The IP configuration logic is written in code.</p>
 <p><img loading="lazy"  src="./network_enable.png"
         alt="network_enable"/></p>
-<p><code>ifconfig</code> was neutered—probably also modified—so I rebuilt my own.</p>
+<p><code>ifconfig</code> was stripped down—probably also modified—so I rebuilt my own.</p>
 <pre tabindex="0"><code>/home/ifconfig eth0 up mtu 1500 &gt;&gt; /PM2008v2/pm2_data/game_stdout.log 2&gt;&amp;1
 /home/ifconfig eth0 192.168.2.128 netmask 255.255.255.0 broadcast 192.168.2.255 &gt;&gt; /PM2008v2/pm2_data/game_stdout.log 2&gt;&amp;1
 </code></pre><p>With that, it can connect to an external network.</p>
@@ -110,11 +111,11 @@ echo &#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin&#34
 </code></pre><pre tabindex="0"><code>sudo ../igs-toolkits/cramfs-tools/mkcramfs ./out test.img &amp;&amp; sudo dd if=./test.img of=/dev/rdisk4s2 bs=1M
 </code></pre><h2 id="game-environment-analysis">Game environment analysis</h2>
 <p>The E2000 host has two I/O interfaces. Control commands come from outside, so even if you get root you still can’t play the game.</p>
-<h3 id="game-main-program">Game main program</h3>
-<p>The game main program actually runs at <code>/exec/PM2008v2</code> and starts three processes.</p>
+<h3 id="game-main-executable">Game main executable</h3>
+<p>The main game executable actually runs at <code>/exec/PM2008v2</code> and starts three processes.</p>
 <p><img loading="lazy"  src="./shell.png"
         alt="shell"/></p>
-<p>From the address space mapping you can tell this program runs under X11 with OpenGL rendering. It can also control the card reader. It calls <code>/dev/plx/Pci9030-0</code>, accessing it via DMA to a virtual address—this should be the game’s physical I/O.</p>
+<p>From the memory map you can tell this executable runs under X11 with OpenGL rendering. It can also control the card reader. It calls <code>/dev/plx/Pci9030-0</code>, accessing it via DMA to a virtual address—this should be the game’s physical I/O.</p>
 <pre tabindex="0"><code>[IGS_Linux]root ~# cat /proc/120/maps 
 08048000-084b6000 r-xp 00000000 00:08 98         /exec/PM2008v2
 084b6000-084cb000 rw-p 0046e000 00:08 98         /exec/PM2008v2
@@ -204,7 +205,7 @@ echo &#34;sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin&#34
 4423c000-44322000 rw-p 01196000 00:00 0 
 443a7000-444b0000 rw-p 01301000 00:00 0 
 bfde2000-c0000000 rwxp ffde3000 00:00 0
-</code></pre><p>The game program itself contains a lot of strings that look like encoded data. Before this, I had never dealt with Big5 encoding. I just asked DeepSeek to write a script to identify it.</p>
+</code></pre><p>The game executable itself contains a lot of strings that look like encoded data. Before this, I had never dealt with Big5 encoding. I just asked DeepSeek to write a script to identify it.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">chardet</span>
 </span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">encodings.aliases</span> <span class="kn">import</span> <span class="n">aliases</span>
 </span></span><span class="line"><span class="cl">
@@ -251,7 +252,7 @@ bfde2000-c0000000 rwxp ffde3000 00:00 0
 <p>Since it’s non-ASCII and there isn’t a great automatic way to detect it, I’ll just follow the same “fix strings” approach from the previous post.</p>
 <p><img loading="lazy"  src="./strings.png"
         alt="strings"/></p>
-<p>When running the game main program, it only prints these logs:</p>
+<p>When running the main game executable, it only prints these logs:</p>
 <pre tabindex="0"><code>[IGS_Linux]root /proc/sys# /exec/PM2008v2
 Device Handle 4
 Version Major 4,Minor 3,Rev 0
@@ -262,17 +263,17 @@ Clear CommandPort Complete.
 start
 </code></pre><p>The <code>dprintf</code> logic was removed in the code, so it won’t print logs.</p>
 <h2 id="bottleneck">Bottleneck</h2>
-<p>I’ve hit a bottleneck: for rhythm games, hit detection is handled by the ASIC, and the ASIC passes the judgment state to the CPU. The main program contains no judgment logic. I’ve already analyzed the ASIC27 protocol; writing my own judgment logic would be fine, but that’s no longer “cracking”. Only by cracking the ASIC can you perfectly emulate these games. Next I need to dump the ASIC firmware, which is very difficult—I’m not sure I can finish it this year.</p>
+<p>I’ve hit a bottleneck: for rhythm games, hit detection is handled by the ASIC, and the ASIC passes the judgments to the CPU. The main executable contains no judgment logic. I’ve already analyzed the ASIC27 protocol; writing my own judgment logic would be fine, but that’s no longer “cracking”. Only by cracking the ASIC can you perfectly emulate these games. Next I need to dump the ASIC firmware, which is very difficult—I’m not sure I can finish it this year.</p>
 <p>There are two more posts’ worth of work already done; I’ll write them when I have time.</p>
 <ul>
 <li>IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and TSGROM Static Analysis</li>
-<li>IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Program Patching</li>
+<li>IGS Arcade Reverse Engineering Series (5) - ASIC27 Protocol Hooking and Main Executable Patching</li>
 </ul>
 <h2 id="rant-hexo">Rant: Hexo</h2>
 <p>Last month my Linux PC’s CPU basically cooked itself. The cause was long-term operation and poor cooling. I spent a lot of time troubleshooting, migrating tools, and then moved the blog environment to a new computer.</p>
 <p>I used to write posts by using <code>nvm</code> to switch to an old Node version and running the Hexo framework to generate static pages. I hadn’t touched that setup for 8 years. Ever since then, Hexo’s dependencies have been a mess—updates always break something—so I didn’t dare to upgrade.</p>
 <p>The old environment was very hard to run on macOS. Neither building from source nor using Homebrew worked. I don’t understand why a Node.js project needs Python 3.8.</p>
-<p>With that pile of messy dependencies, even the latest Hexo wouldn’t work; lots of themes were incompatible. I’m already using <code>asdf</code>, how is it still like this? I gave up on Hexo decisively and spent a lot of time migrating the blog to Hugo.</p>
+<p>With that pile of messy dependencies, even the latest Hexo wouldn’t work; lots of themes were incompatible. I’m already using <code>asdf</code>, how is it still like this? I dropped Hexo completely and spent a lot of time migrating the blog to Hugo.</p>
 </article><section class="article labels"><a class="category" href=/en/categories/reverse-engineering/>Reverse Engineering</a><a class="tag" href=/en/tags/igs/>IGS</a><a class="tag" href=/en/tags/arcade/>Arcade</a><a class="tag" href=/en/tags/crack/>Crack</a><a class="tag" href=/en/tags/international-games-system/>International Games System</a><a class="tag" href=/en/tags/e2000/>E2000</a></section>
 </div>
 <div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/igs-arcade-re-4/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (4) - ASIC27 Protocol and Static Analysis of TSGROM Files</a></p><p><a class="link" href="/en/posts/igs-arcade-re-2/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (2) - Recovering Game Files</a></p></section></div></section><section id="footer"><div class="footer-wrap">
