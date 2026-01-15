@@ -13,95 +13,94 @@ This post documents the process of restoring the NAND Flash filesystem from an i
                 </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
 <p>This post documents the process of restoring the NAND Flash filesystem from an in-vehicle head unit.</p>
 <h2 id="recovery-process">Recovery process</h2>
-<p>The head unit uses an MXIC B162711 NAND Flash storage chip with a Qualcomm CPU. Usually NAND Flash is rarely used directly unless the vendor is very confident in their controller/SoC, like Qualcomm.
-During the hardware analysis, I found this chip had no anti-tamper measures, so I put it on the hot-air rework station and removed it.</p>
+<p>The head unit is equipped with an MXIC B162711 NAND Flash storage chip and a Qualcomm CPU. Raw NAND Flash is typically not controlled directly by the host processor unless the vendor, such as Qualcomm, is highly confident in their controller/SoC implementation.
+During hardware analysis, I observed no anti-tamper measures on the chip, so I proceeded to desolder it using a hot-air rework station.</p>
 <p><img loading="lazy"  src="./tearoff.png"
         alt="tearoff"/></p>
-<p>The chip information is shown below; it is a 512MB SLC NAND.</p>
+<p>The chip details are shown below; it is a 512MB SLC NAND.</p>
 <p><img loading="lazy"  src="./features.png"
         alt="features"/></p>
-<p>The chip uses a BGA63 package; the pinout is as follows.</p>
+<p>The chip utilizes a BGA63 package with the following pinout:</p>
 <p><img loading="lazy"  src="./bga63.png"
         alt="bga63"/></p>
-<p>Below is the extraction process using a Proman programmer.</p>
+<p>The extraction process was performed using a Proman programmer:</p>
 <p><img loading="lazy"  src="./socket.png"
         alt="socket"/></p>
 <p><img loading="lazy"  src="./reading.png"
         alt="reading"/></p>
-<p>After that, I read the chip multiple times and compared the dumps. I kept the bytes that appeared most frequently to reduce the impact of bit flips and improve correctness.</p>
+<p>I read the chip multiple times and compared the resulting dumps. To mitigate the impact of bit flips and ensure data integrity, I applied a majority-voting algorithm, retaining the most frequent byte values.</p>
 <p><img loading="lazy"  src="./bytes_diff.png"
         alt="bytes_diff"/></p>
-<p>The head unit uses the Qualcomm CSR3703 SoC solution.</p>
+<p>The head unit is powered by a Qualcomm CSR3703 SoC.</p>
 <p><img loading="lazy"  src="./CSR3703.png"
         alt="CSR3703"/></p>
-<p>The datasheet for this chip is not publicly available online. I tried _________ but still could not obtain it—they keep the datasheet very confidential.</p>
-<p>Even with manual teardown, I couldn’t determine the chip type just from the BGA layout.</p>
+<p>The datasheet for this chip is not publicly available. Despite exhaustive searches, I was unable to obtain it, as the documentation is kept strictly confidential.</p>
+<p>Even after a manual teardown, the specific chip variant could not be identified solely from the BGA layout.</p>
 <p><img loading="lazy"  src="./CSR3703pin.png"
         alt="CSR3703pin"/></p>
-<p>Through blind testing, I confirmed that the SoC’s memory mapping table resides inside the NAND controller, so the logical block order of the firmware dump cannot be determined directly.</p>
+<p>Through black-box analysis, I confirmed that the SoC’s memory mapping table resides within the NAND controller. Consequently, the logical block order cannot be directly determined from the raw firmware dump.</p>
 <p><img loading="lazy"  src="./soc_block_diagram.png"
         alt="soc_block_diagram"/></p>
-<p>Therefore, I could only “blind test” the extracted firmware. By analyzing the raw binary data from the NAND dump, I temporarily extracted some low-level system components, including U-Boot.</p>
+<p>As a result, I had to analyze the extracted firmware without knowledge of the mapping. By examining the raw binary data from the NAND dump, I was able to carve out some low-level system components, including U-Boot.</p>
 <p><img loading="lazy"  src="./binwalk.png"
         alt="binwalk"/></p>
-<p>U-Boot can be reversed, but the important information is in the system partition.</p>
-<p>CSR Visor 128KB</p>
+<p>While U-Boot can be reverse-engineered, the critical information lies within the system partition.</p>
+<p>CSR Visor analysis (128KB):</p>
 <p><img loading="lazy"  src="./dts1.png"
         alt="dts1"/></p>
-<p>Device Tree shows the console is <code>ttySiRF1</code> at 115200 baud.</p>
+<p>The Device Tree indicates that the console is <code>ttySiRF1</code> running at 115200 baud.</p>
 <p><img loading="lazy"  src="./dts2.png"
         alt="dts2"/></p>
-<p>NAND controller configuration information.</p>
+<p>NAND controller configuration details:</p>
 <p><img loading="lazy"  src="./dts3.png"
         alt="dts3"/></p>
-<p>Because the erase blocks in the previous head unit’s NAND dump were far too random, I removed and read the NAND Flash from another head unit instead.</p>
+<p>Since the erase block distribution in the first head unit&rsquo;s NAND dump appeared overly random, I decided to desolder and read the NAND Flash from a second, identical head unit.</p>
 <p><img loading="lazy"  src="./reball1.png"
         alt="reball1"/>
 <img loading="lazy"  src="./reball2.png"
         alt="reball2"/></p>
-<p>To keep using the head unit, I reballed the chip and used an optical rework station to align and rework it.</p>
+<p>To restore the head unit to working condition, I reballed the chip and reattached it using an optical rework station for precise alignment.</p>
 <p><img loading="lazy"  src="./reball3.png"
         alt="reball3"/></p>
-<p>After reading some materials, I suspected that WL mode might be a hybrid mode. I referenced existing public FTL implementations but couldn’t find mapping logic that matched; I guessed the FTL table might be stored in the NAND controller’s ROM.</p>
+<p>After further research, I suspected the Wear Leveling (WL) mechanism might be using a hybrid mode. I reviewed publicly available FTL (Flash Translation Layer) implementations but could not find matching mapping logic. I hypothesized that the FTL table might be stored in the NAND controller&rsquo;s ROM.</p>
 <p><img loading="lazy"  src="./compact_flash_system.png"
         alt="compact_flash_system"/></p>
-<p>By analyzing U-Boot, I determined it uses a proprietary <code>NANDDisk</code> driver and uses <code>ioctl</code> to read/write NAND; the mapping algorithm is not implemented there.</p>
+<p>By analyzing U-Boot, I determined it utilizes a proprietary <code>NANDDisk</code> driver which uses <code>ioctl</code> for NAND read/write operations. The mapping algorithm, however, was not implemented within the driver itself.</p>
 <p><img loading="lazy"  src="./nand_driver.png"
         alt="nand_driver"/></p>
-<p>So I could only obtain fragmented files rather than a filesystem. To test whether the mapping table was truly stored inside the SoC, I performed a chip-swap experiment between two identical head units (controlling variables), repeatedly reballing and reworking. Not once did the head unit boot with the other unit’s NAND Flash. Finally, I reballed and put each original NAND Flash back into its original head unit, and both could boot successfully—proving the mapping exists in the SoC.</p>
+<p>Consequently, I could only recover fragmented files rather than a complete filesystem. To verify if the mapping table was stored inside the SoC, I performed a controlled experiment using two identical head units. I swapped their NAND chips (reballing and resoldering each time). Neither head unit would boot with the other&rsquo;s NAND Flash. However, when the original chips were returned to their respective units, both booted successfully. This confirmed that the mapping logic or table is tied to the specific SoC.</p>
 <p><img loading="lazy"  src="./reball_again.png"
         alt="reball_again"/></p>
-<p>After multiple comparisons, I extracted a RAMdisk with more than 50% integrity, and I could successfully read the first half of the data.</p>
+<p>After multiple comparisons, I managed to extract a RAMdisk with over 50% integrity, allowing me to successfully read the first half of the data.</p>
 <p><img loading="lazy"  src="./binalk_again.png"
         alt="binalk_again"/></p>
 <p><img loading="lazy"  src="./hex_workshop.png"
         alt="hex_workshop"/></p>
-<p>But I could confirm it uses a Linux EXT filesystem. According to the MBR information, there are three partitions:</p>
+<p>I confirmed the use of a Linux EXT filesystem. The MBR information indicated three partitions:</p>
 <p><img loading="lazy"  src="./010editor.png"
         alt="010editor"/></p>
-<p>Parititon1: 30MB</p>
-<p>Partition2: 400MB</p>
-<p>Partition3: 61.75MB</p>
-<p>Other files were mostly resource files and fragmented ELF files; because the ELF files were fragmented, I couldn’t reverse them properly.</p>
+<p>Partition 1: 30MB</p>
+<p>Partition 2: 400MB</p>
+<p>Partition 3: 61.75MB</p>
+<p>The remaining files were primarily resources and fragmented ELF binaries. Due to the fragmentation, proper reverse engineering of the ELF files was not possible.</p>
 <p><img loading="lazy"  src="./files_1.png"
         alt="files_1"/></p>
-<p>So I tried to manually find the erase-block ordering logic: I split out each erase block and analyzed its characteristics. Because the OOB area at the beginning differs from the later part, it affected my judgment at the time. I only managed to recover page order, so I could only reconstruct the smaller <code>zImage</code> and <code>ramdisk</code>; the overall logic couldn’t be inferred.</p>
+<p>I attempted to manually deduce the erase-block ordering logic by splitting and analyzing each block. However, inconsistencies between the initial and subsequent OOB areas misled my initial analysis. I only managed to recover the page order, which allowed reconstruction of the smaller <code>zImage</code> and <code>ramdisk</code>, but the overall mapping logic remained elusive.</p>
 <p><img loading="lazy"  src="./files_2.png"
         alt="files_2"/></p>
-<p>I also didn’t find a map table in the NAND dump. So it wasn’t possible to recover the filesystem quickly—I needed to understand the block patterns to derive the mapping logic.</p>
-<p>I then removed and read the NAND Flash from the other head unit as well.</p>
-<p>I found the two head units were running different system versions, so I couldn’t continue the analysis.</p>
+<p>I also failed to locate a map table within the NAND dump. Quick filesystem recovery was impossible; I needed to analyze the block patterns to derive the underlying mapping logic.</p>
+<p>I decided to remove and read the NAND Flash from the second head unit. Unfortunately, the two units were running different system versions, which hindered further comparative analysis.</p>
 <p>XXXXX_IHU_LOW_A7_LINUX_18.0F40</p>
 <p>XXXXX_IHU_LOW_A7_LINUX_18.0F43</p>
-<p>The kernel and ramdisk build timestamps/pages were inconsistent, so there was no way to infer the mapping algorithm via blind testing.</p>
+<p>The kernel and ramdisk build timestamps and page layouts were inconsistent, making it impossible to infer the mapping algorithm through comparison.</p>
 <p><img loading="lazy"  src="./modification_time.png"
         alt="modification_time"/>
 <img loading="lazy"  src="./modification_time2.png"
         alt="modification_time2"/></p>
-<p>Because a hybrid mapping was used, I obtained firmware of the same version via a USB HID GetShell method for analysis, and then derived the mapping algorithm.</p>
+<p>Suspecting a hybrid mapping scheme, I obtained a firmware image of the same version via a USB HID &ldquo;GetShell&rdquo; exploit. Analyzing this known-good firmware allowed me to derive the mapping algorithm.</p>
 <p><img loading="lazy"  src="./struct.png"
         alt="struct"/></p>
-<p>This is the script I used to fix the NAND dump—I’ve also forgotten what exactly I wrote back then.</p>
+<p>Below is the script I used to reconstruct the NAND dump. Looking back, I don&rsquo;t recall the specific details of the logic, but it was effective at the time.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">binascii</span>
@@ -179,19 +178,19 @@ During the hardware analysis, I found this chip had no anti-tamper measures, so 
 </span></span><span class="line"><span class="cl">                    <span class="n">nand_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">rawbin</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mh">0x20000</span><span class="p">])</span>
 </span></span><span class="line"><span class="cl">                <span class="n">cur_index</span> <span class="o">=</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">skip</span>
 </span></span><span class="line"><span class="cl">        <span class="n">nand_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span></span></code></pre></div><p>In the end, I reconstructed the firmware. Due to NAND bit-flip characteristics, I still needed to use Hamming ECC to fix errors. Also because the system had rebooted many times, some contents were inconsistent, so the figure below shows large differences.</p>
+</span></span></code></pre></div><p>Ultimately, I successfully reconstructed the firmware. Given the bit-flip characteristics of NAND flash, I applied Hamming ECC for error correction. Since the system had undergone many reboot cycles, some data remained inconsistent, resulting in the significant differences shown in the comparison below.</p>
 <p><img loading="lazy"  src="./fixed_diff.png"
         alt="fixed_diff"/></p>
-<p>The file size and types were correct.</p>
+<p>The file sizes and types were correct.</p>
 <p><img loading="lazy"  src="./fdisk.png"
         alt="fdisk"/></p>
-<p>The reconstructed firmware size matches the 496.6MiB reported by the running system.</p>
+<p>The size of the reconstructed firmware matched the 496.6MiB reported by the live system.</p>
 <p><img loading="lazy"  src="./nand_info.png"
         alt="nand_info"/></p>
-<p>After opening the second partition, I could see the directory structure displayed normally.</p>
+<p>Upon mounting the second partition, the directory structure was displayed correctly.</p>
 <p><img loading="lazy"  src="./fixed.png"
         alt="fixed"/></p>
-<p>However, due to bit flips, I’m sure some files must be corrupted. Because of time constraints, I didn’t continue researching further.</p>
+<p>However, some files were likely corrupted due to uncorrectable bit flips. Due to time constraints, I did not pursue further analysis.</p>
 </article><section class="article labels"><a class="category" href=/en/categories/firmware-extraction-series/>Firmware Extraction Series</a><a class="tag" href=/en/tags/nand/>NAND</a><a class="tag" href=/en/tags/ftl/>FTL</a><a class="tag" href=/en/tags/oob/>OOB</a><a class="tag" href=/en/tags/flash/>Flash</a></section>
 </div>
 <div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/firmware-extraction-series-sata-hdd-unlock/"><span class="iconfont icon-article"></span>Firmware Extraction Series - SATA HDD Unlock</a></p><p><a class="link" href="/en/posts/visteon-firmware-repacking/"><span class="iconfont icon-article"></span>Visteon Firmware Repacking</a></p></section></div></section><section id="footer"><div class="footer-wrap">

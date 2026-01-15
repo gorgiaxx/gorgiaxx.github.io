@@ -1,223 +1,262 @@
 <!DOCTYPE html>
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark"><meta name="description" content="Firmware
-Firmware, also called firmware image in some contexts (and sometimes referred to as “ROM” in mobile communities), resides in non-volatile memory (Non-Volatile Memory, NVM) and can be read and written. In embedded systems, the most common NVM types are ROM (read-only memory) and Flash memory. ROM includes Mask ROM, PROM, EPROM, and EEPROM. Today, the “mainstream ROM” is typically EEPROM, often integrated inside the MCU; meanwhile, the more common external storage is Flash memory."><title>Firmware Extraction Series: Firmware&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Firmware Extraction Series: Firmware" /><body><section id="header">
+<meta name="supported-color-schemes" content="light dark"><meta name="description" content="What is Firmware?
+Firmware, sometimes referred to as a firmware image (or simply &ldquo;ROM&rdquo; in mobile communities), resides in Non-Volatile Memory (NVM) and can be both read and written. In embedded systems, the most common NVM types are ROM (Read-Only Memory) and Flash memory. While strictly speaking, &ldquo;ROM&rdquo; includes Mask ROM, PROM, EPROM, and EEPROM, modern &ldquo;mainstream ROM&rdquo; usually refers to EEPROM integrated within an MCU. Flash memory typically serves as the primary external storage."><title>Firmware Extraction Series: Firmware Media&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Firmware Extraction Series: Firmware Media" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/firmware-extraction-series-firmware-media/" title="中文">
             <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
-    <h1 class="article title">Firmware Extraction Series: Firmware</h1><p class="article date">Saturday, December 28, 2019<span class="langs"><span class="lang">
+    <h1 class="article title">Firmware Extraction Series: Firmware Media</h1><p class="article date">Saturday, December 28, 2019<span class="langs"><span class="lang">
                     <a href="/zh/posts/firmware-extraction-series-firmware-media/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
-                </span></span></p></section><article class="article markdown-body"><h2 id="firmware">Firmware</h2>
-<p>Firmware, also called <em>firmware image</em> in some contexts (and sometimes referred to as “ROM” in mobile communities), resides in <strong>non-volatile memory</strong> (Non-Volatile Memory, NVM) and can be read and written. In embedded systems, the most common NVM types are <strong>ROM</strong> (read-only memory) and <strong>Flash memory</strong>. ROM includes Mask ROM, PROM, EPROM, and EEPROM. Today, the “mainstream ROM” is typically EEPROM, often integrated inside the MCU; meanwhile, the more common external storage is Flash memory.</p>
-<p>In embedded devices, besides plain NAND or NOR flash chips, you may also encounter <strong>eMMC</strong>. For expandable storage, devices may use SD cards, CF cards, HDDs, etc. These are essentially a <em>controller + storage</em> design: the controller talks to the host, and as long as you can access the controller, you can read/write the underlying storage. For devices like eMMC/SD/CF/HDD, the controller exposes a standard external interface, so you can read them with a card reader or a programming socket. For flash chips managed directly by the SoC, there is no generic external interface—but the SoC controls them via drivers. As long as you can access memory-mapped peripherals (their address space), you can interact with them. That’s why techniques like <strong>reading firmware via JTAG</strong>, <strong>IAP</strong>, or <strong>U-Boot</strong> exist; and in theory, even if the main controller is dead, you may still be able to recover firmware from the storage.</p>
-<p>As long as an embedded device stores an operating system on such media, I call those original files “firmware”. In embedded security research, firmware extraction is always the first step—and often the most critical one—because it determines whether the research can continue. So I decided to organize and share the firmware-extraction knowledge I’ve accumulated over the years.</p>
-<h2 id="eeprom-vs-nor-vs-nand-flash">EEPROM vs NOR vs NAND Flash</h2>
-<p>EEPROM products typically have a much higher endurance (erase/write cycles) than Flash products. Together with smaller package sizes and lower write/erase currents, EEPROM often becomes the preferred storage technology in automotive applications.</p>
-<p>For higher-performance devices, Flash is commonly used. Comparing NAND and NOR: <strong>NOR supports XIP</strong>, and it has fast read performance, but write and erase are slow. <strong>NAND</strong> offers much larger capacity, higher throughput, and lower cost, but generally has lower reliability.
-NAND is accessed in <strong>blocks</strong>, while NOR flash can be accessed <strong>randomly</strong>.</p>
-<p>To communicate with firmware media and modify its data, you need the corresponding protocols. For EEPROM, common protocols are <strong>I2C</strong> and <strong>SPI</strong> (SPI has multiple modes). NAND flash uses the <strong>Raw NAND</strong> protocol, and most modern devices follow the <strong>ONFI</strong> standard. NOR flash commonly uses SPI; SPI flash often follows <strong>JEDEC SFDP (JESD216)</strong>, while parallel NOR supports <strong>JEDEC CFI (JESD68)</strong>.</p>
-<p>JEDEC stands for <em>Joint Electron Device Engineering Council</em>. JEDEC defines standards that help software read the Flash manufacturer ID and device ID to determine Flash size and algorithms.</p>
-<p>Note: not all chips strictly follow these standards.</p>
-<h2 id="nor-package">NOR Package</h2>
-<p>NOR flash comes in parallel and serial variants. Serial NOR is commonly packaged as SOP and uses SPI. Parallel NOR has a few BGA options, but is typically TSOP packaged, e.g. TSOP-56, TFBGA-56, LFBGA-64.</p>
+                </span></span></p></section><article class="article markdown-body"><h2 id="what-is-firmware">What is Firmware?</h2>
+<p>Firmware, sometimes referred to as a <em>firmware image</em> (or simply &ldquo;ROM&rdquo; in mobile communities), resides in <strong>Non-Volatile Memory (NVM)</strong> and can be both read and written. In embedded systems, the most common NVM types are <strong>ROM</strong> (Read-Only Memory) and <strong>Flash memory</strong>. While strictly speaking, &ldquo;ROM&rdquo; includes Mask ROM, PROM, EPROM, and EEPROM, modern &ldquo;mainstream ROM&rdquo; usually refers to EEPROM integrated within an MCU. Flash memory typically serves as the primary external storage.</p>
+<p>In embedded devices, beyond standard NAND or NOR flash chips, you may also encounter <strong>eMMC</strong>. For expandable storage, devices might use SD cards, CF cards, USB drives, or HDDs. These storage solutions generally follow a <em>controller + storage</em> architecture: a controller bridges the host and the storage medium. As long as you can interact with the controller, you can read or write to the underlying storage.</p>
+<p>Devices like eMMC, SD cards, and HDDs expose standard external interfaces, allowing them to be read using standard card readers or programming sockets. In contrast, raw flash chips are managed directly by the SoC (System on Chip) via specific drivers; they lack a generic external interface. However, because these chips are memory-mapped peripherals, you can interact with them if you can access their address space. This is the principle behind techniques like <strong>reading firmware via JTAG</strong>, <strong>IAP (In-Application Programming)</strong>, or <strong>bootloaders (like U-Boot)</strong>. Theoretically, even if the device&rsquo;s main controller is non-functional, the firmware can still be recovered directly from the storage chip.</p>
+<p>For the purpose of this series, I define &ldquo;firmware&rdquo; as the original files containing the operating system and data stored on these media. In embedded security research, firmware extraction is almost always the first—and most critical—step. Without the firmware, further research often hits a dead end. This series aims to systematically share the knowledge and techniques I&rsquo;ve accumulated over years of performing firmware extraction.</p>
+<h2 id="eeprom-vs-nor-vs-nand-flash">EEPROM vs. NOR vs. NAND Flash</h2>
+<p><strong>EEPROM</strong> typically offers much higher endurance (erase/write cycles) than Flash memory. Combined with small package sizes and low write/erase power consumption, EEPROM is often the preferred choice for storing configuration data, particularly in automotive applications.</p>
+<p>For high-performance storage, <strong>Flash memory</strong> is the standard. There are two main types:</p>
+<ul>
+<li><strong>NOR Flash:</strong> Supports <strong>XIP (eXecute In Place)</strong> and offers fast read speeds, but provides slower write and erase operations. It supports <strong>random access</strong>, making it ideal for code execution.</li>
+<li><strong>NAND Flash:</strong> Accessed in <strong>blocks</strong> rather than randomly. It offers significantly higher capacity, higher throughput, and lower cost per bit, but generally has lower reliability and requires complex management.</li>
+</ul>
+<p>To communicate with these media, you must speak their protocols:</p>
+<ul>
+<li><strong>EEPROM:</strong> Typically uses <strong>I2C</strong> or <strong>SPI</strong> (Serial Peripheral Interface).</li>
+<li><strong>NOR Flash:</strong> Serial NOR usually uses <strong>SPI</strong>; Parallel NOR uses a parallel bus. Protocol standards include <strong>JEDEC SFDP (JESD216)</strong> for SPI and <strong>JEDEC CFI (JESD68)</strong> for parallel NOR.</li>
+<li><strong>NAND Flash:</strong> Uses the <strong>Raw NAND</strong> protocol, with most modern devices adhering to the <strong>ONFI</strong> (Open NAND Flash Interface) standard.</li>
+</ul>
+<p><em>Note: JEDEC (Joint Electron Device Engineering Council) defines standards that allow software to query a Flash chip&rsquo;s manufacturer and device IDs to determine its size and capabilities. However, not all chips strictly adhere to these standards.</em></p>
+<h2 id="nor-flash-packages">NOR Flash Packages</h2>
+<p>NOR flash is available in parallel and serial variants.</p>
+<ul>
+<li><strong>Serial NOR:</strong> Commonly packaged as <strong>SOP</strong> (Small Outline Package) and uses SPI.</li>
+<li><strong>Parallel NOR:</strong> Typically uses <strong>TSOP</strong> (Thin Small Outline Package) like TSOP-56, or BGA (Ball Grid Array) like TFBGA-56 and LFBGA-64.</li>
+</ul>
 <h2 id="nor-flash-pin-assignment">NOR Flash Pin Assignment</h2>
-<p>NOR flash supports random access, so its erase granularity can be as small as a byte. This section refers to <strong>parallel signal pins</strong>—NOR pinouts are very similar to SRAM. If you need to wire it manually (flying leads), it becomes especially painful.</p>
+<p>Because NOR flash supports random access, it functions similarly to SRAM. Below is the pinout for a parallel NOR flash chip. Manually wiring these (using &ldquo;flying leads&rdquo;) can be tedious due to the high pin count.</p>
 <table>
   <thead>
       <tr>
-          <th>Symbol</th>
-          <th>Pin Name</th>
-          <th>Function</th>
+          <th style="text-align: left">Symbol</th>
+          <th style="text-align: left">Pin Name</th>
+          <th style="text-align: left">Function</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>A[MAX:0]</td>
-          <td>Address</td>
-          <td>Address bits for read/write operations</td>
+          <td style="text-align: left"><strong>A[MAX:0]</strong></td>
+          <td style="text-align: left">Address</td>
+          <td style="text-align: left">Address bits for read/write operations</td>
       </tr>
       <tr>
-          <td>DQ[7:0]</td>
-          <td>Data Inputs/Outputs</td>
-          <td>Used for command/data input and output</td>
+          <td style="text-align: left"><strong>DQ[7:0]</strong></td>
+          <td style="text-align: left">Data I/O</td>
+          <td style="text-align: left">Inputs/Outputs for commands and data</td>
       </tr>
       <tr>
-          <td>DQ[14:8]</td>
-          <td>Data Inputs/Outputs</td>
-          <td>Used for command/data input and output</td>
+          <td style="text-align: left"><strong>DQ[14:8]</strong></td>
+          <td style="text-align: left">Data I/O</td>
+          <td style="text-align: left">Inputs/Outputs for commands and data</td>
       </tr>
       <tr>
-          <td>DQ15/A-1</td>
-          <td>Data Inputs/Outputs</td>
-          <td>Data or address input</td>
+          <td style="text-align: left"><strong>DQ15/A-1</strong></td>
+          <td style="text-align: left">Data I/O</td>
+          <td style="text-align: left">Data or address input (for x8/x16 mode switching)</td>
       </tr>
       <tr>
-          <td>BYTE#</td>
-          <td>Byte/word organization select</td>
-          <td>Select 8-bit or 16-bit mode</td>
+          <td style="text-align: left"><strong>BYTE#</strong></td>
+          <td style="text-align: left">Byte/Word Select</td>
+          <td style="text-align: left">Selects 8-bit or 16-bit data organization</td>
       </tr>
       <tr>
-          <td>CE#</td>
-          <td>Chip Enable</td>
-          <td>Chip enable</td>
+          <td style="text-align: left"><strong>CE#</strong></td>
+          <td style="text-align: left">Chip Enable</td>
+          <td style="text-align: left">Activates the device</td>
       </tr>
       <tr>
-          <td>RE#</td>
-          <td>Read Enable</td>
-          <td>Read enable; data is valid on the falling edge of RE# pulse</td>
+          <td style="text-align: left"><strong>RE#</strong></td>
+          <td style="text-align: left">Read Enable</td>
+          <td style="text-align: left">Data is valid on the falling edge of this pulse</td>
       </tr>
       <tr>
-          <td>OE#</td>
-          <td>Output Enable</td>
-          <td>Output enable; when OE# is LOW, data is driven during read cycles; when OE# is HIGH, outputs are high-impedance</td>
+          <td style="text-align: left"><strong>OE#</strong></td>
+          <td style="text-align: left">Output Enable</td>
+          <td style="text-align: left">Drives data onto the bus when LOW; high-impedance when HIGH</td>
       </tr>
       <tr>
-          <td>WE#</td>
-          <td>Write Enable</td>
-          <td>Write enable</td>
+          <td style="text-align: left"><strong>WE#</strong></td>
+          <td style="text-align: left">Write Enable</td>
+          <td style="text-align: left">Triggers write operations</td>
       </tr>
       <tr>
-          <td>WP#</td>
-          <td>Write Protect</td>
-          <td>Protects against unintended program/erase; when WP# is LOW, other operations are blocked</td>
+          <td style="text-align: left"><strong>WP#</strong></td>
+          <td style="text-align: left">Write Protect</td>
+          <td style="text-align: left">Prevents unintended program/erase operations when LOW</td>
       </tr>
       <tr>
-          <td>RST#</td>
-          <td>Reset</td>
-          <td></td>
+          <td style="text-align: left"><strong>RST#</strong></td>
+          <td style="text-align: left">Reset</td>
+          <td style="text-align: left">Resets the device</td>
       </tr>
       <tr>
-          <td>RY/BY#</td>
-          <td>Read / Busy Output</td>
-          <td>LOW during program/erase/random write; returns HIGH when done. When the chip is not selected or output is disabled, this pin is open-drain and high-impedance; a pull-up resistor is required</td>
+          <td style="text-align: left"><strong>RY/BY#</strong></td>
+          <td style="text-align: left">Read/Busy</td>
+          <td style="text-align: left">Output LOW during operations; HIGH when ready. Requires a pull-up resistor (open-drain).</td>
       </tr>
       <tr>
-          <td>Vcc</td>
-          <td>Power</td>
-          <td>3.3V or 1.8V supply</td>
+          <td style="text-align: left"><strong>Vcc</strong></td>
+          <td style="text-align: left">Power</td>
+          <td style="text-align: left">Supply Voltage (typically 3.3V or 1.8V)</td>
       </tr>
       <tr>
-          <td>Vss</td>
-          <td>Ground</td>
-          <td>Ground</td>
+          <td style="text-align: left"><strong>Vss</strong></td>
+          <td style="text-align: left">Ground</td>
+          <td style="text-align: left">Ground</td>
       </tr>
       <tr>
-          <td>NC</td>
-          <td>No Connection</td>
-          <td>No connection</td>
+          <td style="text-align: left"><strong>NC</strong></td>
+          <td style="text-align: left">No Connection</td>
+          <td style="text-align: left">Unconnected pin</td>
       </tr>
   </tbody>
 </table>
-<p>TSOP-56</p>
+<p><strong>TSOP-56 Pinout:</strong></p>
 <p><img loading="lazy"  src="./TSOP56.png"
         alt="TSOP-56"/></p>
 <h2 id="nand-flash">NAND Flash</h2>
-<p>NAND flash is a type of non-volatile memory. In embedded devices, <strong>SLC</strong> (1-bit per cell) is commonly used. It uses a floating-gate structure that traps electrons inside an insulated gate so data remains after power-off. Flash memory does <strong>not</strong> support overwriting in place—program operations can only write into empty (erased) cells.</p>
-<p>One way to erase cells is to apply a positive voltage to the source and leverage tunneling effects between the first floating gate and the drain, pulling the negative charge out of the floating gate toward the source. Because erasing uses a positive voltage at the source and sources are tied together, erasing cannot be done per byte; it must be done per chip or per block.</p>
-<h2 id="nand-package">NAND Package</h2>
-<p>The ONFI standard defines several common NAND packages. NAND flash is typically TSOP or BGA, both using SMT. The figures below show pin definitions for different packages.</p>
-<p>TSOP-48</p>
+<p>NAND flash is a type of non-volatile storage optimized for high density. Embedded devices commonly use <strong>SLC (Single Level Cell)</strong> NAND, which stores 1 bit per cell.</p>
+<p>Flash memory uses a <strong>floating-gate</strong> transistor structure. Electrons are trapped in an insulated floating gate to store data. A key characteristic of Flash is that it <strong>cannot support in-place overwrites</strong>. Writing involves capturing electrons, but &ldquo;erasing&rdquo; involves releasing them. To erase, a high voltage is applied to pull electrons from the floating gate. Because the source connections are grouped, <strong>erasure must happen in large blocks</strong>, not individual bytes.</p>
+<h2 id="nand-packages">NAND Packages</h2>
+<p>The ONFI standard defines several common packages for NAND flash, typically using SMT (Surface Mount Technology).</p>
+<p><strong>TSOP-48:</strong></p>
 <p><img loading="lazy"  src="./TSOP48.png"
         alt="TSOP-48"/></p>
-<p>BGA-63</p>
+<p><strong>BGA-63:</strong></p>
 <p><img loading="lazy"  src="./BGA63.png"
         alt="BGA-63"/></p>
 <h2 id="nand-flash-pin-assignment">NAND Flash Pin Assignment</h2>
-<p>NAND flash uses parallel I/O, typically 8-bit (x8). Pins with an overline (represented with “#” here) are <strong>active-low</strong>, and by default should be pulled up.</p>
+<p>NAND flash uses a multiplexed parallel I/O interface, typically 8-bit (x8). Pins marked with <code>#</code> are <strong>active-low</strong> and usually require pull-up resistors.</p>
 <table>
   <thead>
       <tr>
-          <th>Symbol</th>
-          <th>Pin Name</th>
-          <th>Function</th>
+          <th style="text-align: left">Symbol</th>
+          <th style="text-align: left">Pin Name</th>
+          <th style="text-align: left">Function</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>I/O x</td>
-          <td>Data Inputs/Outputs</td>
-          <td>Used for command/address/data I/O. When the chip is not selected or output is disabled, I/O pins are high-impedance</td>
+          <td style="text-align: left"><strong>I/O x</strong></td>
+          <td style="text-align: left">Data I/O</td>
+          <td style="text-align: left">Used for command, address, and data input/output. High-impedance when disabled.</td>
       </tr>
       <tr>
-          <td>CLE</td>
-          <td>Command Latch Enable</td>
-          <td>When CLE is HIGH, commands are latched into the command register on the rising edge of WE#</td>
+          <td style="text-align: left"><strong>CLE</strong></td>
+          <td style="text-align: left">Command Latch Enable</td>
+          <td style="text-align: left">When HIGH, commands are latched on the rising edge of WE#.</td>
       </tr>
       <tr>
-          <td>ALE</td>
-          <td>Address Latch Enable</td>
-          <td>When ALE is HIGH, addresses are latched into the address register on the rising edge of WE#</td>
+          <td style="text-align: left"><strong>ALE</strong></td>
+          <td style="text-align: left">Address Latch Enable</td>
+          <td style="text-align: left">When HIGH, addresses are latched on the rising edge of WE#.</td>
       </tr>
       <tr>
-          <td>CE#</td>
-          <td>Chip Enable</td>
-          <td>Chip enable; without CE asserted, the device stays in standby and ignores control signals</td>
+          <td style="text-align: left"><strong>CE#</strong></td>
+          <td style="text-align: left">Chip Enable</td>
+          <td style="text-align: left">Activates the device. When marked high, the device enters standby.</td>
       </tr>
       <tr>
-          <td>RE#</td>
-          <td>Read Enable</td>
-          <td>Read enable; data is valid on the falling edge of RE# pulse</td>
+          <td style="text-align: left"><strong>RE#</strong></td>
+          <td style="text-align: left">Read Enable</td>
+          <td style="text-align: left">Data is driven onto the bus on the falling edge of this pulse.</td>
       </tr>
       <tr>
-          <td>WE#</td>
-          <td>Write Enable</td>
-          <td>Write enable; writes data/address/command into NAND on the rising edge of WE#</td>
+          <td style="text-align: left"><strong>WE#</strong></td>
+          <td style="text-align: left">Write Enable</td>
+          <td style="text-align: left">Latches data/address/commands on the rising edge.</td>
       </tr>
       <tr>
-          <td>WP#</td>
-          <td>Write Protect</td>
-          <td>Protects against unintended program/erase; when WP# is LOW, other operations are blocked</td>
+          <td style="text-align: left"><strong>WP#</strong></td>
+          <td style="text-align: left">Write Protect</td>
+          <td style="text-align: left">Hardware write protection.</td>
       </tr>
       <tr>
-          <td>R/B#</td>
-          <td>Read / Busy Output</td>
-          <td>LOW during program/erase/random write; returns HIGH when done. When the chip is not selected or output is disabled, this pin is open-drain and high-impedance; a pull-up resistor is required</td>
+          <td style="text-align: left"><strong>R/B#</strong></td>
+          <td style="text-align: left">Read/Busy</td>
+          <td style="text-align: left">Indicates device status. LOW = Busy; HIGH = Ready. Open-drain output (requires pull-up).</td>
       </tr>
       <tr>
-          <td>Vcc</td>
-          <td>Power</td>
-          <td>3.3V or 1.8V supply</td>
+          <td style="text-align: left"><strong>Vcc</strong></td>
+          <td style="text-align: left">Power</td>
+          <td style="text-align: left">Supply Voltage (3.3V / 1.8V)</td>
       </tr>
       <tr>
-          <td>Vss</td>
-          <td>Ground</td>
-          <td>Ground</td>
+          <td style="text-align: left"><strong>Vss</strong></td>
+          <td style="text-align: left">Ground</td>
+          <td style="text-align: left">Ground</td>
       </tr>
       <tr>
-          <td>NC</td>
-          <td>No Connection</td>
-          <td>No connection</td>
+          <td style="text-align: left"><strong>NC</strong></td>
+          <td style="text-align: left">No Connection</td>
+          <td style="text-align: left">Unconnected</td>
       </tr>
   </tbody>
 </table>
 <p><img loading="lazy"  src="./block_diagram.png"
         alt="block_diagram"/></p>
 <h2 id="array-organization">Array Organization</h2>
-<p>Below is an example of the array organization of an 8-bit NAND from ESMT: each page contains 2048 bytes of data + 64 bytes of spare/cache, each block contains 64 pages, and the device has 1024 blocks. Including the spare area, that is 1056 Mbit total—i.e. 128 MB capacity + 4 MB spare.</p>
+<p>NAND is organized hierarchically. Below is the organization of an 8-bit NAND chip from ESMT:</p>
+<ul>
+<li><strong>Page:</strong> 2048 bytes (Data) + 64 bytes (Spare/OOB)</li>
+<li><strong>Block:</strong> 64 Pages</li>
+<li><strong>Device:</strong> 1024 Blocks</li>
+<li><strong>Total Capacity:</strong> 1056 Mbits (128 MB Data + 4 MB Spare)</li>
+</ul>
 <p><img loading="lazy"  src="./array_organization.png"
         alt="array_oragnization"/></p>
 <h2 id="tools-for-reading-firmware">Tools for Reading Firmware</h2>
-<p>This section focuses on non-expandable storage. Based on the extraction method, firmware reading can be grouped into:</p>
+<p>For non-expandable storage (soldered chips), reading methods fall into three categories:</p>
+<ol>
+<li><strong>Chip-off (Offline):</strong> Desolder the chip and read it using a dedicated programmer and socket.
 <ul>
-<li><strong>Chip-off (offline)</strong>: remove the target chip and read it with a programmer + socket. This has higher cost, and the programmer (or its controller) may not perfectly match the target chip, so manual firmware repair is often required.</li>
-<li><strong>In-circuit / online</strong>: attach external tools to the device and read via SoC-specific debug interfaces or storage-chip standard interfaces. Common prep includes a USB harness, or debuggers like J-Link, USBDM, etc. (some less common chips require special tools). This is typically an IAP-style extraction.</li>
-<li><strong>Internal backup</strong>: obtain sufficient privileges on the device and back up data from block devices, or read data via I2C/SPI driver interfaces.</li>
+<li><em>Pros:</em> Direct access, works if the device is dead.</li>
+<li><em>Cons:</em> Higher cost (hardware), potential for damage, requires handling ECC/bad blocks manually.</li>
 </ul>
-<p>After understanding chip standards and communication protocols, you don’t necessarily need a dedicated programmer for less common storage chips. With an STM32, AVR, or even a Raspberry Pi, you can often complete firmware extraction.</p>
-<h2 id="how-embedded-devices-use-flash">How Embedded Devices Use Flash</h2>
-<p>One way NOR flash resembles regular memory is that both support random access. This also enables <strong>XIP (eXecute In Place)</strong>, so code can run directly from NOR like a ROM. That makes NOR an excellent medium for code that must execute at power-on, such as BIOS/boot code.</p>
-<p>Unlike NOR, NAND does not support XIP, so it cannot store the very first-stage bootloader directly.</p>
-<p>Early phones and similar devices used both NOR and NAND. NOR was small but supported XIP, so it initialized the system and provided the NAND driver—functionally similar to a bootloader. NAND stored data and the OS image. Samsung later proposed the “NOR-less” concept: by hardcoding the NAND driver in the CPU’s on-die ROM and copying a small initial portion of NAND into low memory as a bootloader, expensive NOR flash could be eliminated—reducing board cost and complexity. Over time, NOR gradually disappeared from phones.</p>
-<p>Compared with NOR, NAND is more prone to bit flips, so <strong>error detection/correction (EDC/ECC)</strong> is required. NAND also develops bad blocks over time. Typically, a software layer is needed to handle bad-block management, wear leveling, ECC, and garbage collection. This layer is called <strong>FTL (Flash Translation Layer)</strong>. Depending on where the FTL resides, Flash memory can be categorized into <strong>Raw Flash</strong> and <strong>Managed Flash</strong>.</p>
-<p>In the early days, Raw Flash was common and the FTL lived entirely in the driver. Later, for SD/eMMC and similar media, the controller implements it in hardware.</p>
-<p>Therefore, when reading raw NAND, you must also consider bad-block management, wear leveling, ECC, etc.</p>
-<p>ECC is usually the hardest part: reading NAND with a programmer often yields errors and needs correction. Many NAND devices use hardware ECC, and the algorithm is hardware-dependent. For SLC parts, common codes include Hamming and BCH. There isn’t a single “standard” open-source implementation for every vendor’s exact parameters, so you often need special channels to obtain the correct ECC algorithm/parameters.</p>
-<p>Based on how the storage chip is used in the system, you can infer whether it stores a bootloader, the OS, or temporary data. And based on the supported standards, you can decide how to read its contents.
-More advanced firmware-extraction topics will be shared in follow-up posts.</p>
-<h2 id="reference">Reference</h2>
+</li>
+<li><strong>In-System / In-Circuit (Online):</strong> Connect external tools to the PCB to read the chip without desoldering.
+<ul>
+<li><em>Methods:</em> SoC debug interfaces (JTAG/SWD) or clamping directly to the storage chip pins (e.g., using a test clip).</li>
+<li><em>Tools:</em> J-Link, USBDM, Bus Pirate, or custom harnesses.</li>
+</ul>
+</li>
+<li><strong>Internal Backup (Software):</strong> Gain shell access (e.g., via UART or partial exploit) and use system tools (<code>dd</code>, <code>cat</code>, <code>nanddump</code>) to dump the firmware partitions.</li>
+</ol>
+<p><em>Tip: You don&rsquo;t always need expensive programmers. For common protocols, a microcontroller (STM32, AVR) or a Raspberry Pi can often be repurposed as a dumper.</em></p>
+<h2 id="architecture-how-embedded-devices-use-flash">Architecture: How Embedded Devices Use Flash</h2>
+<p><strong>NOR Flash</strong> is similar to standard RAM: it supports random access. This enables <strong>XIP (eXecute In Place)</strong>, allowing the CPU to fetch and execute instructions directly from the flash memory. This makes NOR ideal for storing the <strong>bootloader</strong> or BIOS, which must run immediately upon power-up.</p>
+<p><strong>NAND Flash</strong>, by contrast, does <strong>not</strong> support XIP. The CPU cannot execute code directly from NAND. Therefore, the very first stage of boot code cannot reside solely on NAND.</p>
+<p><strong>Historical Context (The &ldquo;NOR-less&rdquo; Shift):</strong>
+Early devices (like feature phones) used both NOR and NAND: NOR for the bootloader/kernel (XIP) and NAND for the filesystem (storage). Samsung later popularized the &ldquo;NOR-less&rdquo; concept. By embedding a small ROM inside the SoC capable of loading a bootloader from the first page of NAND into internal RAM, they eliminated the need for expensive NOR chips. This reduced cost and complexity, making NOR rare in modern high-volume consumer electronics like smartphones.</p>
+<p><strong>Managed Flash &amp; FTL:</strong>
+NAND is susceptible to <strong>bit flips</strong> and <strong>bad blocks</strong>. It requires a complex software management layer called the <strong>FTL (Flash Translation Layer)</strong> to handle:</p>
+<ul>
+<li>Error Correction Codes (ECC)</li>
+<li>Bad Block Management</li>
+<li>Wear Leveling</li>
+<li>Garbage Collection</li>
+</ul>
+<p>Depending on where this FTL resides, flash is categorized as:</p>
+<ul>
+<li><strong>Raw Flash:</strong> The FTL is implemented in the OS driver (software).</li>
+<li><strong>Managed Flash (eMMC, SD, UFS):</strong> The FTL is implemented in a hardware controller inside the storage package.</li>
+</ul>
+<p><strong>Implications for Extraction:</strong>
+When reading <strong>Raw NAND</strong>, you get the raw data including bit errors and OOB (Out-Of-Band) metadata. You must manually handle ECC algorithms (e.g., Hamming, BCH) and descrambling to reconstruct a valid binary. Since these algorithms are often vendor-specific and not standard, this is the most challenging part of raw firmware extraction.</p>
+<p>Advanced topics on reconstructing firmware from raw dumps will be covered in future posts.</p>
+<h2 id="references">References</h2>
 <p><a href="http://aturing.umcs.maine.edu/~meadow/courses/cos335/Toshiba%20NAND_vs_NOR_Flash_Memory_Technology_Overviewt.pdf"target="_blank" rel="noopener noreferrer">NAND vs. NOR Flash Memory Technology Overview</a></p>
 <p><a href="https://flashdba.com/2014/06/20/understanding-flash-blocks-pages-and-program-erases/"target="_blank" rel="noopener noreferrer">Understanding Flash: Blocks, Pages and Program / Erases</a></p>
 <p><a href="https://zhuanlan.zhihu.com/p/26745577"target="_blank" rel="noopener noreferrer">UEFI Blog 杂谈闪存二：NOR和NAND Flash</a></p>

@@ -2,7 +2,7 @@
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="Introduction to FlashROM
-It’s been more than half a year since my last post. The firmware extraction series has already reached Part 11. This one isn’t particularly hard in my opinion, so I can publish it openly."><title>Firmware Extraction Series: Reading Flash with flashrom&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+It’s been over six months since my last post. The firmware extraction series has now reached Part 11. In my opinion, this topic isn&rsquo;t particularly sensitive, so I&rsquo;m sharing it openly."><title>Firmware Extraction Series: Reading Flash with flashrom&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Firmware Extraction Series: Reading Flash with flashrom" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/firmware-extraction-series-read-flash-with-flashrom/" title="中文">
@@ -11,11 +11,11 @@ It’s been more than half a year since my last post. The firmware extraction se
                     <a href="/zh/posts/firmware-extraction-series-read-flash-with-flashrom/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><h2 id="introduction-to-flashrom">Introduction to FlashROM</h2>
-<p>It’s been more than half a year since my last post. The firmware extraction series has already reached Part 11. This one isn’t particularly hard in my opinion, so I can publish it openly.</p>
-<p>Flashrom is an open-source project for extracting (and programming) flash firmware. It supports multiple hardware platforms, SPI flash, and parallel flash.</p>
-<p>This time I ran into a <strong>NAND SPI flash</strong>: <strong>IS38SML01G1</strong>, an automotive-grade storage chip. At first I assumed “SPI flash” always meant NOR, so I didn’t read the datasheet and tried to wire it up and read it with a typical programmer. Most common programmers couldn’t read it; I also tried an RT809H and failed. After checking the datasheet, I realized it was NAND flash. At the time, only <a href="https://www.reveltronics.com/en/products/revelprog-is-serial-memory-programmer-usb"target="_blank" rel="noopener noreferrer">REVELPROG-IS</a> supported read/write for it.</p>
-<p>Initially I wanted to use an FT2232HL, but found the official documentation/support for that chip not great, so I ended up using a Raspberry Pi 3B.</p>
-<p>The <code>flashchips.c</code> file stores configuration information for various chips—very well designed and highly extensible.</p>
+<p>It’s been over six months since my last post. The firmware extraction series has now reached Part 11. In my opinion, this topic isn&rsquo;t particularly sensitive, so I&rsquo;m sharing it openly.</p>
+<p>Flashrom is an open-source project designed for extracting (and programming) flash firmware. It supports multiple hardware platforms, as well as SPI and parallel flash interfaces.</p>
+<p>I recently encountered a <strong>NAND SPI flash</strong> chip: the <strong>IS38SML01G1</strong>, an automotive-grade storage device. Initially, I assumed “SPI flash” implied NOR flash, so I attempted to wire it up and read it with a standard programmer without checking the datasheet. Most standard programmers were unable to read it; even the RT809H failed. After reviewing the datasheet, I realized it was NAND flash. At the time, only the <a href="https://www.reveltronics.com/en/products/revelprog-is-serial-memory-programmer-usb"target="_blank" rel="noopener noreferrer">REVELPROG-IS</a> supported reading and writing for this chip.</p>
+<p>I initially intended to use an FT2232HL, but due to poor official documentation and support, I opted for a Raspberry Pi 3B instead.</p>
+<p>The <code>flashchips.c</code> file stores configuration information for various chips—it is well-designed and highly extensible.</p>
 <pre tabindex="0"><code>{
     .vendor		= Vendor name
     .name		= Chip name
@@ -38,9 +38,9 @@ It’s been more than half a year since my last post. The firmware extraction se
     .read		= Chip read function
     .voltage		= Voltage range in millivolt
 }
-</code></pre><p>Based on the datasheet, I added configuration for the 38SM device.
-From the datasheet: a NAND SPI flash has <strong>1024 blocks</strong>, each block has <strong>64 pages</strong>, and each page is <strong>2K + 64 bytes</strong>, where the 64 bytes are the spare area.
-<code>total_size</code> is in KB, so there’s no need to include the spare area in the size. The voltage range is set to 2.7V–3.6V per the datasheet.</p>
+</code></pre><p>Based on the datasheet, I added the configuration for the 38SM device.
+According to the datasheet, this NAND SPI flash has <strong>1024 blocks</strong>, with each block containing <strong>64 pages</strong>. Each page consists of <strong>2K + 64 bytes</strong>, where the 64 bytes are reserved for the spare (OOB) area.
+<code>total_size</code> is specified in KB, so the spare area is excluded from this value. The voltage range is set to 2.7V–3.6V, as per the datasheet.</p>
 <pre tabindex="0"><code>{
 	.vendor		= &#34;ISSI&#34;,
 	.name		= &#34;IS38SML01G1&#34;,
@@ -63,22 +63,22 @@ From the datasheet: a NAND SPI flash has <strong>1024 blocks</strong>, each bloc
 	.read		= spi_read_issi,
 	.voltage	= {2700, 3600},
 },
-</code></pre><p>To read the flash contents, you need to implement chip initialization and read functionality. So we only need to provide pointers for <code>probe</code> and <code>read</code>. The figure below shows the command definitions, including the opcode byte, address bytes, dummy bytes, and the data bytes returned by the device. Data is transferred MSB-first.</p>
+</code></pre><p>Reading flash contents requires implementing chip initialization and read functionality. Therefore, we only need to define the <code>probe</code> and <code>read</code> function pointers. The figure below illustrates the command definitions, including the opcode byte, address bytes, dummy bytes, and the data bytes returned by the device. Data is transferred MSB-first.</p>
 <p><img loading="lazy"  src="command_set.png"
         alt="command_set"/></p>
-<p>Initialization needs to read the ID, so first define the chip IDs. The Mark Code and Device Code are useful. I also added the Communication Code <code>0x7F7F7F</code> while I was at it.</p>
+<p>Initialization requires reading the chip ID, so we must first define the IDs. The Mark Code and Device Code are useful identifiers. I also added the Communication Code <code>0x7F7F7F</code> for completeness.</p>
 <p><img loading="lazy"  src="jedec_id.png"
         alt="jedec_id"/></p>
 <pre tabindex="0"><code>#define ISSI_NAND_ID		0xC8
 #define ISSI_NAND_ID_SPI	0x21
 #define ISSI_38SML01G1		0x7F7F7F
-</code></pre><p>Flashrom’s built-in <code>probe_spi_rdid4</code> reads the JEDEC ID by sending <code>0x9F</code>, but this chip requires one dummy byte when sending the Read ID command. If you use the normal <code>probe_spi_rdid</code>, the first byte you read becomes <code>0x00</code>. The timing diagram quality in the ISSI datasheet is extremely low.</p>
+</code></pre><p>Flashrom’s built-in <code>probe_spi_rdid4</code> reads the JEDEC ID by sending <code>0x9F</code>. However, this chip requires a single dummy byte when sending the Read ID command. Consequently, using the standard <code>probe_spi_rdid</code> results in the first read byte being <code>0x00</code>. The timing diagram provided in the ISSI datasheet is of extremely low quality.</p>
 <p><img loading="lazy"  src="read_id_timing.png"
         alt="read_id_timing"/></p>
-<p>So we need a new function, named <code>probe_spi_rdid5</code>. We also add a read function <code>spi_read_issi</code>. Both need to be declared in <code>chipdrivers.h</code>.</p>
+<p>Thus, a new function is required, which I named <code>probe_spi_rdid5</code>. I also added a read function, <code>spi_read_issi</code>. Both must be declared in <code>chipdrivers.h</code>.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">probe_spi_rdid5</span><span class="p">(</span><span class="k">struct</span> <span class="n">flashctx</span> <span class="o">*</span><span class="n">flash</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">spi_read_issi</span><span class="p">(</span><span class="k">struct</span> <span class="n">flashctx</span> <span class="o">*</span><span class="n">flash</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">start</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span>
-</span></span></code></pre></div><p>For the Read ID function: if the first byte is <code>0x00</code>, skip it and continue. Alternatively, you can include a dummy byte when sending the ID command, avoiding the need to check MISO data.</p>
+</span></span></code></pre></div><p>For the Read ID function: if the first byte is <code>0x00</code>, it should be skipped. Alternatively, a dummy byte can be included when sending the ID command, which avoids the need to check the MISO data for padding.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">probe_spi_rdid5</span><span class="p">(</span><span class="k">struct</span> <span class="n">flashctx</span> <span class="o">*</span><span class="n">flash</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">const</span> <span class="k">struct</span> <span class="n">flashchip</span> <span class="o">*</span><span class="n">chip</span> <span class="o">=</span> <span class="n">flash</span><span class="o">-&gt;</span><span class="n">chip</span><span class="p">;</span>
@@ -123,24 +123,24 @@ From the datasheet: a NAND SPI flash has <strong>1024 blocks</strong>, each bloc
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>Next is the read function. First, you need to understand the chip’s read flow: the NAND controller first loads NAND data into the <strong>cache memory</strong> (one page at a time), then reads data out from the cache and outputs it to the host.</p>
+</span></span></code></pre></div><p>Next is the read function. It is important to first understand the chip’s read flow: the NAND controller loads NAND data into <strong>cache memory</strong> (one page at a time) before reading it out from the cache to output to the host.</p>
 <p><img loading="lazy"  src="blockdiagram.png"
         alt="blockdiagram"/></p>
-<p>So you must first send a page-read command and tell the controller which page to read. While NAND data is being transferred into the cache, you must not perform other read/write operations. At this time, the status register should indicate busy, i.e. OIP == 1.</p>
-<p>After sending the page-read command, you should poll by sending <code>0x0F 0xC0</code> in a loop until OIP == 0.</p>
+<p>Therefore, a page-read command must first be sent to instruct the controller which page to read. While data is being transferred into the cache, no other read/write operations should be performed. During this process, the status register will indicate a busy state (i.e., OIP == 1).</p>
+<p>After sending the page-read command, the status must be polled by repeatedly sending <code>0x0F 0xC0</code> until OIP == 0.</p>
 <p><img loading="lazy"  src="status_register.png"
         alt="status_register"/></p>
-<p>So a complete read sequence is:</p>
+<p>The complete read sequence is as follows:</p>
 <p>0x13 page read<br>
 0x0F 0xC0 status polling<br>
 0x03 cache read</p>
-<p>According to the command definition, page-read uses 3 address bytes, where 1 byte is dummy, so the maximum address is 0xFFFF (65536 in decimal). 1024 blocks * 64 pages = 65536 pages. Here I temporarily interpret the dummy byte as [7:0], and the address as [23:8].</p>
+<p>According to the command definition, the page-read command uses 3 address bytes, one of which is a dummy byte. This allows for a maximum address of 0xFFFF (65536 in decimal). 1024 blocks * 64 pages equals 65536 pages. Here, I temporarily interpret the dummy byte as [7:0] and the address as [23:8].</p>
 <p><img loading="lazy"  src="page_read.png"
         alt="page_read"/></p>
-<p>For cache read, the address length is 2 bytes, plus 1 byte + 4 bits of dummy cycles, so the cache addressing is 12 bits (4096). The datasheet-defined range is 0–2112, which you can interpret as 2048 bytes + 64 bytes (OOB area).</p>
+<p>For the cache read, the address length is 2 bytes, plus 1 byte + 4 bits of dummy cycles, resulting in a cache addressing range of 12 bits (4096). The datasheet states the range is 0–2112, corresponding to 2048 bytes (data) + 64 bytes (OOB area).</p>
 <p><img loading="lazy"  src="page_cache_read.png"
         alt="page_cache_read"/></p>
-<p>Below is the implementation of <code>spi_read_issi</code>.</p>
+<p>The implementation of <code>spi_read_issi</code> is provided below:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">spi_read_issi</span><span class="p">(</span><span class="k">struct</span> <span class="n">flashctx</span> <span class="o">*</span><span class="n">flash</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">start</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="kt">uint8_t</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
@@ -206,23 +206,23 @@ From the datasheet: a NAND SPI flash has <strong>1024 blocks</strong>, each bloc
 </span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><h2 id="fly-wiring">Fly-wiring</h2>
-<p>First, use a clip fixture. Heat with a hot-air gun at 400°C, preheating from the bottom for 12 seconds.</p>
+<p>First, I secured the chip using a clip fixture and applied heat with a hot-air gun at 400°C, preheating from the bottom for 12 seconds.</p>
 <p><img loading="lazy"  src="target_device.jpg"
         alt="target_device"/></p>
-<p>Solder the chip onto an adapter board.</p>
+<p>I then soldered the chip onto an adapter board.</p>
 <p><img loading="lazy"  src="sop8.jpg"
         alt="sop8"/></p>
-<p>At first I didn’t consider that the bottom of the WSON package could cause shorts, so I reworked the fly-wires.</p>
+<p>Initially, I overlooked the potential for shorts on the underside of the WSON package, which required me to rework the fly-wires.</p>
 <p><img loading="lazy"  src="wson8.png"
         alt="wson8"/></p>
 <p><img loading="lazy"  src="jumping1.jpg"
         alt="jumping1"/></p>
 <p><img loading="lazy"  src="jumping2.jpg"
         alt="jumping2"/></p>
-<p>Connect to a Raspberry Pi 3B.
+<p>I connected it to a Raspberry Pi 3B.
 <img loading="lazy"  src="reading_by_rpi.jpg"
         alt="reading_by_rpi"/></p>
-<p>Wiring is as follows. HOLD should be tied to VCC.</p>
+<p>The wiring configuration is as follows. Note that HOLD should be tied to VCC.</p>
 <table>
   <thead>
       <tr>
@@ -268,7 +268,8 @@ sudo modprobe spidev
 </code></pre><p><img loading="lazy"  src="reading.png"
         alt="reading"/></p>
 <h2 id="target-device-initialization-analysis">Target Device Initialization Analysis</h2>
-<p>The 128MB dump was almost entirely <code>0xFF</code>. But after asking the vendor, they confirmed this chip stores some software and configuration data. The ISSI flash datasheet didn’t clearly document the address format for page reads. The address is 3 bytes; the high and low bytes are consecutive, so there are two permutations. Combined with the dummy byte, there are four possible address formats, and I couldn’t tell which one was correct. I dumped all four variants; only the distribution changed, and there was still no way to confirm the correct mapping.</p>
+<h2 id="target-device-initialization-analysis-1">Target Device Initialization Analysis</h2>
+<p>The extracted 128MB dump consisted almost entirely of <code>0xFF</code>. However, the vendor confirmed that the chip should contain software and configuration data. The ISSI flash datasheet lacked clear documentation regarding the address format for page reads. Since the address consists of 3 bytes, and the high/low bytes are consecutive, there are two permutations. Combined with the dummy byte, this results in four possible address modes. I was unable to determine the correct one. I dumped all four variants; while the data distribution changed, I could not confirm the correct mapping.</p>
 <p><img loading="lazy"  src="flashdump1.png"
         alt="flashdump1"/>
 <img loading="lazy"  src="flashdump2.png"
@@ -277,75 +278,76 @@ sudo modprobe spidev
         alt="flashdump3"/>
 <img loading="lazy"  src="flashdump4.png"
         alt="flashdump4"/></p>
-<p>With a driver implemented strictly according to the datasheet, the dump still came out almost entirely <code>0xFF</code>, so I suspected something was wrong and brought in a logic analyzer.
+<p>Even with a driver implemented strictly according to the datasheet, the dump was predominantly <code>0xFF</code>. Suspecting an issue, I used a logic analyzer to investigate.
 You only need to capture three channels: MOSI, MISO, CLK. Use MSB; set CPOL and CPHA to 0.</p>
 <p><img loading="lazy"  src="spi_mode.png"
         alt="spi_mode"/>
 <img loading="lazy"  src="kingst_spiconf.png"
         alt="kingst_spiconf"/></p>
-<p>Trigger on the rising edge; set sampling rate to 200MHz.
-First, I captured the SPI traffic when the Raspberry Pi was reading the flash. It matched the datasheet.</p>
+<p>Triggering on the rising edge with a sampling rate of 200MHz, I first captured the SPI traffic during the Raspberry Pi&rsquo;s read operation. It matched the datasheet.</p>
 <p>Read JEDEC ID:</p>
 <p><img loading="lazy"  src="rpi_spi_init.png"
         alt="rpi_spi_init"/></p>
 <p>Read status:</p>
 <p><img loading="lazy"  src="rpi_status.png"
         alt="rpi_status"/></p>
-<p>When reading cache, after sending 4 bytes, MISO stayed high the whole time, which made it feel like something was off.</p>
+<p>When reading the cache, after sending 4 bytes, MISO remained high throughout. This behavior seemed anomalous.</p>
 <p><img loading="lazy"  src="rpi_spi_read_cache.png"
         alt="rpi_spi_read_cache"/></p>
-<p>Then I captured traffic from the target device.</p>
+<p>Then, I captured traffic from the target device.</p>
 <p><img loading="lazy"  src="logical_analyzer_probe.jpg"
         alt="logical_analyzer_probe"/></p>
-<p>First, reading the JEDEC ID was fine. Compared to the Raspberry Pi, the target device only returned the first two ID bytes.</p>
+<p>The JEDEC ID read was normal. Unlike the Raspberry Pi, the target device only returned the first two bytes of the ID.</p>
 <p><img loading="lazy"  src="target_init.png"
         alt="target_init"/></p>
-<p>From page read to cache read: it sends the page-read command, then reads status, waits for the controller to return 0, then sends the cache-read command. This is where things went wrong. MISO still output <code>0xFF</code>, but in 4-byte chunks; after each 4-byte output, the master would “receive” 4 bytes of unknown meaning, alternating in a loop. <code>0x03</code> is confirmed to be single-lane transfer, and on the Raspberry Pi, MOSI wouldn’t generate any data during this phase, which suggests those bytes weren’t coming from the slave.</p>
+<p>The sequence from page read to cache read involves sending the page-read command, reading the status, waiting for the controller to return 0, and then sending the cache-read command. This is where the discrepancy occurred. MISO still output <code>0xFF</code>, but in 4-byte chunks. After each 4-byte output, the master would “receive” 4 bytes of unknown data, alternating in a loop. Since <code>0x03</code> confirms a single-lane transfer, and the Raspberry Pi&rsquo;s MOSI line was idle during this phase, these bytes were likely not originating from the slave.</p>
 <p><img loading="lazy"  src="target_reading.png"
         alt="target_reading"/></p>
-<p>At least this suggests my code wasn’t the issue—rather, the device wasn’t actually using this storage chip at the moment.</p>
+<p>This suggested that my code wasn&rsquo;t the issue; rather, the device wasn&rsquo;t actively using this storage chip at that moment.</p>
 <h2 id="consequences-of-reading-the-oob">Consequences of Reading the OOB</h2>
-<p>At first I tried to dump the spare area as well, so I set the response buffer to 2112 bytes. In the dump file, I saw an ELF header, and initially thought the target device used ELF binaries. But something felt off—why would an automotive gateway run Linux?</p>
+<h2 id="consequences-of-reading-the-oob-1">Consequences of Reading the OOB</h2>
+<p>Initially, I attempted to dump the spare area as well by setting the response buffer to 2112 bytes. In the resulting dump file, I observed an ELF header, which led me to believe the target device ran ELF binaries. However, this seemed unusual—why would an automotive gateway run Linux?</p>
 <p><img loading="lazy"  src="dump1.png"
         alt="dump1"/></p>
-<p>Later, after checking the memory address layout, it looked like I exceeded the heap size and did an out-of-bounds read into subsequent library data.</p>
+<p>Later, after checking the memory address layout, I realized I had exceeded the heap size and performed an out-of-bounds read into adjacent library data.</p>
 <p><img loading="lazy"  src="maps.png"
         alt="maps"/></p>
-<p>If you do the math: the first segment is the actual heap size, the second is the actual read size, and the third is the normal read size—so don’t read the spare area.</p>
+<p>The math confirms this: the first segment is the actual heap size, the second is the actual read size, and the third is the normal read size. Therefore, one should not attempt to read the spare area in this context.</p>
 <p><img loading="lazy"  src="address_calc.png"
         alt="address_calc"/></p>
 <h2 id="revelprog-is-unboxing">REVELPROG-IS Unboxing</h2>
-<p>More than a month later, I bought a REVELPROG-IS to verify whether flashrom’s read results were correct.</p>
+<p>Over a month later, I purchased a REVELPROG-IS to verify the accuracy of flashrom’s read results.</p>
 <p><img loading="lazy"  src="package.jpg"
         alt="package"/></p>
-<p>Made in Poland. The packaging and programmer look decent.</p>
+<p>Made in Poland, the packaging and programmer appear to be of good quality.</p>
 <p><img loading="lazy"  src="revelprog.jpg"
         alt="revelprog"/></p>
-<p>The circuit design is simple: one STM32F103. It’s a bit pricey, but at least it hasn’t been cloned aggressively.</p>
+<p>The circuit design is simple, featuring a single STM32F103. While it is somewhat expensive, it at least hasn&rsquo;t been aggressively cloned.</p>
 <p><img loading="lazy"  src="STM32F103.jpg"
         alt="STM32F103"/></p>
 <h2 id="verifying-the-dump">Verifying the Dump</h2>
-<p>The WSON8 socket hadn’t arrived yet, so I temporarily used fly-wires.</p>
+<p>Since the WSON8 socket hadn&rsquo;t arrived, I temporarily used fly-wires for the connection.</p>
 <p><img loading="lazy"  src="reading_with_prog.jpg"
         alt="reading_with_prog"/></p>
-<p>The read speed was extremely slow and took a few minutes. It doesn’t support speed adjustment—flashrom is still the fastest.</p>
+<p>The read speed was extremely slow, taking several minutes. It does not support speed adjustment, making flashrom significantly faster.</p>
 <p><img loading="lazy"  src="reading_with_prog2.png"
         alt="reading_with_prog2"/></p>
 <p>The data read was consistent with the earlier dump.</p>
 <p><img loading="lazy"  src="result.png"
         alt="result"/></p>
-<p>The address format matches the third variant. I forgot the exact ordering, but I’ll use this programmer for future dumps.</p>
+<p>The address format matches the third variant. Although I&rsquo;ve forgotten the exact ordering, I plan to use this programmer for future dumps.</p>
 <p><img loading="lazy"  src="flashdump5.png"
         alt="flashdump5"/></p>
 <h2 id="errata">Errata</h2>
-<p>In later research, I found a few pitfalls in this post.
-<code>address_h</code> and <code>address_l</code> were assumptions made without knowing the actual addressing rules, because the datasheet didn’t document them. I assumed both were 8-bit.
-After reading datasheets for several other chips, I confirmed this was problematic.</p>
+<h2 id="errata-1">Errata</h2>
+<p>In subsequent research, I identified a few pitfalls in this post.
+<code>address_h</code> and <code>address_l</code> were assumptions made without knowledge of the actual addressing rules, as they were undocumented in the datasheet. I incorrectly assumed both were 8-bit.
+After reviewing datasheets for several other chips, I confirmed this was an issue.</p>
 <p><img loading="lazy"  src="readpage_address.png"
         alt="readpage_address"/></p>
-<p>In reality, these two parameters represent the <strong>block address</strong> and <strong>page address</strong>. The device has 1024 blocks (10 bits) and 64 pages per block (6 bits), totaling exactly 16 bits. Different chip capacities follow different rules.</p>
-<p>So the read results can contain repeats. Also, since the valid data happened to be distributed near the beginning of the storage and the rest was invalid, the final result still looked consistent with the programmer’s dump—even with a wrong address interpretation.</p>
-<p>Additionally, the <code>status</code> check in the sample code is not strictly correct: status doesn’t have to be 0 for reads to work. BBM LUT FULL (Look-Up Table) may also be 1, and ECC Err Status can be 0x20.</p>
+<p>In reality, these two parameters represent the <strong>block address</strong> and <strong>page address</strong>. The device has 1024 blocks (10 bits) and 64 pages per block (6 bits), totaling exactly 16 bits. Different chip capacities follow different addressing rules.</p>
+<p>Consequently, the read results can contain duplicated data. Furthermore, since the valid data was located near the beginning of the storage and the rest was irrelevant, the final result appeared consistent with the programmer’s dump—despite the incorrect address interpretation.</p>
+<p>Additionally, the <code>status</code> check in the sample code is not strictly correct: the status doesn&rsquo;t necessarily have to be 0 for reads to proceed. BBM LUT FULL (Look-Up Table) may also be 1, and ECC Err Status can be 0x20.</p>
 <p><img loading="lazy"  src="status.png"
         alt="status"/></p>
 </article><section class="article labels"><a class="category" href=/en/categories/firmware-extraction-series/>Firmware Extraction Series</a><a class="tag" href=/en/tags/flashrom/>FlashROM</a><a class="tag" href=/en/tags/nand/>NAND</a><a class="tag" href=/en/tags/raspberry-pi/>Raspberry Pi</a></section>
