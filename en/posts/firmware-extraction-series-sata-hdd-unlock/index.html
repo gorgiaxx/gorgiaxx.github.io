@@ -6,7 +6,138 @@ This post documents the journey of extracting data from a locked hard drive, inc
 <meta name="twitter:title" content="Firmware Extraction Series - SATA HDD Unlock" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/firmware-extraction-series-sata-hdd-unlock/" title="中文">
-            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><style>
+     
+    .toc-wrapper {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+     
+    .toc-button {
+        background-color: #fff;
+        color: #333;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .toc-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .toc-button svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+    }
+
+     
+    .toc-content-box {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px;
+        width: 250px;
+        max-height: 60vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: none;
+         
+        font-size: 0.9em;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .toc-content-box.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .toc-header {
+        font-weight: bold;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+
+     
+    #TableOfContents {
+        text-align: left;
+    }
+
+    #TableOfContents ul,
+    #TableOfContents ol {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    #TableOfContents li {
+        margin: 4px 0;
+    }
+
+    #TableOfContents ul ul,
+    #TableOfContents ol ol {
+        padding-left: 1em;
+    }
+
+    #TableOfContents a {
+        text-decoration: none;
+        color: #555;
+        display: block;
+        padding: 2px 0;
+        transition: color 0.2s;
+    }
+
+    #TableOfContents a:hover {
+        color: #007bff;
+    }
+
+     
+    @media (prefers-color-scheme: dark) {
+        .toc-button {
+            background-color: #333;
+            color: #ddd;
+            border-color: #555;
+        }
+
+        .toc-content-box {
+            background-color: #2a2a2a;
+            border-color: #444;
+            color: #ddd;
+        }
+
+        .toc-header {
+            border-bottom-color: #444;
+        }
+
+        #TableOfContents a {
+            color: #aaa;
+        }
+
+        #TableOfContents a:hover {
+            color: #fff;
+        }
+    }
+</style><div class="article-container"><section class="article header">
     <h1 class="article title">Firmware Extraction Series - SATA HDD Unlock</h1><p class="article date">Saturday, April 20, 2019<span class="langs"><span class="lang">
                     <a href="/zh/posts/firmware-extraction-series-sata-hdd-unlock/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
@@ -160,7 +291,57 @@ Device     Boot     Start       End   Sectors   Size Id Type
 <p><a href="http://www.dstchina.cn/news-577-53.html"target="_blank" rel="noopener noreferrer">Geek Notes: SATA protocol analysis (Part 5)</a></p>
 </article><section class="article labels"><a class="category" href=/en/categories/firmware-extraction-series/>Firmware Extraction Series</a><a class="tag" href=/en/tags/ntg64/>NTG64</a><a class="tag" href=/en/tags/sata/>SATA</a><a class="tag" href=/en/tags/unlock/>unlock</a><a class="tag" href=/en/tags/hdd/>HDD</a></section>
 </div>
-<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/firmware-extraction-series-read-flash-with-flashrom/"><span class="iconfont icon-article"></span>Firmware Extraction Series: Reading Flash with flashrom</a></p><p><a class="link" href="/en/posts/firmware-extraction-series-rawnand-file-recovery/"><span class="iconfont icon-article"></span>Firmware Extraction Series - Raw NAND File Recovery</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+
+<div class="toc-wrapper">
+    <div class="toc-content-box" id="toc-content-box">
+        <div class="toc-header">Table of Contents</div>
+        <nav id="TableOfContents">
+  <ol>
+    <li><a href="#preface">Preface</a></li>
+    <li><a href="#exploration">Exploration</a></li>
+    <li><a href="#decryption-process">Decryption process</a></li>
+    <li><a href="#related-links">Related links</a></li>
+  </ol>
+</nav>
+    </div>
+    <div class="toc-button" onclick="toggleTOC()" title="">
+        
+        <svg viewBox="0 0 24 24">
+            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path>
+        </svg>
+    </div>
+</div>
+
+<script>
+    function toggleTOC() {
+        const tocBox = document.getElementById('toc-content-box');
+        if (tocBox.classList.contains('show')) {
+            tocBox.classList.remove('show');
+            
+            
+            
+            
+            
+            setTimeout(() => {
+                tocBox.style.display = 'none';
+            }, 300); 
+        } else {
+            tocBox.style.display = 'block';
+            
+            void tocBox.offsetWidth;
+            tocBox.classList.add('show');
+        }
+    }
+
+    
+    document.addEventListener('click', function (event) {
+        const wrapper = document.querySelector('.toc-wrapper');
+        const tocBox = document.getElementById('toc-content-box');
+        if (wrapper && !wrapper.contains(event.target) && tocBox.classList.contains('show')) {
+            toggleTOC();
+        }
+    });
+</script><div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/firmware-extraction-series-read-flash-with-flashrom/"><span class="iconfont icon-article"></span>Firmware Extraction Series: Reading Flash with flashrom</a></p><p><a class="link" href="/en/posts/firmware-extraction-series-rawnand-file-recovery/"><span class="iconfont icon-article"></span>Firmware Extraction Series - Raw NAND File Recovery</a></p></section></div></section><section id="footer"><div class="footer-wrap">
     <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
         <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
             <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />

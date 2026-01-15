@@ -8,7 +8,138 @@
 <meta name="twitter:title" content="在GitCafe上部署Hexo博客" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a><a class="nav item" href="/en/posts/deploy-hexo-blog-on-gitcafe/" title="English">
-            <span class="lang-icon">🌐</span>English</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+            <span class="lang-icon">🌐</span>English</a></nav></div></span></div></section><section id="content"><style>
+     
+    .toc-wrapper {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+     
+    .toc-button {
+        background-color: #fff;
+        color: #333;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .toc-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .toc-button svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+    }
+
+     
+    .toc-content-box {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px;
+        width: 250px;
+        max-height: 60vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: none;
+         
+        font-size: 0.9em;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .toc-content-box.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .toc-header {
+        font-weight: bold;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+
+     
+    #TableOfContents {
+        text-align: left;
+    }
+
+    #TableOfContents ul,
+    #TableOfContents ol {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    #TableOfContents li {
+        margin: 4px 0;
+    }
+
+    #TableOfContents ul ul,
+    #TableOfContents ol ol {
+        padding-left: 1em;
+    }
+
+    #TableOfContents a {
+        text-decoration: none;
+        color: #555;
+        display: block;
+        padding: 2px 0;
+        transition: color 0.2s;
+    }
+
+    #TableOfContents a:hover {
+        color: #007bff;
+    }
+
+     
+    @media (prefers-color-scheme: dark) {
+        .toc-button {
+            background-color: #333;
+            color: #ddd;
+            border-color: #555;
+        }
+
+        .toc-content-box {
+            background-color: #2a2a2a;
+            border-color: #444;
+            color: #ddd;
+        }
+
+        .toc-header {
+            border-bottom-color: #444;
+        }
+
+        #TableOfContents a {
+            color: #aaa;
+        }
+
+        #TableOfContents a:hover {
+            color: #fff;
+        }
+    }
+</style><div class="article-container"><section class="article header">
     <h1 class="article title">在GitCafe上部署Hexo博客</h1><p class="article date">2015-11-01<span class="langs"><span class="lang">
                     <a href="/en/posts/deploy-hexo-blog-on-gitcafe/" title="English">
                         <span class="lang-icon">🌐</span>English</a>
@@ -230,7 +361,65 @@ Project name与用户名相同，点击创建
 标题已经改变</p>
 </article><section class="article labels"><a class="category" href=/zh/categories/%E6%8A%98%E8%85%BE/>折腾</a><a class="tag" href=/zh/tags/git/>git</a><a class="tag" href=/zh/tags/hexo/>hexo</a><a class="tag" href=/zh/tags/%E5%8D%9A%E5%AE%A2/>博客</a></section>
 </div>
-<div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/esxi-5-5-tinkering-notes-1/"><span class="iconfont icon-article"></span>ESXi 5.5 折腾笔记一</a></p><p><a class="link" href="/zh/posts/docker-beginner-notes/"><span class="iconfont icon-article"></span>小鲸鱼Docker新手学习笔记</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+
+<div class="toc-wrapper">
+    <div class="toc-content-box" id="toc-content-box">
+        <div class="toc-header">目录</div>
+        <nav id="TableOfContents">
+  <ol>
+    <li><a href="#注意事项">注意事项</a></li>
+    <li><a href="#参考资料">参考资料</a></li>
+    <li><a href="#环境准备">环境准备</a>
+      <ol>
+        <li><a href="#安装git">安装git</a></li>
+        <li><a href="#配置nodejs环境变量">配置NodeJS环境变量</a></li>
+      </ol>
+    </li>
+    <li><a href="#注册gitcafe账号">注册Gitcafe账号</a></li>
+    <li><a href="#安装配置hexo">安装配置hexo</a></li>
+    <li><a href="#写博客">写博客</a></li>
+    <li><a href="#git工具的简单使用">Git工具的简单使用</a></li>
+  </ol>
+</nav>
+    </div>
+    <div class="toc-button" onclick="toggleTOC()" title="">
+        
+        <svg viewBox="0 0 24 24">
+            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path>
+        </svg>
+    </div>
+</div>
+
+<script>
+    function toggleTOC() {
+        const tocBox = document.getElementById('toc-content-box');
+        if (tocBox.classList.contains('show')) {
+            tocBox.classList.remove('show');
+            
+            
+            
+            
+            
+            setTimeout(() => {
+                tocBox.style.display = 'none';
+            }, 300); 
+        } else {
+            tocBox.style.display = 'block';
+            
+            void tocBox.offsetWidth;
+            tocBox.classList.add('show');
+        }
+    }
+
+    
+    document.addEventListener('click', function (event) {
+        const wrapper = document.querySelector('.toc-wrapper');
+        const tocBox = document.getElementById('toc-content-box');
+        if (wrapper && !wrapper.contains(event.target) && tocBox.classList.contains('show')) {
+            toggleTOC();
+        }
+    });
+</script><div class="article bottom"><section class="article navigation"><p><a class="link" href="/zh/posts/esxi-5-5-tinkering-notes-1/"><span class="iconfont icon-article"></span>ESXi 5.5 折腾笔记一</a></p><p><a class="link" href="/zh/posts/docker-beginner-notes/"><span class="iconfont icon-article"></span>小鲸鱼Docker新手学习笔记</a></p></section></div></section><section id="footer"><div class="footer-wrap">
     <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
         <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
             <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />

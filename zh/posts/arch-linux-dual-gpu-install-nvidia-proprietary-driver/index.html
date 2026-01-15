@@ -7,7 +7,78 @@
 <meta name="twitter:title" content="Arch Linux 双显卡 安装 NVIDIA 闭源驱动" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/zh/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/zh/categories/">分类</a><a class="nav item" href="/zh/tags/">标签</a><a class="nav item" href="/zh/about/">关于</a><a class="nav item" href="/zh/links/">友链</a><a class="nav item" href="/en/posts/arch-linux-dual-gpu-install-nvidia-proprietary-driver/" title="English">
-            <span class="lang-icon">🌐</span>English</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+            <span class="lang-icon">🌐</span>English</a></nav></div></span></div></section><section id="content"><style>
+.wiki-toc {
+    background-color: #f8f9fa;
+    border: 1px solid #a2a9b1;
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 10px 0 20px 0;
+    min-width: 200px;
+    max-width: 100%;
+    font-size: 0.95em;
+    box-sizing: border-box;
+}
+
+.wiki-toc-title {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 10px;
+     
+     
+}
+
+ 
+#TableOfContents {
+    text-align: left;
+}
+
+#TableOfContents ol {
+    list-style-type: none;
+    padding-left: 0;
+    counter-reset: item;
+}
+
+#TableOfContents ol ol {
+    padding-left: 1.5em;  
+}
+
+#TableOfContents li {
+    display: block;
+    margin: 2px 0;
+}
+
+#TableOfContents li:before {
+    content: counters(item, ".") " ";
+    counter-increment: item;
+    font-weight: bold;
+    color: #54595d;
+    margin-right: 5px;
+}
+
+#TableOfContents a {
+    text-decoration: none;
+    color: #0645ad;
+}
+
+#TableOfContents a:hover {
+    text-decoration: underline;
+}
+
+ 
+@media (prefers-color-scheme: dark) {
+    .wiki-toc {
+        background-color: #2a2a2a;
+        border-color: #444;
+    }
+    #TableOfContents li:before {
+        color: #aaa;
+    }
+    #TableOfContents a {
+        color: #66b0ff;
+    }
+}
+</style><div class="article-container"><section class="article header">
     <h1 class="article title">Arch Linux 双显卡 安装 NVIDIA 闭源驱动</h1><p class="article date">2017-01-17<span class="langs"><span class="lang">
                     <a href="/en/posts/arch-linux-dual-gpu-install-nvidia-proprietary-driver/" title="English">
                         <span class="lang-icon">🌐</span>English</a>

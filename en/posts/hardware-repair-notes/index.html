@@ -6,7 +6,138 @@
 <meta name="twitter:title" content="Hardware Repair Notes" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/hardware-repair-notes/" title="中文">
-            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><style>
+     
+    .toc-wrapper {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+     
+    .toc-button {
+        background-color: #fff;
+        color: #333;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .toc-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .toc-button svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+    }
+
+     
+    .toc-content-box {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px;
+        width: 250px;
+        max-height: 60vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: none;
+         
+        font-size: 0.9em;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .toc-content-box.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .toc-header {
+        font-weight: bold;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+
+     
+    #TableOfContents {
+        text-align: left;
+    }
+
+    #TableOfContents ul,
+    #TableOfContents ol {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    #TableOfContents li {
+        margin: 4px 0;
+    }
+
+    #TableOfContents ul ul,
+    #TableOfContents ol ol {
+        padding-left: 1em;
+    }
+
+    #TableOfContents a {
+        text-decoration: none;
+        color: #555;
+        display: block;
+        padding: 2px 0;
+        transition: color 0.2s;
+    }
+
+    #TableOfContents a:hover {
+        color: #007bff;
+    }
+
+     
+    @media (prefers-color-scheme: dark) {
+        .toc-button {
+            background-color: #333;
+            color: #ddd;
+            border-color: #555;
+        }
+
+        .toc-content-box {
+            background-color: #2a2a2a;
+            border-color: #444;
+            color: #ddd;
+        }
+
+        .toc-header {
+            border-bottom-color: #444;
+        }
+
+        #TableOfContents a {
+            color: #aaa;
+        }
+
+        #TableOfContents a:hover {
+            color: #fff;
+        }
+    }
+</style><div class="article-container"><section class="article header">
     <h1 class="article title">Hardware Repair Notes</h1><p class="article date">Sunday, November 12, 2017<span class="langs"><span class="lang">
                     <a href="/zh/posts/hardware-repair-notes/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
@@ -196,7 +327,117 @@
 <p>If it’s a BGA package without alignment marks/white lines, it’s recommended to use an optical rework station for alignment (these usually cost over ten thousand).</p>
 </article><section class="article labels"><a class="category" href=/en/categories/hardware-security/>Hardware Security</a><a class="tag" href=/en/tags/soldering-iron/>soldering iron</a><a class="tag" href=/en/tags/soldering-station/>soldering station</a></section>
 </div>
-<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/subdomain-enumeration-notes/"><span class="iconfont icon-article"></span>Subdomain Enumeration Notes</a></p><p><a class="link" href="/en/posts/find-origin-server-behind-cdn/"><span class="iconfont icon-article"></span>Approaches to Finding the Origin Server Behind a CDN</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+
+<div class="toc-wrapper">
+    <div class="toc-content-box" id="toc-content-box">
+        <div class="toc-header">Table of Contents</div>
+        <nav id="TableOfContents">
+  <ol>
+    <li><a href="#soldering-station">Soldering Station</a>
+      <ol>
+        <li><a href="#soldering-iron-tips">Soldering Iron Tips</a>
+          <ol>
+            <li><a href="#internal-heating-type">Internal heating type</a></li>
+            <li><a href="#external-heating-type">External heating type</a></li>
+            <li><a href="#shapes-and-uses">Shapes and uses</a></li>
+          </ol>
+        </li>
+        <li><a href="#heat-gun">Heat gun</a></li>
+      </ol>
+    </li>
+    <li><a href="#flux">Flux</a>
+      <ol>
+        <li><a href="#rosin-block">Rosin block</a></li>
+        <li><a href="#soldering-paste-flux-paste">Soldering paste (flux paste)</a></li>
+      </ol>
+    </li>
+    <li><a href="#solder">Solder</a>
+      <ol>
+        <li><a href="#solder-wire">Solder wire</a></li>
+        <li><a href="#solder-balls">Solder balls</a></li>
+        <li><a href="#solder-paste">Solder paste</a></li>
+      </ol>
+    </li>
+    <li><a href="#other-tools">Other tools</a>
+      <ol>
+        <li><a href="#vacuum-pickup-pen">Vacuum pickup pen</a></li>
+        <li><a href="#anti-static-tweezers">Anti-static tweezers</a></li>
+        <li><a href="#reballing-stencil">Reballing stencil</a></li>
+        <li><a href="#anti-static-soft-brush">Anti-static soft brush</a></li>
+        <li><a href="#scraper--squeegee">Scraper / squeegee</a></li>
+        <li><a href="#magnet-wire">Magnet wire</a></li>
+        <li><a href="#conductive-silver-paint">Conductive silver paint</a></li>
+      </ol>
+    </li>
+    <li><a href="#cleaning">Cleaning</a>
+      <ol>
+        <li><a href="#high-temperature-sponge">High-temperature sponge</a></li>
+        <li><a href="#tip-cleaning-ball">Tip cleaning ball</a></li>
+        <li><a href="#desoldering-braid">Desoldering braid</a></li>
+        <li><a href="#desoldering-pump">Desoldering pump</a></li>
+        <li><a href="#pcb-cleaning-solution">PCB cleaning solution</a></li>
+      </ol>
+    </li>
+    <li><a href="#wire-connector">Wire connector</a></li>
+    <li><a href="#protection">Protection</a>
+      <ol>
+        <li><a href="#hot-glue-gun">Hot glue gun</a></li>
+        <li><a href="#high-temperature-tape">High-temperature tape</a></li>
+      </ol>
+    </li>
+    <li><a href="#component-types">Component types</a>
+      <ol>
+        <li><a href="#through-hole">Through-hole</a></li>
+        <li><a href="#surface-mount">Surface-mount</a>
+          <ol>
+            <li><a href="#tqfp">TQFP</a></li>
+            <li><a href="#tsop">TSOP</a></li>
+            <li><a href="#bga">BGA</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+    </div>
+    <div class="toc-button" onclick="toggleTOC()" title="">
+        
+        <svg viewBox="0 0 24 24">
+            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path>
+        </svg>
+    </div>
+</div>
+
+<script>
+    function toggleTOC() {
+        const tocBox = document.getElementById('toc-content-box');
+        if (tocBox.classList.contains('show')) {
+            tocBox.classList.remove('show');
+            
+            
+            
+            
+            
+            setTimeout(() => {
+                tocBox.style.display = 'none';
+            }, 300); 
+        } else {
+            tocBox.style.display = 'block';
+            
+            void tocBox.offsetWidth;
+            tocBox.classList.add('show');
+        }
+    }
+
+    
+    document.addEventListener('click', function (event) {
+        const wrapper = document.querySelector('.toc-wrapper');
+        const tocBox = document.getElementById('toc-content-box');
+        if (wrapper && !wrapper.contains(event.target) && tocBox.classList.contains('show')) {
+            toggleTOC();
+        }
+    });
+</script><div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/subdomain-enumeration-notes/"><span class="iconfont icon-article"></span>Subdomain Enumeration Notes</a></p><p><a class="link" href="/en/posts/find-origin-server-behind-cdn/"><span class="iconfont icon-article"></span>Approaches to Finding the Origin Server Behind a CDN</a></p></section></div></section><section id="footer"><div class="footer-wrap">
     <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
         <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
             <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />

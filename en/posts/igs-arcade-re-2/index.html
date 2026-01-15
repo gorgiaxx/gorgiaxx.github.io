@@ -5,7 +5,138 @@
 <meta name="twitter:title" content="IGS Arcade Reverse Engineering Series (2) - Recovering Game Files" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/igs-arcade-re-2/" title="中文">
-            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><style>
+     
+    .toc-wrapper {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+     
+    .toc-button {
+        background-color: #fff;
+        color: #333;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .toc-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .toc-button svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+    }
+
+     
+    .toc-content-box {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px;
+        width: 250px;
+        max-height: 60vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: none;
+         
+        font-size: 0.9em;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .toc-content-box.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .toc-header {
+        font-weight: bold;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+
+     
+    #TableOfContents {
+        text-align: left;
+    }
+
+    #TableOfContents ul,
+    #TableOfContents ol {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    #TableOfContents li {
+        margin: 4px 0;
+    }
+
+    #TableOfContents ul ul,
+    #TableOfContents ol ol {
+        padding-left: 1em;
+    }
+
+    #TableOfContents a {
+        text-decoration: none;
+        color: #555;
+        display: block;
+        padding: 2px 0;
+        transition: color 0.2s;
+    }
+
+    #TableOfContents a:hover {
+        color: #007bff;
+    }
+
+     
+    @media (prefers-color-scheme: dark) {
+        .toc-button {
+            background-color: #333;
+            color: #ddd;
+            border-color: #555;
+        }
+
+        .toc-content-box {
+            background-color: #2a2a2a;
+            border-color: #444;
+            color: #ddd;
+        }
+
+        .toc-header {
+            border-bottom-color: #444;
+        }
+
+        #TableOfContents a {
+            color: #aaa;
+        }
+
+        #TableOfContents a:hover {
+            color: #fff;
+        }
+    }
+</style><div class="article-container"><section class="article header">
     <h1 class="article title">IGS Arcade Reverse Engineering Series (2) - Recovering Game Files</h1><p class="article date">Sunday, May 25, 2025<span class="langs"><span class="lang">
                     <a href="/zh/posts/igs-arcade-re-2/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
@@ -861,7 +992,87 @@ rc9.d size: 0x003CA6D8, write 0x003746D8 bytes to game file, write block 3537 sk
 <p>I still need to do dynamic analysis to understand how the in-memory ELF is loaded. But I’ve noticed that plugging in an Ethernet cable or a keyboard causes the cabinet to crash immediately—no idea whether that’s a protection mechanism. In the next post, I’ll analyze how to do dynamic debugging on the device.</p>
 </article><section class="article labels"><a class="category" href=/en/categories/reverse-engineering/>Reverse Engineering</a><a class="tag" href=/en/tags/igs/>IGS</a><a class="tag" href=/en/tags/arcade/>Arcade</a><a class="tag" href=/en/tags/crack/>Crack</a><a class="tag" href=/en/tags/international-games-system/>International Games System</a><a class="tag" href=/en/tags/e2000/>E2000</a></section>
 </div>
-<div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/igs-arcade-re-3/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (3) - Getting a Shell</a></p><p><a class="link" href="/en/posts/igs-arcade-re-1/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+
+<div class="toc-wrapper">
+    <div class="toc-content-box" id="toc-content-box">
+        <div class="toc-header">Table of Contents</div>
+        <nav id="TableOfContents">
+  <ol>
+    <li><a href="#reverse-engineering-traps">Reverse Engineering Traps</a>
+      <ol>
+        <li><a href="#etcrcdinitdrc"><code>/etc/rc.d/init.d/rc</code></a></li>
+        <li><a href="#etcx11igs"><code>/etc/X11/IGS</code></a></li>
+      </ol>
+    </li>
+    <li><a href="#analyzing-the-fake-game-executable">Analyzing the “Fake Game” Executable</a>
+      <ol>
+        <li><a href="#building-gcc-331">Building GCC 3.3.1</a></li>
+        <li><a href="#building-glibc-232">Building glibc 2.3.2</a></li>
+      </ol>
+    </li>
+    <li><a href="#system-initialization-analysis">System Initialization Analysis</a>
+      <ol>
+        <li><a href="#community-reverse-engineering-notes">Community Reverse Engineering Notes</a></li>
+        <li><a href="#analyzing-the-kernel-boot-flow">Analyzing the Kernel Boot Flow</a></li>
+        <li><a href="#fixing-immediate-value-xrefs">Fixing Immediate-Value Xrefs</a></li>
+        <li><a href="#fixing-string-data">Fixing String Data</a></li>
+        <li><a href="#kernel-thread">Kernel Thread</a></li>
+        <li><a href="#getting-stuck-restoring-zsh-symbols">Getting Stuck Restoring ZSH Symbols</a>
+          <ol>
+            <li><a href="#dependency-analysis">Dependency analysis</a></li>
+          </ol>
+        </li>
+        <li><a href="#recovering-zsh-symbols">Recovering ZSH Symbols</a>
+          <ol>
+            <li><a href="#ida-pro-script-extract-strings-and-function-xrefs-from-target-a">IDA Pro script: extract strings and function xrefs from target A</a></li>
+            <li><a href="#ida-pro-script-apply-xref-symbols-from-a-to-b">IDA Pro script: apply xref symbols from A to B</a></li>
+          </ol>
+        </li>
+        <li><a href="#fixing-geca-and-rc0d">Fixing <code>GECA</code> and <code>rc0.d</code></a></li>
+        <li><a href="#recovering-game-files">Recovering Game Files</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+    </div>
+    <div class="toc-button" onclick="toggleTOC()" title="">
+        
+        <svg viewBox="0 0 24 24">
+            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path>
+        </svg>
+    </div>
+</div>
+
+<script>
+    function toggleTOC() {
+        const tocBox = document.getElementById('toc-content-box');
+        if (tocBox.classList.contains('show')) {
+            tocBox.classList.remove('show');
+            
+            
+            
+            
+            
+            setTimeout(() => {
+                tocBox.style.display = 'none';
+            }, 300); 
+        } else {
+            tocBox.style.display = 'block';
+            
+            void tocBox.offsetWidth;
+            tocBox.classList.add('show');
+        }
+    }
+
+    
+    document.addEventListener('click', function (event) {
+        const wrapper = document.querySelector('.toc-wrapper');
+        const tocBox = document.getElementById('toc-content-box');
+        if (wrapper && !wrapper.contains(event.target) && tocBox.classList.contains('show')) {
+            toggleTOC();
+        }
+    });
+</script><div class="article bottom"><section class="article navigation"><p><a class="link" href="/en/posts/igs-arcade-re-3/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (3) - Getting a Shell</a></p><p><a class="link" href="/en/posts/igs-arcade-re-1/"><span class="iconfont icon-article"></span>IGS Arcade Reverse Engineering Series (1) - E2000 Platform Analysis</a></p></section></div></section><section id="footer"><div class="footer-wrap">
     <p class="copyright">2015 - 2026 Gorgias' Blog. </p><p class="license">
         <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">
             <img alt="CC BY-NC-SA" loading="lazy" src="/images/by-nc.svg" style="vertical-align: middle; height: 1.2em; margin: 0 0.2em;" />

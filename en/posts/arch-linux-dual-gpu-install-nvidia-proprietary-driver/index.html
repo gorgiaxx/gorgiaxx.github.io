@@ -6,11 +6,93 @@ My laptop is a Lenovo Y410P with hybrid graphics: GT755M &#43; HD4600. In the pa
 <meta name="twitter:title" content="Arch Linux Dual-GPU: Installing the NVIDIA Proprietary Driver" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/arch-linux-dual-gpu-install-nvidia-proprietary-driver/" title="中文">
-            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+            <span class="lang-icon">🌐</span>中文</a></nav></div></span></div></section><section id="content"><style>
+.wiki-toc {
+    background-color: #f8f9fa;
+    border: 1px solid #a2a9b1;
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 10px 0 20px 0;
+    min-width: 200px;
+    max-width: 100%;
+    font-size: 0.95em;
+    box-sizing: border-box;
+}
+
+.wiki-toc-title {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 10px;
+     
+     
+}
+
+ 
+#TableOfContents {
+    text-align: left;
+}
+
+#TableOfContents ol {
+    list-style-type: none;
+    padding-left: 0;
+    counter-reset: item;
+}
+
+#TableOfContents ol ol {
+    padding-left: 1.5em;  
+}
+
+#TableOfContents li {
+    display: block;
+    margin: 2px 0;
+}
+
+#TableOfContents li:before {
+    content: counters(item, ".") " ";
+    counter-increment: item;
+    font-weight: bold;
+    color: #54595d;
+    margin-right: 5px;
+}
+
+#TableOfContents a {
+    text-decoration: none;
+    color: #0645ad;
+}
+
+#TableOfContents a:hover {
+    text-decoration: underline;
+}
+
+ 
+@media (prefers-color-scheme: dark) {
+    .wiki-toc {
+        background-color: #2a2a2a;
+        border-color: #444;
+    }
+    #TableOfContents li:before {
+        color: #aaa;
+    }
+    #TableOfContents a {
+        color: #66b0ff;
+    }
+}
+</style><div class="article-container"><section class="article header">
     <h1 class="article title">Arch Linux Dual-GPU: Installing the NVIDIA Proprietary Driver</h1><p class="article date">Tuesday, January 17, 2017<span class="langs"><span class="lang">
                     <a href="/zh/posts/arch-linux-dual-gpu-install-nvidia-proprietary-driver/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
-                </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
+                </span></span></p></section><article class="article markdown-body"><aside class="wiki-toc">
+            <div class="wiki-toc-title">目录</div>
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#preface">Preface</a></li>
+    <li><a href="#why-the-installation-usually-fails">Why the installation usually fails</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#adding-an-unrecognized-resolution">Adding an unrecognized resolution</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </aside><h2 id="preface">Preface</h2>
 <p>My laptop is a Lenovo Y410P with hybrid graphics: GT755M + HD4600. In the past I never managed to get the NVIDIA proprietary driver working on Debian, nor on Arch Linux, so I had been using the Nouveau driver.</p>
 <p>This time I needed to run a wordlist with hashcat, but hashcat does not support Nouveau, so I had to use the proprietary driver.</p>
 <p>Previously I installed it “by luck” without really understanding what was going on, and I couldn’t find a clear solution online. This time I spent some effort to figure it out and wrote these notes in the hope it helps anyone who needs it.</p>
