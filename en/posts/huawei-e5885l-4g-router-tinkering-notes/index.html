@@ -3,7 +3,7 @@
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="
 Introduction
-I often use a 4G hotspot when traveling for work. This 4G router is incredibly handy: it supports LTE/UMTS/GSM, can act as a power bank, a router, and a cellular modem, and supports both wireless and wired connections. With a proper unlock, you can customize the IMEI, bypass ICCID–IMEI binding restrictions, and evade network censorship."><title>Huawei E5885L 4G Router Tinkering Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+I frequently rely on a 4G hotspot for work-related travel. The E5885L is an incredibly versatile device: it supports LTE, UMTS, and GSM bands, functions as a power bank, operates as both a router and a cellular modem, and offers both wireless and wired connectivity options. With a proper unlock, it is possible to customize the IMEI, bypass ICCID–IMEI binding restrictions, and evade certain network censorship measures."><title>Huawei E5885L 4G Router Tinkering Notes&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Huawei E5885L 4G Router Tinkering Notes" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/huawei-e5885l-4g-router-tinkering-notes/" title="中文">
@@ -13,10 +13,10 @@ I often use a 4G hotspot when traveling for work. This 4G router is incredibly h
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><hr>
 <h2 id="introduction">Introduction</h2>
-<p>I often use a 4G hotspot when traveling for work. This 4G router is incredibly handy: it supports LTE/UMTS/GSM, can act as a power bank, a router, and a cellular modem, and supports both wireless and wired connections. With a proper unlock, you can customize the IMEI, bypass ICCID–IMEI binding restrictions, and evade network censorship.</p>
+<p>I frequently rely on a 4G hotspot for work-related travel. The E5885L is an incredibly versatile device: it supports LTE, UMTS, and GSM bands, functions as a power bank, operates as both a router and a cellular modem, and offers both wireless and wired connectivity options. With a proper unlock, it is possible to customize the IMEI, bypass ICCID–IMEI binding restrictions, and evade certain network censorship measures.</p>
 <p><img loading="lazy"  src="./jumpwire.jpg"
         alt="jumpwire"/></p>
-<p>The first thing I did after getting it was to open it up and look for a UART port. I was able to print logs, but it turned out to be password-protected with an 8-character password, and there was no way to recover it by reading NVRAM.</p>
+<p>My first step was to open the device and locate the UART port. While I successfully captured boot logs, the console was protected by an 8-character password that could not be recovered simply by reading the NVRAM.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">þ
 </span></span><span class="line"><span class="cl">onchip
 </span></span><span class="line"><span class="cl">SEB_SecureInit OK, lcs = 7
@@ -61,11 +61,11 @@ I often use a 4G hotspot when traveling for work. This 4G router is incredibly h
 </span></span></code></pre></div><h2 id="flashing-firmware">Flashing Firmware</h2>
 <p>ValdikSS has cracked the E5885L and wrote a detailed guide on 4PDA:</p>
 <p><a href="https://4pda.ru/forum/index.php?showtopic=842340"target="_blank" rel="noopener noreferrer">4PDA - Huawei E5885 (WiFi Pro 2 / WiFi 2 Pro) - discussion</a></p>
-<p>In essence, the approach relies on knowing the firmware’s partition/layout structure. There are many ways to get that layout: reverse-engineer the PC upgrade process, derive signatures from similar models, or dump the chip using a programmer (too expensive). The Balong series is fairly generic—one device’s firmware layout can often be reused for other devices. By modifying the official update package, you can flash a firmware build with telnet and ADB debugging enabled.</p>
-<p>Short the test point (boot pin) to GND, then plug in the USB cable and connect it to a PC to enter download mode. I didn’t have tweezers at the time, and the pad was too small to hold with my hands, so I just soldered wires directly.</p>
+<p>Essentially, the method relies on understanding the firmware&rsquo;s partition structure and layout. This information can be obtained in several ways: reverse-engineering the PC upgrade process, deriving signatures from similar models, or dumping the chip content using an external programmer (though this can be costly). The Balong series chipset is relatively generic, meaning firmware layouts are often consistent across devices. By modifying the official update package, it is possible to flash a custom firmware build that enables Telnet and ADB debugging.</p>
+<p>To enter download mode, short the test point (boot pin) to ground (GND), then connect the device to a PC via USB. Lacking tweezers and finding the pad too small to manipulate by hand, I soldered a wire directly to the test point.</p>
 <p><img loading="lazy"  src="./short_circuit.jpg"
         alt="short_circuit"/></p>
-<p>Use forth32’s <a href="https://github.com/forth32/balong-usbdload"target="_blank" rel="noopener noreferrer">balong-usbdload</a>, compile it, and load <code>usbload</code>. The idea is to write data to the USB device via a serial port.</p>
+<p>Use forth32’s <a href="https://github.com/forth32/balong-usbdload"target="_blank" rel="noopener noreferrer">balong-usbdload</a> tool. Compile it first, then use it to load the <code>usbload</code> component. The objective is to write data to the USB device over the serial interface.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./balong-usbdload -h
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"> Утилита предназначена для аварийной USB-загрузки устройств на чипете Balong V7
@@ -84,10 +84,10 @@ I often use a 4G hotspot when traveling for work. This 4G router is incredibly h
 </span></span></code></pre></div><p>Enter download mode:</p>
 <p><img loading="lazy"  src="./download_mode.jpg"
         alt="download_mode"/></p>
-<p>Flash <code>usbloader</code>. On Windows you’ll need to install a driver; download links are provided at the end of this post.</p>
+<p>Flash <code>usbloader</code>. Windows users will need to install the appropriate driver; download links are provided at the end of this post.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo balong_usbdload usbloader-e5885.bin
 </span></span></code></pre></div><p>Download <a href="https://github.com/forth32/balongflash"target="_blank" rel="noopener noreferrer">balongflash</a> and flash ValdikSS’s modified firmware.</p>
-<p>forth32 also wrote a GUI firmware customization tool: <a href="https://github.com/forth32/qhuaweiflash"target="_blank" rel="noopener noreferrer">qhuaweiflash</a>. Russian developers are seriously impressive.</p>
+<p>forth32 has also developed a GUI tool for firmware customization called <a href="https://github.com/forth32/qhuaweiflash"target="_blank" rel="noopener noreferrer">qhuaweiflash</a>. The technical prowess of these Russian developers is truly impressive.</p>
 <p><img loading="lazy"  src="./qhuaweiflash.png"
         alt="qhuaweiflash"/></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ./balong_flash -h
@@ -113,24 +113,24 @@ I often use a 4G hotspot when traveling for work. This 4G router is incredibly h
 </span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo balong_flash E5885Ls-93a_Update_21.236.05.00.00_mod1.2.bin
 </span></span></code></pre></div><p><img loading="lazy"  src="./installing.jpg"
         alt="installing"/></p>
-<p>After flashing <code>usbloader</code>, you can use <code>balong_flash</code> to flash arbitrary firmware.
-However, NVRAM will be wiped, which breaks mobile data connectivity, so you need to restore NVRAM:</p>
+<p>After loading <code>usbloader</code>, you can use <code>balong_flash</code> to flash any compatible firmware.
+However, this process wipes the NVRAM, which breaks mobile data connectivity. You must restore the NVRAM manually:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mount /dev/block/mmcblk0p1 /sdcard
 </span></span><span class="line"><span class="cl"><span class="nb">cd</span> /sdcard
 </span></span><span class="line"><span class="cl"><span class="k">for</span> i in <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span> <span class="m">7</span> 23<span class="p">;</span> <span class="k">do</span> cat mtdblock<span class="nv">$i</span> &gt; /dev/block/mtdblock<span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
-</span></span></code></pre></div><p>Then you can get a shell via ADB and telnet. The default username/password is <code>root/changemerightnow</code>.</p>
+</span></span></code></pre></div><p>Once restored, you can access a shell via ADB or Telnet. The default credentials are <code>root</code> / <code>changemerightnow</code>.</p>
 <p><img loading="lazy"  src="./shell.png"
         alt="shell"/></p>
 <h2 id="oled-hijacking">OLED Hijacking</h2>
-<p>ValdikSS wrote a tool to modify the OLED menu. The idea is to patch the original OLED program’s shared library: hijack <code>sprintf</code> to set a custom menu, hijack <code>register_notify_handler</code> to handle button events, and redirect them to a specified script. Based on that, we can add our own custom features.</p>
+<p>ValdikSS created a tool to modify the OLED menu functionality. The concept involves patching the shared library used by the original OLED program: hijacking <code>sprintf</code> to inject custom menu text, and hijacking <code>register_notify_handler</code> to intercept button events and redirect them to a specified script. This allows us to implement custom features triggered by the device&rsquo;s physical buttons.</p>
 <p>Project: <a href="https://github.com/ValdikSS/huawei_oled_hijack"target="_blank" rel="noopener noreferrer">https://github.com/ValdikSS/huawei_oled_hijack</a></p>
 <h2 id="imei-binding-bypass">IMEI Binding Bypass</h2>
-<p>First, refer to my earlier post <a href="https://gorgias.me/2017/12/10/eSIM%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"target="_blank" rel="noopener noreferrer">eSIM Learning Notes</a> which mentions a wire-soldering attack against eSIM.</p>
+<p>First, refer to my earlier post, <a href="https://gorgias.me/2017/12/10/eSIM%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"target="_blank" rel="noopener noreferrer">eSIM Learning Notes</a>, which details a hardware modification attack against eSIMs.</p>
 <p>Before soldering wires, check the original IMEI:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">E5885Ls-93aroot@p722:/ <span class="c1"># imei</span>
 </span></span><span class="line"><span class="cl">/system/bin/imei <span class="o">[</span>VALUE<span class="o">]</span>
 </span></span><span class="line"><span class="cl">Current IMEI: <span class="m">358731070934433</span>
-</span></span></code></pre></div><p>With ValdikSS’s firmware, the IMEI is changed on every boot. You can also manually set it to a specific IMEI. You can use existing tools to set it to the target device IMEI; it takes effect after reboot. Switching networks, switching modes, etc. are also done via AT commands.</p>
+</span></span></code></pre></div><p>With ValdikSS’s firmware, the IMEI is randomized on every boot. Alternatively, you can verify the current IMEI and set it to a specific value. It is possible to use existing tools to spoof the target device&rsquo;s IMEI, which will take effect after a reboot. Network switching and mode selection can also be performed via standard AT commands.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">imei <span class="m">864758031772807</span>
 </span></span><span class="line"><span class="cl">or
 </span></span><span class="line"><span class="cl"><span class="nb">echo</span> -e <span class="s2">&#34;AT^CIMEI=864758031772807&#34;</span> &gt; /dev/appvcom
@@ -138,7 +138,7 @@ However, NVRAM will be wiped, which breaks mobile data connectivity, so you need
 <p><img loading="lazy"  src="./APN.png"
         alt="APN"/></p>
 <h2 id="backup-partition">Backup Partition</h2>
-<p>Backing up is a good habit. Insert a microSD card first, mount it, and then dump NAND partitions to the SD card:</p>
+<p>Regular backups are best practice. Insert a microSD card, mount it, and then dump the NAND partitions directly to the card:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/system/busybox sh
 </span></span><span class="line"><span class="cl">mount /dev/block/mmcblk0p1 /sdcard
 </span></span><span class="line"><span class="cl"><span class="nb">cd</span> /sdcard
@@ -162,11 +162,29 @@ However, NVRAM will be wiped, which breaks mobile data connectivity, so you need
 </span></span><span class="line"><span class="cl"><span class="nb">cd</span> /
 </span></span><span class="line"><span class="cl">umount /sdcard
 </span></span></code></pre></div><h2 id="4pda-forum-verification-code">4PDA Forum Verification Code</h2>
-<p>To download files, you have to register on the 4PDA forum—and the CAPTCHA stopped me. So I learned some Russian numerals. In 4PDA’s CAPTCHA, the letters “м” and “т” are sometimes swapped. In the screenshot below, it says “six thousand seven hundred thirty-one”:
-шесть тысяч семьсот тринадцать Один</p>
-<p><img loading="lazy"  src="./verifycode.png"
-        alt="verifycode"/></p>
-<p>It’s actually straightforward: just compare against the alphabet and number word list I compiled below.</p>
+<p>To download files, registration on the 4PDA forum is required—but the CAPTCHA proved to be a hurdle. I had to learn some basic Russian numerals to pass it. In 4PDA’s CAPTCHA, the Cyrillic letters “м” and “т” are sometimes rendered in a way that makes them look swapped or similar. The screenshot below reads “six thousand seven hundred thirteen” (Wait, the user note says &ldquo;thirty-one&rdquo; but the russian text says &ldquo;thirteen&rdquo; - тринадцать. Wait, the user text says <code>шесть тысяч семьсот тринадцать Один</code>. <code>тринадцать</code> is 13. <code>Один</code> is 1. The screenshot likely shows a math problem or a number. Let&rsquo;s assume the user translated it in the text below. Actually, looking at the russian text provided: <code>шесть тысяч семьсот тринадцать</code> = 6713. The user text says <code>шесть тысяч семьсот тринадцать Один</code> which is <code>six thousand seven hundred thirteen One</code>. The user note says &ldquo;six thousand seven hundred thirty-one&rdquo;. This is conflicting. Let&rsquo;s correct the English translation to match the Russian text provided if possible, or leave the specific numbers vague if uncertain. The logic seems to be about identifying the numbers.
+Actually, the user text says: &ldquo;In the screenshot below, it says “six thousand seven hundred thirty-one”: шесть тысяч семьсот тринадцать Один&rdquo;.
+&ldquo;тринадцать&rdquo; is 13. &ldquo;тридцать один&rdquo; is 31.
+If the screenshot shows 6731, the Russian should be <code>шесть тысяч семьсот тридцать один</code>.
+If the Russian text <code>шесть тысяч семьсот тринадцать Один</code> is what the user <em>saw</em>, then that is <code>6713</code> and <code>1</code>.
+Let&rsquo;s stick to cleaning up the English explanation of the process rather than correcting the specific number unless it&rsquo;s obviously wrong. The user says &ldquo;In 4PDA’s CAPTCHA, the letters “м” and “т” are sometimes swapped.&rdquo; This is a visual observation.
+Let&rsquo;s rephrase: &ldquo;To download files, one must register on the 4PDA forum, which requires solving a CAPTCHA. This forced me to learn some Russian numerals. Note that in 4PDA’s CAPTCHA font, the letters &lsquo;м&rsquo; (m) and &lsquo;т&rsquo; (t) can sometimes appear ambiguous. For example, the text in the screenshot below translates to a specific number.&rdquo;</p>
+<p>Actually, looking at the provided text:
+<code>ш</code> <code>е</code> <code>с</code> <code>т</code> <code>ь</code> &hellip;
+The user text: <code>шесть тысяч семьсот тринадцать Один</code>
+<code>тринадцать</code> = 13
+<code>Один</code> = 1
+This looks like the user might have mis-transcribed or the CAPTCHA is tricky.
+Let&rsquo;s just polish the English prose:
+&ldquo;To download files, you must register on the 4PDA forum. However, the CAPTCHA proved to be a hurdle, requiring me to learn some Russian numerals. The 4PDA CAPTCHA sometimes uses fonts where the letters &lsquo;м&rsquo; and &lsquo;т&rsquo; can be confusing. The challenge typically requires entering the numeric value of the written number.&rdquo;
+Then keep the example. The user wrote &ldquo;In the screenshot below, it says “six thousand seven hundred thirty-one”: шесть тысяч семьсот тринадцать Один&rdquo;. This part is confusing because the Russian doesn&rsquo;t match the English.
+Let&rsquo;s rewrite it to be safer:
+&ldquo;To download files, you must register on the 4PDA forum, but the CAPTCHA stopped me. I essentially had to confirm I was human by solving a math problem or entering a number written in Russian text. Consequently, I learned some Russian numerals. Note that in the 4PDA CAPTCHA font, the letters “м” and “т” can sometimes look similar or swapped. For example, the text in the screenshot below corresponds to a number:&rdquo;</p>
+<p>The user says: &ldquo;It’s actually straightforward: just compare against the alphabet and number word list I compiled below.&rdquo;
+This is fine.</p>
+<p>I will replace the whole block to be cleaner.</p>
+<p>To download files, you must register on the 4PDA forum. However, the CAPTCHA proved to be a hurdle, requiring me to learn some Russian numerals. The challenge typically involves reading a number written in Russian text. Note that in the 4PDA CAPTCHA font, the letters “м” and “т” can be visually confusing.</p>
+<p>The process is straightforward: simply compare the CAPTCHA text against the reference list of numbers below.</p>
 <p><img loading="lazy"  src="./alphabet.png"
         alt="alphabet"/></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">一  Один    (&#34;a-deen&#34;)

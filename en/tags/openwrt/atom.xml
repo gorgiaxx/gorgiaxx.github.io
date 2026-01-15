@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Openwrt on Gorgias&#39; Blog</title>
+    <title>OpenWrt on Gorgias&#39; Blog</title>
     <link>https://gorgias.me/en/tags/openwrt/</link>
-    <description>Recent content in Openwrt on Gorgias&#39; Blog</description>
+    <description>Recent content in OpenWrt on Gorgias&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>2015 - 2026 Gorgias&#39; Blog. </copyright>
@@ -3446,13 +3446,13 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
       
       <guid>https://gorgias.me/en/posts/firmware-extraction-series-ubi-extract-and-repack/</guid>
       <description>&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
-&lt;p&gt;I wrote this last year. I accidentally set the GitHub repo to private and lost the README; after re-uploading it, it felt a bit awkward. Anyway, let’s publish this post first.&lt;/p&gt;
+&lt;p&gt;I originally wrote this post last year but accidentally set the GitHub repository to private and lost the README. After re-uploading, the context felt slightly dated, but the technical content remains relevant.&lt;/p&gt;
 &lt;p&gt;UBI (Unsorted Block Images) is a volume management system for raw flash devices designed by IBM. It can manage multiple logical volumes on a single physical device and supports wear leveling. It is widely used in embedded devices.&lt;/p&gt;
 &lt;p&gt;Speaking of raw flash, we should first explain what MTD (Memory Technology Device) is. MTD is a Linux subsystem used to access memory devices (especially flash devices). It serves as an abstraction layer between hardware and filesystems. Taking NAND flash as an example, MTD encapsulates NAND operations and provides abstract interfaces to upper-layer filesystem drivers. An MTD device consists of eraseblocks. The MTD driver provides read, write, and erase operations—but before modifying any block, you must erase it first.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./MTD_subsystem.png&#34;
         alt=&#34;MTD_subsystem&#34;/&gt;&lt;/p&gt;
 &lt;h2 id=&#34;ubi-layout&#34;&gt;UBI Layout&lt;/h2&gt;
-&lt;p&gt;UBI is somewhat like LVM (Logical Volume Management). LVM maps logical sectors to physical sectors, while UBI maps &lt;strong&gt;Logical Erase Blocks (LEBs)&lt;/strong&gt; to &lt;strong&gt;Physical Erase Blocks (PEBs)&lt;/strong&gt;. As you can see, UBI operates at the eraseblock level.&lt;/p&gt;
+&lt;p&gt;UBI shares similarities with LVM (Logical Volume Management). While LVM maps logical sectors to physical sectors, UBI maps &lt;strong&gt;Logical Erase Blocks (LEBs)&lt;/strong&gt; to &lt;strong&gt;Physical Erase Blocks (PEBs)&lt;/strong&gt;. Fundamentally, UBI operates at the eraseblock level.&lt;/p&gt;
 &lt;p&gt;At the beginning of each UBI block (excluding bad blocks), there are two 64-byte headers:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;EC header (erase counter header), which contains per-PEB information (VID header offset, data offset).&lt;/li&gt;
@@ -3514,7 +3514,7 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;__u8&lt;/span&gt;    &lt;span class=&#34;n&#34;&gt;padding&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;23&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;__be32&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;crc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;   &lt;span class=&#34;c1&#34;&gt;// CRC32
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;__packed&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;On an MTD device, the front part is usually used for the bootloader, and the later part is used for UBI. The figure below is just a simplified example; in reality there may be multiple UBIs and other partitions interleaved. UBI uses fastmap to map LEBs onto out-of-order PEBs, providing an abstraction interface for UBIFS.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;On a typical MTD device, the initial sectors are reserved for the bootloader, while the subsequent regions are allocated for UBI. The figure below provides a simplified example; in practice, multiple UBI volumes and other partitions may be interleaved. UBI employs a mechanism called &amp;ldquo;fastmap&amp;rdquo; to map LEBs onto non-contiguous PEBs, providing an abstraction layer for UBIFS.&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./UBI_map.png&#34;
         alt=&#34;UBI_map&#34;/&gt;&lt;/p&gt;
 &lt;h2 id=&#34;mounting-ubifs&#34;&gt;Mounting UBIFS&lt;/h2&gt;
@@ -3533,13 +3533,13 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;li&gt;ubiformat - formats empty flash, erases flash and preserves erase counters, flashes UBI images to MTD devices;&lt;/li&gt;
 &lt;li&gt;mtdinfo - reports information about MTD devices found in the system.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;The tools above operate on UBI, but a typical PC does not have MTD devices. If you extracted a raw flash firmware dump from an embedded device and want to read it on your PC, you can &lt;strong&gt;simulate an MTD device&lt;/strong&gt;. In most cases, you’ll use &lt;strong&gt;NANDSim&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;While the above tools operate on UBI, standard PCs lack native MTD devices. To analyze a raw flash firmware dump from an embedded device on a PC, you must &lt;strong&gt;simulate an MTD device&lt;/strong&gt;. The most common tool for this is &lt;strong&gt;NANDSim&lt;/strong&gt;.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;mtdram which simulates NOR flash in RAM;&lt;/li&gt;
 &lt;li&gt;nandsim which simulates NAND flash in RAM;&lt;/li&gt;
 &lt;li&gt;block2mtd which simulates NOR flash on top of a block device;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;First, look at NANDSim’s parameters—there are a lot. How should you configure them?&lt;/p&gt;
+&lt;p&gt;First, examine NANDSim’s parameters. Given the large number of options, correct configuration is key.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ modinfo nandsim
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;filename:       /lib/modules/4.18.10-arch1-1-ARCH/kernel/drivers/mtd/nand/raw/nandsim.ko.xz
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;description:    The NAND flash simulator
@@ -3580,9 +3580,9 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;parm:           cache_file:File to use to cache nand pages instead of memory (charp)
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;parm:           bbt:0 OOB, 1 BBT with marker in OOB, 2 BBT with marker in data area (uint)
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;parm:           bch:Enable BCH ecc and set how many bits should be correctable in 512-byte blocks (uint)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can read the kernel driver source code to understand NANDSim’s implementation; here’s a brief overview. &lt;code&gt;nandsim.c&lt;/code&gt; calls &lt;code&gt;nand_scan_ident&lt;/code&gt; in &lt;code&gt;nand_base.c&lt;/code&gt;. During &lt;code&gt;nand_detect&lt;/code&gt;, it performs a Read ID operation: &lt;code&gt;nand_readid_op&lt;/code&gt; sends &lt;code&gt;0x90,0x00&lt;/code&gt; to the NAND. Then &lt;code&gt;nand_get_manufacturer&lt;/code&gt; matches the manufacturer ID. Finally, &lt;code&gt;nand_scan_tail&lt;/code&gt; initializes the NAND chip and sets various properties.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To understand NANDSim’s implementation, one can examine the kernel driver source code. Briefly, &lt;code&gt;nandsim.c&lt;/code&gt; calls &lt;code&gt;nand_scan_ident&lt;/code&gt; in &lt;code&gt;nand_base.c&lt;/code&gt;. During &lt;code&gt;nand_detect&lt;/code&gt;, a Read ID operation is performed: &lt;code&gt;nand_readid_op&lt;/code&gt; sends &lt;code&gt;0x90,0x00&lt;/code&gt; to the NAND device. Subsequently, &lt;code&gt;nand_get_manufacturer&lt;/code&gt; matches the manufacturer ID. Finally, &lt;code&gt;nand_scan_tail&lt;/code&gt; initializes the NAND chip and sets the appropriate properties.&lt;/p&gt;
 &lt;p&gt;The NAND chip datasheet specifies the ID bytes in detail.&lt;/p&gt;
-&lt;p&gt;So we need to set the ID correctly. The driver will then automatically configure capacity, page size, and other parameters based on the ID. For NANDSim, you only need the first four ID parameters.&lt;/p&gt;
+&lt;p&gt;Therefore, we must set the ID correctly. This allows the driver to automatically configure the capacity, page size, and other parameters. For NANDSim, only the first four ID parameters are required.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;static&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;u_char&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;id_bytes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;CONFIG_NANDSIM_FIRST_ID_BYTE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;CONFIG_NANDSIM_SECOND_ID_BYTE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
@@ -3595,7 +3595,7 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
         alt=&#34;manufacturer_id_a&#34;/&gt;
 &lt;img loading=&#34;lazy&#34;  src=&#34;./manufacturer_id_b.png&#34;
         alt=&#34;manufacturer_id_b&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;In general, an embedded device’s bootloader and other partitions are stored on the same chip as the system partition. So you need to partition NANDSim. In this example, eraseblocks are 128KB, i.e. &lt;code&gt;0x20000&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Typically, an embedded device stores the bootloader and other partitions on the same chip as the system partition. Consequently, partitioning NANDSim is necessary. In this example, the eraseblock size is 128KB (&lt;code&gt;0x20000&lt;/code&gt;).&lt;/p&gt;
 &lt;p&gt;Write a script to locate UBI regions in the dump:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#!/usr/bin/env python3&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;sys&lt;/span&gt;
@@ -3695,7 +3695,7 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo modprobe mtd
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo modprobe mtdblock
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo modprobe nandsim &lt;span class=&#34;nv&#34;&gt;first_id_byte&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;0x2c &lt;span class=&#34;nv&#34;&gt;second_id_byte&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;0xac &lt;span class=&#34;nv&#34;&gt;third_id_byte&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;0x90 &lt;span class=&#34;nv&#34;&gt;fourth_id_byte&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;0x15 &lt;span class=&#34;nv&#34;&gt;parts&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;371,469,6,106,86,2,3056
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Check MTD device information—you should see the partitions were created successfully.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify the MTD device information to ensure the partitions were created successfully.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ mtdinfo -a
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Count of MTD devices:           &lt;span class=&#34;m&#34;&gt;8&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Present MTD devices:            mtd0, mtd1, mtd2, mtd3, mtd4, mtd5, mtd6, mtd7
@@ -3837,9 +3837,9 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mtd5: 00ac0000 &lt;span class=&#34;m&#34;&gt;00020000&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;NAND simulator partition 4&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mtd6: &lt;span class=&#34;m&#34;&gt;00040000&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;00020000&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;NAND simulator partition 5&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mtd7: 17e00000 &lt;span class=&#34;m&#34;&gt;00020000&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;NAND simulator partition 6&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;mtd0&lt;/code&gt; is the whole MTD device. Write the extracted firmware into the MTD device; since it’s simulated in RAM, it’s very fast.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;mtd0&lt;/code&gt; represents the entire MTD device. Write the extracted firmware into this device; since the simulation runs in RAM, the operation is extremely fast.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo dd &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;NAND.bin &lt;span class=&#34;nv&#34;&gt;of&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/dev/mtd0 &lt;span class=&#34;nv&#34;&gt;bs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;512M &lt;span class=&#34;nv&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If you check the &lt;code&gt;ubi&lt;/code&gt; module parameters, you’ll see it has an &lt;code&gt;mtd&lt;/code&gt; parameter. In practice this may fail because the default VID header offset is 512.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Examining the &lt;code&gt;ubi&lt;/code&gt; module parameters reveals an &lt;code&gt;mtd&lt;/code&gt; parameter. However, using this may fail if the default VID header offset (512) does not match the target image.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo modprobe ubi &lt;span class=&#34;nv&#34;&gt;mtd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ dmesg
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
@@ -3854,7 +3854,7 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;38418.429953&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;  data_offset    &lt;span class=&#34;m&#34;&gt;4096&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;38418.429955&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;  image_seq      &lt;span class=&#34;m&#34;&gt;34870392&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;38418.429957&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;  hdr_crc        0x11db9c17
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So instead, load the &lt;code&gt;ubi&lt;/code&gt; module first, then use &lt;code&gt;ubiattach&lt;/code&gt; from mtd-utils and specify the parameters explicitly:&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Instead, load the &lt;code&gt;ubi&lt;/code&gt; module first, then use &lt;code&gt;ubiattach&lt;/code&gt; from &lt;code&gt;mtd-utils&lt;/code&gt; to specify the parameters explicitly:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo modprobe ubi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo ubiattach /dev/ubi_ctrl -m &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; -O &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; 
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You should then see attach success messages:&lt;/p&gt;
@@ -3873,7 +3873,7 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;43880.491532&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; ubi0: max/mean erase counter: 14/5, WL threshold: 4096, image sequence number: &lt;span class=&#34;m&#34;&gt;1328192&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;43880.491534&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; ubi0: available PEBs: 0, total reserved PEBs: 469, PEBs reserved &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; bad PEB handling: &lt;span class=&#34;m&#34;&gt;80&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;43880.491617&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; ubi0: background thread &lt;span class=&#34;s2&#34;&gt;&amp;#34;ubi_bgt0d&amp;#34;&lt;/span&gt; started, PID &lt;span class=&#34;m&#34;&gt;25777&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Next, mount the UBIFS volume. You should be able to read the filesystem contents successfully.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Next, mount the UBIFS volume to access the filesystem contents.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ mkdir /tmp/modem
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ sudo mount -t ubifs ubi0_0 /tmp/modem
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ ls /tmp/image
@@ -3881,12 +3881,12 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mba.b00       mba.b04  modem.b00  modem.b05  modem.b09  modem.b13  modem.b19  modem.b23  qwlan30.bin
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mba.b01       mba.b05  modem.b01  modem.b06  modem.b10  modem.b14  modem.b20  modem.b24  utf30.bin
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mba.b02       mba.mbn  modem.b02  modem.b07  modem.b11  modem.b15  modem.b21  modem.mdt
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Sometimes SquashFS is used on top of UBI, so a regular UBIFS mount will fail:&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In some cases, SquashFS runs on top of UBI, which causes standard UBIFS mounts to fail:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[  214.800087] UBIFS error (ubi0:0 pid 3848): ubifs_read_node [ubifs]: bad node type (1 but expected 6)
 [  214.800093] UBIFS error (ubi0:0 pid 3848): ubifs_read_node [ubifs]: bad node at LEB 0:0, LEB mapping status 1
 [  214.800094] Not a node, first 24 bytes:
 [  214.800095] 00000000: 68 73 71 73 46 0c 00 00 5a 9c 25 5d 00 00 02 00 ac 00 00 00 01 00 11 00                          hsqsF
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Here, &lt;code&gt;hsqs&lt;/code&gt; is SquashFS’s magic. So you can just extract it as SquashFS:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;hsqs&lt;/code&gt; magic bytes identify this as a SquashFS image. It can be extracted directly as SquashFS:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo dd &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/dev/ubi0_0 &lt;span class=&#34;nv&#34;&gt;of&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;./ubi0_0
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;unsquashfs ./ubi0_0
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Detach/unload:&lt;/p&gt;
@@ -3901,14 +3901,14 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ubireader_display_info &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;options&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; path/to/file
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Extract all files (but it will fail if another filesystem is present):&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ubireader_extract_files &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;options&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; path/to/file
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So it’s recommended to first restore PEBs to LEBs, then analyze individual volumes:&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It is recommended to first restore PEBs to LEBs before analyzing individual volumes:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ubireader_extract_images &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;options&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; path/to/file
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;repacking-ubi&#34;&gt;Repacking UBI&lt;/h2&gt;
-&lt;p&gt;After mounting UBIFS, you may want to modify files and repack. Using &lt;code&gt;dd&lt;/code&gt; directly is not feasible.&lt;/p&gt;
+&lt;p&gt;After mounting UBIFS, modification and repacking might be required. Direct use of &lt;code&gt;dd&lt;/code&gt; is not suitable for this task.&lt;/p&gt;
 &lt;p&gt;First, pay attention to the output from &lt;code&gt;ubiattach&lt;/code&gt;—it prints LEB information:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ sudo ubiattach /dev/ubi_ctrl -m &lt;span class=&#34;m&#34;&gt;7&lt;/span&gt; -O &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;UBI device number 0, total &lt;span class=&#34;m&#34;&gt;240&lt;/span&gt; LEBs &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;30474240&lt;/span&gt; bytes, 29.1 MiB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;, available &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; LEBs &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; bytes&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;, LEB size &lt;span class=&#34;m&#34;&gt;126976&lt;/span&gt; bytes &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;124.0 KiB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There are 240 LEBs total, each LEB is 126976 bytes. Use these parameters in &lt;code&gt;mkfs.ubifs&lt;/code&gt; to build a UBIFS image:&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There are 240 LEBs in total, with each LEB being 126976 bytes. These parameters must be passed to &lt;code&gt;mkfs.ubifs&lt;/code&gt; to build the UBIFS image:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mtd5&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo mkfs.ubifs -m &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; -e &lt;span class=&#34;m&#34;&gt;126976&lt;/span&gt; -c &lt;span class=&#34;m&#34;&gt;240&lt;/span&gt; -F -r ./UBI_1 rootfs.img
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mtd9&lt;/span&gt;
@@ -3917,7 +3917,7 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo mkfs.ubifs -m &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; -e &lt;span class=&#34;m&#34;&gt;126976&lt;/span&gt; -c &lt;span class=&#34;m&#34;&gt;240&lt;/span&gt; -x lzo -r ./rootfs rootfs.img
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Create &lt;code&gt;ubi_config.ini&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vi ubi_config.ini
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;vol_size&lt;/code&gt; must match the image size. Also, the last line must be empty, otherwise you’ll get an error:
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;vol_size&lt;/code&gt; must match the image size. Additionally, the file must end with an empty line to avoid the following error:
 &lt;code&gt;ubinize: error!: cannot load the input ini file &amp;quot;ubi_config.ini&amp;quot;&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ini&#34; data-lang=&#34;ini&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;[rootfs]&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;mode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;ubi&lt;/span&gt;
@@ -3928,19 +3928,21 @@ When reading &lt;strong&gt;Raw NAND&lt;/strong&gt;, you get the raw data includi
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;vol_name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;rootfs&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;vol_alignment&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;1&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;vol_flags&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;autoresize&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Finally, generate the UBI image with &lt;code&gt;ubinize&lt;/code&gt;:&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Finally, use &lt;code&gt;ubinize&lt;/code&gt; to generate the UBI image:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo ubinize -o rootfs.ubi -p &lt;span class=&#34;m&#34;&gt;131072&lt;/span&gt; -m &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; -s &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; -e &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; -Q &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; -O &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; -x1 ubi_config.ini
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Where:&lt;/p&gt;
-&lt;p&gt;-e is the number of eraseblocks (default is 0). You can quickly check this with binwalk.
--Q is the image sequence number. You can view it with ubi_display_info.
--x is the UBI version (default is 1).
--s is the sub-page size. Not all NAND has sub-pages. Generally, SLC NAND with 2048-byte pages consists of 4 sub-pages of 512 bytes; MLC typically has no sub-pages.
--m is the page size.
--p is the physical eraseblock size. A physical block usually has 64 pages; refer to the NAND datasheet.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-e&lt;/code&gt;: Number of eraseblocks (default is 0). This can be quickly verified with &lt;code&gt;binwalk&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-Q&lt;/code&gt;: Image sequence number, viewable with &lt;code&gt;ubi_display_info&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-x&lt;/code&gt;: UBI version (default is 1).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-s&lt;/code&gt;: Sub-page size. Not all NAND flash supports sub-pages. Typically, SLC NAND with 2048-byte pages uses 4 sub-pages of 512 bytes, whereas MLC usually does not have sub-pages.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-m&lt;/code&gt;: Page size.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-p&lt;/code&gt;: Physical eraseblock size. A physical block usually consists of 64 pages; refer to the NAND datasheet for specifics.&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;Below is an example of flashing &lt;code&gt;rootfs.ubi&lt;/code&gt; to &lt;code&gt;mtd7&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo ubinize -v -o rootfs.ubi -p &lt;span class=&#34;m&#34;&gt;131072&lt;/span&gt; -m &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; -s &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; -O &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; ubi_config.ini
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo ubiformat /dev/mtd7 -O &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; -s &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; -f rootfs.ubi
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If the filesystem is SquashFS, you don’t need to build UBIFS. After modifying the system contents, just repack SquashFS with &lt;code&gt;mksquashfs&lt;/code&gt;. Make sure to pack with the correct ownership/permissions: if the target system runs as root, pack it as root. Then use &lt;code&gt;ubinize&lt;/code&gt; to wrap it into a UBI image.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For SquashFS filesystems, building UBIFS is unnecessary. After modifying the contents, simply repack SquashFS using &lt;code&gt;mksquashfs&lt;/code&gt;. Ensure that ownership and permissions are correct (e.g., if the target system runs as root, pack as root). Then, use &lt;code&gt;ubinize&lt;/code&gt; to wrap it into a UBI image.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo mksquashfs ./squashfs-root/* rootfs.squashfs
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34;  src=&#34;./UBIFS.png&#34;
         alt=&#34;UBIFS&#34;/&gt;&lt;/p&gt;

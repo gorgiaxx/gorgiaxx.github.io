@@ -2,7 +2,7 @@
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
-An SD card (Secure Digital Memory Card) is a storage medium based on NAND flash technology, designed as a replacement for MMC (Multimedia Card). It is commonly used in multimedia players, cameras, and phones, and later became widely used in IoT devices and automotive electronics as well. By physical size, SD cards can be divided into SD, miniSD, and microSD."><title>Firmware Extraction Series - SD Card Unlock&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+The SD card (Secure Digital Memory Card) is a NAND flash-based storage medium designed as a successor to the MMC (Multimedia Card). It is commonly found in multimedia players, cameras, and smartphones, and has since been widely adopted in IoT devices and automotive electronics. Physically, SD cards are categorized into three sizes: SD, miniSD, and microSD."><title>Firmware Extraction Series - SD Card Unlock&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Firmware Extraction Series - SD Card Unlock" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/firmware-extraction-series-sd-card-unlock/" title="中文">
@@ -11,10 +11,10 @@ An SD card (Secure Digital Memory Card) is a storage medium based on NAND flash 
                     <a href="/zh/posts/firmware-extraction-series-sd-card-unlock/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
-<p>An SD card (Secure Digital Memory Card) is a storage medium based on NAND flash technology, designed as a replacement for MMC (Multimedia Card). It is commonly used in multimedia players, cameras, and phones, and later became widely used in IoT devices and automotive electronics as well. By physical size, SD cards can be divided into SD, miniSD, and microSD.</p>
+<p>The SD card (Secure Digital Memory Card) is a NAND flash-based storage medium designed as a successor to the MMC (Multimedia Card). It is commonly found in multimedia players, cameras, and smartphones, and has since been widely adopted in IoT devices and automotive electronics. Physically, SD cards are categorized into three sizes: SD, miniSD, and microSD.</p>
 <p><img loading="lazy"  src="./sd_size.png"
         alt="sd_size"/></p>
-<p>There are currently two SD card speed class markings in common use: the “standard” speed class marking and the UHS speed class marking. Different speed classes correspond to different bus modes. The SD Association has also introduced a newer speed class standard, Video Speed Class, which uses the UHS bus. SD card capacity also follows standards, ranging from SDSC to SDUC.</p>
+<p>There are two common speed class markings: the “standard” speed class and the UHS speed class. Each corresponds to a different bus interface mode. The SD Association has also introduced the Video Speed Class, which utilizes the UHS bus. SD card capacities are also standardized, ranging from SDSC (Standard Capacity) to SDUC (Ultra Capacity).</p>
 <p><img loading="lazy"  src="./Micro-SD-speeds.png"
         alt="Micro-SD-speeds"/>
 <img loading="lazy"  src="./bus_speed_img.jpg"
@@ -22,16 +22,16 @@ An SD card (Secure Digital Memory Card) is a storage medium based on NAND flash 
 <p>SD card parameters can often be seen on the label sticker or silkscreen.</p>
 <p><img loading="lazy"  src="./sd_sticker.png"
         alt="sd_sticker"/></p>
-<p>The original name of microSD was TF (Trans-flash Card). SD slots are compatible with MMC cards, and you can also wire an eMMC to an SD slot via fly-wires.</p>
+<p>microSD was originally known as T-Flash (TransFlash). SD slots are backward compatible with MMC cards. Additionally, eMMC chips can be wired to an SD slot for interfacing.</p>
 <p><img loading="lazy"  src="./sd_emmc.png"
         alt="sd_emmc"/></p>
 <p>This post is based on the SD Physical Layer Simplified Specification, Version 6, and focuses on the unlock mechanism.</p>
-<p>SDIO (Secure Digital Input Output) is derived from modifications to the SD Physical Layer specification and is an extension of the SD standard. In addition to SDIO storage cards that support the SDIO specification, it also supports SDIO peripheral devices such as Wi‑Fi modules, GPS modules, CMOS sensor modules, etc.</p>
+<p>SDIO (Secure Digital Input Output) is an extension of the SD standard derived from the SD Physical Layer specification. Beyond SDIO memory cards, the specification supports SDIO peripheral devices such as Wi-Fi modules, GPS modules, and CMOS sensors.</p>
 <h2 id="io-information">I/O Information</h2>
 <p>Below is a pin comparison between MMC and SD cards.</p>
 <p><img loading="lazy"  src="./pin_compare.gif"
         alt="pin_compare"/></p>
-<p>Under different bus protocols and transfer modes, these pins serve different functions. This post mainly focuses on the SD-mode specification. In the Type column, the definitions are:</p>
+<p>These pins serve different functions depending on the bus protocol and transfer mode. This post focuses primarily on the SD-mode specification. The pin types are defined as follows:</p>
 <ul>
 <li>S - Power Supply</li>
 <li>I - Input</li>
@@ -104,16 +104,16 @@ An SD card (Secure Digital Memory Card) is a storage medium based on NAND flash 
       </tr>
   </tbody>
 </table>
-<p>Below is the SD card we studied: an SDSC card (maximum 2GB). It is printed with “M2B9 2GB Made in Japan”; these markings don’t seem searchable online.</p>
+<p>Below is the SD card under analysis: an SDSC card (max 2GB), labeled “M2B9 2GB Made in Japan”. These markings yielded no search results.</p>
 <p><img loading="lazy"  src="./SD_card_internal.jpg"
         alt="SD_card_internal"/></p>
-<p>Now look at the SD controller chip, “56X31B002 AC00145R”, also not searchable.
-However, the memory chip below has a Micron logo. On the <a href="https://www.micron.com/decoder"target="_blank" rel="noopener noreferrer">FBGA &amp; Component Marking Decoder</a> website you can query the FBGA code. It is an SLC NAND Flash in a VBGA100 package, but the official information is not very accurate—only a 16GB version is listed.</p>
+<p>The SD controller chip is marked “56X31B002 AC00145R”, which also returned no search results.
+However, the underlying memory chip features a Micron logo. Using the <a href="https://www.micron.com/decoder"target="_blank" rel="noopener noreferrer">FBGA &amp; Component Marking Decoder</a>, I identified it as an SLC NAND Flash in a VBGA100 package. The official database seems incomplete, listing only a 16GB version.</p>
 <p><img loading="lazy"  src="./SD_card_internal2.jpg"
         alt="SD_card_internal2"/></p>
 <h2 id="registers">Registers</h2>
-<p>OCR, CID, CSD, and SCR carry card-specific information; RCA and DSR store the actual configuration parameters; SSR and CSR carry status information.
-Because the spec authors seem a bit obsessive, the registers are all three-letter abbreviations; if three letters can’t express the meaning precisely, they drop the “R”.</p>
+<p>Registers such as OCR, CID, CSD, and SCR contain card-specific information. RCA and DSR store configuration parameters, while SSR and CSR convey status information.
+The specification authors seem partial to three-letter abbreviations; when three letters suffice, the “R” (for Register) is often omitted.</p>
 <table>
   <thead>
       <tr>
@@ -179,17 +179,17 @@ Because the spec authors seem a bit obsessive, the registers are all three-lette
 <p><img loading="lazy"  src="./architecture.png"
         alt="architecture"/></p>
 <h3 id="sdio">SDIO</h3>
-<p>In the SDIO specification, two types of SDIO cards are defined: low-speed cards and high-speed cards. Three modes are defined for SDIO cards:</p>
+<p>The SDIO specification defines two types of cards: low-speed and high-speed. Three underlying bus modes are supported:</p>
 <ul>
-<li>SPI bus mode</li>
-<li>One-bit SD bus mode - command and data are separated</li>
-<li>Four-bit SD bus mode - supported by high-speed cards; commands occupy a dedicated channel while the other 4 channels transfer data; this is the default SD mode</li>
+<li><strong>SPI bus mode</strong></li>
+<li><strong>1-bit SD bus mode</strong>: Command and data lines are strictly separated.</li>
+<li><strong>4-bit SD bus mode</strong>: Supported by high-speed cards. Commands utilize a dedicated channel, while four other lines transfer data. This is the default configuration for SD mode.</li>
 </ul>
 <h2 id="sd-bus-protocol">SD Bus Protocol</h2>
-<p>SD bus communication mainly consists of CMD (Command Token, operation command) and DAT (data). CMD and DAT are transmitted in parallel on different channels. CMD and Response share the same channel: CMD comes from the host, Response comes from the SD card, and a Response appears only for specific CMDs.</p>
+<p>SD bus communication relies primarily on the CMD (Command) and DAT (Data) lines. CMD and DAT signals are transmitted in parallel on separate channels. The command channel is bidirectional: CMD tokens are sent by the host, and Responses are returned by the SD card. A Response is only generated for valid commands.</p>
 <p><img loading="lazy"  src="./sd_protocal.png"
         alt="sd_protocal"/></p>
-<p>SD specifies block-based read/write operations; the data block follows the CMD. Each data block ends with CRC bits. Termination of an operation is done by sending a terminate command.</p>
+<p>The SD protocol specifies block-based read/write operations. The data block transmission follows the command sequence. Each data block is terminated with CRC bits. An operation is concluded by sending a stop command.</p>
 <p><img loading="lazy"  src="./sd_protocal_r.png"
         alt="sd_protocal_r"/></p>
 <p>The write process includes a busy signal.</p>
@@ -260,10 +260,10 @@ Because the spec authors seem a bit obsessive, the registers are all three-lette
 <li>addressed (point-to-point) data transfer commands (adtc), data transfer on DAT lines</li>
 </ul>
 <p>CMD5 and CMD52-54 are SDIO-specific.</p>
-<p>Most Significant Bit (MSB) comes first; Least Significant Bit (LSB) comes last.</p>
+<p>Most Significant Bit (MSB) is transmitted first; Least Significant Bit (LSB) is transmitted last.</p>
 <p><img loading="lazy"  src="./command_format.png"
         alt="command_format"/></p>
-<p>Classes are categorized as follows:</p>
+<p>Commands are grouped into classes:</p>
 <table>
   <thead>
       <tr>
@@ -286,7 +286,7 @@ Because the spec authors seem a bit obsessive, the registers are all three-lette
       </tr>
       <tr>
           <td>3</td>
-          <td>Reversed</td>
+          <td>Reserved</td>
       </tr>
       <tr>
           <td>4</td>
@@ -322,7 +322,7 @@ Because the spec authors seem a bit obsessive, the registers are all three-lette
       </tr>
   </tbody>
 </table>
-<p>There are three “Class 7” commands related to card locking. CMD16 sets the block length and is used for setting the password. CMD42 performs lock/unlock. A locked card can respond to Class 0 commands.</p>
+<p>Class 7 contains three commands related to card locking. <code>CMD16</code> sets the block length (often used before setting a password). <code>CMD42</code> performs the actual lock/unlock operations. Even when locked, a card responds to Class 0 commands.</p>
 <p><img loading="lazy"  src="./card_lock_class.png"
         alt="card_lock_class"/></p>
 <p>For SDSC cards, <code>SET_BLOCK_LEN</code> can be used to specify the data block length. For SDHC and SDXC cards, the block length is fixed at 512 bytes.</p>
@@ -342,10 +342,11 @@ S - Status bit
 R - Detected and set for the actual command response
 X - Detected and set during command execution. The host can obtain status info from command responses</p>
 <p>And the clear conditions for status bits:</p>
-<p>A - According to the card current status.
-B - Always related to the previous command. Cleared by sending specific CMDs
-C - Clear by read.</p>
-<p>R1 responses carry card status information. The length is 32 bits and is stored in CSR. Below is the definition of each CSR bit (reserved bits omitted).</p>
+<p>Status bits may be cleared under the following conditions:</p>
+<p>A - According to the current card status.
+B - Always related to the previous command. Cleared by receiving a new command.
+C - Cleared by read.</p>
+<p>R1 responses carry the 32-bit card status information, which is derived from the CSR. The table below defines each bit (reserved bits omitted).</p>
 <table>
   <thead>
       <tr>
@@ -543,18 +544,19 @@ C - Clear by read.</p>
 <p>Length matching is a PCB design term, commonly used for high-speed I/O such as DDR. When using fly-wires, try to keep equal lengths and control the distance between the clock line and other signal lines—this is also an SD card vendor requirement for PCB design.</p>
 <p><img loading="lazy"  src="./wiring.jpg"
         alt="wiring"/></p>
-<p>In practice, SD “high-speed” mode is only 20MHz, so whether you use length-matched routing doesn’t have much impact on data. The most critical factor is the sampling rate of the logic analyzer. At the beginning, a 100MHz sampling-rate logic analyzer often produced garbage; after switching to an LA5016 at 500MHz, it worked normally.</p>
+<p>In practice, standard SD &ldquo;High Speed&rdquo; mode operates at 25MHz/50MHz. While length matching is less critical at these speeds than for UHS modes, signal integrity remains important. The crucial factor here is the logic analyzer&rsquo;s sampling rate. My initial attempts with a 100MHz sampling rate produced garbage data; switching to an LA5016 at 500MHz resolved the issue.</p>
 <p><img loading="lazy"  src="./LA5016.jpg"
         alt="LA5016"/></p>
-<p>Choose the sampling rate and time, and also select the voltage level. Select SDIO and trigger on the clock rising edge. This yields accurate logic levels. As shown below, the data corresponding to the rising edge is 0.</p>
+<p>The selected logic level must match the device voltage. Configure the analyzer for SDIO and trigger on the rising edge of the clock signal. This ensures accurate logic level capture. As shown below, the data line state is <code>0</code> at the rising clock edge.</p>
 <p><img loading="lazy"  src="./rising_edge.png"
         alt="rising_edge"/></p>
 <h2 id="sd-unlock">SD Unlock</h2>
-<p>The unlock session is only effective within a single power cycle; on the next power-up, the SD card automatically returns to the locked state. The unlock flow first uses CMD7 to select the card. If FEP is set, you need to unlock COP. Then use CMD16 to set the required block length: 8-bit unlock operation + 8-bit password length + the actual password length. Finally, send CMD42 to unlock.</p>
+<p>The unlock session remains valid only for the current power cycle; the SD card will revert to a locked state upon the next power-up. The unlock sequence begins with <code>CMD7</code> to select the card. If the Force Erase Password (FEP) bit is set, the COP (Card Ownership Protection) must be cleared. Next, <code>CMD16</code> sets the necessary block length: 1 byte for operation mode + 1 byte for password length + the actual password length. Finally, <code>CMD42</code> is issued to perform the unlock.</p>
 <p><img loading="lazy"  src="./unlock_operations.png"
         alt="unlock_operations"/></p>
 <h3 id="cmd-42">CMD 42</h3>
-<p>CMD42 is used to unlock the device, with two versions: V1.0 and V2.0. There are also two unlocking methods: force erase password (Force Erase Password, FEP), and password-based unlock. Only SD cards with the COP (Card Ownership Protection) feature have a non-volatile FEP register. COP is newly added in SD spec 6.0, and SD cards with COP are rare on the market.</p>
+<h3 id="cmd-42-1">CMD 42</h3>
+<p><code>CMD42</code> manages card locking and unlocking. The feature has two versions: V1.0 and V2.0. Unlocking can be performed via two methods: Force Erase Password (FEP) or standard password authentication. FEP uses a non-volatile register available only on cards supporting COP (Card Ownership Protection). COP was introduced in SD Specification 6.0, and such cards remain rare in the market.</p>
 <p>From the CMD format, <code>01</code> indicates a CMD request, <code>101010</code> represents 42, so the first byte of CMD42 should be <code>01101010</code>, i.e. <code>6A</code>.
 The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status bit-25 should change from 1 to 0, and bit-24 should be 0.</p>
 <p><img loading="lazy"  src="./unlock_parameters.png"
@@ -566,7 +568,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 <p>For the Data portion of CMD42: the first byte describes the operation. The first three bits are reserved and are typically set to 0. The fourth bit indicates the COP feature. During unlock, the remaining four bits should all be 0. The second byte is the password length field, 8 bits wide, in bytes. Therefore the maximum password length is 128 bytes. Here the password length is 16 bytes. Starting from the third byte is the password data, and finally a 16-bit CRC is appended.</p>
 <p><img loading="lazy"  src="./password.png"
         alt="password"/></p>
-<p>The address in CMD7 is random:</p>
+<p>The address in <code>CMD7</code> is dynamically assigned (Random Card Address):</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">47 4B 47 00 00 6F
 </span></span><span class="line"><span class="cl">[47:41] 01000111  start bit + Command index
 </span></span><span class="line"><span class="cl">[40:32] 01001011  RCA 4B
@@ -576,7 +578,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">[7:0]   01101111  CRC7 + end bit
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">07 02 00 07 00 79
-</span></span></code></pre></div><p>CMD16 is as follows. The second-to-last line is the <code>SET_BLOCKLEN</code> argument, which sets the block length and must be an even length. The response type is R1. <code>0b00010010</code> is 18 in decimal, i.e. 2 bytes of parameters plus a 16-byte password.</p>
+</span></span></code></pre></div><p><code>CMD16</code> is shown below. The value <code>0x12</code> (decimal 18) sets the block length to 18 bytes (2 bytes for header/length + 16 bytes for the password).</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">50 00 00 00 12 2F
 </span></span><span class="line"><span class="cl">[47:41] 01010000  start bit + Command index
 </span></span><span class="line"><span class="cl">[40:32] 00000000
@@ -584,7 +586,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">[23:16] 00000000
 </span></span><span class="line"><span class="cl">[15:8]  00010010  SET_BLOCKLEN
 </span></span><span class="line"><span class="cl">[7:0]   00101111  CRC7 + end bit
-</span></span></code></pre></div><p>CMD16 response:</p>
+</span></span></code></pre></div><p><code>CMD16</code> response:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">10 02 00 09 00 07
 </span></span><span class="line"><span class="cl">[47:41] 00010000  start bit + Command index
 </span></span><span class="line"><span class="cl">[40:32] 00000010  Card Status
@@ -592,9 +594,9 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">[23:16] 00001001  Card Status
 </span></span><span class="line"><span class="cl">[15:8]  00000000  Card Status
 </span></span><span class="line"><span class="cl">[7:0]   00000111  CRC7 + end bit
-</span></span></code></pre></div><p>The first byte of the CMD42 response is <code>00101010</code>, i.e. <code>2A</code>. The response type is R1.</p>
-<p>I captured the CMD42 response using a logic analyzer.</p>
-<p>Convert the Parameter field to binary. According to the CSR definition, the status below indicates: not unlocked, ready, tran mode.</p>
+</span></span></code></pre></div><p>The first byte of the <code>CMD42</code> response is <code>00101010</code> (<code>0x2A</code>), indicating an R1 response.</p>
+<p>I captured the <code>CMD42</code> response using a logic analyzer.</p>
+<p>Decoding the Parameter field reveals the card status: <strong>Locked</strong>, <strong>Ready</strong>, <strong>Transfer Mode</strong>.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">2a <span class="m">02</span> <span class="m">00</span> <span class="m">09</span> <span class="m">00</span> 6f
 </span></span><span class="line"><span class="cl"><span class="o">[</span>47:41<span class="o">]</span> <span class="m">00010000</span>  start bit + Command index
 </span></span><span class="line"><span class="cl"><span class="o">[</span>40:32<span class="o">]</span> <span class="m">00000010</span>  Card Status Locked
@@ -602,7 +604,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl"><span class="o">[</span>23:16<span class="o">]</span> <span class="m">00001001</span>  Card Status
 </span></span><span class="line"><span class="cl"><span class="o">[</span>15:8<span class="o">]</span>  <span class="m">00000000</span>  Card Status
 </span></span><span class="line"><span class="cl"><span class="o">[</span>7:0<span class="o">]</span>   <span class="m">00000111</span>  CRC7 + end bit
-</span></span></code></pre></div><p>After CMD42 Data is sent, send CMD13. According to CSR, the status below indicates: unlocked, ready, tran mode, APP_CMD disabled.</p>
+</span></span></code></pre></div><p>Following the delivery of <code>CMD42</code> data, <code>CMD13</code> is sent to check status. The CSR bits now indicate: <strong>Unlocked</strong>, <strong>Ready</strong>, <strong>Transfer Mode</strong>, with <code>APP_CMD</code> disabled.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">0D <span class="m">00</span> <span class="m">00</span> <span class="m">09</span> <span class="m">00</span> <span class="m">07</span>
 </span></span><span class="line"><span class="cl"><span class="o">[</span>47:41<span class="o">]</span> <span class="m">00010000</span>  start bit + Command index
 </span></span><span class="line"><span class="cl"><span class="o">[</span>40:32<span class="o">]</span> <span class="m">00000000</span>  Card Status Unlocked
@@ -610,14 +612,14 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl"><span class="o">[</span>23:16<span class="o">]</span> <span class="m">00001001</span>  Card Status
 </span></span><span class="line"><span class="cl"><span class="o">[</span>15:8<span class="o">]</span>  <span class="m">00000000</span>  Card Status
 </span></span><span class="line"><span class="cl"><span class="o">[</span>7:0<span class="o">]</span>   <span class="m">01101111</span>  CRC7 + end bit
-</span></span></code></pre></div><h3 id="analyze-data">Analyze Data</h3>
-<p>In KingstVIS, locate the Data0 channel. Align to the rising edge after CMD42, select the interval, and export the clock channel and Data0 channel as TXT.</p>
+</span></span></code></pre></div><h3 id="data-analysis">Data Analysis</h3>
+<p>In KingstVIS, I located the Data0 channel, aligned it to the rising edge following <code>CMD42</code>, selected the relevant interval, and exported the clock and Data0 channels to a TXT file.</p>
 <p><img loading="lazy"  src="./exporting_data.png"
         alt="exporting_data"/></p>
-<p>The exported data is actually still CSV. In KingstVIS, exporting as CSV results in reversed order, so TXT format was chosen. The character encoding is ANSI; it will appear garbled on Linux, so remove the Title line.</p>
+<p>The exported data is effectively CSV-formatted. Note that KingstVIS exports to CSV in reverse chronological order, so the TXT format was preferred. The encoding is ANSI, which may display incorrectly on Linux; simply removing the header line resolved this.</p>
 <p><img loading="lazy"  src="./csv_data_exported.png"
         alt="csv_data_exported"/></p>
-<p>With the script below, you can print the Data0 data into readable output.</p>
+<p>The script below parses the Data0 output into a readable format.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># -*- coding: utf-8 -*-</span>
 </span></span><span class="line"><span class="cl">
@@ -677,7 +679,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">        <span class="n">crc_data</span> <span class="o">=</span> <span class="p">[]</span>
 </span></span><span class="line"><span class="cl">        <span class="n">keys_len</span> <span class="o">=</span> <span class="mi">0</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="c1"># 去掉Data的第一位标志位</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Remove the first start bit of Data</span>
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">bits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">            <span class="n">bits</span> <span class="o">=</span> <span class="n">bits</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 </span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">bits</span><span class="p">),</span> <span class="mi">8</span><span class="p">):</span>
@@ -703,7 +705,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">                        <span class="n">x</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">keys_list</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="n">keys_len</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span>
 </span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Key:&#34;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">binascii</span><span class="o">.</span><span class="n">b2a_hex</span><span class="p">(</span><span class="n">x</span><span class="p">))[</span><span class="mi">2</span><span class="p">:(</span><span class="n">keys_len</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">])</span>
 </span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;CRC:&#34;</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">crc16_calc</span><span class="p">(</span><span class="n">keys_list</span><span class="p">)))</span>
-</span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">Analyse compeleted!&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">Analysis completed!&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">                    <span class="k">else</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">                        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;CRC error!&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">                    <span class="n">exit</span><span class="p">()</span>
@@ -716,13 +718,13 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">usage</span><span class="p">():</span>
 </span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Usage:python kinstvis_sdio_parser.py -f test.csv&#34;</span><span class="p">)</span>
-</span></span></code></pre></div><p>Remove the first start bit, parse the CMD42 Data structure, and then verify CRC; the CRC check succeeds.</p>
+</span></span></code></pre></div><p>After removing the start bit, parsing the <code>CMD42</code> data structure, and verifying the CRC, the analysis confirmed a valid password.</p>
 <p><img loading="lazy"  src="./parse_key.png"
         alt="parse_key"/></p>
-<p>The password is:</p>
+<p>Extracted password:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">5ffca19ffcdb5899a82c4e265f99c76b
 </span></span></code></pre></div><h2 id="mmc-utils">MMC Utils</h2>
-<p>The next step is to write an SD unlock tool. Micron’s official documentation provides a demo for adding lock/unlock functionality; by modifying <code>mmc-utils</code> you can implement unlocking.</p>
+<p>The next step involved creating an SD unlock tool. Micron’s documentation provides a demo for adding lock/unlock functionality; I modified <code>mmc-utils</code> to implement this.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone git://git.kernel.org/pub/scm/linux/kernel/git/cjb/mmc-utils.git
 </span></span></code></pre></div><p><code>mmc-utils/mmc.h</code></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define MMC_SET_BLOCKLEN        16 </span><span class="cm">/* ac [31:0] block len R1 */</span><span class="cp">
@@ -872,7 +874,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">    <span class="n">ret</span> <span class="o">=</span> <span class="nf">ioctl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">MMC_IOC_CMD</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">idata</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>In practice this is controlled via <code>ioctl</code>. After compiling, I could lock the card, but I could never successfully unlock it again—so I had to try another approach.</p>
+</span></span></code></pre></div><p>In practice, this is controlled via <code>ioctl</code>. After compilation, I successfuly locked the card, but subsequent unlock attempts failed. I had to pivot to another approach.</p>
 <p><a href="https://github.com/torvalds/linux/blob/master/include/uapi/linux/mmc/ioctl.h"target="_blank" rel="noopener noreferrer">https://github.com/torvalds/linux/blob/master/include/uapi/linux/mmc/ioctl.h</a></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo ./mmc scr <span class="nb">read</span> /sys/bus/mmc/devices/mmc0:aaaa/
 </span></span><span class="line"><span class="cl">type: <span class="s1">&#39;SD&#39;</span>
@@ -881,14 +883,14 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">sudo ./mmc cmd42 <span class="m">123456</span> s /sys/bus/mmc/devices/mmc0:aaaa/
 </span></span><span class="line"><span class="cl">Set password: <span class="nv">password</span><span class="o">=</span><span class="m">123456</span> ...
-</span></span></code></pre></div><h2 id="modify-the-kernel-module">Modify the kernel module</h2>
-<p>Since third-party tools couldn’t achieve it, I had to modify the kernel module. My OS was Arch Linux; the MMC driver is a kernel module, so I didn’t need to rebuild the whole kernel (unlike Ubuntu where it is often built-in).</p>
-<p>The kernel module directories on Arch Linux are as follows. My laptop is an HP 840G3. The SD card uses the PCI bus, and the following drivers are involved:</p>
+</span></span></code></pre></div><h2 id="modification-of-the-kernel-module">Modification of the Kernel Module</h2>
+<p>Since existing user-space tools fell short, I proceeded to modify the kernel module directly. My development environment was Arch Linux. As the MMC driver is compiled as a module, I could modify it without rebuilding the entire kernel (unlike certain Ubuntu configurations where it may be built-in).</p>
+<p>The relevant kernel module directories on Arch Linux are listed below. Testing was performed on an HP 840G3 laptop where the SD card reader is connected via the PCI bus. The following drivers are involved:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">/lib/modules/$(uname -r)/kernel/drivers/mmc/core/mmc_core.ko.xz
 </span></span><span class="line"><span class="cl">/lib/modules/$(uname -r)/kernel/drivers/mmc/core/mmc_block.ko.xz
 </span></span><span class="line"><span class="cl">/lib/modules/$(uname -r)/kernel/drivers/mmc/host/rtsx_pci_sdmmc.ko.xz
 </span></span><span class="line"><span class="cl">/lib/modules/$(uname -r)/kernel/drivers/misc/cardreader/rtsx_pci.ko.xz
-</span></span></code></pre></div><p>If you re-download the official source and build the kernel module, you may encounter strange errors. First is the <code>vermagic</code> matching issue: if the kernel version and CPU features don’t match, the module cannot be loaded. Because Linux added a module signing mechanism after 3.7, you can use <code>modinfo</code> to inspect the system’s built-in modules; missing signatures can also prevent loading.</p>
+</span></span></code></pre></div><p>When building kernel modules from source, <code>vermagic</code> mismatch errors can occur if the kernel version or CPU feature flags do not align with the running kernel. Additionally, since kernel 3.7, Linux enforces module signing; lacking a valid signature can prevent module loading. Use <code>modinfo</code> to inspect the module properties.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ modinfo mmc_core
 </span></span><span class="line"><span class="cl">filename:       /lib/modules/4.18.10-arch1-1-ARCH/kernel/drivers/mmc/core/mmc_core.ko.xz
 </span></span><span class="line"><span class="cl">license:        GPL
@@ -905,7 +907,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">signature:      30:82:02:A5:06:09:2A:86:48:86:F7:0D:01:07:02:A0:82:02:96:30
 </span></span><span class="line"><span class="cl">                以下省略
 </span></span><span class="line"><span class="cl">parm:           use_spi_crc:bool
-</span></span></code></pre></div><p>We can build in <code>/usr/lib/modules/$(uname -r)/build/</code> without extra configuration. Just copy the MMC core code into the target directory, then <code>make</code>, and reload the MMC kernel modules.</p>
+</span></span></code></pre></div><p>We can build directly in <code>/usr/lib/modules/$(uname -r)/build/</code> without additional configuration. Simply copy the MMC core code to the target directory, run <code>make</code>, and reload the modules.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp ./core/* /usr/lib/modules/<span class="k">$(</span>uname -r<span class="k">)</span>/build/drivers/mmc/core/
 </span></span><span class="line"><span class="cl">make modules <span class="nv">SUBDIRS</span><span class="o">=</span>drivers/mmc/core
 </span></span><span class="line"><span class="cl">  Building modules, stage 2.
@@ -993,7 +995,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>Before <code>mmc_sd_setup_card</code> in <code>sd.c</code>, add the unlock logic.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">// 检查是否上锁
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">// Check <span class="k">if</span> locked
 </span></span><span class="line"><span class="cl">u32 <span class="nv">status</span> <span class="o">=</span> 0<span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="nv">err</span> <span class="o">=</span> mmc_send_status<span class="o">(</span>card, <span class="p">&amp;</span>status<span class="o">)</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">(</span>err<span class="o">)</span>
@@ -1004,7 +1006,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">    mmc_card_set_locked<span class="o">(</span>card<span class="o">)</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="o">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">//方便调试
+</span></span><span class="line"><span class="cl">// For debugging convenience
 </span></span><span class="line"><span class="cl">bool <span class="nv">auto_unlock</span> <span class="o">=</span> true<span class="p">;</span>
 </span></span><span class="line"><span class="cl">char unlock_pwd<span class="o">[</span>16<span class="o">]</span> <span class="o">=</span> <span class="o">{</span>0x5f,0xfc,0xa1,0x9f,0xfc,0xdb,0x58,0x99,0xa8,0x2c,0x4e,0x26,0x5f,0x99,0xc7,0x6b<span class="o">}</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
@@ -1055,7 +1057,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl"><span class="o">{</span>
 </span></span><span class="line"><span class="cl">    printk<span class="o">(</span>KERN_WARNING <span class="s2">&#34;[SDLOCK] sdcard is unlocked\n&#34;</span><span class="o">)</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="o">}</span>
-</span></span></code></pre></div><p>Add macro definitions in <code>card.h</code>:</p>
+</span></span></code></pre></div><p>Next, define the necessary macros in <code>card.h</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define mmc_card_mmc(c)     ((c)-&gt;type == MMC_TYPE_MMC)
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define mmc_card_sd(c)      ((c)-&gt;type == MMC_TYPE_SD)
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define mmc_card_sdio(c)    ((c)-&gt;type == MMC_TYPE_SDIO)
@@ -1080,23 +1082,23 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define MMC_LOCK_MODE_CLR_PWD    (1&lt;&lt;1)
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define MMC_LOCK_MODE_SET_PWD    (1&lt;&lt;0)
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define MMC_LOCK_MODE_UNLOCK     0
-</span></span></span></code></pre></div><p>Add instrumentation in <code>mmc_wait_for_req_done</code> in <code>core.c</code>, then check logs via <code>dmesg</code>:</p>
+</span></span></span></code></pre></div><p>To debug, I added instrumentation to <code>mmc_wait_for_req_done</code> within <code>core.c</code> and monitored the logs using <code>dmesg</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">printk</span><span class="p">(</span><span class="s">&#34;[mmc] CMD %d err number: %d&#34;</span><span class="p">,</span> <span class="n">mrq</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">opcode</span><span class="p">,</span> <span class="n">mrq</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">error</span><span class="p">);</span>
 </span></span></code></pre></div><h2 id="uhs-i">UHS-I</h2>
-<p>UHS-I (Ultra High Speed Phase I) is a bus interface for high-speed data transfer on SDHC and SDXC cards. It supports LVS and has seven operating modes:</p>
+<p>UHS-I (Ultra High Speed Phase I) is a bus interface designed for high-speed data transfer on SDHC and SDXC cards. It supports Low Voltage Signaling (LVS) and offers seven operating modes:</p>
 <ul>
-<li>DS - Default Speed up to 25MHz 3.3V signaling</li>
-<li>HS - High Speed up to 50MHz 3.3V signaling</li>
-<li>SDR12 - SDR up to 25MHz 1.8V signaling</li>
-<li>SDR25 - SDR up to 50MHz 1.8V signaling</li>
-<li>SDR50 - SDR up to 100MHz 1.8V signaling</li>
-<li>SDR104 - SDR up to 208MHz 1.8V signaling</li>
-<li>DDR - DDR up to 50MHz 1.8V signaling</li>
+<li><strong>DS</strong> (Default Speed): Up to 25MHz, 3.3V signaling</li>
+<li><strong>HS</strong> (High Speed): Up to 50MHz, 3.3V signaling</li>
+<li><strong>SDR12</strong>: SDR up to 25MHz, 1.8V signaling</li>
+<li><strong>SDR25</strong>: SDR up to 50MHz, 1.8V signaling</li>
+<li><strong>SDR50</strong>: SDR up to 100MHz, 1.8V signaling</li>
+<li><strong>SDR104</strong>: SDR up to 208MHz, 1.8V signaling</li>
+<li><strong>DDR50</strong>: DDR up to 50MHz, 1.8V signaling</li>
 </ul>
-<p>First, use CMD0 to select the bus mode: SPI mode or SD mode. The 1.8V signaling mode can only enter SD mode.</p>
+<p>Initially, <code>CMD0</code> is used to select the bus mode (SPI or SD mode). Note that 1.8V signaling is only available in SD mode.</p>
 <p><img loading="lazy"  src="./uhs_command_sequence.png"
         alt="uhs_command_sequence"/></p>
-<p>You can see the unlock did not succeed; CMD42 returned an error <code>-22</code>.</p>
+<p>As shown in the logs below, the unlock attempt failed; <code>CMD42</code> returned error <code>-22</code>.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dmesg -l 0,1,2,3,4,5,6,7
 </span></span><span class="line"><span class="cl"><span class="o">[</span>62696.072102<span class="o">]</span> <span class="o">[</span>mmc<span class="o">]</span> CMD <span class="m">52</span> err number: -110
 </span></span><span class="line"><span class="cl"><span class="o">[</span>62696.175620<span class="o">]</span> <span class="o">[</span>mmc<span class="o">]</span> CMD <span class="m">52</span> err number: -110
@@ -1133,7 +1135,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl"><span class="o">[</span>62696.690755<span class="o">]</span> <span class="o">[</span>SDLOCK<span class="o">]</span> sdcard is locked
 </span></span><span class="line"><span class="cl"><span class="o">[</span>62696.690773<span class="o">]</span> mmc0: new SD card at address f317
 </span></span><span class="line"><span class="cl"><span class="o">[</span>62696.691709<span class="o">]</span> mmcblk0: mmc0:f317 MF02B 1.88 GiB
-</span></span></code></pre></div><p>Linux error number <code>-22</code> is <code>EINVAL</code>. Eventually I traced it to <code>drivers/mmc/host/sdhci.c</code>:</p>
+</span></span></code></pre></div><p>Linux error <code>-22</code> corresponds to <code>EINVAL</code> (Invalid Argument). I traced the error propagation through the driver stack, eventually reaching <code>drivers/mmc/host/sdhci.c</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">filename: drivers/mmc/core/core.c
 </span></span><span class="line"><span class="cl">functions:
 </span></span><span class="line"><span class="cl">mmc_wait_for_req -&gt; __mmc_start_request -&gt; host-&gt;ops-&gt;request
@@ -1148,7 +1150,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">rtsx_pci_write_ppbuf
 </span></span><span class="line"><span class="cl">rtsx_pci_add_cmd
 </span></span><span class="line"><span class="cl">rtsx_pci_send_cmd
-</span></span></code></pre></div><p>Because this is a laptop, the relevant commands are in the Realtek SD card reader driver; on phones it is <code>drivers/mfd/rtsx_pcr.c</code>.</p>
+</span></span></code></pre></div><p>Since I am testing on a laptop with a Realtek SD card reader, the relevant code is in the Realtek PCI driver (<code>rtsx_pci</code>). On embedded devices or phones, this might correspond to <code>drivers/mfd/rtsx_pcr.c</code>.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">rtsx_pci_send_cmd</span><span class="p">(</span><span class="k">struct</span> <span class="n">rtsx_pcr</span> <span class="o">*</span><span class="n">pcr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="p">...</span>
@@ -1158,7 +1160,7 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp ./drivers/misc/cardreader/* /usr/lib/modules/<span class="k">$(</span>uname -r<span class="k">)</span>/build/drivers/misc/cardreader/
 </span></span><span class="line"><span class="cl">make modules <span class="nv">SUBDIRS</span><span class="o">=</span>drivers/misc/cardreader
-</span></span></code></pre></div><p>By printing the parameters of <code>rtsx_pci_add_cmd</code>, I confirmed the key passed in was correct.</p>
+</span></span></code></pre></div><p>By inspecting the parameters passed to <code>rtsx_pci_add_cmd</code>, I verified that the key was being transmitted correctly.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sd_cmd_set_sd_cmd
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">[75754.016095] [rtsx] cmd_type:1, reg_addr:fda9, ptr:0x50, val:2108292944 SD_CMD0 16
@@ -1234,14 +1236,17 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">[75754.017580] [rtsx] cmd_type:1, reg_addr:fda1, ptr:0x0, val:2107768576  WRITE_REG_CMD SD_CFG2
 </span></span><span class="line"><span class="cl">[75754.017583] [rtsx] cmd_type:1, reg_addr:fdb3, ptr:0x81, val:2108948353 WRITE_REG_CMD SD_TRANSFER
 </span></span><span class="line"><span class="cl">[75754.017585] [rtsx] cmd_type:2, reg_addr:fdb3, ptr:0x40, val:-1112326080 CHECK_REG_CMD SD_TRANSFER
-</span></span></code></pre></div><h2 id="unlocking-sd-card-by-raspberry-pi">Unlocking SD Card by Raspberry Pi</h2>
+</span></span></code></pre></div><h2 id="unlocking-sd-card-via-raspberry-pi">Unlocking SD Card via Raspberry Pi</h2>
+<p>Since the Realtek driver proved problematic, I switched to using a Raspberry Pi.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo dd <span class="nv">bs</span><span class="o">=</span>4M <span class="k">if</span><span class="o">=</span>/home/cygnus/IMG/2018-06-27-raspbian-stretch-lite/2018-06-27-raspbian-stretch-lite.img <span class="nv">of</span><span class="o">=</span>/dev/mmcblk0 <span class="nv">status</span><span class="o">=</span>progress <span class="nv">conv</span><span class="o">=</span>fsync
-</span></span></code></pre></div><p>Download the corresponding Raspberry Pi kernel source, and add the toolchain to the environment variables:</p>
+</span></span></code></pre></div><p>I downloaded the appropriate Raspberry Pi kernel source and added the cross-compilation toolchain to my PATH:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone --depth<span class="o">=</span><span class="m">1</span> --branch rpi-4.14.y https://github.com/raspberrypi/linux
 </span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/home/cygnus/git/rapi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
-</span></span></code></pre></div><p>Use the BCM2709 config, and in MENU CONFIG change the SD card and MMC drivers into kernel modules. Finally build <code>zImage</code>, modules, and device trees, then update the files on the SD card.
-<code>kernel.img</code> is used by RPi 1B, 1A, A+, B+, 2B (first version) Z, Z (with camera), ZW, CM1
-<code>kernel7.img</code> is used by the RPi2B2, RPi3B, CM3 and CM3L.</p>
+</span></span></code></pre></div><p>I used the <code>BCM2709</code> configuration. In <code>menuconfig</code>, I configured the SD card and MMC drivers to be built as modules. Finally, I built the <code>zImage</code>, modules, and device tree blobs (dtbs), and updated the files on the boot partition.</p>
+<ul>
+<li><code>kernel.img</code>: RPi 1B, 1A, A+, B+, 2B (v1), Zero, Zero W, CM1</li>
+<li><code>kernel7.img</code>: RPi 2B (v2), 3B, CM3, CM3L</li>
+</ul>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">KERNEL</span><span class="o">=</span>kernel7
 </span></span><span class="line"><span class="cl">make <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- bcm2709_defconfig
 </span></span><span class="line"><span class="cl">make <span class="nv">ARCH</span><span class="o">=</span>arm <span class="nv">CROSS_COMPILE</span><span class="o">=</span>arm-linux-gnueabihf- menuconfig
@@ -1255,55 +1260,55 @@ The first 4 bits of CMD42’s argument should be 0. The corresponding CSR status
 </span></span><span class="line"><span class="cl">sudo cp arch/arm/boot/dts/overlays/*.dtb* /run/media/cygnus/boot/overlays/
 </span></span></code></pre></div><p>Add the following to the boot config:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">dtoverlay</span><span class="o">=</span>sdio,poll_once<span class="o">=</span>off
-</span></span></code></pre></div><p>Wiring:</p>
+</span></span></code></pre></div><p>Wire the SD card to the Raspberry Pi GPIO pins as follows:</p>
 <table>
   <thead>
       <tr>
-          <th>Name</th>
-          <th>SD Card</th>
-          <th>Raspberry Pi Pin Num</th>
+          <th style="text-align: right">Name</th>
+          <th style="text-align: center">SD Card</th>
+          <th style="text-align: left">Raspberry Pi Pin Num</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>VCC</td>
-          <td>4</td>
-          <td>17</td>
+          <td style="text-align: right">VCC</td>
+          <td style="text-align: center">4</td>
+          <td style="text-align: left">17</td>
       </tr>
       <tr>
-          <td>GND</td>
-          <td>6</td>
-          <td>20</td>
+          <td style="text-align: right">GND</td>
+          <td style="text-align: center">6</td>
+          <td style="text-align: left">20</td>
       </tr>
       <tr>
-          <td>CLK/SCLK</td>
-          <td>5</td>
-          <td>15</td>
+          <td style="text-align: right">CLK/SCLK</td>
+          <td style="text-align: center">5</td>
+          <td style="text-align: left">15</td>
       </tr>
       <tr>
-          <td>CMD/MOSI</td>
-          <td>2</td>
-          <td>16</td>
+          <td style="text-align: right">CMD/MOSI</td>
+          <td style="text-align: center">2</td>
+          <td style="text-align: left">16</td>
       </tr>
       <tr>
-          <td>DAT0/MISO</td>
-          <td>7</td>
-          <td>18</td>
+          <td style="text-align: right">DAT0/MISO</td>
+          <td style="text-align: center">7</td>
+          <td style="text-align: left">18</td>
       </tr>
       <tr>
-          <td>DAT1</td>
-          <td>8</td>
-          <td>22</td>
+          <td style="text-align: right">DAT1</td>
+          <td style="text-align: center">8</td>
+          <td style="text-align: left">22</td>
       </tr>
       <tr>
-          <td>DAT2</td>
-          <td>9</td>
-          <td>37</td>
+          <td style="text-align: right">DAT2</td>
+          <td style="text-align: center">9</td>
+          <td style="text-align: left">37</td>
       </tr>
       <tr>
-          <td>DAT3/CS</td>
-          <td>1</td>
-          <td>13</td>
+          <td style="text-align: right">DAT3/CS</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: left">13</td>
       </tr>
   </tbody>
 </table>

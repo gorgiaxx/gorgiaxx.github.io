@@ -2,7 +2,7 @@
 <html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.154.5"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="supported-color-schemes" content="light dark"><meta name="description" content="Preface
-I wrote this last year. I accidentally set the GitHub repo to private and lost the README; after re-uploading it, it felt a bit awkward. Anyway, let’s publish this post first."><title>Firmware Extraction Series: UBI Filesystem Extraction and Repacking&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
+I originally wrote this post last year but accidentally set the GitHub repository to private and lost the README. After re-uploading, the context felt slightly dated, but the technical content remains relevant."><title>Firmware Extraction Series: UBI Filesystem Extraction and Repacking&nbsp;&ndash;&nbsp;Gorgias&#39; Blog</title><link rel="stylesheet" href="/css/core.min.363cdd0e3e6340dd0e88b1f21887fb7e53e3129ed31d7f3cf62686d06069621ece79dc5ffb48a77ebba54468e667212f.css" integrity="sha384-NjzdDj5jQN0OiLHyGIf7flPjEp7THX889iaG0GBpYh7Oedxf&#43;0infrulRGjmZyEv"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Firmware Extraction Series: UBI Filesystem Extraction and Repacking" /><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/en/"><span class="site name">Gorgias' Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/en/categories/">Categories</a><a class="nav item" href="/en/tags/">Tags</a><a class="nav item" href="/en/about/">About</a><a class="nav item" href="/en/links/">Links</a><a class="nav item" href="/zh/posts/firmware-extraction-series-ubi-extract-and-repack/" title="中文">
@@ -11,13 +11,13 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
                     <a href="/zh/posts/firmware-extraction-series-ubi-extract-and-repack/" title="中文">
                         <span class="lang-icon">🌐</span>中文</a>
                 </span></span></p></section><article class="article markdown-body"><h2 id="preface">Preface</h2>
-<p>I wrote this last year. I accidentally set the GitHub repo to private and lost the README; after re-uploading it, it felt a bit awkward. Anyway, let’s publish this post first.</p>
+<p>I originally wrote this post last year but accidentally set the GitHub repository to private and lost the README. After re-uploading, the context felt slightly dated, but the technical content remains relevant.</p>
 <p>UBI (Unsorted Block Images) is a volume management system for raw flash devices designed by IBM. It can manage multiple logical volumes on a single physical device and supports wear leveling. It is widely used in embedded devices.</p>
 <p>Speaking of raw flash, we should first explain what MTD (Memory Technology Device) is. MTD is a Linux subsystem used to access memory devices (especially flash devices). It serves as an abstraction layer between hardware and filesystems. Taking NAND flash as an example, MTD encapsulates NAND operations and provides abstract interfaces to upper-layer filesystem drivers. An MTD device consists of eraseblocks. The MTD driver provides read, write, and erase operations—but before modifying any block, you must erase it first.</p>
 <p><img loading="lazy"  src="./MTD_subsystem.png"
         alt="MTD_subsystem"/></p>
 <h2 id="ubi-layout">UBI Layout</h2>
-<p>UBI is somewhat like LVM (Logical Volume Management). LVM maps logical sectors to physical sectors, while UBI maps <strong>Logical Erase Blocks (LEBs)</strong> to <strong>Physical Erase Blocks (PEBs)</strong>. As you can see, UBI operates at the eraseblock level.</p>
+<p>UBI shares similarities with LVM (Logical Volume Management). While LVM maps logical sectors to physical sectors, UBI maps <strong>Logical Erase Blocks (LEBs)</strong> to <strong>Physical Erase Blocks (PEBs)</strong>. Fundamentally, UBI operates at the eraseblock level.</p>
 <p>At the beginning of each UBI block (excluding bad blocks), there are two 64-byte headers:</p>
 <ul>
 <li>EC header (erase counter header), which contains per-PEB information (VID header offset, data offset).</li>
@@ -79,7 +79,7 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 </span></span><span class="line"><span class="cl">    <span class="n">__u8</span>    <span class="n">padding</span><span class="p">[</span><span class="mi">23</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">    <span class="n">__be32</span>  <span class="n">crc</span><span class="p">;</span>   <span class="c1">// CRC32
 </span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">__packed</span><span class="p">;</span>
-</span></span></code></pre></div><p>On an MTD device, the front part is usually used for the bootloader, and the later part is used for UBI. The figure below is just a simplified example; in reality there may be multiple UBIs and other partitions interleaved. UBI uses fastmap to map LEBs onto out-of-order PEBs, providing an abstraction interface for UBIFS.</p>
+</span></span></code></pre></div><p>On a typical MTD device, the initial sectors are reserved for the bootloader, while the subsequent regions are allocated for UBI. The figure below provides a simplified example; in practice, multiple UBI volumes and other partitions may be interleaved. UBI employs a mechanism called &ldquo;fastmap&rdquo; to map LEBs onto non-contiguous PEBs, providing an abstraction layer for UBIFS.</p>
 <p><img loading="lazy"  src="./UBI_map.png"
         alt="UBI_map"/></p>
 <h2 id="mounting-ubifs">Mounting UBIFS</h2>
@@ -98,13 +98,13 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 <li>ubiformat - formats empty flash, erases flash and preserves erase counters, flashes UBI images to MTD devices;</li>
 <li>mtdinfo - reports information about MTD devices found in the system.</li>
 </ul>
-<p>The tools above operate on UBI, but a typical PC does not have MTD devices. If you extracted a raw flash firmware dump from an embedded device and want to read it on your PC, you can <strong>simulate an MTD device</strong>. In most cases, you’ll use <strong>NANDSim</strong>.</p>
+<p>While the above tools operate on UBI, standard PCs lack native MTD devices. To analyze a raw flash firmware dump from an embedded device on a PC, you must <strong>simulate an MTD device</strong>. The most common tool for this is <strong>NANDSim</strong>.</p>
 <ul>
 <li>mtdram which simulates NOR flash in RAM;</li>
 <li>nandsim which simulates NAND flash in RAM;</li>
 <li>block2mtd which simulates NOR flash on top of a block device;</li>
 </ul>
-<p>First, look at NANDSim’s parameters—there are a lot. How should you configure them?</p>
+<p>First, examine NANDSim’s parameters. Given the large number of options, correct configuration is key.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">$ modinfo nandsim
 </span></span><span class="line"><span class="cl">filename:       /lib/modules/4.18.10-arch1-1-ARCH/kernel/drivers/mtd/nand/raw/nandsim.ko.xz
 </span></span><span class="line"><span class="cl">description:    The NAND flash simulator
@@ -145,9 +145,9 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 </span></span><span class="line"><span class="cl">parm:           cache_file:File to use to cache nand pages instead of memory (charp)
 </span></span><span class="line"><span class="cl">parm:           bbt:0 OOB, 1 BBT with marker in OOB, 2 BBT with marker in data area (uint)
 </span></span><span class="line"><span class="cl">parm:           bch:Enable BCH ecc and set how many bits should be correctable in 512-byte blocks (uint)
-</span></span></code></pre></div><p>You can read the kernel driver source code to understand NANDSim’s implementation; here’s a brief overview. <code>nandsim.c</code> calls <code>nand_scan_ident</code> in <code>nand_base.c</code>. During <code>nand_detect</code>, it performs a Read ID operation: <code>nand_readid_op</code> sends <code>0x90,0x00</code> to the NAND. Then <code>nand_get_manufacturer</code> matches the manufacturer ID. Finally, <code>nand_scan_tail</code> initializes the NAND chip and sets various properties.</p>
+</span></span></code></pre></div><p>To understand NANDSim’s implementation, one can examine the kernel driver source code. Briefly, <code>nandsim.c</code> calls <code>nand_scan_ident</code> in <code>nand_base.c</code>. During <code>nand_detect</code>, a Read ID operation is performed: <code>nand_readid_op</code> sends <code>0x90,0x00</code> to the NAND device. Subsequently, <code>nand_get_manufacturer</code> matches the manufacturer ID. Finally, <code>nand_scan_tail</code> initializes the NAND chip and sets the appropriate properties.</p>
 <p>The NAND chip datasheet specifies the ID bytes in detail.</p>
-<p>So we need to set the ID correctly. The driver will then automatically configure capacity, page size, and other parameters based on the ID. For NANDSim, you only need the first four ID parameters.</p>
+<p>Therefore, we must set the ID correctly. This allows the driver to automatically configure the capacity, page size, and other parameters. For NANDSim, only the first four ID parameters are required.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">u_char</span> <span class="n">id_bytes</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONFIG_NANDSIM_FIRST_ID_BYTE</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONFIG_NANDSIM_SECOND_ID_BYTE</span><span class="p">,</span>
@@ -160,7 +160,7 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
         alt="manufacturer_id_a"/>
 <img loading="lazy"  src="./manufacturer_id_b.png"
         alt="manufacturer_id_b"/></p>
-<p>In general, an embedded device’s bootloader and other partitions are stored on the same chip as the system partition. So you need to partition NANDSim. In this example, eraseblocks are 128KB, i.e. <code>0x20000</code>.</p>
+<p>Typically, an embedded device stores the bootloader and other partitions on the same chip as the system partition. Consequently, partitioning NANDSim is necessary. In this example, the eraseblock size is 128KB (<code>0x20000</code>).</p>
 <p>Write a script to locate UBI regions in the dump:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
@@ -260,7 +260,7 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo modprobe mtd
 </span></span><span class="line"><span class="cl">sudo modprobe mtdblock
 </span></span><span class="line"><span class="cl">sudo modprobe nandsim <span class="nv">first_id_byte</span><span class="o">=</span>0x2c <span class="nv">second_id_byte</span><span class="o">=</span>0xac <span class="nv">third_id_byte</span><span class="o">=</span>0x90 <span class="nv">fourth_id_byte</span><span class="o">=</span>0x15 <span class="nv">parts</span><span class="o">=</span>371,469,6,106,86,2,3056
-</span></span></code></pre></div><p>Check MTD device information—you should see the partitions were created successfully.</p>
+</span></span></code></pre></div><p>Verify the MTD device information to ensure the partitions were created successfully.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ mtdinfo -a
 </span></span><span class="line"><span class="cl">Count of MTD devices:           <span class="m">8</span>
 </span></span><span class="line"><span class="cl">Present MTD devices:            mtd0, mtd1, mtd2, mtd3, mtd4, mtd5, mtd6, mtd7
@@ -402,9 +402,9 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 </span></span><span class="line"><span class="cl">mtd5: 00ac0000 <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 4&#34;</span>
 </span></span><span class="line"><span class="cl">mtd6: <span class="m">00040000</span> <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 5&#34;</span>
 </span></span><span class="line"><span class="cl">mtd7: 17e00000 <span class="m">00020000</span> <span class="s2">&#34;NAND simulator partition 6&#34;</span>
-</span></span></code></pre></div><p><code>mtd0</code> is the whole MTD device. Write the extracted firmware into the MTD device; since it’s simulated in RAM, it’s very fast.</p>
+</span></span></code></pre></div><p><code>mtd0</code> represents the entire MTD device. Write the extracted firmware into this device; since the simulation runs in RAM, the operation is extremely fast.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo dd <span class="k">if</span><span class="o">=</span>NAND.bin <span class="nv">of</span><span class="o">=</span>/dev/mtd0 <span class="nv">bs</span><span class="o">=</span>512M <span class="nv">count</span><span class="o">=</span><span class="m">1</span>
-</span></span></code></pre></div><p>If you check the <code>ubi</code> module parameters, you’ll see it has an <code>mtd</code> parameter. In practice this may fail because the default VID header offset is 512.</p>
+</span></span></code></pre></div><p>Examining the <code>ubi</code> module parameters reveals an <code>mtd</code> parameter. However, using this may fail if the default VID header offset (512) does not match the target image.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo modprobe ubi <span class="nv">mtd</span><span class="o">=</span><span class="m">0</span>
 </span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dmesg
 </span></span><span class="line"><span class="cl">
@@ -419,7 +419,7 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 </span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429953<span class="o">]</span>  data_offset    <span class="m">4096</span>
 </span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429955<span class="o">]</span>  image_seq      <span class="m">34870392</span>
 </span></span><span class="line"><span class="cl"><span class="o">[</span>38418.429957<span class="o">]</span>  hdr_crc        0x11db9c17
-</span></span></code></pre></div><p>So instead, load the <code>ubi</code> module first, then use <code>ubiattach</code> from mtd-utils and specify the parameters explicitly:</p>
+</span></span></code></pre></div><p>Instead, load the <code>ubi</code> module first, then use <code>ubiattach</code> from <code>mtd-utils</code> to specify the parameters explicitly:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo modprobe ubi
 </span></span><span class="line"><span class="cl">sudo ubiattach /dev/ubi_ctrl -m <span class="m">2</span> -O <span class="m">2048</span> 
 </span></span></code></pre></div><p>You should then see attach success messages:</p>
@@ -438,7 +438,7 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 </span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491532<span class="o">]</span> ubi0: max/mean erase counter: 14/5, WL threshold: 4096, image sequence number: <span class="m">1328192</span>
 </span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491534<span class="o">]</span> ubi0: available PEBs: 0, total reserved PEBs: 469, PEBs reserved <span class="k">for</span> bad PEB handling: <span class="m">80</span>
 </span></span><span class="line"><span class="cl"><span class="o">[</span>43880.491617<span class="o">]</span> ubi0: background thread <span class="s2">&#34;ubi_bgt0d&#34;</span> started, PID <span class="m">25777</span>
-</span></span></code></pre></div><p>Next, mount the UBIFS volume. You should be able to read the filesystem contents successfully.</p>
+</span></span></code></pre></div><p>Next, mount the UBIFS volume to access the filesystem contents.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ mkdir /tmp/modem
 </span></span><span class="line"><span class="cl">$ sudo mount -t ubifs ubi0_0 /tmp/modem
 </span></span><span class="line"><span class="cl">$ ls /tmp/image
@@ -446,12 +446,12 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 </span></span><span class="line"><span class="cl">mba.b00       mba.b04  modem.b00  modem.b05  modem.b09  modem.b13  modem.b19  modem.b23  qwlan30.bin
 </span></span><span class="line"><span class="cl">mba.b01       mba.b05  modem.b01  modem.b06  modem.b10  modem.b14  modem.b20  modem.b24  utf30.bin
 </span></span><span class="line"><span class="cl">mba.b02       mba.mbn  modem.b02  modem.b07  modem.b11  modem.b15  modem.b21  modem.mdt
-</span></span></code></pre></div><p>Sometimes SquashFS is used on top of UBI, so a regular UBIFS mount will fail:</p>
+</span></span></code></pre></div><p>In some cases, SquashFS runs on top of UBI, which causes standard UBIFS mounts to fail:</p>
 <pre tabindex="0"><code>[  214.800087] UBIFS error (ubi0:0 pid 3848): ubifs_read_node [ubifs]: bad node type (1 but expected 6)
 [  214.800093] UBIFS error (ubi0:0 pid 3848): ubifs_read_node [ubifs]: bad node at LEB 0:0, LEB mapping status 1
 [  214.800094] Not a node, first 24 bytes:
 [  214.800095] 00000000: 68 73 71 73 46 0c 00 00 5a 9c 25 5d 00 00 02 00 ac 00 00 00 01 00 11 00                          hsqsF
-</code></pre><p>Here, <code>hsqs</code> is SquashFS’s magic. So you can just extract it as SquashFS:</p>
+</code></pre><p>The <code>hsqs</code> magic bytes identify this as a SquashFS image. It can be extracted directly as SquashFS:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo dd <span class="k">if</span><span class="o">=</span>/dev/ubi0_0 <span class="nv">of</span><span class="o">=</span>./ubi0_0
 </span></span><span class="line"><span class="cl">unsquashfs ./ubi0_0
 </span></span></code></pre></div><p>Detach/unload:</p>
@@ -466,14 +466,14 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubireader_display_info <span class="o">[</span>options<span class="o">]</span> path/to/file
 </span></span></code></pre></div><p>Extract all files (but it will fail if another filesystem is present):</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubireader_extract_files <span class="o">[</span>options<span class="o">]</span> path/to/file
-</span></span></code></pre></div><p>So it’s recommended to first restore PEBs to LEBs, then analyze individual volumes:</p>
+</span></span></code></pre></div><p>It is recommended to first restore PEBs to LEBs before analyzing individual volumes:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubireader_extract_images <span class="o">[</span>options<span class="o">]</span> path/to/file
 </span></span></code></pre></div><h2 id="repacking-ubi">Repacking UBI</h2>
-<p>After mounting UBIFS, you may want to modify files and repack. Using <code>dd</code> directly is not feasible.</p>
+<p>After mounting UBIFS, modification and repacking might be required. Direct use of <code>dd</code> is not suitable for this task.</p>
 <p>First, pay attention to the output from <code>ubiattach</code>—it prints LEB information:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo ubiattach /dev/ubi_ctrl -m <span class="m">7</span> -O <span class="m">2048</span>
 </span></span><span class="line"><span class="cl">UBI device number 0, total <span class="m">240</span> LEBs <span class="o">(</span><span class="m">30474240</span> bytes, 29.1 MiB<span class="o">)</span>, available <span class="m">0</span> LEBs <span class="o">(</span><span class="m">0</span> bytes<span class="o">)</span>, LEB size <span class="m">126976</span> bytes <span class="o">(</span>124.0 KiB<span class="o">)</span>
-</span></span></code></pre></div><p>There are 240 LEBs total, each LEB is 126976 bytes. Use these parameters in <code>mkfs.ubifs</code> to build a UBIFS image:</p>
+</span></span></code></pre></div><p>There are 240 LEBs in total, with each LEB being 126976 bytes. These parameters must be passed to <code>mkfs.ubifs</code> to build the UBIFS image:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># mtd5</span>
 </span></span><span class="line"><span class="cl">sudo mkfs.ubifs -m <span class="m">2048</span> -e <span class="m">126976</span> -c <span class="m">240</span> -F -r ./UBI_1 rootfs.img
 </span></span><span class="line"><span class="cl"><span class="c1"># mtd9</span>
@@ -482,7 +482,7 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 </span></span><span class="line"><span class="cl">sudo mkfs.ubifs -m <span class="m">2048</span> -e <span class="m">126976</span> -c <span class="m">240</span> -x lzo -r ./rootfs rootfs.img
 </span></span></code></pre></div><p>Create <code>ubi_config.ini</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vi ubi_config.ini
-</span></span></code></pre></div><p><code>vol_size</code> must match the image size. Also, the last line must be empty, otherwise you’ll get an error:
+</span></span></code></pre></div><p>The <code>vol_size</code> must match the image size. Additionally, the file must end with an empty line to avoid the following error:
 <code>ubinize: error!: cannot load the input ini file &quot;ubi_config.ini&quot;</code></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[rootfs]</span>
 </span></span><span class="line"><span class="cl"><span class="na">mode</span><span class="o">=</span><span class="s">ubi</span>
@@ -493,19 +493,21 @@ I wrote this last year. I accidentally set the GitHub repo to private and lost t
 </span></span><span class="line"><span class="cl"><span class="na">vol_name</span><span class="o">=</span><span class="s">rootfs</span>
 </span></span><span class="line"><span class="cl"><span class="na">vol_alignment</span><span class="o">=</span><span class="s">1</span>
 </span></span><span class="line"><span class="cl"><span class="na">vol_flags</span><span class="o">=</span><span class="s">autoresize</span>
-</span></span></code></pre></div><p>Finally, generate the UBI image with <code>ubinize</code>:</p>
+</span></span></code></pre></div><p>Finally, use <code>ubinize</code> to generate the UBI image:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo ubinize -o rootfs.ubi -p <span class="m">131072</span> -m <span class="m">2048</span> -s <span class="m">512</span> -e <span class="m">2</span> -Q <span class="m">0</span> -O <span class="m">2048</span> -x1 ubi_config.ini
 </span></span></code></pre></div><p>Where:</p>
-<p>-e is the number of eraseblocks (default is 0). You can quickly check this with binwalk.
--Q is the image sequence number. You can view it with ubi_display_info.
--x is the UBI version (default is 1).
--s is the sub-page size. Not all NAND has sub-pages. Generally, SLC NAND with 2048-byte pages consists of 4 sub-pages of 512 bytes; MLC typically has no sub-pages.
--m is the page size.
--p is the physical eraseblock size. A physical block usually has 64 pages; refer to the NAND datasheet.</p>
+<ul>
+<li><code>-e</code>: Number of eraseblocks (default is 0). This can be quickly verified with <code>binwalk</code>.</li>
+<li><code>-Q</code>: Image sequence number, viewable with <code>ubi_display_info</code>.</li>
+<li><code>-x</code>: UBI version (default is 1).</li>
+<li><code>-s</code>: Sub-page size. Not all NAND flash supports sub-pages. Typically, SLC NAND with 2048-byte pages uses 4 sub-pages of 512 bytes, whereas MLC usually does not have sub-pages.</li>
+<li><code>-m</code>: Page size.</li>
+<li><code>-p</code>: Physical eraseblock size. A physical block usually consists of 64 pages; refer to the NAND datasheet for specifics.</li>
+</ul>
 <p>Below is an example of flashing <code>rootfs.ubi</code> to <code>mtd7</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo ubinize -v -o rootfs.ubi -p <span class="m">131072</span> -m <span class="m">2048</span> -s <span class="m">512</span> -O <span class="m">2048</span> ubi_config.ini
 </span></span><span class="line"><span class="cl">sudo ubiformat /dev/mtd7 -O <span class="m">2048</span> -s <span class="m">512</span> -f rootfs.ubi
-</span></span></code></pre></div><p>If the filesystem is SquashFS, you don’t need to build UBIFS. After modifying the system contents, just repack SquashFS with <code>mksquashfs</code>. Make sure to pack with the correct ownership/permissions: if the target system runs as root, pack it as root. Then use <code>ubinize</code> to wrap it into a UBI image.</p>
+</span></span></code></pre></div><p>For SquashFS filesystems, building UBIFS is unnecessary. After modifying the contents, simply repack SquashFS using <code>mksquashfs</code>. Ensure that ownership and permissions are correct (e.g., if the target system runs as root, pack as root). Then, use <code>ubinize</code> to wrap it into a UBI image.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo mksquashfs ./squashfs-root/* rootfs.squashfs
 </span></span></code></pre></div><p><img loading="lazy"  src="./UBIFS.png"
         alt="UBIFS"/></p>
